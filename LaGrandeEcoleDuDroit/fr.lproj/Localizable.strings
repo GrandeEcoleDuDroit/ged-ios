@@ -1,13 +1,24 @@
 "app_name" = "La Grande Ecole du Droit";
+"next" = "Suivant";
+"back" = "Retour";
+
+//Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";
 "authentication_page_subtitle" = "L'application qui réunit toute les actualités de la GED, faite par les gédois pour les gédois.";
+"last_name" = "Nom";
+"first_name" = "Prénom";
 "email" = "Adresse email";
 "password" = "Mot de passe";
 "login" = "Se connecter";
 "register" = "S'inscrire";
+"registration" = "Inscription";
 "forgotten_password" = "Mot de passe oublié ?";
 "not_register_yet" = "Pas encore inscrit ?";
+"enter_first_name_and_last_name" = "Entrez votre prénom et nom";
+"registration_step" = "Étape %d sur %d";
 
-"empty_inputs_error" = "Veuillez remplir tous les champs.";
 "invalid_email_error" = "Veuillez entrer une adresse mail valide.";
 "password_length_error" = "Le mot de passe doit faire au moins 8 caractères.";
+
+"empty_inputs_error" = "Veuillez remplir tous les champs.";
+
