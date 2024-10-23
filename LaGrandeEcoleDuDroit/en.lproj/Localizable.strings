@@ -1,13 +1,24 @@
 "app_name" = "La Grande Ecole du Droit";
+"next" = "Next";
+"back" = "Back";
+
+//Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";
 "authentication_page_subtitle" = "The application which bring all GED news, made by gedois for gedois";
+"last_name" = "Name";
+"first_name" = "First name";
 "email" = "Email";
 "password" = "Password";
 "login" = "Login";
 "register" = "Register";
+"registration" = "Registration";
 "not_register_yet" = "Not register yet ?";
 "forgotten_password" = "Forgotten Password ?";
+"enter_first_name_and_last_name" = "Enter your first name and last name";
+"registration_step" = "Step %d of %d";
 
-"empty_inputs_error" = "Please fill out all fields.";
 "invalid_email_error" = "Please enter a valid email address.";
 "password_length_error" = "The password must be at least 8 characters long.";
+
+"empty_inputs_error" = "Please fill out all fields.";
+
