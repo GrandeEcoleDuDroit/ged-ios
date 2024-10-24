@@ -16,6 +16,7 @@ struct GedString {
     static let not_register_yet = "not_register_yet"
     static let forgotten_password = "forgotten_password"
     static let registration_step = "registration_step"
+    static let select_school_level = "select_school_level"
     
     static let invalid_email_error = "invalid_email_error"
     static let password_length_error = "password_length_error"
