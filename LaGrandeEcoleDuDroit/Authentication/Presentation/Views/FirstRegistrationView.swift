@@ -3,6 +3,7 @@ import SwiftUI
 struct FirstRegistrationView: View {
     @StateObject private var registrationViewModel = RegistrationViewModel()
     @State private var inputFocused: InputField?
+    @State private var isValid = false
     private let titleFirstNameTextField = getString(gedString: GedString.firstName)
     private let titleLastNameTextField = getString(gedString: GedString.lastName)
     @Environment(\.presentationMode) var presentationMode
@@ -27,18 +28,31 @@ struct FirstRegistrationView: View {
                     inputFocused: $inputFocused
                 )
                 
+                if registrationViewModel.errorMessage != nil {
+                    Text(registrationViewModel.errorMessage!)
+                        .foregroundColor(.red)
+                }
+                
                 Spacer()
+                
                 HStack {
                     Spacer()
-                    NavigationLink(destination: {}) {
-                        Text(getString(gedString: GedString.next))
-                            .tint(Color(GedColor.primary))
-                            .font(.title3)
+                    NavigationLink(
+                        destination: SecondRegistrationView(),
+                        isActive: $isValid
+                    ) {
+                        Button(action: {
+                            isValid = registrationViewModel.validateNameInputs()
+                        }) {
+                            Text(getString(gedString: GedString.next))
+                                .tint(Color(GedColor.primary))
+                                .font(.title2)
+                        }
                     }
                 }
                 .padding()
             }
-            .navigationTitle(getString(gedString: GedString.registration))
+            .navigationTitle(getString(gedString: GedString.registration)).navigationBarTitleDisplayMode(.inline)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .background(Color(UIColor.systemBackground))
             .padding()
@@ -46,8 +60,8 @@ struct FirstRegistrationView: View {
                 inputFocused = nil
             }
             .toolbar {
-                ToolbarItem(placement: .navigation) {
-                    BackButton(text: getString(gedString: GedString.back), action: {
+                ToolbarItem(placement: .topBarLeading) {
+                    BackButton(text: "", action: {
                         presentationMode.wrappedValue.dismiss()
                     })
                 }

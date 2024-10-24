@@ -106,7 +106,7 @@ struct FocusableOutlinedPasswordTextField: View {
                     }))
                 Image(systemName: "eye")
                     .onTapGesture {
-                        padding = 16.5
+                        padding = 16.4
                         showPassword = false
                         DispatchQueue.main.async {
                             focusedField = defaultFocusValue
