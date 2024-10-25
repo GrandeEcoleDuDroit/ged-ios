@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SecondRegistrationView: View {
-    @StateObject private var registrationViewModel = RegistrationViewModel()
+    @EnvironmentObject private var registrationViewModel: RegistrationViewModel
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
@@ -28,7 +28,10 @@ struct SecondRegistrationView: View {
                 
                 HStack {
                     Spacer()
-                    NavigationLink(destination: {}) {
+                    NavigationLink(
+                        destination: ThirdRegistrationView()
+                            .environmentObject(registrationViewModel)
+                    ) {
                         Text(getString(gedString: GedString.next))
                             .tint(Color(GedColor.primary))
                             .font(.title2)
@@ -38,7 +41,6 @@ struct SecondRegistrationView: View {
             }
             .navigationTitle(getString(gedString: GedString.registration)).navigationBarTitleDisplayMode(.inline)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .background(Color(UIColor.systemBackground))
             .padding()
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {

@@ -23,4 +23,23 @@ class RegistrationViewModel: ObservableObject {
         
         return true
     }
+    
+    func validateCredentialInputs() -> Bool {
+        guard !email.isEmpty, !password.isEmpty else {
+            errorMessage = NSLocalizedString(GedString.empty_inputs_error, comment: "")
+            return false
+        }
+
+        guard verifyEmailUseCase(email) else {
+            errorMessage = NSLocalizedString(GedString.invalid_email_error, comment: "")
+            return false
+        }
+        
+        guard password.count >= 8 else {
+            errorMessage = NSLocalizedString(GedString.password_length_error, comment: "")
+            return false
+        }
+
+        return true
+    }
 }

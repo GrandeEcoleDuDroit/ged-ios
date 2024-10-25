@@ -17,6 +17,7 @@
 "enter_first_name_and_last_name" = "Enter your first name and last name";
 "registration_step" = "Step %d of %d";
 "select_school_level" = "Select your school level";
+"enter_email_password" = "Enter your email and password";
 
 "invalid_email_error" = "Please enter a valid email address.";
 "password_length_error" = "The password must be at least 8 characters long.";

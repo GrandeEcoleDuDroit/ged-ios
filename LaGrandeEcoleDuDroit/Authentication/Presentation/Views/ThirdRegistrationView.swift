@@ -1,30 +1,28 @@
 import SwiftUI
 
-struct FirstRegistrationView: View {
-    @StateObject private var registrationViewModel = RegistrationViewModel()
+struct ThirdRegistrationView: View {
+    @EnvironmentObject private var registrationViewModel: RegistrationViewModel
+    @Environment(\.presentationMode) var presentationMode
     @State private var inputFocused: InputField?
     @State private var isValid = false
-    private let titleFirstNameTextField = getString(gedString: GedString.firstName)
-    private let titleLastNameTextField = getString(gedString: GedString.lastName)
-    @Environment(\.presentationMode) var presentationMode
-
+    
     var body: some View {
         NavigationView {
             VStack(alignment: .leading, spacing: GedSpacing.medium) {
-                Text(getString(gedString: GedString.enter_first_name_and_last_name))
+                Text(getString(gedString: GedString.enter_email_password))
                     .font(.title2)
                 
                 FocusableOutlinedTextField(
-                    title: titleFirstNameTextField,
-                    text: $registrationViewModel.firstName,
-                    defaultFocusValue: InputField.firstName,
+                    title: getString(gedString: GedString.email),
+                    text: $registrationViewModel.email,
+                    defaultFocusValue: InputField.email,
                     inputFocused: $inputFocused
                 )
                 
-                FocusableOutlinedTextField(
-                    title: titleLastNameTextField,
-                    text: $registrationViewModel.lastName,
-                    defaultFocusValue: InputField.lastName,
+                FocusableOutlinedPasswordTextField(
+                    title: getString(gedString: GedString.password),
+                    text: $registrationViewModel.password,
+                    defaultFocusValue: InputField.password,
                     inputFocused: $inputFocused
                 )
                 
@@ -38,12 +36,11 @@ struct FirstRegistrationView: View {
                 HStack {
                     Spacer()
                     NavigationLink(
-                        destination: SecondRegistrationView()
-                            .environmentObject(registrationViewModel),
+                        destination: ThirdRegistrationView(),
                         isActive: $isValid
                     ) {
                         Button(action: {
-                            isValid = registrationViewModel.validateNameInputs()
+                            isValid = registrationViewModel.validateCredentialInputs()
                         }) {
                             Text(getString(gedString: GedString.next))
                                 .tint(Color(GedColor.primary))
@@ -68,16 +65,16 @@ struct FirstRegistrationView: View {
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Text(getString(gedString: GedString.registration_step, 1, registrationViewModel.maxStep))
+                    Text(getString(gedString: GedString.registration_step, 3, registrationViewModel.maxStep))
                         .foregroundStyle(.gray)
                 }
                 
             }
         }.navigationBarBackButtonHidden()
-
     }
 }
 
 #Preview {
-    FirstRegistrationView()
+    ThirdRegistrationView()
+        .environmentObject(RegistrationViewModel())
 }
