@@ -140,7 +140,7 @@ struct FocusableOutlinedPasswordTextField: View {
 }
 
 #Preview {
-    VStack {
+    VStack(spacing: GedSpacing.large) {
         FocusableOutlinedTextField(
             title: "Email",
             text: .constant(""),

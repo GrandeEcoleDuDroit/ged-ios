@@ -10,19 +10,26 @@ struct SecondRegistrationView: View {
                 Text(getString(gedString: GedString.select_school_level))
                     .font(.title2)
                 
-                Picker(
-                    getString(gedString: GedString.select_school_level),
-                    selection: $registrationViewModel.schoolLevel
-                ) {
-                    ForEach(registrationViewModel.schoolLevels, id: \.self) { level in
-                        Text(level)
-                    }
+                HStack {
+                    Text(getString(gedString: GedString.level))
                     
+                    Spacer()
+                    
+                    Picker(
+                        getString(gedString: GedString.select_school_level),
+                        selection: $registrationViewModel.schoolLevel
+                    ) {
+                        ForEach(registrationViewModel.schoolLevels, id: \.self) { level in
+                            Text(level)
+                        }
+                        
+                    }
                 }
-                .pickerStyle(SegmentedPickerStyle())
-                .background(Color(.lightGray).opacity(0.1))
+                .padding([.horizontal], 20)
+                .padding([.vertical], 10)
+                .background(Color(.lightGray).opacity(0.3))
                 .tint(.black)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
                 
                 Spacer()
                 
@@ -62,4 +69,5 @@ struct SecondRegistrationView: View {
 
 #Preview {
     SecondRegistrationView()
+        .environmentObject(RegistrationViewModel())
 }
