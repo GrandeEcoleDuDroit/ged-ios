@@ -17,11 +17,15 @@ struct GedString {
     static let forgotten_password = "forgotten_password"
     static let registration_step = "registration_step"
     static let select_school_level = "select_school_level"
+    static let level = "level"
+    static let enter_first_name_and_last_name = "enter_first_name_and_last_name"
     static let enter_email_password = "enter_email_password"
+    static let email_verification_title = "email_verification_title"
+    static let email_verification_explanation = "email_verification_explanation"
     
     static let invalid_email_error = "invalid_email_error"
     static let password_length_error = "password_length_error"
-    static let enter_first_name_and_last_name = "enter_first_name_and_last_name"
+    static let email_not_verified_error = "email_not_verified_error"
     
     
     static let empty_inputs_error = "empty_inputs_error"

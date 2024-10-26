@@ -36,7 +36,7 @@ struct ThirdRegistrationView: View {
                 HStack {
                     Spacer()
                     NavigationLink(
-                        destination: ThirdRegistrationView(),
+                        destination: EmailVerificationView(),
                         isActive: $isValid
                     ) {
                         Button(action: {
