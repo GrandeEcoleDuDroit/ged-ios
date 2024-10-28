@@ -27,7 +27,7 @@ struct SecondRegistrationView: View {
                 }
                 .padding([.horizontal], 20)
                 .padding([.vertical], 10)
-                .background(Color(.lightGray).opacity(0.3))
+                .background(Color(.lightGray).opacity(0.2))
                 .tint(.black)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 
