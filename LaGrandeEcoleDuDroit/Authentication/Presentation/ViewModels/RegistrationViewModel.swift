@@ -42,4 +42,8 @@ class RegistrationViewModel: ObservableObject {
 
         return true
     }
+    
+    func sendEmailVerification() {
+        
+    }
 }

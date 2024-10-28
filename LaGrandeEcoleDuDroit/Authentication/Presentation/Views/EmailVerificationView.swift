@@ -49,9 +49,7 @@ struct EmailVerificationView: View {
             .navigationTitle(getString(gedString: GedString.email_verification_title))
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding()
-            .toolbar {
-                
-            }
+            
         }.navigationBarBackButtonHidden()
     }
 }

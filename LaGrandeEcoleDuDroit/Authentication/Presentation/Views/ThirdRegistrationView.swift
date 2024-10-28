@@ -26,9 +26,18 @@ struct ThirdRegistrationView: View {
                     inputFocused: $inputFocused
                 )
                 
+                HStack {
+                    Image(systemName: "info.circle")
+                        .foregroundStyle(Color(UIColor.lightGray))
+                    
+                    Text(getString(gedString: GedString.send_email_verification_caption))
+                        .font(.caption)
+                        .foregroundStyle(Color(UIColor.lightGray))
+                }
+            
                 if registrationViewModel.errorMessage != nil {
                     Text(registrationViewModel.errorMessage!)
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                 }
                 
                 Spacer()
