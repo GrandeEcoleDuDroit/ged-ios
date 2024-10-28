@@ -26,6 +26,7 @@
 "invalid_email_error" = "Please enter a valid email address.";
 "password_length_error" = "The password must be at least 8 characters long.";
 "email_not_verified_error" = "Please verify your email address before to continue.";
+"registration_error" = "An error occured while registration";
 
 "empty_inputs_error" = "Please fill out all fields.";
 
