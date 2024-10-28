@@ -5,6 +5,7 @@ class AuthenticationViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
+    @Published var isAuthenticated: Bool = false
     
     func validateInputs() -> Bool {
         guard !email.isEmpty, !password.isEmpty else {
@@ -12,7 +13,7 @@ class AuthenticationViewModel: ObservableObject {
             return false
         }
 
-        guard verifyEmailUseCase(email) else {
+        guard verifyEmail(email) else {
             errorMessage = NSLocalizedString(GedString.invalid_email_error, comment: "")
             return false
         }

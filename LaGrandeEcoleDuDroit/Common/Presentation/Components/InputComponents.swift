@@ -68,7 +68,7 @@ struct FocusableOutlinedPasswordTextField: View {
             Color.gray
         }
     }
-    private var borderWidth: CGFloat = 0.7
+    private var borderWidth: CGFloat = 0.5
     private var cornerRadius: CGFloat = 5
     @State private var showPassword = false
     @State private var padding: CGFloat = 16
