@@ -90,8 +90,8 @@ private struct CredentialsInputs: View {
             NavigationLink(destination: {}) {
                 Text(forgottenPassword)
                     .foregroundColor(.primary)
-                    .fontWeight(.medium)
             }
+            
             .disabled(authenticationViewModel.isLoading)
             
             if authenticationViewModel.errorMessage != nil {

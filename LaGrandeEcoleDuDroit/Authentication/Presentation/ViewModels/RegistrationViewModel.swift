@@ -10,13 +10,21 @@ class RegistrationViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var schoolLevel: String
     @Published var isRegistered: Bool = false
+    @Published var isEmailVerified: Bool = false
     let schoolLevels = ["GED 1", "GED 2", "GED 3", "GED 4"]
     let maxStep = 3
+    
     private let registerUseCase: RegisterUseCase = RegisterUseCase()
+    private let sendVerificationEmailUseCase: SendVerificationEmailUseCase = SendVerificationEmailUseCase()
+    private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase = IsEmailVerifiedUseCase()
     private var cancellables = Set<AnyCancellable>()
     
     init() {
         schoolLevel = schoolLevels[0]
+    }
+    
+    func resetErrorMessage() {
+        errorMessage = nil
     }
     
     func validateNameInputs() -> Bool {
@@ -51,7 +59,7 @@ class RegistrationViewModel: ObservableObject {
         self.isLoading = true
         registerUseCase.execute(email: email, password: password)
             .sink(receiveCompletion: { completion in
-                if case let .failure(error) = completion {
+                if case .failure = completion {
                     self.isLoading = false
                     self.errorMessage = getString(gedString: GedString.registration_error)
                     self.isRegistered = false
@@ -59,7 +67,27 @@ class RegistrationViewModel: ObservableObject {
             }, receiveValue: {
                 self.isLoading = false
                 self.isRegistered = true
+                self.errorMessage = nil
             })
             .store(in: &cancellables)
+    }
+    
+    func sendVerificationEmail() {
+        sendVerificationEmailUseCase.execute { success in
+            if !success {
+                self.errorMessage = getString(gedString: GedString.unknown_error)
+            }
+        }
+    }
+    
+    func checkVerifiedEmail() {
+        isEmailVerifiedUseCase.execute { result in
+            if result {
+                self.isEmailVerified = true
+            } else {
+                self.errorMessage = getString(gedString: GedString.email_not_verified_error)
+                self.isEmailVerified = false
+            }
+        }
     }
 }

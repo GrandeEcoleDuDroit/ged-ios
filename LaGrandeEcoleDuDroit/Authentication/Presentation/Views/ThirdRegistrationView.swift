@@ -25,9 +25,18 @@ struct ThirdRegistrationView: View {
                     inputFocused: $inputFocused
                 ).disabled(registrationViewModel.isLoading)
                 
+                HStack {
+                    Image(systemName: "info.circle")
+                        .foregroundStyle(Color(UIColor.lightGray))
+                    
+                    Text(getString(gedString: GedString.send_email_verification_caption))
+                        .font(.caption)
+                        .foregroundStyle(Color(UIColor.lightGray))
+                }
+            
                 if registrationViewModel.errorMessage != nil {
                     Text(registrationViewModel.errorMessage!)
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                 }
                 
                 if registrationViewModel.isLoading {
@@ -75,6 +84,9 @@ struct ThirdRegistrationView: View {
                         .foregroundStyle(.gray)
                 }
                 
+            }
+            .onAppear {
+                registrationViewModel.resetErrorMessage()
             }
         }.navigationBarBackButtonHidden()
     }
