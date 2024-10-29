@@ -20,13 +20,14 @@
 "level" = "Level";
 "enter_email_password" = "Enter your email and password";
 "email_verification_title" = "Email verification";
-"email_verification_explanation" = "A link has been sent to the following address : %@. Please click on it to finish the registration.";
-"send_email_verification_caption" = "A verification link will be send to you.";
+"email_verification_explanation" = "A link has been sent to the following address : %@. Please click on it to complete registration.";
+"send_email_verification_caption" = "A verification link will be sent to the mail adress.";
 
 "invalid_email_error" = "Please enter a valid email address.";
 "password_length_error" = "The password must be at least 8 characters long.";
-"email_not_verified_error" = "Please verify your email address before to continue.";
+"email_not_verified_error" = "Please validate your email address before to continue.";
 "registration_error" = "An error occured while registration";
+"unknown_error" = "An unknown error has occured";
 
 "empty_inputs_error" = "Please fill out all fields.";
 

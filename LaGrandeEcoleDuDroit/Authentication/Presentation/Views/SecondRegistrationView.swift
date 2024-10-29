@@ -27,9 +27,11 @@ struct SecondRegistrationView: View {
                 }
                 .padding([.horizontal], 20)
                 .padding([.vertical], 10)
-                .background(Color(.lightGray).opacity(0.2))
+                .background(
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(Color.black, lineWidth: 0.5)
+                )
                 .tint(.black)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
                 
                 Spacer()
                 
@@ -63,7 +65,6 @@ struct SecondRegistrationView: View {
                 
             }
         }.navigationBarBackButtonHidden()
-
     }
 }
 

@@ -28,6 +28,7 @@ struct GedString {
     static let password_length_error = "password_length_error"
     static let email_not_verified_error = "email_not_verified_error"
     static let registration_error = "registration_error"
+    static let unknown_error = "unknown_error"
     
     
     static let empty_inputs_error = "empty_inputs_error"

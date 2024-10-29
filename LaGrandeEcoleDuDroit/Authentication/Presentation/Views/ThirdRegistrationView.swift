@@ -85,6 +85,9 @@ struct ThirdRegistrationView: View {
                 }
                 
             }
+            .onAppear {
+                registrationViewModel.resetErrorMessage()
+            }
         }.navigationBarBackButtonHidden()
     }
 }
