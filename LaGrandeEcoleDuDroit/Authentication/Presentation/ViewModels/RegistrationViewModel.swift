@@ -57,19 +57,22 @@ class RegistrationViewModel: ObservableObject {
     
     func register() {
         self.isLoading = true
-        registerUseCase.execute(email: email, password: password)
-            .sink(receiveCompletion: { completion in
-                if case .failure = completion {
-                    self.isLoading = false
-                    self.errorMessage = getString(gedString: GedString.registration_error)
-                    self.isRegistered = false
-                }
-            }, receiveValue: {
-                self.isLoading = false
+        registerUseCase.execute(email: email, password: password) { result in
+            self.isLoading = false
+            switch result {
+            case .success:
                 self.isRegistered = true
                 self.errorMessage = nil
-            })
-            .store(in: &cancellables)
+            case .failure(let error):
+                switch error {
+                case .accountAlreadyExist:
+                    self.errorMessage = getString(gedString: GedString.account_already_in_use_error)
+                default:
+                    self.errorMessage = getString(gedString: GedString.registration_error)
+                }
+                self.isRegistered = false
+            }
+        }
     }
     
     func sendVerificationEmail() {
@@ -81,8 +84,8 @@ class RegistrationViewModel: ObservableObject {
     }
     
     func checkVerifiedEmail() {
-        isEmailVerifiedUseCase.execute { result in
-            if result {
+        isEmailVerifiedUseCase.execute { isVerified in
+            if isVerified {
                 self.isEmailVerified = true
             } else {
                 self.errorMessage = getString(gedString: GedString.email_not_verified_error)
