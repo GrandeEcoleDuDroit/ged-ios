@@ -7,6 +7,8 @@ class AuthenticationViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var isAuthenticated: Bool = false
     
+    private let loginUseCase: LoginUseCase = LoginUseCase()
+    
     func validateInputs() -> Bool {
         guard !email.isEmpty, !password.isEmpty else {
             errorMessage = NSLocalizedString(GedString.empty_inputs_error, comment: "")
@@ -30,6 +32,22 @@ class AuthenticationViewModel: ObservableObject {
         errorMessage = nil
         isLoading = true
         
-        // Do the login implementation
+        loginUseCase.execute(email: email, password: password) { result in
+            self.isLoading = false
+            switch result {
+            case .success:
+                self.isAuthenticated = true
+            case .failure(let error):
+                switch error {
+                case .invalidCredentials:
+                    self.errorMessage = getString(gedString: GedString.invalid_credentials)
+                case .userDisabled:
+                    self.errorMessage = getString(gedString: GedString.user_disabled)
+                default:
+                    self.errorMessage = getString(gedString: GedString.unknown_error)
+                }
+                self.isAuthenticated = false
+            }
+        }
     }
 }

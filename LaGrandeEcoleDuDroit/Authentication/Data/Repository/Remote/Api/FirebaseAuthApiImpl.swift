@@ -1,13 +1,27 @@
 import FirebaseAuth
+import os
 
 class FirebaseAuthApiImpl: FirebaseAuthApi {
+    private let logger = Logger(subsystem: "com.upsaclay.gedoise", category: "debug")
+    
     func createUserWithEmail(
         email: String,
         password: String,
         completion: @escaping (FirebaseAuth.AuthDataResult?, Error?) -> Void
     ) {
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
-            completion(authResult, error)
+            if let error = error {
+                self.logger.error("FirebaseAuth create user error: \(error.localizedDescription)")
+                let errorCode = AuthErrorCode(rawValue: error._code)
+                switch errorCode {
+                    case .emailAlreadyInUse:
+                        print("Authentication error : Email already in use")
+                        return completion(authResult, error)
+                    default:
+                        print("Authentication error : \(error.localizedDescription)")
+                        completion(authResult, error)
+                }
+            }
         }
     }
     
@@ -15,13 +29,8 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
         completion: @escaping (Error?) -> Void
     ) {
         guard let currentUser = Auth.auth().currentUser else {
-            completion(
-                NSError(
-                    domain: "FirebaseAuthApi",
-                    code: -1,
-                    userInfo: [NSLocalizedDescriptionKey: "User not connected"]
-                )
-            )
+            self.logger.error("FirebaseAuth send email verification error: User not connected")
+            completion(AuthenticationError.userNotConnected)
             return
         }
         
@@ -45,5 +54,18 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
             
             completion(currentUser.isEmailVerified)
         })
+    }
+    
+    func signIn(
+        email: String,
+        password: String,
+        completion: @escaping (FirebaseAuth.AuthDataResult?, Error?) -> Void
+    ) {
+        Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
+            if let error = error {
+                self.logger.error("FirebaseAuth sign in user error: \(error.localizedDescription)")
+            }
+            completion(authResult, error)
+        }
     }
 }

@@ -74,7 +74,7 @@ struct ThirdRegistrationView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    BackButton(text: "", action: {
+                    BackButton(action: {
                         presentationMode.wrappedValue.dismiss()
                     })
                 }

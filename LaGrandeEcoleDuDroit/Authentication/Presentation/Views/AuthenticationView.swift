@@ -116,7 +116,10 @@ private struct Buttons: View {
     
     var body: some View {
         VStack(spacing: GedSpacing.medium) {
-            NavigationLink(destination: {}) {
+            NavigationLink(
+                destination: NewsView(),
+                isActive: $authenticationViewModel.isAuthenticated
+            ) {
                 LoadingButton(
                     label: login,
                     onClick: {

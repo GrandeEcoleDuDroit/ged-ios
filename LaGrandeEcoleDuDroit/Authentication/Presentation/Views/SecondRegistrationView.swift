@@ -53,7 +53,7 @@ struct SecondRegistrationView: View {
             .padding()
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    BackButton(text: "", action: {
+                    BackButton(action: {
                         presentationMode.wrappedValue.dismiss()
                     })
                 }
