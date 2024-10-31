@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct AuthenticationView: View {
-    @StateObject private var authenticationViewModel = AuthenticationViewModel()
+    @EnvironmentObject private var authenticationViewModel: AuthenticationViewModel
+    @EnvironmentObject private var registrationViewModel: RegistrationViewModel
     @State private var isInputsFocused: Bool = false
     
     var body: some View {
@@ -14,6 +15,7 @@ struct AuthenticationView: View {
                 
                 Buttons()
                     .environmentObject(authenticationViewModel)
+                    .environmentObject(registrationViewModel)
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -28,8 +30,8 @@ struct AuthenticationView: View {
 private struct Header: View {
     private let imageWidth = UIScreen.main.bounds.width * 0.4
     private let imageHeight = UIScreen.main.bounds.height * 0.2
-    private let titleAuthenticationPage = NSLocalizedString(GedString.appName, comment: "")
-    private let subtitleAuthenticationPage = NSLocalizedString(GedString.authenticationPageSubtitle, comment: "")
+    private let titleAuthenticationPage = getString(gedString: GedString.appName)
+    private let subtitleAuthenticationPage = getString(gedString: GedString.authenticationPageSubtitle)
     
     var body: some View {
         VStack(spacing: GedSpacing.small) {
@@ -56,21 +58,20 @@ private struct Header: View {
 private struct CredentialsInputs: View {
     @EnvironmentObject private var authenticationViewModel: AuthenticationViewModel
     @Binding var isInputsFocused: Bool
-    
+    @State private var isLoading: Bool = false
     @State private var inputFocused: InputField?
-    private let titleEmailTextField = NSLocalizedString(GedString.email, comment: "")
-    private let titlePasswordTextField = NSLocalizedString(GedString.password, comment: "")
-    private let forgottenPassword = NSLocalizedString(GedString.forgotten_password, comment: "")
+    private let titleEmailTextField = getString(gedString: GedString.email)
+    private let titlePasswordTextField = getString(gedString: GedString.password)
+    private let forgottenPassword = getString(gedString: GedString.forgotten_password)
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            
             FocusableOutlinedTextField(
                 title: titleEmailTextField,
                 text: $authenticationViewModel.email,
                 defaultFocusValue: InputField.email,
                 inputFocused: $inputFocused,
-                isDisable: $authenticationViewModel.isLoading
+                isDisable: $isLoading
             )
             .simultaneousGesture(TapGesture().onEnded({
                 isInputsFocused = true
@@ -81,7 +82,7 @@ private struct CredentialsInputs: View {
                 text: $authenticationViewModel.password,
                 defaultFocusValue: InputField.password,
                 inputFocused: $inputFocused,
-                isDisable: $authenticationViewModel.isLoading
+                isDisable: $isLoading
             )
             .simultaneousGesture(TapGesture().onEnded({
                 isInputsFocused = true
@@ -90,36 +91,44 @@ private struct CredentialsInputs: View {
             NavigationLink(destination: {}) {
                 Text(forgottenPassword)
                     .foregroundColor(.primary)
-            }
+            }.disabled(isLoading)
             
-            .disabled(authenticationViewModel.isLoading)
-            
-            if authenticationViewModel.errorMessage != nil {
-                Text(authenticationViewModel.errorMessage!)
+            if case .error(let message) = authenticationViewModel.authenticationState {
+                Text(message)
                     .foregroundColor(.red)
             }
         }
-        .onChange(of: isInputsFocused) { newValue in
-            if !newValue {
+        .onChange(of: isInputsFocused) { isFocused in
+            if !isFocused {
                 inputFocused = nil
             }
         }
+        .onReceive(authenticationViewModel.$authenticationState) { state in
+            isLoading = state == .loading
+        }
     }
+    
+    
 }
 
 private struct Buttons: View {
     @EnvironmentObject private var authenticationViewModel: AuthenticationViewModel
+    @EnvironmentObject private var registrationViewModel: RegistrationViewModel
     
-    private let login = NSLocalizedString(GedString.login, comment: "")
-    private let register = NSLocalizedString(GedString.register, comment: "")
-    private let notRegisterYet = NSLocalizedString(GedString.not_register_yet, comment: "")
+    private let login = getString(gedString: GedString.login)
+    private let register = getString(gedString: GedString.register)
+    private let notRegisterYet = getString(gedString: GedString.not_register_yet)
+    @State private var isLoading: Bool = false
+    @State private var destination = AnyView(FirstRegistrationView())
+    @State private var showDialog: Bool = false
+    @State private var isActive: Bool = false
     
     var body: some View {
-        VStack(spacing: GedSpacing.medium) {
-            NavigationLink(
-                destination: NewsView(),
-                isActive: $authenticationViewModel.isAuthenticated
-            ) {
+        NavigationLink(
+            destination: destination,
+            isActive: $isActive
+        ) {
+            VStack(spacing: GedSpacing.medium) {
                 LoadingButton(
                     label: login,
                     onClick: {
@@ -127,19 +136,49 @@ private struct Buttons: View {
                             authenticationViewModel.login()
                         }
                     },
-                    isLoading: $authenticationViewModel.isLoading
+                    isLoading: $isLoading
                 )
-            }
-            
-            HStack {
-                Text(notRegisterYet)
-                NavigationLink(destination: FirstRegistrationView()) {
+                
+                HStack {
+                    Text(notRegisterYet)
+                        .foregroundStyle(Color.primary)
                     Text(register)
                         .foregroundColor(Color(GedColor.primary))
                         .fontWeight(.semibold)
                         .underline()
+                        .onTapGesture {
+                            destination = AnyView(
+                                FirstRegistrationView()
+                                    .environmentObject(registrationViewModel)
+                            )
+                            isActive = true
+                        }
+                }.disabled(isLoading)
+            }
+            .onReceive(authenticationViewModel.$authenticationState) { state in
+                switch state {
+                case .emailNotVerified:
+                    showDialog = true
+                default:
+                    destination = AnyView(NewsView())
                 }
-                .disabled(authenticationViewModel.isLoading)
+                isLoading = state == .loading
+            }
+            .alert(
+                getString(gedString: GedString.email_not_verified),
+                isPresented: $showDialog,
+                presenting: ""
+            ) { data in
+                Button(getString(gedString: GedString.verify_email)) {
+                    destination = AnyView(
+                        EmailVerificationView()
+                            .environmentObject(RegistrationViewModel(email: authenticationViewModel.email))
+                    )
+                    isActive = true
+                }
+                Button(getString(gedString: GedString.cancel), role: .cancel) {}
+            } message: { data in
+                Text(getString(gedString: GedString.email_not_verified_dialog_message))
             }
         }
     }
@@ -148,4 +187,5 @@ private struct Buttons: View {
 #Preview {
     AuthenticationView()
         .environmentObject(AuthenticationViewModel())
+        .environmentObject(RegistrationViewModel())
 }

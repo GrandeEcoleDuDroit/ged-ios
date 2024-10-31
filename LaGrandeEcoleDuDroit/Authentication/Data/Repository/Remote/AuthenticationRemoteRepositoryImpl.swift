@@ -28,6 +28,8 @@ class AuthenticationRemoteRepositoryImpl: AuthenticationRemoteRepository {
                 switch errorCode {
                 case .userNotFound:
                     completion(.failure(AuthenticationError.userNotFound))
+                case .tooManyRequests:
+                    completion(.failure(AuthenticationError.tooManyRequest))
                 default:
                     completion(.failure(AuthenticationError.unknown))
                 }
@@ -47,6 +49,8 @@ class AuthenticationRemoteRepositoryImpl: AuthenticationRemoteRepository {
                 let errorCode = AuthErrorCode(rawValue: error._code)
                 switch errorCode {
                 case .wrongPassword:
+                    completion(.failure(AuthenticationError.invalidCredentials))
+                case .userNotFound:
                     completion(.failure(AuthenticationError.invalidCredentials))
                 case .userDisabled:
                     completion(.failure(AuthenticationError.userDisabled))

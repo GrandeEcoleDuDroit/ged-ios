@@ -45,10 +45,10 @@ struct SecondRegistrationView: View {
                             .tint(Color(GedColor.primary))
                             .font(.title2)
                     }
-                }
-                .padding()
+                }.padding()
             }
-            .navigationTitle(getString(gedString: GedString.registration)).navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(getString(gedString: GedString.registration))
+            .navigationBarTitleDisplayMode(.inline)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding()
             .toolbar {

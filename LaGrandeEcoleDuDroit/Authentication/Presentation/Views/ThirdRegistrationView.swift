@@ -3,6 +3,7 @@ import SwiftUI
 struct ThirdRegistrationView: View {
     @EnvironmentObject private var registrationViewModel: RegistrationViewModel
     @Environment(\.presentationMode) var presentationMode
+    @State private var isActive: Bool = false
     @State private var inputFocused: InputField?
     
     var body: some View {
@@ -16,14 +17,14 @@ struct ThirdRegistrationView: View {
                     text: $registrationViewModel.email,
                     defaultFocusValue: InputField.email,
                     inputFocused: $inputFocused
-                ).disabled(registrationViewModel.isLoading)
+                ).disabled(registrationViewModel.registrationState == .loading)
                 
                 FocusableOutlinedPasswordTextField(
                     title: getString(gedString: GedString.password),
                     text: $registrationViewModel.password,
                     defaultFocusValue: InputField.password,
                     inputFocused: $inputFocused
-                ).disabled(registrationViewModel.isLoading)
+                ).disabled(registrationViewModel.registrationState == .loading)
                 
                 HStack {
                     Image(systemName: "info.circle")
@@ -34,12 +35,12 @@ struct ThirdRegistrationView: View {
                         .foregroundStyle(Color(UIColor.lightGray))
                 }
             
-                if registrationViewModel.errorMessage != nil {
-                    Text(registrationViewModel.errorMessage!)
+                if case .error(let message) = registrationViewModel.registrationState {
+                    Text(message)
                         .foregroundStyle(.red)
                 }
                 
-                if registrationViewModel.isLoading {
+                if registrationViewModel.registrationState == .loading {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                 }
@@ -49,8 +50,9 @@ struct ThirdRegistrationView: View {
                 HStack {
                     Spacer()
                     NavigationLink(
-                        destination: EmailVerificationView(),
-                        isActive: $registrationViewModel.isRegistered
+                        destination: EmailVerificationView()
+                            .environmentObject(registrationViewModel),
+                        isActive: $isActive
                     ) {
                         Button(action: {
                             if registrationViewModel.validateCredentialInputs() {
@@ -60,7 +62,12 @@ struct ThirdRegistrationView: View {
                             Text(getString(gedString: GedString.next))
                                 .tint(Color(GedColor.primary))
                                 .font(.title2)
-                        }.disabled(registrationViewModel.isLoading)
+                        }.disabled(registrationViewModel.registrationState == .loading)
+                    }
+                }
+                .onReceive(registrationViewModel.$registrationState) { state in
+                    if state == .registered {
+                        isActive = true
                     }
                 }
                 .padding()
@@ -84,9 +91,6 @@ struct ThirdRegistrationView: View {
                         .foregroundStyle(.gray)
                 }
                 
-            }
-            .onAppear {
-                registrationViewModel.resetErrorMessage()
             }
         }.navigationBarBackButtonHidden()
     }

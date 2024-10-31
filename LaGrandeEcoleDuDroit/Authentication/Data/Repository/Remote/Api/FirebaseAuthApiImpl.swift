@@ -12,16 +12,8 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
             if let error = error {
                 self.logger.error("FirebaseAuth create user error: \(error.localizedDescription)")
-                let errorCode = AuthErrorCode(rawValue: error._code)
-                switch errorCode {
-                    case .emailAlreadyInUse:
-                        print("Authentication error : Email already in use")
-                        return completion(authResult, error)
-                    default:
-                        print("Authentication error : \(error.localizedDescription)")
-                        completion(authResult, error)
-                }
             }
+            completion(authResult, error)
         }
     }
     
@@ -45,15 +37,16 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
             return
         }
         
-        currentUser.reload(completion: { error in
-            if let error = error {
-                print("Error while reloading user : \(error.localizedDescription)")
+        currentUser.reload(
+            completion: { error in
+                if let error = error {
+                    self.logger.error("Error while reloading user : \(error.localizedDescription)")
+                    completion(false)
+                    return
+                }
+                
                 completion(false)
-                return
-            }
-            
-            completion(currentUser.isEmailVerified)
-        })
+            })
     }
     
     func signIn(

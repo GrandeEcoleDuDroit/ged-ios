@@ -3,25 +3,24 @@ import SwiftUI
 class AuthenticationViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
-    @Published var isLoading: Bool = false
-    @Published var errorMessage: String? = nil
-    @Published var isAuthenticated: Bool = false
+    @Published var authenticationState: AuthenticationState = .idle
     
     private let loginUseCase: LoginUseCase = LoginUseCase()
+    private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase = IsEmailVerifiedUseCase()
     
     func validateInputs() -> Bool {
         guard !email.isEmpty, !password.isEmpty else {
-            errorMessage = NSLocalizedString(GedString.empty_inputs_error, comment: "")
+            authenticationState = .error(message: getString(gedString: GedString.empty_inputs_error))
             return false
         }
 
         guard verifyEmail(email) else {
-            errorMessage = NSLocalizedString(GedString.invalid_email_error, comment: "")
+            authenticationState = .error(message: getString(gedString: GedString.invalid_email_error))
             return false
         }
         
         guard password.count >= 8 else {
-            errorMessage = NSLocalizedString(GedString.password_length_error, comment: "")
+            authenticationState = .error(message: getString(gedString: GedString.password_length_error))
             return false
         }
 
@@ -29,24 +28,27 @@ class AuthenticationViewModel: ObservableObject {
     }
     
     func login() {
-        errorMessage = nil
-        isLoading = true
+        authenticationState = .loading
         
         loginUseCase.execute(email: email, password: password) { result in
-            self.isLoading = false
             switch result {
             case .success:
-                self.isAuthenticated = true
+                self.isEmailVerifiedUseCase.execute { isVerified in
+                    if isVerified {
+                        self.authenticationState = .authenticated
+                    } else {
+                        self.authenticationState = .emailNotVerified
+                    }
+                }
             case .failure(let error):
                 switch error {
                 case .invalidCredentials:
-                    self.errorMessage = getString(gedString: GedString.invalid_credentials)
+                    self.authenticationState = .error(message: getString(gedString: GedString.invalid_credentials))
                 case .userDisabled:
-                    self.errorMessage = getString(gedString: GedString.user_disabled)
+                    self.authenticationState = .error(message: getString(gedString: GedString.user_disabled))
                 default:
-                    self.errorMessage = getString(gedString: GedString.unknown_error)
+                    self.authenticationState = .error(message: getString(gedString: GedString.unknown_error))
                 }
-                self.isAuthenticated = false
             }
         }
     }
