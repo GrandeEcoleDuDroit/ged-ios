@@ -6,11 +6,8 @@ class RegistrationViewModel: ObservableObject {
     @Published var lastName: String = ""
     @Published var email: String = ""
     @Published var password: String = ""
-    @Published var isLoading: Bool = false
-    @Published var errorMessage: String? = nil
     @Published var schoolLevel: String
-    @Published var isRegistered: Bool = false
-    @Published var isEmailVerified: Bool = false
+    @Published var registrationState: RegistrationState = .idle
     let schoolLevels = ["GED 1", "GED 2", "GED 3", "GED 4"]
     let maxStep = 3
     
@@ -19,17 +16,14 @@ class RegistrationViewModel: ObservableObject {
     private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase = IsEmailVerifiedUseCase()
     private var cancellables = Set<AnyCancellable>()
     
-    init() {
+    init(email: String? = nil) {
         schoolLevel = schoolLevels[0]
-    }
-    
-    func resetErrorMessage() {
-        errorMessage = nil
+        self.email = email ?? ""
     }
     
     func validateNameInputs() -> Bool {
         guard !firstName.isEmpty, !lastName.isEmpty else {
-            errorMessage = NSLocalizedString(GedString.empty_inputs_error, comment: "")
+            self.registrationState = .error(message: getString(gedString: GedString.empty_inputs_error))
             return false
         }
         
@@ -38,17 +32,17 @@ class RegistrationViewModel: ObservableObject {
     
     func validateCredentialInputs() -> Bool {
         guard !email.isEmpty, !password.isEmpty else {
-            errorMessage = NSLocalizedString(GedString.empty_inputs_error, comment: "")
+            self.registrationState = .error(message: getString(gedString: GedString.empty_inputs_error))
             return false
         }
         
         guard verifyEmail(email) else {
-            errorMessage = NSLocalizedString(GedString.invalid_email_error, comment: "")
+            self.registrationState = .error(message: getString(gedString: GedString.invalid_email_error))
             return false
         }
         
         guard password.count >= 8 else {
-            errorMessage = NSLocalizedString(GedString.password_length_error, comment: "")
+            self.registrationState = .error(message: getString(gedString: GedString.password_length_error))
             return false
         }
         
@@ -56,40 +50,53 @@ class RegistrationViewModel: ObservableObject {
     }
     
     func register() {
-        self.isLoading = true
-        registerUseCase.execute(email: email, password: password) { result in
-            self.isLoading = false
+        self.registrationState = .loading
+        let formattedEmail = email.trimmedAndCapitalized()
+        let formattedPassword = password.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        registerUseCase.execute(email: formattedEmail, password: formattedPassword) { result in
             switch result {
             case .success:
-                self.isRegistered = true
-                self.errorMessage = nil
+                self.registrationState = .registered
             case .failure(let error):
                 switch error {
                 case .accountAlreadyExist:
-                    self.errorMessage = getString(gedString: GedString.account_already_in_use_error)
+                    self.registrationState = .error(message: getString(gedString: GedString.account_already_in_use_error))
+                case .userNotFound:
+                    self.registrationState = .error(message: getString(gedString: GedString.user_not_found))
                 default:
-                    self.errorMessage = getString(gedString: GedString.registration_error)
+                    self.registrationState = .error(message: getString(gedString: GedString.registration_error))
                 }
-                self.isRegistered = false
             }
         }
     }
     
     func sendVerificationEmail() {
-        sendVerificationEmailUseCase.execute { success in
-            if !success {
-                self.errorMessage = getString(gedString: GedString.unknown_error)
+        registrationState = .loading
+        
+        sendVerificationEmailUseCase.execute { result in
+            switch result {
+            case .success:
+                self.registrationState = .idle
+            case .failure(let error):
+                switch error {
+                case .tooManyRequest:
+                    self.registrationState = .error(message: getString(gedString: GedString.too_many_request_error))
+                default:
+                    self.registrationState = .error(message: getString(gedString: GedString.unknown_error))
+                }
             }
         }
     }
     
     func checkVerifiedEmail() {
+        registrationState = .loading
+
         isEmailVerifiedUseCase.execute { isVerified in
             if isVerified {
-                self.isEmailVerified = true
+                self.registrationState = .emailVerified
             } else {
-                self.errorMessage = getString(gedString: GedString.email_not_verified_error)
-                self.isEmailVerified = false
+                self.registrationState = .error(message: getString(gedString: GedString.email_not_verified_error))
             }
         }
     }

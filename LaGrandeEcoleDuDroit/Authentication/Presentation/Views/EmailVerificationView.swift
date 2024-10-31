@@ -2,7 +2,6 @@ import SwiftUI
 
 struct EmailVerificationView: View {
     @EnvironmentObject private var registrationViewModel: RegistrationViewModel
-    @Environment(\.presentationMode) var presentationMode
     @State private var isValid = false
     @State private var isAnimating = false
     
@@ -16,10 +15,10 @@ struct EmailVerificationView: View {
                     )
                 ).font(.title3)
                 
-                if registrationViewModel.errorMessage != nil {
+                if case .error(let message) = registrationViewModel.registrationState {
                     HStack {
                         Image(systemName: "exclamationmark.octagon")
-                        Text(registrationViewModel.errorMessage!)
+                        Text(message)
                     }.foregroundStyle(Color.red)
                 }
                 
@@ -38,10 +37,6 @@ struct EmailVerificationView: View {
                 
                 HStack {
                     Spacer()
-                    NavigationLink(
-                        destination: EmailVerificationView(),
-                        isActive: $registrationViewModel.isEmailVerified
-                    ) {
                         Button(action: {
                             registrationViewModel.checkVerifiedEmail()
                         }) {
@@ -49,24 +44,14 @@ struct EmailVerificationView: View {
                                 .tint(Color(GedColor.primary))
                                 .font(.title2)
                         }
-                    }
-                }
-                .padding()
+                }.padding()
             }
             .onAppear {
-                registrationViewModel.resetErrorMessage()
                 registrationViewModel.sendVerificationEmail()
             }
             .navigationTitle(getString(gedString: GedString.email_verification_title))
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding()
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    BackButton(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    })
-                }
-            }
             
         }.navigationBarBackButtonHidden()
     }

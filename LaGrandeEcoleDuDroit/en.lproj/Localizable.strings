@@ -1,6 +1,8 @@
 "app_name" = "La Grande Ecole du Droit";
 "next" = "Next";
 "back" = "Back";
+"cancel" = "Cancel";
+"ok" = "Ok";
 
 //Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";
@@ -21,16 +23,21 @@
 "enter_email_password" = "Enter your email and password";
 "email_verification_title" = "Email verification";
 "email_verification_explanation" = "A link has been sent to the following address : %@. Please click on it to complete registration.";
-"send_email_verification_caption" = "A verification link will be sent to the mail adress.";
+"send_email_verification_caption" = "A verification link will be sent.";
+"email_not_verified" = "Email not verified";
+"email_not_verified_dialog_message" = "Please confirm your email before to continue.";
+"verify_email" = "Verify email";
 
 "invalid_email_error" = "Please enter a valid email address.";
 "password_length_error" = "The password must be at least 8 characters long.";
 "invalid_credentials" = "Incorrect email address or password.";
-"user_disabled" = "The user account is disabled. Please contact the support: application.ged@gmail.com";
+"user_disabled" = "This account is disabled. Please contact the support: application.ged@gmail.com to re-enabled it";
+"user_not_found" = "User not found. Please re-authenticate and try again.";
 "email_not_verified_error" = "Please validate your email address before to continue.";
 "registration_error" = "An error occured while registration";
 "account_already_in_use_error" = "The account is already in use. Please log in or reset your password.";
-"unknown_error" = "An unknown error has occured";
+"unknown_error" = "An unknown error has occured. Please try again.";
+"too_many_request_error" = "You have made too many requests. Please try again in a few minutes.";
 
 "empty_inputs_error" = "Please fill out all fields.";
 

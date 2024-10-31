@@ -1,11 +1,11 @@
 import SwiftUI
 
 struct FirstRegistrationView: View {
-    @StateObject private var registrationViewModel = RegistrationViewModel()
+    @EnvironmentObject private var registrationViewModel: RegistrationViewModel
     @State private var inputFocused: InputField?
-    @State private var isValid = false
-    private let titleFirstNameTextField = getString(gedString: GedString.firstName)
-    private let titleLastNameTextField = getString(gedString: GedString.lastName)
+    @State private var isValidNameInputs = false
+    private let firstNameTextFieldTitle = getString(gedString: GedString.firstName)
+    private let lastNameTextFieldTitle = getString(gedString: GedString.lastName)
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
@@ -15,21 +15,21 @@ struct FirstRegistrationView: View {
                     .font(.title2)
                 
                 FocusableOutlinedTextField(
-                    title: titleFirstNameTextField,
+                    title: firstNameTextFieldTitle,
                     text: $registrationViewModel.firstName,
                     defaultFocusValue: InputField.firstName,
                     inputFocused: $inputFocused
                 )
                 
                 FocusableOutlinedTextField(
-                    title: titleLastNameTextField,
+                    title: lastNameTextFieldTitle,
                     text: $registrationViewModel.lastName,
                     defaultFocusValue: InputField.lastName,
                     inputFocused: $inputFocused
                 )
                 
-                if registrationViewModel.errorMessage != nil {
-                    Text(registrationViewModel.errorMessage!)
+                if case .error(let message) = registrationViewModel.registrationState {
+                    Text(message)
                         .foregroundColor(.red)
                 }
                 
@@ -38,12 +38,11 @@ struct FirstRegistrationView: View {
                 HStack {
                     Spacer()
                     NavigationLink(
-                        destination: SecondRegistrationView()
-                            .environmentObject(registrationViewModel),
-                        isActive: $isValid
+                        destination: SecondRegistrationView().environmentObject(registrationViewModel),
+                        isActive: $isValidNameInputs
                     ) {
                         Button(action: {
-                            isValid = registrationViewModel.validateNameInputs()
+                            isValidNameInputs = registrationViewModel.validateNameInputs()
                         }) {
                             Text(getString(gedString: GedString.next))
                                 .tint(Color(GedColor.primary))
@@ -53,7 +52,8 @@ struct FirstRegistrationView: View {
                 }
                 .padding()
             }
-            .navigationTitle(getString(gedString: GedString.registration)).navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(getString(gedString: GedString.registration))
+            .navigationBarTitleDisplayMode(.inline)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .background(Color(UIColor.systemBackground))
             .padding()
