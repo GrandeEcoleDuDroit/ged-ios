@@ -38,7 +38,9 @@ struct EmailVerificationView: View {
                 HStack {
                     Spacer()
                         Button(action: {
-                            registrationViewModel.checkVerifiedEmail()
+                            Task {
+                                await registrationViewModel.checkVerifiedEmail()
+                            }
                         }) {
                             Text(getString(gedString: GedString.next))
                                 .tint(Color(GedColor.primary))
@@ -46,8 +48,8 @@ struct EmailVerificationView: View {
                         }
                 }.padding()
             }
-            .onAppear {
-                registrationViewModel.sendVerificationEmail()
+            .task {
+                await registrationViewModel.sendVerificationEmail()
             }
             .navigationTitle(getString(gedString: GedString.email_verification_title))
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

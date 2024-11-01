@@ -5,60 +5,50 @@ import FirebaseAuth
 class AuthenticationRemoteRepositoryImpl: AuthenticationRemoteRepository {
     private let firebaseAuthApi: FirebaseAuthApi = FirebaseAuthApiImpl()
     
-    func register(email: String, password: String, completion: @escaping (Result<Void, AuthenticationError>) -> Void) {
-        firebaseAuthApi.createUserWithEmail(email: email, password: password) { authResult, error in
-            if let error = error {
-                let errorCode = AuthErrorCode(rawValue: error._code)
-                switch errorCode {
+    func register(email: String, password: String) async throws -> String? {
+        do {
+            let authResult = try await firebaseAuthApi.createUserWithEmail(email: email, password: password)
+            return authResult?.user.uid
+        } catch let error as NSError {
+            if let authErrorCode = AuthErrorCode(rawValue: error.code) {
+                switch authErrorCode {
                 case .emailAlreadyInUse:
-                    completion(.failure(AuthenticationError.accountAlreadyExist))
+                    throw AuthenticationError.accountAlreadyExist
                 default:
-                    completion(.failure(AuthenticationError.unknown))
+                    throw AuthenticationError.unknown
                 }
             } else {
-                completion(.success(()))
+                throw AuthenticationError.unknown
             }
         }
     }
     
-    func sendEmailVerification(completion: @escaping (Result<Void, AuthenticationError>) -> Void) {
-        firebaseAuthApi.sendEmailVerification { error in
-            if let error = error {
-                let errorCode = AuthErrorCode(rawValue: error._code)
-                switch errorCode {
-                case .userNotFound:
-                    completion(.failure(AuthenticationError.userNotFound))
-                case .tooManyRequests:
-                    completion(.failure(AuthenticationError.tooManyRequest))
-                default:
-                    completion(.failure(AuthenticationError.unknown))
-                }
-            } else {
-                completion(.success(()))
-            }
-        }
+    func sendEmailVerification() async throws {
+        try await firebaseAuthApi.sendEmailVerification()
     }
     
-    func isEmailVerified(completion: @escaping (Bool) -> Void) {
-        firebaseAuthApi.isEmailVerified(completion: completion)
+    func isEmailVerified() async throws -> Bool {
+        try await firebaseAuthApi.isEmailVerified()
     }
     
-    func login(email: String, password: String, completion: @escaping (Result<Void, AuthenticationError>) -> Void) {
-        firebaseAuthApi.signIn(email: email, password: password) { authResult, error in
-            if let error = error {
-                let errorCode = AuthErrorCode(rawValue: error._code)
-                switch errorCode {
+    func login(email: String, password: String) async throws {
+        do {
+            try await firebaseAuthApi.signIn(email: email, password: password)
+        } catch let error as NSError {
+            if let authErrorCode = AuthErrorCode(rawValue: error.code) {
+                switch authErrorCode {
                 case .wrongPassword:
-                    completion(.failure(AuthenticationError.invalidCredentials))
+                    throw AuthenticationError.invalidCredentials
                 case .userNotFound:
-                    completion(.failure(AuthenticationError.invalidCredentials))
+                    throw AuthenticationError.invalidCredentials
                 case .userDisabled:
-                    completion(.failure(AuthenticationError.userDisabled))
+                    throw AuthenticationError.userDisabled
                 default:
-                    completion(.failure(AuthenticationError.unknown))
+                    throw AuthenticationError.unknown
                 }
-            } else {
-                completion(.success(()))
+            }
+            else {
+                throw AuthenticationError.unknown
             }
         }
     }

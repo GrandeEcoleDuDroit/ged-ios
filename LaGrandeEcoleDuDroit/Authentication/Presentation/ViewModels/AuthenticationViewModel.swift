@@ -27,29 +27,26 @@ class AuthenticationViewModel: ObservableObject {
         return true
     }
     
-    func login() {
+    func login() async {
         authenticationState = .loading
-        
-        loginUseCase.execute(email: email, password: password) { result in
-            switch result {
-            case .success:
-                self.isEmailVerifiedUseCase.execute { isVerified in
-                    if isVerified {
-                        self.authenticationState = .authenticated
-                    } else {
-                        self.authenticationState = .emailNotVerified
-                    }
+        do {
+            try await loginUseCase.execute(email: email, password: password)
+            
+            if let isVerified = try? await isEmailVerifiedUseCase.execute() {
+                if isVerified {
+                    authenticationState = .authenticated
+                } else {
+                    authenticationState = .emailNotVerified
                 }
-            case .failure(let error):
-                switch error {
-                case .invalidCredentials:
-                    self.authenticationState = .error(message: getString(gedString: GedString.invalid_credentials))
-                case .userDisabled:
-                    self.authenticationState = .error(message: getString(gedString: GedString.user_disabled))
-                default:
-                    self.authenticationState = .error(message: getString(gedString: GedString.unknown_error))
-                }
+            } else {
+                authenticationState = .emailNotVerified
             }
+        } catch AuthenticationError.invalidCredentials {
+            authenticationState = .error(message: getString(gedString: GedString.invalid_credentials))
+        } catch AuthenticationError.userDisabled {
+            authenticationState = .error(message: getString(gedString: GedString.user_disabled))
+        } catch {
+            authenticationState = .error(message: getString(gedString: GedString.unknown_error))
         }
     }
 }

@@ -55,8 +55,10 @@ struct ThirdRegistrationView: View {
                         isActive: $isActive
                     ) {
                         Button(action: {
-                            if registrationViewModel.validateCredentialInputs() {
-                                registrationViewModel.register()
+                            Task {
+                                if registrationViewModel.validateCredentialInputs() {
+                                    await registrationViewModel.register()
+                                }
                             }
                         }) {
                             Text(getString(gedString: GedString.next))
