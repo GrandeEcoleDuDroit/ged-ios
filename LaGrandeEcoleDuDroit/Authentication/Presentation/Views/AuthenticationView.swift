@@ -132,8 +132,10 @@ private struct Buttons: View {
                 LoadingButton(
                     label: login,
                     onClick: {
-                        if authenticationViewModel.validateInputs() {
-                            authenticationViewModel.login()
+                        Task {
+                            if authenticationViewModel.validateInputs() {
+                                await authenticationViewModel.login()
+                            }
                         }
                     },
                     isLoading: $isLoading

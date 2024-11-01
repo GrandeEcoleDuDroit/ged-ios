@@ -23,7 +23,7 @@ class RegistrationViewModel: ObservableObject {
     
     func validateNameInputs() -> Bool {
         guard !firstName.isEmpty, !lastName.isEmpty else {
-            self.registrationState = .error(message: getString(gedString: GedString.empty_inputs_error))
+            registrationState = .error(message: getString(gedString: GedString.empty_inputs_error))
             return false
         }
         
@@ -32,72 +32,63 @@ class RegistrationViewModel: ObservableObject {
     
     func validateCredentialInputs() -> Bool {
         guard !email.isEmpty, !password.isEmpty else {
-            self.registrationState = .error(message: getString(gedString: GedString.empty_inputs_error))
+            registrationState = .error(message: getString(gedString: GedString.empty_inputs_error))
             return false
         }
         
         guard verifyEmail(email) else {
-            self.registrationState = .error(message: getString(gedString: GedString.invalid_email_error))
+            registrationState = .error(message: getString(gedString: GedString.invalid_email_error))
             return false
         }
         
         guard password.count >= 8 else {
-            self.registrationState = .error(message: getString(gedString: GedString.password_length_error))
+            registrationState = .error(message: getString(gedString: GedString.password_length_error))
             return false
         }
         
         return true
     }
     
-    func register() {
-        self.registrationState = .loading
+    func register() async {
+        registrationState = .loading
         let formattedEmail = email.trimmedAndCapitalized()
         let formattedPassword = password.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        registerUseCase.execute(email: formattedEmail, password: formattedPassword) { result in
-            switch result {
-            case .success:
-                self.registrationState = .registered
-            case .failure(let error):
-                switch error {
-                case .accountAlreadyExist:
-                    self.registrationState = .error(message: getString(gedString: GedString.account_already_in_use_error))
-                case .userNotFound:
-                    self.registrationState = .error(message: getString(gedString: GedString.user_not_found))
-                default:
-                    self.registrationState = .error(message: getString(gedString: GedString.registration_error))
-                }
-            }
+        do {
+            let userId = try await registerUseCase.execute(email: formattedEmail, password: formattedPassword)
+            registrationState = .registered
+        } catch AuthenticationError.accountAlreadyExist {
+            registrationState = .error(message: getString(gedString: GedString.account_already_in_use_error))
+        } catch AuthenticationError.userNotFound {
+            registrationState = .error(message: getString(gedString: GedString.user_not_found))
+        } catch {
+            registrationState = .error(message: getString(gedString: GedString.registration_error))
         }
     }
     
-    func sendVerificationEmail() {
+    func sendVerificationEmail() async {
         registrationState = .loading
-        
-        sendVerificationEmailUseCase.execute { result in
-            switch result {
-            case .success:
-                self.registrationState = .idle
-            case .failure(let error):
-                switch error {
-                case .tooManyRequest:
-                    self.registrationState = .error(message: getString(gedString: GedString.too_many_request_error))
-                default:
-                    self.registrationState = .error(message: getString(gedString: GedString.unknown_error))
-                }
-            }
+        do {
+            try await sendVerificationEmailUseCase.execute()
+            registrationState = .idle
+        } catch AuthenticationError.tooManyRequest {
+            registrationState = .error(message: getString(gedString: GedString.too_many_request_error))
+        } catch {
+            registrationState = .error(message: getString(gedString: GedString.registration_error))
         }
     }
     
-    func checkVerifiedEmail() {
+    func checkVerifiedEmail() async {
         registrationState = .loading
 
-        isEmailVerifiedUseCase.execute { isVerified in
-            if isVerified {
-                self.registrationState = .emailVerified
+        if let emailVerified = try? await isEmailVerifiedUseCase.execute() {
+            if emailVerified {
+                registrationState = .emailVerified
             } else {
-                self.registrationState = .error(message: getString(gedString: GedString.email_not_verified_error))
+                registrationState = .error(message: getString(gedString: GedString.email_not_verified_error))
             }
+        } else {
+            registrationState = .error(message: getString(gedString: GedString.email_not_verified_error))
         }
     }
 }

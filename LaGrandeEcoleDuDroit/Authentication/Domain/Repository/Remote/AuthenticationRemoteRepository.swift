@@ -1,11 +1,11 @@
 import Combine
 
 protocol AuthenticationRemoteRepository {
-    func register(email: String, password: String, completion: @escaping (Result<Void, AuthenticationError>) -> Void)
+    func register(email: String, password: String) async throws -> String?
     
-    func sendEmailVerification(completion: @escaping (Result<Void, AuthenticationError>) -> Void)
+    func sendEmailVerification() async throws
     
-    func isEmailVerified(completion: @escaping (Bool) -> Void)
+    func isEmailVerified() async throws -> Bool
     
-    func login(email: String, password: String, completion: @escaping (Result<Void, AuthenticationError>) -> Void)
+    func login(email: String, password: String) async throws
 }
