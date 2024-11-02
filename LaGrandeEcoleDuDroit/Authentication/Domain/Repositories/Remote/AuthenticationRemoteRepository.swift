@@ -1,7 +1,7 @@
 import Combine
 
 protocol AuthenticationRemoteRepository {
-    func register(email: String, password: String) async throws -> String?
+    func register(email: String, password: String) async throws -> String
     
     func sendEmailVerification() async throws
     

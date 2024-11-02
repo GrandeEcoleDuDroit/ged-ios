@@ -14,7 +14,7 @@ class RegistrationViewModel: ObservableObject {
     private let registerUseCase: RegisterUseCase = RegisterUseCase()
     private let sendVerificationEmailUseCase: SendVerificationEmailUseCase = SendVerificationEmailUseCase()
     private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase = IsEmailVerifiedUseCase()
-    private var cancellables = Set<AnyCancellable>()
+    private let createUserUseCase: CreateUserUseCase = CreateUserUseCase()
     
     init(email: String? = nil) {
         schoolLevel = schoolLevels[0]
@@ -50,19 +50,29 @@ class RegistrationViewModel: ObservableObject {
     }
     
     func register() async {
-        registrationState = .loading
-        let formattedEmail = email.trimmedAndCapitalized()
+        await updateRegistrationState(to: .loading)
+        let formattedEmail = email.trimmedAndCapitalized
         let formattedPassword = password.trimmingCharacters(in: .whitespacesAndNewlines)
         
         do {
             let userId = try await registerUseCase.execute(email: formattedEmail, password: formattedPassword)
-            registrationState = .registered
+            let user = User(
+                id: userId,
+                firstName: firstName,
+                lastName: lastName,
+                email: formattedEmail,
+                schoolLevel: schoolLevel,
+                isMember: false,
+                profilePictureUrl: nil
+            )
+            try await createUserUseCase.execute(user: user)
+            await updateRegistrationState(to: .registered)
         } catch AuthenticationError.accountAlreadyExist {
-            registrationState = .error(message: getString(gedString: GedString.account_already_in_use_error))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.account_already_in_use_error)))
         } catch AuthenticationError.userNotFound {
-            registrationState = .error(message: getString(gedString: GedString.user_not_found))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.user_not_found)))
         } catch {
-            registrationState = .error(message: getString(gedString: GedString.registration_error))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.registration_error)))
         }
     }
     
@@ -89,6 +99,12 @@ class RegistrationViewModel: ObservableObject {
             }
         } else {
             registrationState = .error(message: getString(gedString: GedString.email_not_verified_error))
+        }
+    }
+    
+    private func updateRegistrationState(to state: RegistrationState) async {
+        await MainActor.run {
+            registrationState = state
         }
     }
 }

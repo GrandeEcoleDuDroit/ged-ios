@@ -67,5 +67,8 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
             }
         }
     }
-    
+ 
+    func isAuthenticated() -> Bool {
+        return Auth.auth().currentUser != nil
+    }
 }
