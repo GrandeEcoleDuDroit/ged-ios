@@ -7,6 +7,15 @@ class AuthenticationViewModel: ObservableObject {
     
     private let loginUseCase: LoginUseCase = LoginUseCase()
     private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase = IsEmailVerifiedUseCase()
+    private let isAuthenticatedUseCase: IsAuthenticatedUseCase = IsAuthenticatedUseCase()
+    
+    init() {
+        authenticationState = if isAuthenticatedUseCase.execute() {
+            .authenticated
+        } else {
+            .idle
+        }
+    }
     
     func validateInputs() -> Bool {
         guard !email.isEmpty, !password.isEmpty else {
@@ -29,6 +38,7 @@ class AuthenticationViewModel: ObservableObject {
     
     func login() async {
         authenticationState = .loading
+        
         do {
             try await loginUseCase.execute(email: email, password: password)
             

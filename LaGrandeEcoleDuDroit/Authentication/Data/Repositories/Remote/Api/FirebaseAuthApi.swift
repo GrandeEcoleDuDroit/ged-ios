@@ -8,4 +8,6 @@ protocol FirebaseAuthApi {
     func isEmailVerified() async throws -> Bool
     
     func signIn(email: String, password: String) async throws
+    
+    func isAuthenticated() -> Bool
 }

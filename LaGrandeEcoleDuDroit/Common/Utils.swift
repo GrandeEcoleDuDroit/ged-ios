@@ -1,5 +1,7 @@
 import SwiftUI
 
+let serverBaseUrl = ""
+
 func getString(gedString: String) -> String {
     return NSLocalizedString(gedString, comment: "")
 }
