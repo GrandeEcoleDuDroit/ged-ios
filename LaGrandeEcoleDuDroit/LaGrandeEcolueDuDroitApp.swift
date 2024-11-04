@@ -16,8 +16,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct LaGrandeEcolueDuDroitApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    @StateObject private var authenticationViewModel = AuthenticationViewModel()
-    @StateObject private var registrationViewModel = RegistrationViewModel()
+    @StateObject private var authenticationViewModel = DependencyContainer.shared.authenticationViewModel
+    @StateObject private var registrationViewModel = DependencyContainer.shared.registrationViewModel
     @State private var isAuthenticated: Bool = false
 
     var body: some Scene {

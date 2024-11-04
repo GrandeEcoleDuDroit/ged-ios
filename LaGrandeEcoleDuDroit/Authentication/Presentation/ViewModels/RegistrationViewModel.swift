@@ -11,14 +11,23 @@ class RegistrationViewModel: ObservableObject {
     let schoolLevels = ["GED 1", "GED 2", "GED 3", "GED 4"]
     let maxStep = 3
     
-    private let registerUseCase: RegisterUseCase = RegisterUseCase()
-    private let sendVerificationEmailUseCase: SendVerificationEmailUseCase = SendVerificationEmailUseCase()
-    private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase = IsEmailVerifiedUseCase()
-    private var cancellables = Set<AnyCancellable>()
+    private let registerUseCase: RegisterUseCase
+    private let sendVerificationEmailUseCase: SendVerificationEmailUseCase
+    private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase
+    private let createUserUseCase: CreateUserUseCase
     
-    init(email: String? = nil) {
+    init(
+        registerUseCase: RegisterUseCase,
+        sendVerificationEmailUseCase: SendVerificationEmailUseCase,
+        isEmailVerifiedUseCase: IsEmailVerifiedUseCase,
+        createUserUseCase: CreateUserUseCase
+    ) {
+        self.registerUseCase = registerUseCase
+        self.sendVerificationEmailUseCase = sendVerificationEmailUseCase
+        self.isEmailVerifiedUseCase = isEmailVerifiedUseCase
+        self.createUserUseCase = createUserUseCase
+        
         schoolLevel = schoolLevels[0]
-        self.email = email ?? ""
     }
     
     func validateNameInputs() -> Bool {
@@ -50,19 +59,29 @@ class RegistrationViewModel: ObservableObject {
     }
     
     func register() async {
-        registrationState = .loading
-        let formattedEmail = email.trimmedAndCapitalized()
+        await updateRegistrationState(to: .loading)
+        let formattedEmail = email.trimmedAndCapitalized
         let formattedPassword = password.trimmingCharacters(in: .whitespacesAndNewlines)
         
         do {
             let userId = try await registerUseCase.execute(email: formattedEmail, password: formattedPassword)
-            registrationState = .registered
+            let user = User(
+                id: userId,
+                firstName: firstName,
+                lastName: lastName,
+                email: formattedEmail,
+                schoolLevel: schoolLevel,
+                isMember: false,
+                profilePictureUrl: nil
+            )
+            try await createUserUseCase.execute(user: user)
+            await updateRegistrationState(to: .registered)
         } catch AuthenticationError.accountAlreadyExist {
-            registrationState = .error(message: getString(gedString: GedString.account_already_in_use_error))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.account_already_in_use_error)))
         } catch AuthenticationError.userNotFound {
-            registrationState = .error(message: getString(gedString: GedString.user_not_found))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.user_not_found)))
         } catch {
-            registrationState = .error(message: getString(gedString: GedString.registration_error))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.registration_error)))
         }
     }
     
@@ -70,11 +89,11 @@ class RegistrationViewModel: ObservableObject {
         registrationState = .loading
         do {
             try await sendVerificationEmailUseCase.execute()
-            registrationState = .idle
+            await updateRegistrationState(to: .idle)
         } catch AuthenticationError.tooManyRequest {
-            registrationState = .error(message: getString(gedString: GedString.too_many_request_error))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.too_many_request_error)))
         } catch {
-            registrationState = .error(message: getString(gedString: GedString.registration_error))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.registration_error)))
         }
     }
     
@@ -85,10 +104,16 @@ class RegistrationViewModel: ObservableObject {
             if emailVerified {
                 registrationState = .emailVerified
             } else {
-                registrationState = .error(message: getString(gedString: GedString.email_not_verified_error))
+                await updateRegistrationState(to: .error(message: getString(gedString: GedString.email_not_verified_error)))
             }
         } else {
-            registrationState = .error(message: getString(gedString: GedString.email_not_verified_error))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.email_not_verified_error)))
+        }
+    }
+    
+    private func updateRegistrationState(to state: RegistrationState) async {
+        await MainActor.run {
+            registrationState = state
         }
     }
 }

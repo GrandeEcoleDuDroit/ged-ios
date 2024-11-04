@@ -3,12 +3,16 @@ import os
 import FirebaseAuth
 
 class AuthenticationRemoteRepositoryImpl: AuthenticationRemoteRepository {
-    private let firebaseAuthApi: FirebaseAuthApi = FirebaseAuthApiImpl()
+    private let firebaseAuthApi: FirebaseAuthApi
     
-    func register(email: String, password: String) async throws -> String? {
+    init(firebaseAuthApi: FirebaseAuthApi) {
+        self.firebaseAuthApi = firebaseAuthApi
+    }
+    
+    func register(email: String, password: String) async throws -> String {
         do {
             let authResult = try await firebaseAuthApi.createUserWithEmail(email: email, password: password)
-            return authResult?.user.uid
+            return authResult.user.uid
         } catch let error as NSError {
             if let authErrorCode = AuthErrorCode(rawValue: error.code) {
                 switch authErrorCode {
@@ -31,15 +35,14 @@ class AuthenticationRemoteRepositoryImpl: AuthenticationRemoteRepository {
         try await firebaseAuthApi.isEmailVerified()
     }
     
-    func login(email: String, password: String) async throws {
+    func login(email: String, password: String) async throws -> String {
         do {
-            try await firebaseAuthApi.signIn(email: email, password: password)
+            let authDataResult = try await firebaseAuthApi.signIn(email: email, password: password)
+            return authDataResult.user.uid
         } catch let error as NSError {
             if let authErrorCode = AuthErrorCode(rawValue: error.code) {
                 switch authErrorCode {
-                case .wrongPassword:
-                    throw AuthenticationError.invalidCredentials
-                case .userNotFound:
+                case .wrongPassword, .userNotFound, .invalidCredential:
                     throw AuthenticationError.invalidCredentials
                 case .userDisabled:
                     throw AuthenticationError.userDisabled

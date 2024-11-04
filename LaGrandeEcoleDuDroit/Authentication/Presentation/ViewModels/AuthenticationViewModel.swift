@@ -5,8 +5,31 @@ class AuthenticationViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var authenticationState: AuthenticationState = .idle
     
-    private let loginUseCase: LoginUseCase = LoginUseCase()
-    private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase = IsEmailVerifiedUseCase()
+    private let loginUseCase: LoginUseCase
+    private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase
+    private let isAuthenticatedUseCase: IsAuthenticatedUseCase
+    private let getUserUseCase: GetUserUseCase
+    private let setCurrentUserUseCase: SetCurrentUserUseCase
+    
+    init(
+        loginUseCase: LoginUseCase,
+        isEmailVerifiedUseCase: IsEmailVerifiedUseCase,
+        isAuthenticatedUseCase: IsAuthenticatedUseCase,
+        getUserUseCase: GetUserUseCase,
+        setCurrentUserUseCase: SetCurrentUserUseCase
+    ) {
+        self.loginUseCase = loginUseCase
+        self.isEmailVerifiedUseCase = isEmailVerifiedUseCase
+        self.isAuthenticatedUseCase = isAuthenticatedUseCase
+        self.getUserUseCase = getUserUseCase
+        self.setCurrentUserUseCase = setCurrentUserUseCase
+        
+        authenticationState = if self.isAuthenticatedUseCase.execute() {
+            .authenticated
+        } else {
+            .idle
+        }
+    }
     
     func validateInputs() -> Bool {
         guard !email.isEmpty, !password.isEmpty else {
@@ -28,25 +51,34 @@ class AuthenticationViewModel: ObservableObject {
     }
     
     func login() async {
-        authenticationState = .loading
+        await updateAuthenticationState(to: .loading)
+        
         do {
-            try await loginUseCase.execute(email: email, password: password)
+            let userId = try await loginUseCase.execute(email: email, password: password)
             
-            if let isVerified = try? await isEmailVerifiedUseCase.execute() {
-                if isVerified {
-                    authenticationState = .authenticated
+            if try await isEmailVerifiedUseCase.execute() {
+                let user = await getUserUseCase.executre(userId: userId)
+                if user != nil {
+                    setCurrentUserUseCase.execute(user: user!)
+                    await updateAuthenticationState(to: .authenticated)
                 } else {
-                    authenticationState = .emailNotVerified
+                    await updateAuthenticationState(to: .error(message: getString(gedString: GedString.user_not_exist)))
                 }
             } else {
-                authenticationState = .emailNotVerified
+                await updateAuthenticationState(to: .emailNotVerified)
             }
         } catch AuthenticationError.invalidCredentials {
-            authenticationState = .error(message: getString(gedString: GedString.invalid_credentials))
+            await updateAuthenticationState(to: .error(message: getString(gedString: GedString.invalid_credentials)))
         } catch AuthenticationError.userDisabled {
-            authenticationState = .error(message: getString(gedString: GedString.user_disabled))
+            await updateAuthenticationState(to: .error(message: getString(gedString: GedString.user_disabled)))
         } catch {
-            authenticationState = .error(message: getString(gedString: GedString.unknown_error))
+            await updateAuthenticationState(to: .error(message: getString(gedString: GedString.unknown_error)))
+        }
+    }
+    
+    private func updateAuthenticationState(to state: AuthenticationState) async {
+        await MainActor.run {
+            authenticationState = state
         }
     }
 }

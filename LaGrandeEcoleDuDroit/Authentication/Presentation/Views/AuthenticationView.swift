@@ -107,8 +107,6 @@ private struct CredentialsInputs: View {
             isLoading = state == .loading
         }
     }
-    
-    
 }
 
 private struct Buttons: View {
@@ -172,9 +170,11 @@ private struct Buttons: View {
                 presenting: ""
             ) { data in
                 Button(getString(gedString: GedString.verify_email)) {
+                    let registrationViewModel = DependencyContainer.shared.registrationViewModel
+                    registrationViewModel.email = authenticationViewModel.email
                     destination = AnyView(
                         EmailVerificationView()
-                            .environmentObject(RegistrationViewModel(email: authenticationViewModel.email))
+                            .environmentObject(registrationViewModel)
                     )
                     isActive = true
                 }
@@ -188,6 +188,6 @@ private struct Buttons: View {
 
 #Preview {
     AuthenticationView()
-        .environmentObject(AuthenticationViewModel())
-        .environmentObject(RegistrationViewModel())
+        .environmentObject(DependencyContainer.shared.authenticationViewModel)
+        .environmentObject(DependencyContainer.shared.registrationViewModel)
 }

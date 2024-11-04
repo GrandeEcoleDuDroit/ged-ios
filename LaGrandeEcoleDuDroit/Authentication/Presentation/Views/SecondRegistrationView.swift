@@ -70,5 +70,5 @@ struct SecondRegistrationView: View {
 
 #Preview {
     SecondRegistrationView()
-        .environmentObject(RegistrationViewModel())
+        .environmentObject(DependencyContainer.shared.registrationViewModel)
 }

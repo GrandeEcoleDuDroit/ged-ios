@@ -33,6 +33,7 @@
 "invalid_credentials" = "Adresse email ou mot de passe incorrect.";
 "user_disabled" = "Ce compte est désactivé. Veuillez contacter le support: application.ged@gmail.com pour le réactiver";
 "user_not_found" = "L'utilisateur n'a pas été trouvé. Veuillez vous re-authentifier puis réessayer.";
+"user_not_exist" = "L'utilisateur n'existe pas.";
 "email_not_verified_error" = "Veuillez validez votre adresse mail avant de continuer.";
 "registration_error" = "Une erreur est survenue lors de l'inscription.";
 "account_already_in_use_error" = "Le compte est déjà utilisé. Veuillez vous connecter ou réinitialiser votre mot de passe.";

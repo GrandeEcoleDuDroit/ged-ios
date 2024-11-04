@@ -1,5 +1,5 @@
 extension String {
-    func trimmedAndCapitalized() -> String {
+    var trimmedAndCapitalized: String {
         // Trim the string
         let trimmedText = self.trimmingCharacters(in: .whitespacesAndNewlines)
         
