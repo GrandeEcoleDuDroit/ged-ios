@@ -18,6 +18,7 @@ struct LaGrandeEcolueDuDroitApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var authenticationViewModel = AuthenticationViewModel()
     @StateObject private var registrationViewModel = RegistrationViewModel()
+    @StateObject private var newsViewModel = NewsViewModel()
     @State private var isAuthenticated: Bool = false
 
     var body: some Scene {
@@ -26,6 +27,7 @@ struct LaGrandeEcolueDuDroitApp: App {
                 HStack {
                     if isAuthenticated {
                         NewsView()
+                            .environmentObject(newsViewModel)
                     } else {
                         AuthenticationView()
                             .environmentObject(authenticationViewModel)

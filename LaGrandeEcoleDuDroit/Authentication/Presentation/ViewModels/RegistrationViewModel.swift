@@ -80,11 +80,11 @@ class RegistrationViewModel: ObservableObject {
         registrationState = .loading
         do {
             try await sendVerificationEmailUseCase.execute()
-            registrationState = .idle
+            await updateRegistrationState(to: .idle)
         } catch AuthenticationError.tooManyRequest {
-            registrationState = .error(message: getString(gedString: GedString.too_many_request_error))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.too_many_request_error)))
         } catch {
-            registrationState = .error(message: getString(gedString: GedString.registration_error))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.registration_error)))
         }
     }
     
@@ -95,10 +95,10 @@ class RegistrationViewModel: ObservableObject {
             if emailVerified {
                 registrationState = .emailVerified
             } else {
-                registrationState = .error(message: getString(gedString: GedString.email_not_verified_error))
+                await updateRegistrationState(to: .error(message: getString(gedString: GedString.email_not_verified_error)))
             }
         } else {
-            registrationState = .error(message: getString(gedString: GedString.email_not_verified_error))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.email_not_verified_error)))
         }
     }
     

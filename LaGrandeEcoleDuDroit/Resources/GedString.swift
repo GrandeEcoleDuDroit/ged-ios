@@ -35,6 +35,7 @@ struct GedString {
     static let invalid_credentials = "invalid_credentials"
     static let user_disabled = "user_disabled"
     static let user_not_found = "user_not_found"
+    static let user_not_exist = "user_not_exist"
     static let email_not_verified_error = "email_not_verified_error"
     static let registration_error = "registration_error"
     static let account_already_in_use_error = "account_already_in_use_error"

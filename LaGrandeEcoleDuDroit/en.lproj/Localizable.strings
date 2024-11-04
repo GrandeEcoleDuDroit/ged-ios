@@ -33,6 +33,7 @@
 "invalid_credentials" = "Incorrect email address or password.";
 "user_disabled" = "This account is disabled. Please contact the support: application.ged@gmail.com to re-enabled it";
 "user_not_found" = "User not found. Please re-authenticate and try again.";
+"user_not_exist" = "User doesn't exist.";
 "email_not_verified_error" = "Please validate your email address before to continue.";
 "registration_error" = "An error occured while registration";
 "account_already_in_use_error" = "The account is already in use. Please log in or reset your password.";
