@@ -8,7 +8,7 @@ class AuthenticationRemoteRepositoryImpl: AuthenticationRemoteRepository {
     func register(email: String, password: String) async throws -> String {
         do {
             let authResult = try await firebaseAuthApi.createUserWithEmail(email: email, password: password)
-            return (authResult?.user.uid)!
+            return authResult.user.uid
         } catch let error as NSError {
             if let authErrorCode = AuthErrorCode(rawValue: error.code) {
                 switch authErrorCode {
@@ -31,9 +31,10 @@ class AuthenticationRemoteRepositoryImpl: AuthenticationRemoteRepository {
         try await firebaseAuthApi.isEmailVerified()
     }
     
-    func login(email: String, password: String) async throws {
+    func login(email: String, password: String) async throws -> String {
         do {
-            try await firebaseAuthApi.signIn(email: email, password: password)
+            let authDataResult = try await firebaseAuthApi.signIn(email: email, password: password)
+            return authDataResult.user.uid
         } catch let error as NSError {
             if let authErrorCode = AuthErrorCode(rawValue: error.code) {
                 switch authErrorCode {

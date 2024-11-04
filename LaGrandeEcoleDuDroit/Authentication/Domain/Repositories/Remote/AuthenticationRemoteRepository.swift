@@ -7,5 +7,5 @@ protocol AuthenticationRemoteRepository {
     
     func isEmailVerified() async throws -> Bool
     
-    func login(email: String, password: String) async throws
+    func login(email: String, password: String) async throws -> String
 }

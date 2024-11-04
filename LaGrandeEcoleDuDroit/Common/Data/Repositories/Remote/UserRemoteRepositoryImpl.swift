@@ -6,4 +6,13 @@ class UserRemoteRepositoryImpl: UserRemoteRepository {
         async let firestoreResult: Void = firestoreApi.createUser(firestoreUser: firestoreUser)
         try await firestoreResult
     }
+    
+    func getUser(userId: String) async throws -> User? {
+        let firestoreUser = try await firestoreApi.getUser(userId: userId)
+        if firestoreUser != nil {
+            return UserMapper.toDomain(firestoreUser: firestoreUser!)
+        } else {
+            return nil
+        }
+    }
 }

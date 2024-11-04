@@ -4,14 +4,17 @@ import os
 class FirebaseAuthApiImpl: FirebaseAuthApi {
     private let logger = Logger(subsystem: "com.upsaclay.gedoise", category: "debug")
     
-    func createUserWithEmail(email: String, password: String) async throws -> FirebaseAuth.AuthDataResult? {
+    func createUserWithEmail(email: String, password: String) async throws -> AuthDataResult {
         return try await withCheckedThrowingContinuation { continuation in
             Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
-                if let error = error {
+                if let authResult = authResult {
+                    continuation.resume(returning: authResult)
+                } else if let error = error {
                     self.logger.error("FirebaseAuth create user error: \(error.localizedDescription)")
                     continuation.resume(throwing: error)
                 } else {
-                    continuation.resume(returning: authResult)
+                    self.logger.error("FirebaseAuth create user error: unknown")
+                    continuation.resume(throwing: NSError(domain: "com.upsaclay.gedoise", code: 1, userInfo: nil))
                 }
             }
         }
@@ -55,14 +58,17 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
         }
     }
     
-    func signIn(email: String, password: String) async throws {
+    func signIn(email: String, password: String) async throws -> AuthDataResult {
         return try await withCheckedThrowingContinuation { continuation in
             Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
-                if let error = error {
+                if let authResult = authResult {
+                    continuation.resume(returning: authResult)
+                } else if let error = error {
                     self.logger.error("FirebaseAuth sign in user error: \(error.localizedDescription)")
                     continuation.resume(throwing: error)
                 } else {
-                    continuation.resume()
+                    self.logger.error("FirebaseAuth sign in user error: unknown")
+                    continuation.resume(throwing: NSError(domain: "com.upsaclay.gedoise", code: 1, userInfo: nil))
                 }
             }
         }

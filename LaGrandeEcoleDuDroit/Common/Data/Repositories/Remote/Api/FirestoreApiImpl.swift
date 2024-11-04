@@ -8,4 +8,13 @@ class FirestoreApiImpl: FirestoreApi {
         let userRef = usersCollection.document(firestoreUser.userId)
         try await userRef.setData(userData)
     }
+    
+    func getUser(userId: String) async throws -> FirestoreUser? {
+        let snapshot = try await usersCollection.document(userId).getDocument()
+        guard snapshot.exists else {
+            return nil
+        }
+        
+        return try snapshot.data(as: FirestoreUser.self)
+    }
 }

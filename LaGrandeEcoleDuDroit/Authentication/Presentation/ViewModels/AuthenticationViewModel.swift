@@ -8,6 +8,8 @@ class AuthenticationViewModel: ObservableObject {
     private let loginUseCase: LoginUseCase = LoginUseCase()
     private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase = IsEmailVerifiedUseCase()
     private let isAuthenticatedUseCase: IsAuthenticatedUseCase = IsAuthenticatedUseCase()
+    private let getUserUseCase: GetUserUseCase = GetUserUseCase()
+    private let setCurretUserUseCase: SetCurretUserUseCase = SetCurretUserUseCase()
     
     init() {
         authenticationState = if isAuthenticatedUseCase.execute() {
@@ -37,14 +39,20 @@ class AuthenticationViewModel: ObservableObject {
     }
     
     func login() async {
-        authenticationState = .loading
+        await updateAuthenticationState(to: .loading)
         
         do {
-            try await loginUseCase.execute(email: email, password: password)
+            let userId = try await loginUseCase.execute(email: email, password: password)
             
             if let isVerified = try? await isEmailVerifiedUseCase.execute() {
                 if isVerified {
-                    authenticationState = .authenticated
+                    let user = await getUserUseCase.executre(userId: userId)
+                    if user != nil {
+                        setCurretUserUseCase.execute(user: user!)
+                        await updateAuthenticationState(to: .authenticated)
+                    } else {
+                        await updateAuthenticationState(to: .error(message: getString(gedString: GedString.user_not_exist)))
+                    }
                 } else {
                     authenticationState = .emailNotVerified
                 }
@@ -52,11 +60,17 @@ class AuthenticationViewModel: ObservableObject {
                 authenticationState = .emailNotVerified
             }
         } catch AuthenticationError.invalidCredentials {
-            authenticationState = .error(message: getString(gedString: GedString.invalid_credentials))
+            await updateAuthenticationState(to: .error(message: getString(gedString: GedString.invalid_credentials)))
         } catch AuthenticationError.userDisabled {
-            authenticationState = .error(message: getString(gedString: GedString.user_disabled))
+            await updateAuthenticationState(to: .error(message: getString(gedString: GedString.user_disabled)))
         } catch {
-            authenticationState = .error(message: getString(gedString: GedString.unknown_error))
+            await updateAuthenticationState(to: .error(message: getString(gedString: GedString.unknown_error)))
+        }
+    }
+    
+    private func updateAuthenticationState(to state: AuthenticationState) async {
+        await MainActor.run {
+            authenticationState = state
         }
     }
 }
