@@ -1,12 +1,12 @@
+import Combine
 import Foundation
 
-class UserLocalRepositoryImpl: UserLocalRepository, ObservableObject {
+class UserLocalRepositoryImpl: UserLocalRepository {
     private let userKey = "USER_KEY"
     
-    @Published var currentUser: User? {
-        didSet {
-            saveCurrentUser()
-        }
+    @Published private var _currentUser: User?
+    var currentUser: AnyPublisher<User?, Never> {
+        return $_currentUser.eraseToAnyPublisher()
     }
     
     init() {
@@ -14,40 +14,28 @@ class UserLocalRepositoryImpl: UserLocalRepository, ObservableObject {
     }
     
     func setCurrentUser(user: User) {
-        currentUser = user
-    }
-    
-    func getCurrentUser() -> User? {
-        return currentUser
-    }
-    
-    func removeCurrentUser() {
-        UserDefaults.standard.removeObject(forKey: userKey)
-        currentUser = nil
-    }
-    
-    private func loadCurrentUser() {
-        if let userLocalData = UserDefaults.standard.data(forKey: userKey) {
-            do {
-                let userLocal = try JSONDecoder().decode(UserLocal.self, from: userLocalData)
-                currentUser = UserMapper.toDomain(userLocal: userLocal)
-            } catch {
-                print("Failed to decode user: \(error)")
-                currentUser = nil
-            }
-        } else {
-            currentUser = nil
-        }
-    }
-    
-    private func saveCurrentUser() {
-        guard let user = currentUser else {
-            return
-        }
-        
         let userLocal = UserMapper.toUserLocal(user: user)
         if let userLocalJson = try? JSONEncoder().encode(userLocal) {
             UserDefaults.standard.set(userLocalJson, forKey: userKey)
+            _currentUser = user
+        }
+    }
+ 
+    func removeCurrentUser() {
+        UserDefaults.standard.removeObject(forKey: userKey)
+        _currentUser = nil
+    }
+    
+    private func loadCurrentUser() {
+        guard let userLocalData = UserDefaults.standard.data(forKey: userKey) else {
+            _currentUser = nil
+            return
+        }
+        
+        if let userLocal = try? JSONDecoder().decode(UserLocal.self, from: userLocalData) {
+            _currentUser = UserMapper.toDomain(userLocal: userLocal)
+        } else {
+            _currentUser = nil
         }
     }
 }

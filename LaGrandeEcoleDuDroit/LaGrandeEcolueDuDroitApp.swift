@@ -16,9 +16,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct LaGrandeEcolueDuDroitApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    @StateObject private var authenticationViewModel = AuthenticationViewModel()
-    @StateObject private var registrationViewModel = RegistrationViewModel()
-    @StateObject private var newsViewModel = NewsViewModel()
+    @StateObject private var authenticationViewModel = DependencyContainer.shared.authenticationViewModel
+    @StateObject private var registrationViewModel = DependencyContainer.shared.registrationViewModel
     @State private var isAuthenticated: Bool = false
 
     var body: some Scene {
@@ -27,7 +26,6 @@ struct LaGrandeEcolueDuDroitApp: App {
                 HStack {
                     if isAuthenticated {
                         NewsView()
-                            .environmentObject(newsViewModel)
                     } else {
                         AuthenticationView()
                             .environmentObject(authenticationViewModel)

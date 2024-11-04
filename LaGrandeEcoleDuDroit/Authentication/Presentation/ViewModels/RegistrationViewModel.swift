@@ -11,14 +11,23 @@ class RegistrationViewModel: ObservableObject {
     let schoolLevels = ["GED 1", "GED 2", "GED 3", "GED 4"]
     let maxStep = 3
     
-    private let registerUseCase: RegisterUseCase = RegisterUseCase()
-    private let sendVerificationEmailUseCase: SendVerificationEmailUseCase = SendVerificationEmailUseCase()
-    private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase = IsEmailVerifiedUseCase()
-    private let createUserUseCase: CreateUserUseCase = CreateUserUseCase()
+    private let registerUseCase: RegisterUseCase
+    private let sendVerificationEmailUseCase: SendVerificationEmailUseCase
+    private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase
+    private let createUserUseCase: CreateUserUseCase
     
-    init(email: String? = nil) {
+    init(
+        registerUseCase: RegisterUseCase,
+        sendVerificationEmailUseCase: SendVerificationEmailUseCase,
+        isEmailVerifiedUseCase: IsEmailVerifiedUseCase,
+        createUserUseCase: CreateUserUseCase
+    ) {
+        self.registerUseCase = registerUseCase
+        self.sendVerificationEmailUseCase = sendVerificationEmailUseCase
+        self.isEmailVerifiedUseCase = isEmailVerifiedUseCase
+        self.createUserUseCase = createUserUseCase
+        
         schoolLevel = schoolLevels[0]
-        self.email = email ?? ""
     }
     
     func validateNameInputs() -> Bool {
