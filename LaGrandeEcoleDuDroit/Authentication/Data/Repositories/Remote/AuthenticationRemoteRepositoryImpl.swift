@@ -3,7 +3,11 @@ import os
 import FirebaseAuth
 
 class AuthenticationRemoteRepositoryImpl: AuthenticationRemoteRepository {
-    private let firebaseAuthApi: FirebaseAuthApi = FirebaseAuthApiImpl()
+    private let firebaseAuthApi: FirebaseAuthApi
+    
+    init(firebaseAuthApi: FirebaseAuthApi) {
+        self.firebaseAuthApi = firebaseAuthApi
+    }
     
     func register(email: String, password: String) async throws -> String {
         do {
@@ -38,9 +42,7 @@ class AuthenticationRemoteRepositoryImpl: AuthenticationRemoteRepository {
         } catch let error as NSError {
             if let authErrorCode = AuthErrorCode(rawValue: error.code) {
                 switch authErrorCode {
-                case .wrongPassword:
-                    throw AuthenticationError.invalidCredentials
-                case .userNotFound:
+                case .wrongPassword, .userNotFound, .invalidCredential:
                     throw AuthenticationError.invalidCredentials
                 case .userDisabled:
                     throw AuthenticationError.userDisabled

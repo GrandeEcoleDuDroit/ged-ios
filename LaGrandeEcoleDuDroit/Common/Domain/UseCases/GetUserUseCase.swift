@@ -1,5 +1,9 @@
 class GetUserUseCase {
-    private let userRemoteRepository: UserRemoteRepository = UserRemoteRepositoryImpl()
+    private let userRemoteRepository: UserRemoteRepository
+    
+    init(userRemoteRepository: UserRemoteRepository) {
+        self.userRemoteRepository = userRemoteRepository
+    }
     
     func executre(userId: String) async -> User? {
         do {

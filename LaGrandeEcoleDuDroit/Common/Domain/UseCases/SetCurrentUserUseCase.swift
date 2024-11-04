@@ -1,13 +1,11 @@
-import Combine
-
-class GetCurrentUserUseCase {
+class SetCurrentUserUseCase {
     private let userLocalRepository: UserLocalRepository
     
     init(userLocalRepository: UserLocalRepository) {
         self.userLocalRepository = userLocalRepository
     }
     
-    func execute() -> AnyPublisher<User?, Never> {
-        return userLocalRepository.currentUser
+    func execute(user: User) {
+        userLocalRepository.setCurrentUser(user: user)
     }
 }

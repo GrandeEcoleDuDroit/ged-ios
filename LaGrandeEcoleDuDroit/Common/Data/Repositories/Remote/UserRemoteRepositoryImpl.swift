@@ -1,5 +1,9 @@
 class UserRemoteRepositoryImpl: UserRemoteRepository {
-    private let firestoreApi: FirestoreApi = FirestoreApiImpl()
+    private let firestoreApi: FirestoreApi
+    
+    init(firestoreApi: FirestoreApi) {
+        self.firestoreApi = firestoreApi
+    }
     
     func createUser(user: User) async throws {
         let firestoreUser = UserMapper.toFirestoreUser(user: user)

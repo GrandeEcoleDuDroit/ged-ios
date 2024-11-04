@@ -1,11 +1,11 @@
 struct User {
-    let id: String
-    let firstName: String
-    let lastName: String
-    let email: String
-    let schoolLevel: String
-    let isMember: Bool
-    let profilePictureUrl: String?
+    var id: String
+    var firstName: String
+    var lastName: String
+    var email: String
+    var schoolLevel: String
+    var isMember: Bool
+    var profilePictureUrl: String?
     
     var fullName: String {
         return (firstName + " " + lastName).capitalized

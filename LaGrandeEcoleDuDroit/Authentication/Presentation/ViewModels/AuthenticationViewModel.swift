@@ -5,14 +5,26 @@ class AuthenticationViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var authenticationState: AuthenticationState = .idle
     
-    private let loginUseCase: LoginUseCase = LoginUseCase()
-    private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase = IsEmailVerifiedUseCase()
-    private let isAuthenticatedUseCase: IsAuthenticatedUseCase = IsAuthenticatedUseCase()
-    private let getUserUseCase: GetUserUseCase = GetUserUseCase()
-    private let setCurretUserUseCase: SetCurretUserUseCase = SetCurretUserUseCase()
+    private let loginUseCase: LoginUseCase
+    private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase
+    private let isAuthenticatedUseCase: IsAuthenticatedUseCase
+    private let getUserUseCase: GetUserUseCase
+    private let setCurrentUserUseCase: SetCurrentUserUseCase
     
-    init() {
-        authenticationState = if isAuthenticatedUseCase.execute() {
+    init(
+        loginUseCase: LoginUseCase,
+        isEmailVerifiedUseCase: IsEmailVerifiedUseCase,
+        isAuthenticatedUseCase: IsAuthenticatedUseCase,
+        getUserUseCase: GetUserUseCase,
+        setCurrentUserUseCase: SetCurrentUserUseCase
+    ) {
+        self.loginUseCase = loginUseCase
+        self.isEmailVerifiedUseCase = isEmailVerifiedUseCase
+        self.isAuthenticatedUseCase = isAuthenticatedUseCase
+        self.getUserUseCase = getUserUseCase
+        self.setCurrentUserUseCase = setCurrentUserUseCase
+        
+        authenticationState = if self.isAuthenticatedUseCase.execute() {
             .authenticated
         } else {
             .idle
@@ -44,20 +56,16 @@ class AuthenticationViewModel: ObservableObject {
         do {
             let userId = try await loginUseCase.execute(email: email, password: password)
             
-            if let isVerified = try? await isEmailVerifiedUseCase.execute() {
-                if isVerified {
-                    let user = await getUserUseCase.executre(userId: userId)
-                    if user != nil {
-                        setCurretUserUseCase.execute(user: user!)
-                        await updateAuthenticationState(to: .authenticated)
-                    } else {
-                        await updateAuthenticationState(to: .error(message: getString(gedString: GedString.user_not_exist)))
-                    }
+            if try await isEmailVerifiedUseCase.execute() {
+                let user = await getUserUseCase.executre(userId: userId)
+                if user != nil {
+                    setCurrentUserUseCase.execute(user: user!)
+                    await updateAuthenticationState(to: .authenticated)
                 } else {
-                    authenticationState = .emailNotVerified
+                    await updateAuthenticationState(to: .error(message: getString(gedString: GedString.user_not_exist)))
                 }
             } else {
-                authenticationState = .emailNotVerified
+                await updateAuthenticationState(to: .emailNotVerified)
             }
         } catch AuthenticationError.invalidCredentials {
             await updateAuthenticationState(to: .error(message: getString(gedString: GedString.invalid_credentials)))

@@ -100,5 +100,5 @@ struct ThirdRegistrationView: View {
 
 #Preview {
     ThirdRegistrationView()
-        .environmentObject(RegistrationViewModel())
+        .environmentObject(DependencyContainer.shared.registrationViewModel)
 }

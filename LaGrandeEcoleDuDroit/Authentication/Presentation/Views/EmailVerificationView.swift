@@ -61,7 +61,7 @@ struct EmailVerificationView: View {
 
 struct EmailVerificationView_Previews: PreviewProvider {
     static var previews: some View {
-        let registrationViewModel = RegistrationViewModel()
+        let registrationViewModel = DependencyContainer.shared.registrationViewModel
         registrationViewModel.email = "example@email.com"
         
         return EmailVerificationView()
