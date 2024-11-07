@@ -24,11 +24,11 @@ class AuthenticationViewModel: ObservableObject {
         self.getUserUseCase = getUserUseCase
         self.setCurrentUserUseCase = setCurrentUserUseCase
         
-//        authenticationState = if self.isAuthenticatedUseCase.execute() {
-//            .authenticated
-//        } else {
-//            .idle
-//        }
+        authenticationState = if self.isAuthenticatedUseCase.execute() {
+            .authenticated
+        } else {
+            .idle
+        }
     }
     
     func validateInputs() -> Bool {
