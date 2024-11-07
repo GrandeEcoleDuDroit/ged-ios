@@ -5,7 +5,7 @@ struct GedString {
     static let cancel = "cancel"
     static let ok = "ok"
     
-    //Authentication
+    // Authentication
     static let authenticationPageTitle = "authentication_page_title"
     static let authenticationPageSubtitle = "authentication_page_subtitle"
     static let firstName = "first_name"
@@ -29,6 +29,10 @@ struct GedString {
     static let email_not_verified_dialog_message = "email_not_verified_dialog_message"
     static let verify_email = "verify_email"
     
+    // News
+    static let news = "news"
+    static let recent_announcements = "recent_announcements"
+    
     // Authentication error
     static let invalid_email_error = "invalid_email_error"
     static let password_length_error = "password_length_error"
@@ -42,7 +46,5 @@ struct GedString {
     static let unknown_error = "unknown_error"
     static let too_many_request_error = "too_many_request_error"
     
-    
     static let empty_inputs_error = "empty_inputs_error"
-    
 }

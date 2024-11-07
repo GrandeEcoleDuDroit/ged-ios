@@ -3,8 +3,9 @@
 "back" = "Back";
 "cancel" = "Cancel";
 "ok" = "Ok";
+"home" = "Home";
 
-//Authentication
+// Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";
 "authentication_page_subtitle" = "The application which bring all GED news, made by gedois for gedois";
 "last_name" = "Name";
@@ -28,6 +29,11 @@
 "email_not_verified_dialog_message" = "Please confirm your email before to continue.";
 "verify_email" = "Verify email";
 
+// News
+"news" = "News";
+"recent_announcements" = "Recent announcements";
+
+// Authentification errors
 "invalid_email_error" = "Please enter a valid email address.";
 "password_length_error" = "The password must be at least 8 characters long.";
 "invalid_credentials" = "Incorrect email address or password.";
