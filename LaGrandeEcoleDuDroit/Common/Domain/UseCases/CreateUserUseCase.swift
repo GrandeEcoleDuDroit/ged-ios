@@ -18,11 +18,13 @@ class CreateUserUseCase {
                 switch error.code {
                 case .notConnectedToInternet:
                     throw NetworkError.notConnectedToInternet
-                }
                 case .timedOut:
                     throw NetworkError.timedOut
                 default:
-                    throw NetworkError.unknown
+                    throw error
+                }
+            } else {
+                throw error
             }
         }
     }
