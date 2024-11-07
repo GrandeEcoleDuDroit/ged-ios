@@ -1,3 +1,5 @@
 enum NetworkError: Error {
-    case invalidURL
+    case timedOut
+    case notConnectedToInternet
+    case unknown
 }

@@ -65,9 +65,6 @@ struct BackButton: View {
             isLoading : isLoading
         )
         
-        Divider()
-            .overlay(.black)
-        
-        BackButton(text: "Retour", action: {})
+        BackButton(text: "Back button", action: {})
     }.padding()
 }

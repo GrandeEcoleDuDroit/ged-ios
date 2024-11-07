@@ -47,4 +47,6 @@ struct GedString {
     static let too_many_request_error = "too_many_request_error"
     
     static let empty_inputs_error = "empty_inputs_error"
+    static let timed_out_error = "timed_out_error"
+    static let not_connected_to_internet_error = "not_connected_to_internet_error"
 }

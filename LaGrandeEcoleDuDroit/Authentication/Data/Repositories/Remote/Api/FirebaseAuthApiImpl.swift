@@ -4,6 +4,12 @@ import os
 class FirebaseAuthApiImpl: FirebaseAuthApi {
     private let logger = Logger(subsystem: "com.upsaclay.gedoise", category: "debug")
     
+    init() {
+        #if DEBUG
+        Auth.auth().useEmulator(withHost:"127.0.0.1", port:9099)
+        #endif
+    }
+    
     func createUserWithEmail(email: String, password: String) async throws -> AuthDataResult {
         return try await withCheckedThrowingContinuation { continuation in
             Auth.auth().createUser(withEmail: email, password: password) { authResult, error in

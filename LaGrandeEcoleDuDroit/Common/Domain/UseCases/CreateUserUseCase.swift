@@ -1,3 +1,5 @@
+import Foundation
+
 class CreateUserUseCase {
     private let userRemoteRepository: UserRemoteRepository
     private let userLocalRepository: UserLocalRepository
@@ -8,7 +10,20 @@ class CreateUserUseCase {
     }
     
     func execute(user: User) async throws {
-        try await userRemoteRepository.createUser(user: user)
-        userLocalRepository.setCurrentUser(user: user)
+        do {
+            try await userRemoteRepository.createUser(user: user)
+            userLocalRepository.setCurrentUser(user: user)
+        } catch {
+            if let error = error as? URLError {
+                switch error.code {
+                case .notConnectedToInternet:
+                    throw NetworkError.notConnectedToInternet
+                }
+                case .timedOut:
+                    throw NetworkError.timedOut
+                default:
+                    throw NetworkError.unknown
+            }
+        }
     }
 }
