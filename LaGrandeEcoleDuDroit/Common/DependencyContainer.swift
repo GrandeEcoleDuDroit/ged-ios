@@ -6,9 +6,10 @@ class DependencyContainer {
     // ---------------------------------- Repositories ----------------------------------//
     
     // Common
-    private lazy var firestoreApi: FirestoreApi = FirestoreApiImpl()
+    private lazy var userFirestoreApi: UserFirestoreApi = UserFirestoreApiImpl()
+    private lazy var userOracleApi: UserOracleApi = UserOracleApiImpl()
     private lazy var userLocalRepository: UserLocalRepository = UserLocalRepositoryImpl()
-    private lazy var userRemoteRepository: UserRemoteRepository = UserRemoteRepositoryImpl(firestoreApi: firestoreApi)
+    private lazy var userRemoteRepository: UserRemoteRepository = UserRemoteRepositoryImpl(userFirestoreApi: userFirestoreApi, userOracleApi: userOracleApi)
     
     // Authentication
     private lazy var firebaseAuthApi: FirebaseAuthApi = FirebaseAuthApiImpl()

@@ -1,6 +1,6 @@
 class UserMapper {
     static func toFirestoreUser(user: User) -> FirestoreUser {
-        return FirestoreUser(
+        FirestoreUser(
             userId: user.id,
             firstName: user.firstName,
             lastName: user.lastName,
@@ -12,8 +12,20 @@ class UserMapper {
         )
     }
     
+    static func toOracleUser(user: User) -> OracleUser {
+        OracleUser(
+            userId: user.id,
+            userFirstName: user.firstName,
+            userLastName: user.lastName,
+            userEmail: user.email,
+            schoolLevel: user.schoolLevel,
+            userIsMember: user.isMember ? 1 : 0,
+            userProfilePictureUrl: user.profilePictureUrl
+        )
+    }
+    
     static func toUserLocal(user: User) -> UserLocal {
-        return UserLocal(
+        UserLocal(
             userId: user.id,
             userFirstName: user.firstName,
             userLastName: user.lastName,
@@ -25,7 +37,7 @@ class UserMapper {
     }
     
     static func toDomain(userLocal: UserLocal) -> User {
-        return User(
+        User(
             id: userLocal.userId,
             firstName: userLocal.userFirstName,
             lastName: userLocal.userLastName,
@@ -37,7 +49,7 @@ class UserMapper {
     }
     
     static func toDomain(firestoreUser: FirestoreUser) -> User {
-        return User(
+        User(
             id: firestoreUser.userId,
             firstName: firestoreUser.firstName,
             lastName: firestoreUser.lastName,

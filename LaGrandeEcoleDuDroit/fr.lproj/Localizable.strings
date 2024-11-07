@@ -24,7 +24,7 @@
 "enter_email_password" = "Entrez votre adresse mail et votre mot de passe";
 "email_verification_title" = "Vérification de l'email";
 "email_verification_explanation" = "Un lien a été à l'adresse suivante : %@. Veuillez cliquez dessus pour terminer l'inscription";
-"send_email_verification_caption" = "Un lien de vérification sera envoyé.";
+"send_email_verification_caption" = "Un lien de vérification vous sera envoyé.";
 "email_not_verified" = "Email non vérifié";
 "email_not_verified_dialog_message" = "Veuillez vérifier votre adresse mail avant de continuer.";
 "verify_email" = "Vérifier l'email";
@@ -47,4 +47,6 @@
 "too_many_request_error" = "Vous avez effectué trop de requêtes. Veuillez réessayer dans quelques minutes.";
 
 "empty_inputs_error" = "Veuillez remplir tous les champs.";
+"timed_out_error" = "Le service a mis trop de temps à répondre. Veuillez réessayer.";
+"not_connected_to_internet_error" = "Une erreur réseau est survenue. Veuillez vérifier votre connexion à internet.";
 

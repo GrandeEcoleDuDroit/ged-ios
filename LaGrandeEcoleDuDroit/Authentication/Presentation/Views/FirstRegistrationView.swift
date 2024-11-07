@@ -80,4 +80,5 @@ struct FirstRegistrationView: View {
 
 #Preview {
     FirstRegistrationView()
+        .environmentObject(DependencyContainer.shared.registrationViewModel)
 }

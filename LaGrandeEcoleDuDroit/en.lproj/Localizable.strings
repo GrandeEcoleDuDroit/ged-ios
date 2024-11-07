@@ -47,4 +47,6 @@
 "too_many_request_error" = "You have made too many requests. Please try again in a few minutes.";
 
 "empty_inputs_error" = "Please fill out all fields.";
+"timed_out_error" = "The service took too long to respond. Please try again.";
+"not_connected_to_internet_error" = "A network error occurred. Please check your internet connection.";
 

@@ -3,7 +3,7 @@ import Foundation
 class AnnouncementApiImpl: AnnouncementApi {
     func getAnnouncements() async throws -> [RemoteAnnouncement] {
         guard let url = URL.oracleUrl(endpoint: "/announcements") else {
-            throw NetworkError.invalidURL
+            throw RequestError.invalidURL
         }
         
         let request = URLRequest(url: url)

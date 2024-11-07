@@ -60,15 +60,17 @@ class RegistrationViewModel: ObservableObject {
     
     func register() async {
         await updateRegistrationState(to: .loading)
-        let formattedEmail = email.trimmedAndCapitalizedFirstLetter
+        let formattedFirstName = self.firstName.trimmedAndCapitalizedFirstLetter
+        let formattedLastName = self.lastName.trimmedAndCapitalizedFirstLetter
+        let formattedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
         let formattedPassword = password.trimmingCharacters(in: .whitespacesAndNewlines)
         
         do {
             let userId = try await registerUseCase.execute(email: formattedEmail, password: formattedPassword)
             let user = User(
                 id: userId,
-                firstName: firstName,
-                lastName: lastName,
+                firstName: formattedFirstName,
+                lastName: formattedLastName,
                 email: formattedEmail,
                 schoolLevel: schoolLevel,
                 isMember: false,
@@ -76,33 +78,48 @@ class RegistrationViewModel: ObservableObject {
             )
             try await createUserUseCase.execute(user: user)
             await updateRegistrationState(to: .registered)
-        } catch AuthenticationError.accountAlreadyExist {
+        }
+        catch AuthenticationError.accountAlreadyExist {
             await updateRegistrationState(to: .error(message: getString(gedString: GedString.account_already_in_use_error)))
-        } catch AuthenticationError.userNotFound {
+        }
+        catch AuthenticationError.userNotFound {
             await updateRegistrationState(to: .error(message: getString(gedString: GedString.user_not_found)))
-        } catch {
+        }
+        catch RequestError.invalidResponse(let error) {
+            print(error ?? "Query error")
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.registration_error)))
+        }
+        catch NetworkError.timedOut {
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.timed_out_error)))
+        }
+        catch NetworkError.notConnectedToInternet {
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.not_connected_to_internet_error)))
+        }
+        catch {
             await updateRegistrationState(to: .error(message: getString(gedString: GedString.registration_error)))
         }
     }
     
     func sendVerificationEmail() async {
-        registrationState = .loading
+        await updateRegistrationState(to: .loading)
         do {
             try await sendVerificationEmailUseCase.execute()
             await updateRegistrationState(to: .idle)
-        } catch AuthenticationError.tooManyRequest {
+        }
+        catch AuthenticationError.tooManyRequest {
             await updateRegistrationState(to: .error(message: getString(gedString: GedString.too_many_request_error)))
-        } catch {
+        }
+        catch {
             await updateRegistrationState(to: .error(message: getString(gedString: GedString.registration_error)))
         }
     }
     
     func checkVerifiedEmail() async {
-        registrationState = .loading
+        await updateRegistrationState(to: .loading)
 
         if let emailVerified = try? await isEmailVerifiedUseCase.execute() {
             if emailVerified {
-                registrationState = .emailVerified
+                await updateRegistrationState(to: .emailVerified )
             } else {
                 await updateRegistrationState(to: .error(message: getString(gedString: GedString.email_not_verified_error)))
             }
