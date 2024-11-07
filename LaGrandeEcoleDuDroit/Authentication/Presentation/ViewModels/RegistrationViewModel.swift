@@ -60,7 +60,7 @@ class RegistrationViewModel: ObservableObject {
     
     func register() async {
         await updateRegistrationState(to: .loading)
-        let formattedEmail = email.trimmedAndCapitalized
+        let formattedEmail = email.trimmedAndCapitalizedFirstLetter
         let formattedPassword = password.trimmingCharacters(in: .whitespacesAndNewlines)
         
         do {

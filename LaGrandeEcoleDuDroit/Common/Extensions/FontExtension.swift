@@ -1,0 +1,19 @@
+import SwiftUI
+
+extension Font {
+    private static func gedFont(size: CGFloat) -> Font {
+        Font.custom("GedFont", size: size)
+    }
+    
+    private static func gedFont(size: CGFloat, weight: Weight) -> Font {
+        Font.system(size: size, weight: weight)
+    }
+    
+    static var titleSmall: Font {
+        .gedFont(size: 14)
+    }
+    
+    static var bodyMedium: Font {
+        .gedFont(size: 14)
+    }
+}

@@ -3,18 +3,25 @@ import Combine
 
 class NewsViewModel: ObservableObject {
     @Published var user: User? = nil
+    @Published var announcements: [Announcement] = []
+    
     private let getCurrentUserUseCase: GetCurrentUserUseCase
-    private let setCurrentUser: SetCurrentUserUseCase
+    private let getAnnouncementsUseCase: GetAnnouncementsUseCase
     private var cancellables: Set<AnyCancellable> = []
     
     init(
         getCurrentUserUseCase: GetCurrentUserUseCase,
-        setCurrentUser: SetCurrentUserUseCase
+        getAnnouncementsUseCase: GetAnnouncementsUseCase
     ) {
         self.getCurrentUserUseCase = getCurrentUserUseCase
-        self.setCurrentUser = setCurrentUser
+        self.getAnnouncementsUseCase = getAnnouncementsUseCase
         
-        self.getCurrentUserUseCase.execute()
+        initCurrentUser()
+        initAnnouncements()
+    }
+    
+    private func initCurrentUser() {
+        getCurrentUserUseCase.execute()
             .receive(on: RunLoop.main)
             .sink(receiveCompletion: { completion in
                 switch completion {
@@ -29,7 +36,7 @@ class NewsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func save(user: User) {
-        setCurrentUser.execute(user: user)
+    private func initAnnouncements(){
+        announcements = getAnnouncementsUseCase.execute()
     }
 }

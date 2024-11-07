@@ -3,7 +3,8 @@ class DependencyContainer {
     
     private init() { }
     
-    // ---- Repositories ---- //
+    // ---------------------------------- Repositories ----------------------------------//
+    
     // Common
     private lazy var firestoreApi: FirestoreApi = FirestoreApiImpl()
     private lazy var userLocalRepository: UserLocalRepository = UserLocalRepositoryImpl()
@@ -13,9 +14,11 @@ class DependencyContainer {
     private lazy var firebaseAuthApi: FirebaseAuthApi = FirebaseAuthApiImpl()
     private lazy var authenticationRemoteRepository: AuthenticationRemoteRepository = AuthenticationRemoteRepositoryImpl(firebaseAuthApi: firebaseAuthApi)
     
+    // News
+    private lazy var announcementLocalRepository: AnnouncementLocalRepository = AnnouncementLocalRepositoryImpl()
     
+    // ---------------------------------- ViewModels ---------------------------------- //
     
-    // ---- ViewModels ---- //
     // Authentication
     lazy var authenticationViewModel: AuthenticationViewModel = {
         return AuthenticationViewModel(
@@ -40,13 +43,14 @@ class DependencyContainer {
     lazy var newsViewModel: NewsViewModel = {
         return NewsViewModel(
             getCurrentUserUseCase: getCurrentUserUseCase,
-            setCurrentUser: setCurrentUserUseCase
+            getAnnouncementsUseCase: getAnnouncementsUseCase
         )
     }()
     
     
     
-    // ---- UseCases ---- //
+    // ---------------------------------- UseCases ---------------------------------- //
+    
     // Common
     lazy var createUserUseCase: CreateUserUseCase = {
         return CreateUserUseCase(
@@ -86,5 +90,10 @@ class DependencyContainer {
     
     lazy var isEmailVerifiedUseCase: IsEmailVerifiedUseCase = {
         return IsEmailVerifiedUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
+    }()
+    
+    // News
+    lazy var getAnnouncementsUseCase: GetAnnouncementsUseCase = {
+        return GetAnnouncementsUseCase(announcementLocalRepository: announcementLocalRepository)
     }()
 }

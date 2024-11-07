@@ -3,6 +3,7 @@
 "back" = "Retour";
 "cancel" = "Annuler";
 "ok" = "Ok";
+"home" = "Accueil";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";
@@ -28,6 +29,11 @@
 "email_not_verified_dialog_message" = "Veuillez vérifier votre adresse mail avant de continuer.";
 "verify_email" = "Vérifier l'email";
 
+// News
+"news" = "Actualités";
+"recent_announcements" = "Récentes annonces";
+
+// Authtentication errors
 "invalid_email_error" = "Veuillez entrer une adresse mail valide.";
 "password_length_error" = "Le mot de passe doit faire au moins 8 caractères.";
 "invalid_credentials" = "Adresse email ou mot de passe incorrect.";
