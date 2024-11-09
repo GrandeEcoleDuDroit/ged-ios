@@ -9,6 +9,14 @@ extension Font {
         Font.system(size: size, weight: weight)
     }
     
+    static var titleLarge: Font {
+        .gedFont(size: 22)
+    }
+    
+    static var titleMedium: Font {
+        .gedFont(size: 18)
+    }
+    
     static var titleSmall: Font {
         .gedFont(size: 14)
     }

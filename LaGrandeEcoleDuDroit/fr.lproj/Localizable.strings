@@ -4,6 +4,13 @@
 "cancel" = "Annuler";
 "ok" = "Ok";
 "home" = "Accueil";
+"now" = "Maintenant";
+"minute_ago" = "%d min";
+"hour_ago" = "%d h";
+"day_ago" = "%d j";
+"week_ago" = "%d sem";
+"today" = "Aujourd'hui";
+"yester" = "Hier";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";

@@ -1,10 +1,73 @@
 import SwiftUI
 
-struct RecentAnnouncement: View {
-    @Binding var announcement: Announcement
+struct AnnouncementItem: View {
+    @Binding private var announcement: Announcement
+    @State private var isClicked: Bool = false
+    @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
+    @State private var announcementElapsedTime: String = ""
+    
+    init(announcement: Binding<Announcement>) {
+        self._announcement = announcement
+    }
     
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
+        HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
+            if let profilePictureUrl = announcement.author.profilePictureUrl {
+                ProfilePicture(
+                    url: profilePictureUrl,
+                    scale: 0.5
+                )
+            } else {
+                DefaultProfilePicture(scale: 0.5)
+            }
+            
+            Text(announcement.author.fullName)
+                .font(.titleSmall)
+                .bold()
+            
+            Text(announcementElapsedTime)
+                .font(.caption)
+                .foregroundStyle(Color(UIColor.lightGray))
+            
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 5)
+        .onAppear {
+            elapsedTime = getElapsedTime(date: announcement.date)
+            announcementElapsedTime = switch elapsedTime {
+            case .now(_):
+                getString(gedString: GedString.now)
+            case .minute(let minutes):
+                getString(gedString: GedString.minute_ago, minutes)
+            case .hour(let hours):
+                getString(gedString: GedString.hour_ago, hours)
+            case .day(let days):
+                getString(gedString: GedString.day_ago, days)
+            case .week(let weeks):
+                getString(gedString: GedString.week_ago, weeks)
+            case .later(let date):
+                date.formatted(.dateTime.year().month().day())
+            }
+        }
+    }
+}
+
+
+
+struct AnnouncementItemWithContent: View {
+    @Binding private var announcement: Announcement
+    private let onClick: () -> Void
+    @State private var isClicked: Bool = false
+    @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
+    @State private var announcementElapsedTime: String = ""
+    
+    init(announcement: Binding<Announcement>, onClick: @escaping () -> Void) {
+        self._announcement = announcement
+        self.onClick = onClick
+    }
+    
+    var body: some View {
+        HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
             if let profilePictureUrl = announcement.author.profilePictureUrl {
                 ProfilePicture(
                     url: profilePictureUrl,
@@ -15,9 +78,15 @@ struct RecentAnnouncement: View {
             }
             
             VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
-                Text(announcement.author.fullName)
-                    .font(.titleSmall)
-                    .bold()
+                HStack {
+                    Text(announcement.author.fullName)
+                        .font(.titleSmall)
+                        .bold()
+                    
+                    Text(announcementElapsedTime)
+                        .font(.caption)
+                        .foregroundStyle(Color(UIColor.lightGray))
+                }
                 
                 Text(announcement.title ?? announcement.content)
                     .foregroundStyle(Color(UIColor.lightGray))
@@ -25,23 +94,36 @@ struct RecentAnnouncement: View {
                     .lineLimit(1)
                     .truncationMode(.tail)
             }
-            
-            Text(announcement.date.formatted(.dateTime.year().month().day().hour().minute()))
-                .font(.caption)
-                .foregroundStyle(Color(UIColor.lightGray))
-                .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(UIColor.systemBackground))
         .padding(.horizontal)
         .padding(.vertical, 5)
-        .onTapGesture {
-            print("Announcement tapped")
+        .clickable(isClicked: $isClicked, onClick: onClick)
+        .onAppear {
+            elapsedTime = getElapsedTime(date: announcement.date)
+            announcementElapsedTime = switch elapsedTime {
+            case .now(_):
+                getString(gedString: GedString.now)
+            case .minute(let minutes):
+                getString(gedString: GedString.minute_ago, minutes)
+            case .hour(let hours):
+                getString(gedString: GedString.hour_ago, hours)
+            case .day(let days):
+                getString(gedString: GedString.day_ago, days)
+            case .week(let weeks):
+                getString(gedString: GedString.week_ago, weeks)
+            case .later(let date):
+                date.formatted(.dateTime.year().month().day())
+            }
         }
     }
 }
 
 #Preview {
-    RecentAnnouncement(
-        announcement: .constant(announcementFixture)
-    )
+    VStack(spacing: 10) {
+        AnnouncementItem(announcement: .constant(announcementFixture))
+        
+        AnnouncementItemWithContent(announcement: .constant(announcementFixture), onClick: {})
+    }
 }

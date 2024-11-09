@@ -4,6 +4,13 @@ struct GedString {
     static let back = "back"
     static let cancel = "cancel"
     static let ok = "ok"
+    static let now = "now"
+    static let minute_ago = "minute_ago"
+    static let hour_ago = "hour_ago"
+    static let day_ago = "day_ago"
+    static let week_ago = "week_ago"
+    static let today = "today"
+    static let yesterday = "yesterday"
     
     // Authentication
     static let authenticationPageTitle = "authentication_page_title"
