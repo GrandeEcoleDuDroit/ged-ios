@@ -13,7 +13,7 @@ struct LoadingButton: View {
                     .frame(maxWidth: .infinity)
                     .padding(10)
                     .foregroundColor(.white)
-                    .background(Color(GedColor.primary))
+                    .background(.gedPrimary)
                     .cornerRadius(30)
 
             } else {
@@ -21,38 +21,12 @@ struct LoadingButton: View {
                     .frame(maxWidth: .infinity)
                     .padding(10)
                     .foregroundColor(.white)
-                    .background(Color(GedColor.primary))
+                    .background(.gedPrimary)
                     .cornerRadius(30)
             }
         }
         .disabled(isLoading)
     }
-}
-
-struct BackButton: View {
-    let text: String?
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            HStack {
-                Image(systemName: "chevron.left")
-                    .font(.title2)
-                    .tint(.black)
-                if text != nil {
-                    Text(text!)
-                        .tint(.black)
-                }
-            }
-            
-        }
-    }
-    
-    init(text: String? = nil, action: @escaping () -> Void) {
-        self.text = text
-        self.action = action
-    }
-    
 }
 
 #Preview {
@@ -63,8 +37,6 @@ struct BackButton: View {
             label: "Loading button",
             onClick: {},
             isLoading : isLoading
-        )
-        
-        BackButton(text: "Back button", action: {})
+        )        
     }.padding()
 }

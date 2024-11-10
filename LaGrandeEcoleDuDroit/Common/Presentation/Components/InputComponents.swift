@@ -35,7 +35,7 @@ struct FocusableOutlinedTextField: View {
     
     var body: some View {
         TextField(title, text: $text)
-            .tint(Color(GedColor.primary))
+            .tint(.gedPrimary)
             .focused($focusedField, equals: defaultFocusValue)
             .textInputAutocapitalization(.never)
             .padding()
@@ -114,7 +114,7 @@ struct FocusableOutlinedPasswordTextField: View {
                     }
             }
         }
-        .tint(Color(GedColor.primary))
+        .tint(.gedPrimary)
         .padding(padding)
         .cornerRadius(cornerRadius)
         .overlay(

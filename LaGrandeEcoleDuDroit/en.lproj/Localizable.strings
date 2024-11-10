@@ -4,6 +4,13 @@
 "cancel" = "Cancel";
 "ok" = "Ok";
 "home" = "Home";
+"now" = "Now";
+"minute_ago" = "%d min";
+"hour_ago" = "%d h";
+"day_ago" = "%d d";
+"week_ago" = "%d w";
+"today" = "Today";
+"yesterday" = "Yesterday";
 
 // Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";
