@@ -17,28 +17,26 @@ struct LaGrandeEcolueDuDroitApp: App {
 
     var body: some Scene {
         WindowGroup {
-            NavigationView {
-                HStack {
-                    if isAuthenticated {
-                        NewsView()
-                    } else {
-                        AuthenticationView()
-                            .environmentObject(authenticationViewModel)
-                            .environmentObject(registrationViewModel)
-                    }
+            HStack {
+                if isAuthenticated {
+                    NewsView()
+                } else {
+                    AuthenticationView()
+                        .environmentObject(authenticationViewModel)
+                        .environmentObject(registrationViewModel)
                 }
-                .onReceive(authenticationViewModel.$authenticationState) { state in
-                    if state == .authenticated {
-                        isAuthenticated = true
-                    }
-                }
-                .onReceive(registrationViewModel.$registrationState) { state in
-                    if state == .emailVerified {
-                        isAuthenticated = true
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
+            .onReceive(authenticationViewModel.$authenticationState) { state in
+                if state == .authenticated {
+                    isAuthenticated = true
+                }
+            }
+            .onReceive(registrationViewModel.$registrationState) { state in
+                if state == .emailVerified {
+                    isAuthenticated = true
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
     }
 }

@@ -15,44 +15,28 @@ struct AnnouncementItem: View {
             if let profilePictureUrl = announcement.author.profilePictureUrl {
                 ProfilePicture(
                     url: profilePictureUrl,
-                    scale: 0.5
+                    scale: 0.4
                 )
             } else {
-                DefaultProfilePicture(scale: 0.5)
+                DefaultProfilePicture(scale: 0.4)
             }
             
             Text(announcement.author.fullName)
                 .font(.titleSmall)
-                .bold()
             
             Text(announcementElapsedTime)
-                .font(.caption)
-                .foregroundStyle(Color(UIColor.lightGray))
+                .font(.bodyMedium)
+                .foregroundStyle(.textPreview)
             
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 5)
         .onAppear {
             elapsedTime = getElapsedTime(date: announcement.date)
-            announcementElapsedTime = switch elapsedTime {
-            case .now(_):
-                getString(gedString: GedString.now)
-            case .minute(let minutes):
-                getString(gedString: GedString.minute_ago, minutes)
-            case .hour(let hours):
-                getString(gedString: GedString.hour_ago, hours)
-            case .day(let days):
-                getString(gedString: GedString.day_ago, days)
-            case .week(let weeks):
-                getString(gedString: GedString.week_ago, weeks)
-            case .later(let date):
-                date.formatted(.dateTime.year().month().day())
-            }
+            announcementElapsedTime = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
         }
     }
 }
-
-
 
 struct AnnouncementItemWithContent: View {
     @Binding private var announcement: Announcement
@@ -71,25 +55,24 @@ struct AnnouncementItemWithContent: View {
             if let profilePictureUrl = announcement.author.profilePictureUrl {
                 ProfilePicture(
                     url: profilePictureUrl,
-                    scale: 0.5
+                    scale: 0.4
                 )
             } else {
-                DefaultProfilePicture(scale: 0.5)
+                DefaultProfilePicture(scale: 0.4)
             }
             
             VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                 HStack {
                     Text(announcement.author.fullName)
                         .font(.titleSmall)
-                        .bold()
                     
                     Text(announcementElapsedTime)
-                        .font(.caption)
-                        .foregroundStyle(Color(UIColor.lightGray))
+                        .font(.bodyMedium)
+                        .foregroundStyle(.textPreview)
                 }
                 
                 Text(announcement.title ?? announcement.content)
-                    .foregroundStyle(Color(UIColor.lightGray))
+                    .foregroundStyle(.textPreview)
                     .font(.bodyMedium)
                     .lineLimit(1)
                     .truncationMode(.tail)
@@ -102,27 +85,31 @@ struct AnnouncementItemWithContent: View {
         .clickable(isClicked: $isClicked, onClick: onClick)
         .onAppear {
             elapsedTime = getElapsedTime(date: announcement.date)
-            announcementElapsedTime = switch elapsedTime {
-            case .now(_):
-                getString(gedString: GedString.now)
-            case .minute(let minutes):
-                getString(gedString: GedString.minute_ago, minutes)
-            case .hour(let hours):
-                getString(gedString: GedString.hour_ago, hours)
-            case .day(let days):
-                getString(gedString: GedString.day_ago, days)
-            case .week(let weeks):
-                getString(gedString: GedString.week_ago, weeks)
-            case .later(let date):
-                date.formatted(.dateTime.year().month().day())
-            }
+            announcementElapsedTime = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
         }
+    }
+}
+
+private func getElapsedTimeText(elapsedTime: ElapsedTime, announcementDate: Date) -> String {
+    switch elapsedTime {
+    case .now(_), .minute(_), .hour(_):
+        getString(gedString: GedString.today)
+    case .day(let days):
+        if days == 1 {
+            getString(gedString: GedString.yesterday)
+        }
+        else {
+            announcementDate.formatted(.dateTime.year().month().day())
+        }
+    default:
+        announcementDate.formatted(.dateTime.year().month().day())
     }
 }
 
 #Preview {
     VStack(spacing: 10) {
         AnnouncementItem(announcement: .constant(announcementFixture))
+            .padding(.horizontal)
         
         AnnouncementItemWithContent(announcement: .constant(announcementFixture), onClick: {})
     }

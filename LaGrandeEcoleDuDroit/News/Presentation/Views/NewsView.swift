@@ -15,8 +15,9 @@ struct NewsView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding(.top, GedSpacing.medium)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .topBarLeading) {
                     HStack {
                         Image(ImageResource.gedLogo)
                             .resizable()
@@ -24,13 +25,12 @@ struct NewsView: View {
                             .frame(width: 40, height: 40)
                         
                         Text(getString(gedString: GedString.appName))
-                            .font(.title3)
-                            .fontWeight(.semibold)
+                            .font(.title2)
+                            .fontWeight(.bold)
                     }
                 }
             }
         }
-        .navigationBarBackButtonHidden()
     }
     
     var newsSection: some View {
@@ -63,10 +63,9 @@ struct RecentAnnouncementSection: View {
                             NavigationLink(
                                 destination: AnnouncementDetailView(announcement: $announcement),
                                 tag: announcement,
-                                selection: $selectedAnnouncement
-                            ) {
-                                EmptyView()
-                            }
+                                selection: $selectedAnnouncement,
+                                label: { EmptyView() }
+                            )
                             .hidden()
                         )
                 }

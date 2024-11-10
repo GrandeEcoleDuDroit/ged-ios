@@ -50,7 +50,7 @@ private struct Header: View {
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, alignment: .center)
-                .foregroundColor(Color(GedColor.primary))
+                .foregroundColor(.gedPrimary)
         }
     }
 }
@@ -143,7 +143,7 @@ private struct Buttons: View {
                     Text(notRegisterYet)
                         .foregroundStyle(Color.primary)
                     Text(register)
-                        .foregroundColor(Color(GedColor.primary))
+                        .foregroundColor(.gedPrimary)
                         .fontWeight(.semibold)
                         .underline()
                         .onTapGesture {

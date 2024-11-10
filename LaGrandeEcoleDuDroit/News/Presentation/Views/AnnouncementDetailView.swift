@@ -4,18 +4,20 @@ struct AnnouncementDetailView: View {
     @Binding var announcement: Announcement
 
     var body: some View {
-        NavigationView {
-            VStack(alignment: .leading, spacing: GedSpacing.medium) {
-                AnnouncementItem(announcement: $announcement)
-                
-                Text(announcement.content)
-                    .font(.body)
-                    .multilineTextAlignment(.leading)
+        VStack(alignment: .leading, spacing: GedSpacing.medium) {
+            AnnouncementItem(announcement: $announcement)
+            
+            if let title = announcement.title {
+                Text(title)
+                    .font(.titleMedium)
             }
-            .navigationTitle(announcement.title ?? "No title")
-            .navigationBarTitleDisplayMode(.inline)
-            .padding(.horizontal)
+            
+            Text(announcement.content)
+                .font(.body)
+                .multilineTextAlignment(.leading)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .padding(.horizontal)
     }
 }
 
