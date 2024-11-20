@@ -29,7 +29,7 @@ struct NewsView: View {
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                if true {
+                if newsViewModel.user?.isMember == true {
                     NavigationLink(destination: CreateAnnouncementView(), isActive: $isPresented) {
                         Button(
                             action: { isPresented = true },

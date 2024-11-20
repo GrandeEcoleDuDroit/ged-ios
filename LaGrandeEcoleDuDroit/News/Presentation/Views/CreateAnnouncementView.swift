@@ -6,6 +6,8 @@ struct CreateAnnouncementView: View {
     private let lineHeight: CGFloat = 24
     @State private var isActive: Bool = false
     @Environment(\.dismiss) var dismiss
+    @State private var showErrorDialog: Bool = false
+    @State private var errorMessage: String = ""
     
     var body: some View {
         GeometryReader { geometry in
@@ -72,10 +74,29 @@ struct CreateAnnouncementView: View {
                     }
                 ).disabled(createAnnouncementViewModel.content.isEmpty)
             }
-        }.onReceive(createAnnouncementViewModel.$announcementState) { value in
-            if case .created = value {
+        }
+        .onReceive(createAnnouncementViewModel.$announcementState) { state in
+            switch state {
+            case .created:
+                errorMessage = ""
                 isActive = true
+            case .error(let message):
+                errorMessage = message
+                showErrorDialog = true
+            default:
+                errorMessage = ""
             }
+        }
+        .alert(
+            "",
+            isPresented: $showErrorDialog,
+            presenting: ""
+        ) { data in
+            Button(getString(gedString: GedString.ok)) {
+                showErrorDialog = false
+            }
+        } message: { data in
+            Text(errorMessage)
         }
     }
 }
