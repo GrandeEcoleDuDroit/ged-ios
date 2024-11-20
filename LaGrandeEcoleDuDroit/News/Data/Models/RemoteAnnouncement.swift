@@ -1,15 +1,31 @@
 struct RemoteAnnouncement: Codable {
-    let announcementId: Int
-    let announcementTitle: String
-    let announcementContent: String
-    let announcementDate: Int
-    let userId: String
-    let userFirstName: String
-    let userLastName: String
-    let userEmail: String
-    let userSchoolLevel: String
-    let userIsMember: Int
-    let userProfilePictureUrl: String
+    var announcementId: String
+    var announcementTitle: String?
+    var announcementContent: String
+    var announcementDate: Int
+    var userId: String
+    
+    enum CodingKeys: String, CodingKey {
+        case announcementId = "ANNOUNCEMENT_ID"
+        case announcementTitle = "ANNOUNCEMENT_TITLE"
+        case announcementContent = "ANNOUNCEMENT_CONTENT"
+        case announcementDate = "ANNOUNCEMENT_DATE"
+        case userId = "USER_ID"
+    }
+}
+
+struct RemoteAnnouncementWithUser: Codable {
+    var announcementId: String
+    var announcementTitle: String?
+    var announcementContent: String
+    var announcementDate: Int
+    var userId: String
+    var userFirstName: String
+    var userLastName: String
+    var userEmail: String
+    var userSchoolLevel: String
+    var userIsMember: Int
+    var userProfilePictureUrl: String?
     
     enum CodingKeys: String, CodingKey {
         case announcementId = "ANNOUNCEMENT_ID"

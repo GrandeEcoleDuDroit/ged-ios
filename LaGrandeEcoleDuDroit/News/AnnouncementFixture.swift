@@ -4,7 +4,7 @@ private let calendar = Calendar.current
 private let currentDate = Date.now
 
 let announcementFixture = Announcement(
-    id: 1,
+    id: "1",
     title: "Rappel : Visite de cabinet le 23/03.",
     content: "Nous vous informons que la visite de votre " +
     "cabinet médical est programmée pour le 23 mars. " +
@@ -23,10 +23,10 @@ let announcementFixture = Announcement(
 )
 
 let announcementsFixture = [
-    Announcement(id: 1, content: "First announcement", date: currentDate, author: userFixture),
-    Announcement(id: 2, content: "Second announcement", date: calendar.date(byAdding: .day, value: -1, to: currentDate) ?? currentDate, author:userFixture),
-    Announcement(id: 3, content: "Third announcement", date: calendar.date(byAdding: .day, value: -3, to: currentDate) ?? currentDate, author: userFixture),
-    Announcement(id: 4, content: "Fourth announcement", date: calendar.date(byAdding: .weekOfMonth, value: -1, to: currentDate) ?? currentDate, author:userFixture),
-    Announcement(id: 5, content: "Fifth announcement", date: calendar.date(byAdding: .month, value: -1, to: currentDate) ?? currentDate, author: userFixture),
-    Announcement(id: 6, content: "Sixth announcement", date: calendar.date(byAdding: .year, value: -1, to: currentDate) ?? currentDate, author: userFixture),
+    Announcement(id: "1", content: "First announcement", date: currentDate, author: userFixture),
+    Announcement(id: "2", content: "Second announcement", date: calendar.date(byAdding: .day, value: -1, to: currentDate) ?? currentDate, author:userFixture),
+    Announcement(id: "3", content: "Third announcement", date: calendar.date(byAdding: .day, value: -3, to: currentDate) ?? currentDate, author: userFixture),
+    Announcement(id: "4", content: "Fourth announcement", date: calendar.date(byAdding: .weekOfMonth, value: -1, to: currentDate) ?? currentDate, author:userFixture),
+    Announcement(id: "5", content: "Fifth announcement", date: calendar.date(byAdding: .month, value: -1, to: currentDate) ?? currentDate, author: userFixture),
+    Announcement(id: "6", content: "Sixth announcement", date: calendar.date(byAdding: .year, value: -1, to: currentDate) ?? currentDate, author: userFixture),
 ]

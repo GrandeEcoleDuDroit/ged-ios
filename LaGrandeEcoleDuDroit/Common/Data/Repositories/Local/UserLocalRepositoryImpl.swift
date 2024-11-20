@@ -5,8 +5,11 @@ class UserLocalRepositoryImpl: UserLocalRepository {
     private let userKey = "USER_KEY"
     
     @Published private var _currentUser: User?
-    var currentUser: AnyPublisher<User?, Never> {
-        return $_currentUser.eraseToAnyPublisher()
+    var currentUserPublisher: AnyPublisher<User?, Never> {
+        $_currentUser.eraseToAnyPublisher()
+    }
+    var currentUser: User? {
+        _currentUser
     }
     
     init() {
@@ -14,9 +17,9 @@ class UserLocalRepositoryImpl: UserLocalRepository {
     }
     
     func setCurrentUser(user: User) {
-        let userLocal = UserMapper.toUserLocal(user: user)
-        if let userLocalJson = try? JSONEncoder().encode(userLocal) {
-            UserDefaults.standard.set(userLocalJson, forKey: userKey)
+        let localUser = UserMapper.toLocalUser(user: user)
+        if let localUserJson = try? JSONEncoder().encode(localUser) {
+            UserDefaults.standard.set(localUserJson, forKey: userKey)
             _currentUser = user
         }
     }
@@ -27,13 +30,13 @@ class UserLocalRepositoryImpl: UserLocalRepository {
     }
     
     private func loadCurrentUser() {
-        guard let userLocalData = UserDefaults.standard.data(forKey: userKey) else {
+        guard let localUserData = UserDefaults.standard.data(forKey: userKey) else {
             _currentUser = nil
             return
         }
         
-        if let userLocal = try? JSONDecoder().decode(UserLocal.self, from: userLocalData) {
-            _currentUser = UserMapper.toDomain(userLocal: userLocal)
+        if let localUser = try? JSONDecoder().decode(LocalUser.self, from: localUserData) {
+            _currentUser = UserMapper.toDomain(localUser: localUser)
         } else {
             _currentUser = nil
         }

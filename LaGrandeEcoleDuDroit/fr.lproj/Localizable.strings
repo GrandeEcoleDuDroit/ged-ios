@@ -11,6 +11,7 @@
 "week_ago" = "%d sem";
 "today" = "Aujourd'hui";
 "yester" = "Hier";
+"home" = "Accueil";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";
@@ -39,6 +40,13 @@
 // News
 "news" = "Actualités";
 "recent_announcements" = "Récentes annonces";
+"create_announcement" = "Créer Annonce";
+"title" = "Titre";
+"content" = "Contenu";
+"post" = "Poster";
+"no_announcement" = "Aucune annonce";
+// News errors
+"error_creating_announcement" = "Une erreur est survenue lors de la création de l'annonce.";
 
 // Authtentication errors
 "invalid_email_error" = "Veuillez entrer une adresse mail valide.";

@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 func getString(gedString: String) -> String {
     return NSLocalizedString(gedString, comment: "")

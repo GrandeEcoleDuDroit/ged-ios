@@ -9,7 +9,8 @@ struct AnnouncementDetailView: View {
             
             if let title = announcement.title {
                 Text(title)
-                    .font(.titleMedium)
+                    .font(.title2)
+                    .fontWeight(.semibold)
             }
             
             Text(announcement.content)

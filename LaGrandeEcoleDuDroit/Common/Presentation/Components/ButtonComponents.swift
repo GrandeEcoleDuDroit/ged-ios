@@ -14,7 +14,7 @@ struct LoadingButton: View {
                     .padding(10)
                     .foregroundColor(.white)
                     .background(.gedPrimary)
-                    .cornerRadius(30)
+                    .clipShape(.rect(cornerRadius: 30))
 
             } else {
                 Text(label)
@@ -22,7 +22,7 @@ struct LoadingButton: View {
                     .padding(10)
                     .foregroundColor(.white)
                     .background(.gedPrimary)
-                    .cornerRadius(30)
+                    .clipShape(.rect(cornerRadius: 30))
             }
         }
         .disabled(isLoading)

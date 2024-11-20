@@ -21,7 +21,7 @@ class NewsViewModel: ObservableObject {
     }
     
     private func initCurrentUser() {
-        getCurrentUserUseCase.execute()
+        getCurrentUserUseCase.executeWithPublisher()
             .receive(on: RunLoop.main)
             .sink(receiveCompletion: { completion in
                 switch completion {
@@ -36,7 +36,19 @@ class NewsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func initAnnouncements(){
-        announcements = getAnnouncementsUseCase.execute()
+    private func initAnnouncements() {
+        getAnnouncementsUseCase.execute()
+            .receive(on: RunLoop.main)
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    print("Error fetching announcements: \(error)")
+                }
+            }, receiveValue: { [weak self] announcements in
+                self?.announcements = announcements
+            })
+            .store(in: &cancellables)
     }
 }

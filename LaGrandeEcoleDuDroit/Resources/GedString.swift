@@ -11,6 +11,7 @@ struct GedString {
     static let week_ago = "week_ago"
     static let today = "today"
     static let yesterday = "yesterday"
+    static let home = "home"
     
     // Authentication
     static let authenticationPageTitle = "authentication_page_title"
@@ -36,10 +37,6 @@ struct GedString {
     static let email_not_verified_dialog_message = "email_not_verified_dialog_message"
     static let verify_email = "verify_email"
     
-    // News
-    static let news = "news"
-    static let recent_announcements = "recent_announcements"
-    
     // Authentication error
     static let invalid_email_error = "invalid_email_error"
     static let password_length_error = "password_length_error"
@@ -52,6 +49,19 @@ struct GedString {
     static let account_already_in_use_error = "account_already_in_use_error"
     static let unknown_error = "unknown_error"
     static let too_many_request_error = "too_many_request_error"
+    
+    // News
+    static let news = "news"
+    static let recent_announcements = "recent_announcements"
+    static let create_announcement = "create_announcement"
+    static let title = "title"
+    static let content = "content"
+    static let post = "post"
+    static let announcement_created = "announcement_created"
+    static let no_announcement = "no_announcement"
+    
+    // News error
+    static let error_creating_announcement = "error_creating_announcement"
     
     static let empty_inputs_error = "empty_inputs_error"
     static let timed_out_error = "timed_out_error"

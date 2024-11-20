@@ -9,6 +9,11 @@ class AnnouncementRemoteRepositoryImpl: AnnouncementRemoteRepository {
     
     func getAnnouncements() async throws -> [Announcement] {
         let localAnnouncements = try await announcementApi.getAnnouncements()
-        return localAnnouncements.map { AnnouncementMapper.toAnnouncement(remoteAnnouncement: $0) }
+        return localAnnouncements.map { AnnouncementMapper.toDomain(remoteAnnouncementWithUser: $0) }
+    }
+    
+    func createAnnouncement(announcement: Announcement) async throws {
+        let remoteAnnouncement = AnnouncementMapper.toRemote(announcement: announcement)
+        try await announcementApi.createAnnouncement(remoteAnnouncement: remoteAnnouncement)
     }
 }

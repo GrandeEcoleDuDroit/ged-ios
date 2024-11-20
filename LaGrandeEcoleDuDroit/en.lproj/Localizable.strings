@@ -11,6 +11,7 @@
 "week_ago" = "%d w";
 "today" = "Today";
 "yesterday" = "Yesterday";
+"home" = "Home";
 
 // Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";
@@ -39,6 +40,14 @@
 // News
 "news" = "News";
 "recent_announcements" = "Recent announcements";
+"create_announcement" = "Create Annnounement";
+"title" = "Title";
+"content" = "Content";
+"post" = "Post";
+"no_announcement" = "No announcement";
+
+// News errors
+"error_creating_announcement " = "An error occured while creating the announcement.";
 
 // Authentification errors
 "invalid_email_error" = "Please enter a valid email address.";
