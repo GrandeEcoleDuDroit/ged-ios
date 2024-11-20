@@ -16,4 +16,8 @@ class AnnouncementRemoteRepositoryImpl: AnnouncementRemoteRepository {
         let remoteAnnouncement = AnnouncementMapper.toRemote(announcement: announcement)
         try await announcementApi.createAnnouncement(remoteAnnouncement: remoteAnnouncement)
     }
+    
+    func deleteAnnouncement(announcement: Announcement) async throws {
+        
+    }
 }
