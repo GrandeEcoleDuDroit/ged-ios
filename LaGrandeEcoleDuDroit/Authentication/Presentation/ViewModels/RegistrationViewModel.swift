@@ -45,7 +45,7 @@ class RegistrationViewModel: ObservableObject {
             return false
         }
         
-        guard verifyEmail(email) else {
+        guard VerifyEmailFormatUseCase.execute(email) else {
             registrationState = .error(message: getString(gedString: GedString.invalid_email_error))
             return false
         }

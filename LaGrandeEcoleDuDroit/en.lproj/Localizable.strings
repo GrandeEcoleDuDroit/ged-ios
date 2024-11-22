@@ -40,7 +40,7 @@
 // News
 "news" = "News";
 "recent_announcements" = "Recent announcements";
-"create_announcement" = "Create Annnounement";
+"new_announcement" = "New Annnounement";
 "title" = "Title";
 "content" = "Content";
 "post" = "Post";

@@ -24,13 +24,19 @@ class CreateAnnouncementViewModel: ObservableObject {
             return
         }
       
-        announcementState = .loading
+        await updateAnnouncementState(to: .loading)
         let announcement = Announcement(id: "", title: title, content: content, date: Date.now, author: currentUser!)
         do {
             try await createAnnouncementUseCase.execute(announcement: announcement)
-            announcementState = .created
+            await updateAnnouncementState(to: .created)
         } catch {
-            announcementState = .error(message: getString(gedString: GedString.error_creating_announcement))
+            await updateAnnouncementState(to: .error(message: getString(gedString: GedString.error_creating_announcement)))
+        }
+    }
+    
+    private func updateAnnouncementState(to state: AnnouncementState) async {
+        await MainActor.run {
+            announcementState = state
         }
     }
 }

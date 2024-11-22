@@ -11,14 +11,17 @@ class AnnouncementLocalRepositoryImpl: AnnouncementLocalRepository {
     var announcements: AnyPublisher<[Announcement], Never> {
         $_announcements.eraseToAnyPublisher()
     }
+    private let context: NSManagedObjectContext
     
     init(gedDatabaseContainer: GedDatabaseContainer) {
         self.gedDatabaseContainer = gedDatabaseContainer
+        context = gedDatabaseContainer.container.viewContext
+        fetchAnnouncements()
     }
     
     private func fetchAnnouncements() {
         do {
-            _announcements = try gedDatabaseContainer.container.viewContext.fetch(request).map({ localAnnouncement in
+            _announcements = try context.fetch(request).map({ localAnnouncement in
                 AnnouncementMapper.toDomain(localAnnouncement: localAnnouncement)
             })
         } catch {
@@ -27,8 +30,24 @@ class AnnouncementLocalRepositoryImpl: AnnouncementLocalRepository {
     }
     
     func insertAnnouncement(announcement: Announcement) async throws {
-        AnnouncementMapper.toLocal(announcement: announcement, context: gedDatabaseContainer.container.viewContext)
-        try gedDatabaseContainer.container.viewContext.save()
+        do {
+            AnnouncementMapper.toLocal(announcement: announcement, context: context)
+            try context.save()
+            _announcements.append(announcement)
+        } catch {
+            print(error.localizedDescription)
+            throw error
+        }
+    }
+    
+    func updateAnnouncement(announcement: Announcement) async throws {
+        do {
+            
+            _announcements.append(announcement)
+        } catch {
+            print(error.localizedDescription)
+            throw error
+        }
     }
     
     func deleteAnnouncement(announcement: Announcement) async throws {

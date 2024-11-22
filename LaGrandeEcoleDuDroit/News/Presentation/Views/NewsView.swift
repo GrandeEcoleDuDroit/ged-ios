@@ -2,7 +2,7 @@ import SwiftUI
 
 struct NewsView: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
-    @State private var isPresented: Bool = false
+    @State private var showBottomSheet: Bool = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -30,11 +30,13 @@ struct NewsView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 if newsViewModel.user?.isMember == true {
-                    NavigationLink(destination: CreateAnnouncementView(), isActive: $isPresented) {
-                        Button(
-                            action: { isPresented = true },
-                            label: { Image(systemName: "plus") }
-                        )
+                    Button(
+                        action: { showBottomSheet = true },
+                        label: {
+                            Image(systemName: "plus")
+                        }
+                    ).sheet(isPresented: $showBottomSheet) {
+                        CreateAnnouncementView()
                     }
                 }
             }
@@ -69,21 +71,24 @@ struct RecentAnnouncementSection: View {
                     .font(.bodyLarge)
                     .foregroundColor(Color(UIColor.lightGray))
                     .padding()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
             } else {
                 ScrollView {
                     ForEach($announcements, id: \.id) { $announcement in
-                        AnnouncementItemWithContent(announcement: $announcement, onClick: { selectedAnnouncement = announcement })
-                            .background(
-                                NavigationLink(
-                                    destination: AnnouncementDetailView(announcement: $announcement),
-                                    tag: announcement,
-                                    selection: $selectedAnnouncement,
-                                    label: { EmptyView() }
-                                )
-                                .hidden()
+                        AnnouncementItemWithContent(
+                            announcement: $announcement,
+                            onClick: { selectedAnnouncement = announcement }
+                        )
+                        .background(
+                            NavigationLink(
+                                destination: AnnouncementDetailView(announcement: $announcement),
+                                tag: announcement,
+                                selection: $selectedAnnouncement,
+                                label: { EmptyView() }
                             )
+                            .hidden()
+                        )
                     }
                 }
             }

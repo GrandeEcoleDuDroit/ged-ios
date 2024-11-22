@@ -40,7 +40,7 @@
 // News
 "news" = "Actualités";
 "recent_announcements" = "Récentes annonces";
-"create_announcement" = "Créer Annonce";
+"new_announcement" = "Nouvelle Annonce";
 "title" = "Titre";
 "content" = "Contenu";
 "post" = "Poster";

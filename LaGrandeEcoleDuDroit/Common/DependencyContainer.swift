@@ -6,7 +6,7 @@ class DependencyContainer {
     // ---------------------------------- Repositories ----------------------------------//
     
     // Common
-    private var firestoreConfig = FirestoreConfig()
+    private let gedConfig: GedConfig = GedConfig()
     private lazy var userFirestoreApi: UserFirestoreApi = UserFirestoreApiImpl()
     private lazy var userOracleApi: UserOracleApi = UserOracleApiImpl()
     private lazy var userLocalRepository: UserLocalRepository = UserLocalRepositoryImpl()
@@ -14,7 +14,6 @@ class DependencyContainer {
     private lazy var gedDatabaseContainer: GedDatabaseContainer = GedDatabaseContainer()
     
     // Authentication
-    private var firebaseAuthConfig = FirebaseAuthConfig()
     private lazy var firebaseAuthApi: FirebaseAuthApi = FirebaseAuthApiImpl()
     private lazy var authenticationRemoteRepository: AuthenticationRemoteRepository = AuthenticationRemoteRepositoryImpl(firebaseAuthApi: firebaseAuthApi)
     
