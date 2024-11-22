@@ -12,6 +12,40 @@ struct CreateAnnouncementView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(alignment: .leading) {
+                HStack(alignment: .center) {
+                    Button(
+                        action: { dismiss() },
+                        label: { Text(getString(gedString: GedString.cancel))
+                                .foregroundStyle(.black)
+                        }
+                    )
+                    
+                    Text(getString(gedString: GedString.new_announcement))
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                    
+                    Button(
+                        action: {
+                            Task {
+                                await createAnnouncementViewModel.createAnnouncement()
+                                if createAnnouncementViewModel.announcementState == .created {
+                                    dismiss()
+                                }
+                            }
+                        },
+                        label: {
+                            if createAnnouncementViewModel.content.isEmpty {
+                                Text(getString(gedString: GedString.post))
+                                    .fontWeight(.semibold)
+                            } else {
+                                Text(getString(gedString: GedString.post))
+                                    .foregroundColor(.gedPrimary)
+                                    .fontWeight(.semibold)
+                            }
+                        }
+                    ).disabled(createAnnouncementViewModel.content.isEmpty)
+                }.padding(.vertical, 5)
+                
                 TextEditor(text: $createAnnouncementViewModel.title)
                     .font(.system(size: 22, weight: .semibold))
                     .overlay {
@@ -51,30 +85,6 @@ struct CreateAnnouncementView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
-        .navigationTitle(getString(gedString: GedString.create_announcement))
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(
-                    action: {
-                        Task {
-                            await createAnnouncementViewModel.createAnnouncement()
-                            dismiss()
-                        }
-                    },
-                    label: {
-                        if createAnnouncementViewModel.content.isEmpty {
-                            Text(getString(gedString: GedString.post))
-                                .fontWeight(.semibold)
-                        } else {
-                            Text(getString(gedString: GedString.post))
-                                .foregroundColor(.gedPrimary)
-                                .fontWeight(.semibold)
-                        }
-                    }
-                ).disabled(createAnnouncementViewModel.content.isEmpty)
-            }
-        }
         .onReceive(createAnnouncementViewModel.$announcementState) { state in
             switch state {
             case .created:

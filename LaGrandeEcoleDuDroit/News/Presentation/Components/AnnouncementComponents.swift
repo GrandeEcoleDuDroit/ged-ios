@@ -32,7 +32,7 @@ struct AnnouncementItem: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 5)
         .onAppear {
-            elapsedTime = getElapsedTime(date: announcement.date)
+            elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
             announcementElapsedTime = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
         }
     }
@@ -84,7 +84,7 @@ struct AnnouncementItemWithContent: View {
         .padding(.vertical, 5)
         .clickable(isClicked: $isClicked, onClick: onClick)
         .onAppear {
-            elapsedTime = getElapsedTime(date: announcement.date)
+            elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
             announcementElapsedTime = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
         }
     }
@@ -92,15 +92,14 @@ struct AnnouncementItemWithContent: View {
 
 private func getElapsedTimeText(elapsedTime: ElapsedTime, announcementDate: Date) -> String {
     switch elapsedTime {
-    case .now(_), .minute(_), .hour(_):
-        getString(gedString: GedString.today)
+    case .now(_):
+        getString(gedString: GedString.now)
+    case.minute(let minutes):
+        getString(gedString: GedString.minute_ago, minutes)
+    case .hour(let hours):
+        getString(gedString: GedString.hour_ago, hours)
     case .day(let days):
-        if days == 1 {
-            getString(gedString: GedString.yesterday)
-        }
-        else {
-            announcementDate.formatted(.dateTime.year().month().day())
-        }
+        getString(gedString: GedString.day_ago, days)
     default:
         announcementDate.formatted(.dateTime.year().month().day())
     }

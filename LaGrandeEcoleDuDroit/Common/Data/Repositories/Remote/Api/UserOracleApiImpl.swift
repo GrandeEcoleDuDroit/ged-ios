@@ -20,9 +20,11 @@ class UserOracleApiImpl: UserOracleApi {
             if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
                 print(serverResponse.message)
             } else {
+                print(serverResponse.error ?? "Error to create user")
                 throw RequestError.invalidResponse(serverResponse.error)
             }
         } else {
+            print(serverResponse.error ?? "Error to create user")
             throw RequestError.invalidResponse(serverResponse.error)
         }
     }

@@ -53,7 +53,7 @@ struct GedString {
     // News
     static let news = "news"
     static let recent_announcements = "recent_announcements"
-    static let create_announcement = "create_announcement"
+    static let new_announcement = "new_announcement"
     static let title = "title"
     static let content = "content"
     static let post = "post"

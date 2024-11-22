@@ -5,7 +5,7 @@ class GetUserUseCase {
         self.userRemoteRepository = userRemoteRepository
     }
     
-    func executre(userId: String) async -> User? {
+    func execute(userId: String) async -> User? {
         do {
             return try await userRemoteRepository.getUser(userId: userId)
         } catch {

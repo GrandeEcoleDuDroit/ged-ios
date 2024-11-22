@@ -37,7 +37,7 @@ class AuthenticationViewModel: ObservableObject {
             return false
         }
 
-        guard verifyEmail(email) else {
+        guard VerifyEmailFormatUseCase.execute(email) else {
             authenticationState = .error(message: getString(gedString: GedString.invalid_email_error))
             return false
         }
@@ -57,7 +57,7 @@ class AuthenticationViewModel: ObservableObject {
             let userId = try await loginUseCase.execute(email: email, password: password)
             
             if try await isEmailVerifiedUseCase.execute() {
-                let user = await getUserUseCase.executre(userId: userId)
+                let user = await getUserUseCase.execute(userId: userId)
                 if user != nil {
                     setCurrentUserUseCase.execute(user: user!)
                     await updateAuthenticationState(to: .authenticated)

@@ -14,7 +14,6 @@ struct MainNavigationView: View {
             }
             .tag(0)
         }
-        .tint(.gedPrimary)
     }
 }
 

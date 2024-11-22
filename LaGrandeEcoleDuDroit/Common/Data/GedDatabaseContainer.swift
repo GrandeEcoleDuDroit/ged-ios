@@ -1,6 +1,6 @@
 import CoreData
 
-private let containerName = "GedoiseDatabase"
+private let containerName = "GedDatabase"
 
 open class GedDatabaseContainer {
     let container: NSPersistentContainer
@@ -9,7 +9,7 @@ open class GedDatabaseContainer {
         container = NSPersistentContainer(name: containerName)
         container.loadPersistentStores { _, error in
             if let error {
-                print("Failed to load local datas: \(error)")
+                fatalError("Failed to load local data: \(error.localizedDescription)")
             }
         }
     }
