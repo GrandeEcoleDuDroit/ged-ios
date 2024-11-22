@@ -30,4 +30,8 @@ class AnnouncementLocalRepositoryImpl: AnnouncementLocalRepository {
         AnnouncementMapper.toLocal(announcement: announcement, context: gedDatabaseContainer.container.viewContext)
         try gedDatabaseContainer.container.viewContext.save()
     }
+    
+    func updateAnnouncement(announcement: Announcement) async throws {
+        AnnouncementMapper.toLocal(announcement: announcement, context: gedDatabaseContainer.container.viewContext)
+    }
 }

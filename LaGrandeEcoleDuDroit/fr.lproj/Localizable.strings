@@ -3,6 +3,8 @@
 "back" = "Retour";
 "cancel" = "Annuler";
 "ok" = "Ok";
+"delete" = "Supprimer";
+"modify" = "Modifier";
 "home" = "Accueil";
 "now" = "Maintenant";
 "minute_ago" = "%d min";

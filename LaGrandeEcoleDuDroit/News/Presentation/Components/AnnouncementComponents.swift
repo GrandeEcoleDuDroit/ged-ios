@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct AnnouncementItem: View {
+struct TopAnnouncementDetailItem: View {
     @Binding private var announcement: Announcement
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
@@ -108,7 +108,7 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, announcementDate: Date
 
 #Preview {
     VStack(spacing: 10) {
-        AnnouncementItem(announcement: .constant(announcementFixture))
+        TopAnnouncementDetailItem(announcement: .constant(announcementFixture))
             .padding(.horizontal)
         
         AnnouncementItemWithContent(announcement: .constant(announcementFixture), onClick: {})

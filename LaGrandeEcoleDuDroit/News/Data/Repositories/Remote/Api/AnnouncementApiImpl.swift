@@ -36,4 +36,26 @@ class AnnouncementApiImpl: AnnouncementApi {
             throw RequestError.invalidResponse(serverResponse.error)
         }
     }
+    
+    func updateAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws {
+        guard let url = baseUrl(endPoint: "/update") else {
+            throw RequestError.invalidURL
+        }
+        
+        let session = DataUtils.getUrlSession()
+        let postRequest = try DataUtils.formatPostRequest(dataToSend: remoteAnnouncement, url: url)
+        
+        let (dataReceived, response) = try await session.data(for: postRequest)
+        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
+                print(serverResponse.message)
+            } else {
+                throw RequestError.invalidResponse(serverResponse.error)
+            }
+        } else {
+            throw RequestError.invalidResponse(serverResponse.error)
+        }
+    }
 }

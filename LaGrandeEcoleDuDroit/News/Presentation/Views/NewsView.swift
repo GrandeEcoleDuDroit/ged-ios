@@ -7,7 +7,10 @@ struct NewsView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(alignment: .leading, spacing: GedSpacing.large) {
-                RecentAnnouncementSection(announcements: $newsViewModel.announcements)
+                RecentAnnouncementSection(
+                    announcements: $newsViewModel.announcements,
+                    userId: newsViewModel.user?.id ?? ""
+                )
                     .frame(maxHeight: geometry.size.height / 2.5)
                 newsSection
             }
@@ -53,9 +56,11 @@ var newsSection: some View {
 struct RecentAnnouncementSection: View {
     @State private var selectedAnnouncement: Announcement? = nil
     @Binding private var announcements: [Announcement]
+    private var userId: String
     
-    init(announcements: Binding<[Announcement]>) {
+    init(announcements: Binding<[Announcement]>, userId: String) {
         self._announcements = announcements
+        self.userId = userId
     }
     
     var body: some View {
@@ -77,7 +82,10 @@ struct RecentAnnouncementSection: View {
                         AnnouncementItemWithContent(announcement: $announcement, onClick: { selectedAnnouncement = announcement })
                             .background(
                                 NavigationLink(
-                                    destination: AnnouncementDetailView(announcement: $announcement),
+                                    destination: AnnouncementDetailView(
+                                        announcement: $announcement,
+                                        userId: userId
+                                    ),
                                     tag: announcement,
                                     selection: $selectedAnnouncement,
                                     label: { EmptyView() }

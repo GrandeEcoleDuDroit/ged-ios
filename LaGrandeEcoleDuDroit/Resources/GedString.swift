@@ -4,6 +4,8 @@ struct GedString {
     static let back = "back"
     static let cancel = "cancel"
     static let ok = "ok"
+    static let delete = "delete"
+    static let modify = "modify"
     static let now = "now"
     static let minute_ago = "minute_ago"
     static let hour_ago = "hour_ago"
