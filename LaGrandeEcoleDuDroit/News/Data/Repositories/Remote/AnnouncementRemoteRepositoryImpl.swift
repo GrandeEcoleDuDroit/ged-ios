@@ -17,7 +17,7 @@ class AnnouncementRemoteRepositoryImpl: AnnouncementRemoteRepository {
         try await announcementApi.createAnnouncement(remoteAnnouncement: remoteAnnouncement)
     }
     
-    func deleteAnnouncement(announcement: Announcement) async throws {
-        
+    func deleteAnnouncement(announcementId: String) async throws {
+        try await announcementApi.deleteAnnouncement(remoteAnnouncementId: announcementId)
     }
 }

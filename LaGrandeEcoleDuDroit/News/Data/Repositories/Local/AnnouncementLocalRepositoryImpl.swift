@@ -51,7 +51,11 @@ class AnnouncementLocalRepositoryImpl: AnnouncementLocalRepository {
     }
     
     func deleteAnnouncement(announcement: Announcement) async throws {
-        let localAnnouncement = AnnouncementMapper.toLocal(announcement: announcement, context: gedDatabaseContainer.container.viewContext)
-        gedDatabaseContainer.container.viewContext.delete()
+        let localAnnouncement = try context.fetch(request).first {
+            $0.announcementId == announcement.id
+        }
+        if localAnnouncement != nil {
+            context.delete(localAnnouncement!)
+        }
     }
 }

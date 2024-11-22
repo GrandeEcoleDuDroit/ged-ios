@@ -3,5 +3,5 @@ protocol AnnouncementRemoteRepository {
     
     func createAnnouncement(announcement: Announcement) async throws
     
-    func deleteAnnouncement(announcement: Announcement) async throws
+    func deleteAnnouncement(announcementId: String) async throws
 }

@@ -54,9 +54,11 @@ class AnnouncementApiImpl: AnnouncementApi {
             if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
                 print(serverResponse.message)
             } else {
+                print(serverResponse.error ?? "Error to delete announcement")
                 throw RequestError.invalidResponse(serverResponse.error)
             }
         } else {
+            print(serverResponse.error ?? "Error to delete announcement")
             throw RequestError.invalidResponse(serverResponse.error)
         }
     }
