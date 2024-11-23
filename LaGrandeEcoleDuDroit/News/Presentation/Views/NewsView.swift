@@ -84,7 +84,7 @@ struct RecentAnnouncementSection: View {
             } else {
                 ScrollView {
                     ForEach($announcements, id: \.id) { $announcement in
-                        AnnouncementItemWithContent(
+                        FetchAnnouncementItemState(
                             announcement: $announcement,
                             onClick: { selectedAnnouncement = announcement }
                         )
@@ -106,6 +106,37 @@ struct RecentAnnouncementSection: View {
         }
     }
 }
+
+struct FetchAnnouncementItemState: View {
+    @Binding private var announcement: Announcement
+    private let onClick: () -> Void
+        
+        init(announcement: Binding<Announcement>, onClick: @escaping () -> Void) {
+            self._announcement = announcement
+            self.onClick = onClick
+        }
+        
+        var body: some View {
+            if case .loading = announcement.state {
+                LoadingAnnouncementItemWithContent(
+                    announcement: $announcement,
+                    onClick: onClick
+                )
+            }
+            else if case .error = announcement.state {
+                ErrorAnnouncementItemWithContent(
+                    announcement: $announcement,
+                    onClick: onClick
+                )
+            } else {
+                AnnouncementItemWithContent(
+                    announcement: $announcement,
+                    onClick: onClick
+                )
+            }
+        }
+    }
+
 
 #Preview {
     NavigationView {

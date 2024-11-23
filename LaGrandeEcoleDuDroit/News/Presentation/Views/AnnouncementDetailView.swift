@@ -52,11 +52,12 @@ struct AnnouncementDetailView: View {
                     }
                 }
                 
-                if let title = announcement.title {
-                    Text(title)
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                }
+               if let title = announcement.title, !title.isEmpty {
+                Text(title)
+                    .font(.title2)
+                    .fontWeight(.semibold)
+               }
+               
                 Text(announcement.content)
                     .font(.body)
                     .multilineTextAlignment(.leading)

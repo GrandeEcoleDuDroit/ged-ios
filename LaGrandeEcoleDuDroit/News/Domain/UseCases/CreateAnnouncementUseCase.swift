@@ -23,12 +23,13 @@ class CreateAnnouncementUseCase {
             
             try await localResult
 //            try await remoteResult
+            formattedAnnouncement.state = .created
+            try await announcementLocalRepository.updateAnnouncement(announcement: formattedAnnouncement)
             
         } catch {
-            // Set error state to announcement
-//            var errorAnnouncement = formattedAnnouncement
-//            errorAnnouncement.state = .error(message: "")
-//            try await announcementLocalRepository.insertAnnouncement(announcement: errorAnnouncement)
+            var errorAnnouncement = formattedAnnouncement
+            errorAnnouncement.state = .error(message: "")
+            try await announcementLocalRepository.updateAnnouncement(announcement: errorAnnouncement)
             print(error.localizedDescription)
             throw error
         }
