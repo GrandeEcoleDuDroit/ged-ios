@@ -47,7 +47,7 @@ class NewsViewModel: ObservableObject {
                     print("Error fetching announcements: \(error)")
                 }
             }, receiveValue: { [weak self] announcements in
-                self?.announcements = announcements
+                self?.announcements = announcements.sorted(by: { $0.date > $1.date })
             })
             .store(in: &cancellables)
     }

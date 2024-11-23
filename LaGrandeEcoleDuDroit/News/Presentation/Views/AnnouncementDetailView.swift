@@ -7,7 +7,7 @@ struct AnnouncementDetailView: View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
             AnnouncementItem(announcement: $announcement)
             
-            if let title = announcement.title {
+            if let title = announcement.title, !title.isEmpty {
                 Text(title)
                     .font(.title2)
                     .fontWeight(.semibold)
