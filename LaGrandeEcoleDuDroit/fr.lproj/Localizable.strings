@@ -47,6 +47,7 @@
 "content" = "Contenu";
 "post" = "Poster";
 "no_announcement" = "Aucune annonce";
+"delete_announcemment_dialog_message" = "Voulez-vous supprimer cette annonce ?";
 // News errors
 "error_creating_announcement" = "Une erreur est survenue lors de la création de l'annonce.";
 

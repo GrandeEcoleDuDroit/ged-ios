@@ -4,5 +4,5 @@ let userFixture = User(
     lastName: "Dupont",
     email: "jean.dupon@email.com",
     schoolLevel: "GED 1",
-    isMember: false
+    isMember: true
 )

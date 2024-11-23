@@ -9,9 +9,11 @@ struct NewsView: View {
             VStack(alignment: .leading, spacing: GedSpacing.large) {
                 RecentAnnouncementSection(
                     announcements: $newsViewModel.announcements,
-                    userId: newsViewModel.user?.id ?? ""
+                    currentUser: newsViewModel.user!
                 )
-                    .frame(maxHeight: geometry.size.height / 2.5)
+                .frame(maxHeight: geometry.size.height / 2.5)
+                .environmentObject(newsViewModel)
+                
                 newsSection
             }
         }
@@ -58,11 +60,12 @@ var newsSection: some View {
 struct RecentAnnouncementSection: View {
     @State private var selectedAnnouncement: Announcement? = nil
     @Binding private var announcements: [Announcement]
-    private var userId: String
+    @EnvironmentObject private var newsViewModel: NewsViewModel
+    private var currentUser: User
     
-    init(announcements: Binding<[Announcement]>, userId: String) {
+    init(announcements: Binding<[Announcement]>, currentUser: User) {
         self._announcements = announcements
-        self.userId = userId
+        self.currentUser = currentUser
     }
     
     var body: some View {
@@ -81,18 +84,19 @@ struct RecentAnnouncementSection: View {
             } else {
                 ScrollView {
                     ForEach($announcements, id: \.id) { $announcement in
-                        AnnouncementItemWithContent(announcement: $announcement, onClick: { selectedAnnouncement = announcement })
-                            .background(
-                                NavigationLink(
-                                    destination: AnnouncementDetailView(
-                                        announcement: $announcement,
-                                        userId: userId
-                                    ),
-                                    tag: announcement,
-                                    selection: $selectedAnnouncement,
-                                    label: { EmptyView() }
-                                )
-                                .hidden()
+                        AnnouncementItemWithContent(
+                            announcement: $announcement,
+                            onClick: { selectedAnnouncement = announcement }
+                        )
+                        .background(
+                            NavigationLink(
+                                destination: AnnouncementDetailView(
+                                    announcement: $announcement,
+                                    currentUser: currentUser
+                                ).environmentObject(newsViewModel),
+                                tag: announcement,
+                                selection: $selectedAnnouncement,
+                                label: { EmptyView() }
                             )
                             .hidden()
                         )

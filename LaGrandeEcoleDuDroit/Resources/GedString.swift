@@ -61,6 +61,7 @@ struct GedString {
     static let post = "post"
     static let announcement_created = "announcement_created"
     static let no_announcement = "no_announcement"
+    static let delete_announcemment_dialog_message = "delete_announcemment_dialog_message"
     
     // News error
     static let error_creating_announcement = "error_creating_announcement"

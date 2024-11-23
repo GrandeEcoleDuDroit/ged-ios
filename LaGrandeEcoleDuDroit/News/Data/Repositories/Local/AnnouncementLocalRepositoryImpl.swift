@@ -56,10 +56,7 @@ class AnnouncementLocalRepositoryImpl: AnnouncementLocalRepository {
         }
         if localAnnouncement != nil {
             context.delete(localAnnouncement!)
+            try context.save()
         }
-    }
-    
-    func updateAnnouncement(announcement: Announcement) async throws {
-        AnnouncementMapper.toLocal(announcement: announcement, context: gedDatabaseContainer.container.viewContext)
     }
 }

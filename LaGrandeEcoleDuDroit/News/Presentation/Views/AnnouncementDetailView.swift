@@ -2,17 +2,19 @@ import SwiftUI
 
 struct AnnouncementDetailView: View {
     @Binding var announcement: Announcement
-    @Binding var newsViewModel: NewsViewModel
+    @EnvironmentObject var newsViewModel: NewsViewModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var showErrorDialog: Bool = false
+    @State private var showDeleteDialog: Bool = false
+    @State private var errorMessage: String = ""
     private var currentUser: User
     
     init(
         announcement: Binding<Announcement>,
-        newsViewModel: Binding<NewsViewModel>,
         currentUser: User
     ) {
         self._announcement = announcement
         self.currentUser = currentUser
-        self._newsViewModel = newsViewModel
     }
     
     var body: some View {
@@ -20,29 +22,33 @@ struct AnnouncementDetailView: View {
             VStack(alignment: .leading, spacing: GedSpacing.medium) {
                 HStack {
                     TopAnnouncementDetailItem(announcement: $announcement)
+                    
                     if currentUser.isMember && announcement.author.id == currentUser.id {
                         Menu {
                             Button(
-                                action: {
-                                    print("Option 2 sélectionnée")
-                                },
+                                action: { print("Option 2 sélectionnée") },
                                 label: {
                                     Label(getString(gedString: GedString.modify), systemImage: "square.and.pencil")
                                 }
                             )
                             Button(
-                                action: {
-                                    // Add delete anouncement
-                                },
+                                action: { showDeleteDialog = true },
                                 label: {
                                     Label(getString(gedString: GedString.delete), systemImage: "trash")
-                                        
                                 }
                             )
                         } label: {
                             Image(systemName: "ellipsis")
                                 .imageScale(.large)
+                                .padding(5)
                         }
+                    }
+                }.onReceive(newsViewModel.$announcementState) { state in
+                    if case .deleted = state {
+                        dismiss()
+                    } else if case .error(let message) = state {
+                        errorMessage = message
+                        showErrorDialog = true
                     }
                 }
                 
@@ -57,6 +63,33 @@ struct AnnouncementDetailView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding(.horizontal)
+            .alert(
+                "",
+                isPresented: $showErrorDialog,
+                presenting: ""
+            ) { data in
+                Button(getString(gedString: GedString.ok)) {
+                    showErrorDialog = false
+                }
+            } message: { data in
+                Text(errorMessage)
+            }
+            .alert(
+                "",
+                isPresented: $showDeleteDialog,
+                presenting: ""
+            ) { data in
+                Button(getString(gedString: GedString.cancel), role: .cancel) {
+                    showErrorDialog = false
+                }
+                Button(getString(gedString: GedString.delete), role: .destructive) {
+                    Task {
+                        await newsViewModel.deleteAnnouncement(announcement: announcement)
+                    }
+                }
+            } message: { data in
+                Text(getString(gedString: GedString.delete_announcemment_dialog_message))
+            }
         }
     }
 }
@@ -65,5 +98,5 @@ struct AnnouncementDetailView: View {
     AnnouncementDetailView(
         announcement: .constant(announcementFixture),
         currentUser: userFixture
-    )
+    ).environmentObject(DependencyContainer.shared.newsViewModel)
 }
