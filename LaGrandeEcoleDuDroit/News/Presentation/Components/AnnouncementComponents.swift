@@ -30,7 +30,6 @@ struct AnnouncementItem: View {
             
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 5)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
             announcementElapsedTime = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
@@ -88,8 +87,6 @@ struct AnnouncementItemWithContent: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(UIColor.systemBackground))
-        .padding(.horizontal)
-        .padding(.vertical, 5)
         .clickable(isClicked: $isClicked, onClick: onClick)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)

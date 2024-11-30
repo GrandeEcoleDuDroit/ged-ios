@@ -19,13 +19,12 @@ class CreateAnnouncementUseCase {
         
         do {
             async let localResult: Void = try announcementLocalRepository.insertAnnouncement(announcement: formattedAnnouncement)
-//            async let remoteResult: Void = try announcementRemoteRepository.createAnnouncement(announcement: formattedAnnouncement)
+            async let remoteResult: Void = try announcementRemoteRepository.createAnnouncement(announcement: formattedAnnouncement)
             
             try await localResult
-//            try await remoteResult
+            try await remoteResult
             formattedAnnouncement.state = .created
             try await announcementLocalRepository.updateAnnouncement(announcement: formattedAnnouncement)
-            
         } catch {
             var errorAnnouncement = formattedAnnouncement
             errorAnnouncement.state = .error(message: "")
