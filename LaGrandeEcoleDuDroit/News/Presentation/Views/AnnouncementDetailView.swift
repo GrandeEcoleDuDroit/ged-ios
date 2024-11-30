@@ -22,6 +22,7 @@ struct AnnouncementDetailView: View {
             VStack(alignment: .leading, spacing: GedSpacing.medium) {
                 HStack {
                     TopAnnouncementDetailItem(announcement: announcement)
+                        .padding(.top, 5)
                     
                     if currentUser.isMember && announcement.author.id == currentUser.id {
                         Menu {

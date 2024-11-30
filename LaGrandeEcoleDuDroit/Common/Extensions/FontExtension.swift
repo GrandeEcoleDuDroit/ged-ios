@@ -18,7 +18,7 @@ extension Font {
     }
     
     static var titleSmall: Font {
-        .gedFont(size: 14, weight: .medium)
+        .gedFont(size: 16, weight: .medium)
     }
     
     static var bodyLarge: Font {
@@ -26,6 +26,6 @@ extension Font {
     }
     
     static var bodyMedium: Font {
-        .gedFont(size: 14)
+        .gedFont(size: 15)
     }
 }
