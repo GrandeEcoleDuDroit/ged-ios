@@ -1,3 +1,9 @@
+import Combine
+
 protocol AnnouncementLocalRepository {
-    func getAnnouncements() -> [Announcement]
+    var announcements: AnyPublisher<[Announcement], Never> { get }
+    
+    func insertAnnouncement(announcement: Announcement) async throws
+    
+    func updateAnnouncement(announcement: Announcement) async throws
 }

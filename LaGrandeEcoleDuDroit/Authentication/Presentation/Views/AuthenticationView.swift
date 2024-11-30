@@ -118,7 +118,7 @@ private struct Buttons: View {
     private let notRegisterYet = getString(gedString: GedString.not_register_yet)
     @State private var isLoading: Bool = false
     @State private var destination = AnyView(FirstRegistrationView())
-    @State private var showDialog: Bool = false
+    @State private var showEmailNotVerifiedDialog: Bool = false
     @State private var isActive: Bool = false
     
     var body: some View {
@@ -158,7 +158,7 @@ private struct Buttons: View {
             .onReceive(authenticationViewModel.$authenticationState) { state in
                 switch state {
                 case .emailNotVerified:
-                    showDialog = true
+                    showEmailNotVerifiedDialog = true
                 default:
                     destination = AnyView(NewsView())
                 }
@@ -166,7 +166,7 @@ private struct Buttons: View {
             }
             .alert(
                 getString(gedString: GedString.email_not_verified),
-                isPresented: $showDialog,
+                isPresented: $showEmailNotVerifiedDialog,
                 presenting: ""
             ) { data in
                 Button(getString(gedString: GedString.verify_email)) {

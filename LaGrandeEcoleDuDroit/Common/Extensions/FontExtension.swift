@@ -14,18 +14,18 @@ extension Font {
     }
     
     static var titleMedium: Font {
-        .gedFont(size: 16, weight: .semibold)
+        .gedFont(size: 18, weight: .semibold)
     }
     
     static var titleSmall: Font {
-        .gedFont(size: 14, weight: .medium)
+        .gedFont(size: 16, weight: .medium)
     }
     
     static var bodyLarge: Font {
-        .gedFont(size: 16)
+        .gedFont(size: 18)
     }
     
     static var bodyMedium: Font {
-        .gedFont(size: 14)
+        .gedFont(size: 15)
     }
 }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23507" systemVersion="24A348" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="LocalAnnouncement" representedClassName=".LocalAnnouncement" syncable="YES" codeGenerationType="class">
+        <attribute name="announcementContent" attributeType="String" defaultValueString=""/>
+        <attribute name="announcementDate" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="announcementId" attributeType="String" defaultValueString=""/>
+        <attribute name="announcementState" attributeType="String" customClassName="Announcement"/>
+        <attribute name="announcementTitle" optional="YES" attributeType="String"/>
+        <attribute name="userEmail" attributeType="String" defaultValueString=""/>
+        <attribute name="userFirstName" attributeType="String" defaultValueString=""/>
+        <attribute name="userId" attributeType="String" defaultValueString=""/>
+        <attribute name="userIsMember" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="userLastName" attributeType="String" defaultValueString=""/>
+        <attribute name="userProfilePictureUrl" optional="YES" attributeType="String"/>
+        <attribute name="userSchoolLevel" attributeType="String" defaultValueString=""/>
+    </entity>
+</model>

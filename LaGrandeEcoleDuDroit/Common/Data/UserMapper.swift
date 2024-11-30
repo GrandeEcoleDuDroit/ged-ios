@@ -24,8 +24,8 @@ class UserMapper {
         )
     }
     
-    static func toUserLocal(user: User) -> UserLocal {
-        UserLocal(
+    static func toLocalUser(user: User) -> LocalUser {
+        LocalUser(
             userId: user.id,
             userFirstName: user.firstName,
             userLastName: user.lastName,
@@ -36,15 +36,15 @@ class UserMapper {
         )
     }
     
-    static func toDomain(userLocal: UserLocal) -> User {
+    static func toDomain(localUser: LocalUser) -> User {
         User(
-            id: userLocal.userId,
-            firstName: userLocal.userFirstName,
-            lastName: userLocal.userLastName,
-            email: userLocal.userEmail,
-            schoolLevel: userLocal.userSchoolLevel,
-            isMember: userLocal.userIsMember,
-            profilePictureUrl: userLocal.userProfilePictureUrl
+            id: localUser.userId,
+            firstName: localUser.userFirstName,
+            lastName: localUser.userLastName,
+            email: localUser.userEmail,
+            schoolLevel: localUser.userSchoolLevel,
+            isMember: localUser.userIsMember,
+            profilePictureUrl: localUser.userProfilePictureUrl
         )
     }
     

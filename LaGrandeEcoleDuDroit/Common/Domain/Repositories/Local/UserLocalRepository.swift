@@ -1,7 +1,8 @@
 import Combine
 
 protocol UserLocalRepository {
-    var currentUser: AnyPublisher<User?, Never> { get }
+    var currentUserPublisher: AnyPublisher<User?, Never> { get }
+    var currentUser: User? { get }
         
     func setCurrentUser(user: User)
     

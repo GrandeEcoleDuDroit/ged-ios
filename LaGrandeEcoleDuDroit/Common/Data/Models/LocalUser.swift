@@ -1,4 +1,4 @@
-struct UserLocal: Codable {
+struct LocalUser: Codable {
     let userId: String
     let userFirstName: String
     let userLastName: String

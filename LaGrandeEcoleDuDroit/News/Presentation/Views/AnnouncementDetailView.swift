@@ -6,10 +6,12 @@ struct AnnouncementDetailView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
             AnnouncementItem(announcement: $announcement)
+                .padding(.top, 5)
             
-            if let title = announcement.title {
+            if let title = announcement.title, !title.isEmpty {
                 Text(title)
-                    .font(.titleMedium)
+                    .font(.title2)
+                    .fontWeight(.semibold)
             }
             
             Text(announcement.content)
