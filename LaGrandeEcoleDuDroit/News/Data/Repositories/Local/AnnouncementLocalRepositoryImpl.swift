@@ -70,5 +70,6 @@ class AnnouncementLocalRepositoryImpl: AnnouncementLocalRepository {
             context.delete(localAnnouncement!)
             try context.save()
         }
+        _announcements.removeAll { $0.id == announcement.id }
     }
 }

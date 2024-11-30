@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AnnouncementDetailView: View {
-    @Binding var announcement: Announcement
+    private let announcement: Announcement
     @EnvironmentObject var newsViewModel: NewsViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var showErrorDialog: Bool = false
@@ -10,10 +10,10 @@ struct AnnouncementDetailView: View {
     private var currentUser: User
     
     init(
-        announcement: Binding<Announcement>,
+        announcement: Announcement,
         currentUser: User
     ) {
-        self._announcement = announcement
+        self.announcement = announcement
         self.currentUser = currentUser
     }
     
@@ -21,7 +21,7 @@ struct AnnouncementDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: GedSpacing.medium) {
                 HStack {
-                    TopAnnouncementDetailItem(announcement: $announcement)
+                    TopAnnouncementDetailItem(announcement: announcement)
                     
                     if currentUser.isMember && announcement.author.id == currentUser.id {
                         Menu {
@@ -97,7 +97,7 @@ struct AnnouncementDetailView: View {
 
 #Preview {
     AnnouncementDetailView(
-        announcement: .constant(announcementFixture),
+        announcement: announcementFixture,
         currentUser: userFixture
     ).environmentObject(DependencyContainer.shared.newsViewModel)
 }

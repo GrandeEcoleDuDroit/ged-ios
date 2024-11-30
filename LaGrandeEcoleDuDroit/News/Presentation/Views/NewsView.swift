@@ -91,7 +91,7 @@ struct RecentAnnouncementSection: View {
                         .background(
                             NavigationLink(
                                 destination: AnnouncementDetailView(
-                                    announcement: $announcement,
+                                    announcement: announcement,
                                     currentUser: currentUser
                                 ).environmentObject(newsViewModel),
                                 tag: announcement,

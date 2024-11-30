@@ -1,13 +1,13 @@
 import SwiftUI
 
 struct TopAnnouncementDetailItem: View {
-    @Binding private var announcement: Announcement
+    private var announcement: Announcement
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var announcementElapsedTime: String = ""
     
-    init(announcement: Binding<Announcement>) {
-        self._announcement = announcement
+    init(announcement: Announcement) {
+        self.announcement = announcement
     }
     
     var body: some View {
@@ -92,8 +92,12 @@ struct AnnouncementItemWithContent: View {
         .padding(.vertical, 5)
         .clickable(isClicked: $isClicked, onClick: onClick)
         .onAppear {
-            elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
-            announcementElapsedTime = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
+            do {
+                elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
+                announcementElapsedTime = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
+            } catch {
+                print("Error getting elapsed time")
+            }
         }
     }
 }
@@ -230,7 +234,7 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, announcementDate: Date
 
 #Preview {
     VStack(spacing: 10) {
-        TopAnnouncementDetailItem(announcement: .constant(announcementFixture))
+        TopAnnouncementDetailItem(announcement: announcementFixture)
             .padding(.horizontal)
         
         AnnouncementItemWithContent(announcement: .constant(announcementFixture), onClick: {})
