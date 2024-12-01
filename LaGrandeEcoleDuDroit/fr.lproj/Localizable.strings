@@ -24,6 +24,7 @@
 "email" = "Adresse email";
 "password" = "Mot de passe";
 "login" = "Se connecter";
+"logout" = "Se déconnecter";
 "register" = "S'inscrire";
 "registration" = "Inscription";
 "forgotten_password" = "Mot de passe oublié ?";
@@ -39,20 +40,7 @@
 "email_not_verified" = "Email non vérifié";
 "email_not_verified_dialog_message" = "Veuillez vérifier votre adresse mail avant de continuer.";
 "verify_email" = "Vérifier l'email";
-
-// News
-"news" = "Actualités";
-"recent_announcements" = "Récentes annonces";
-"new_announcement" = "Nouvelle Annonce";
-"edit_announcement" = "Editer Annonce";
-"title" = "Titre";
-"content" = "Contenu";
-"post" = "Poster";
-"no_announcement" = "Aucune annonce";
-"delete_announcemment_dialog_message" = "Voulez-vous supprimer cette annonce ?";
-// News errors
-"error_creating_announcement" = "Une erreur est survenue lors de la création de l'annonce.";
-"error_deleting_announcement" = "Une erreur est survenue lors de la suppression de l'annonce.";
+"logout_alert_message" = "Voulez-vous vous déconnecter ?";
 
 // Authtentication errors
 "invalid_email_error" = "Veuillez entrer une adresse mail valide.";
@@ -66,6 +54,28 @@
 "account_already_in_use_error" = "Le compte est déjà utilisé. Veuillez vous connecter ou réinitialiser votre mot de passe.";
 "unknown_error" = "Une erreur inconnue est survenue. Veuillez réessayer";
 "too_many_request_error" = "Vous avez effectué trop de requêtes. Veuillez réessayer dans quelques minutes.";
+
+// News
+"news" = "Actualités";
+"recent_announcements" = "Récentes annonces";
+"new_announcement" = "Nouvelle Annonce";
+"edit_announcement" = "Editer Annonce";
+"title" = "Titre";
+"content" = "Contenu";
+"post" = "Poster";
+"no_announcement" = "Aucune annonce";
+"delete_announcemment_alert_message" = "Voulez-vous supprimer cette annonce ?";
+
+// News errors
+"error_creating_announcement" = "Une erreur est survenue lors de la création de l'annonce.";
+"error_deleting_announcement" = "Une erreur est survenue lors de la suppression de l'annonce.";
+
+// Profile
+"profile" = "Profil";
+"account" = "Compte";
+
+// Profile errors
+"error_logout" = "Une erreur est survenue lors de la déconnexion.";
 
 "empty_inputs_error" = "Veuillez remplir tous les champs.";
 "timed_out_error" = "Le service a mis trop de temps à répondre. Veuillez réessayer.";

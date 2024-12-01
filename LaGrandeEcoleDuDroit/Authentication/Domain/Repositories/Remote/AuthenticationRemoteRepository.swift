@@ -1,6 +1,8 @@
 import Combine
 
 protocol AuthenticationRemoteRepository {
+    var isAuthenticated: AnyPublisher<Bool, Never> { get }
+    
     func register(email: String, password: String) async throws -> String
     
     func sendEmailVerification() async throws
@@ -8,4 +10,6 @@ protocol AuthenticationRemoteRepository {
     func isEmailVerified() async throws -> Bool
     
     func login(email: String, password: String) async throws -> String
+    
+    func logout() throws
 }

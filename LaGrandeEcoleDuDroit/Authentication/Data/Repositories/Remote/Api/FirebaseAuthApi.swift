@@ -9,5 +9,7 @@ protocol FirebaseAuthApi {
     
     func signIn(email: String, password: String) async throws -> AuthDataResult
     
+    func signOut() throws
+    
     func isAuthenticated() -> Bool
 }

@@ -7,7 +7,7 @@ struct EditAnnouncementView: View {
     private let lineHeight: CGFloat = 24
     @State private var isActive: Bool = false
     @Environment(\.dismiss) var dismiss
-    @State private var showErrorDialog: Bool = false
+    @State private var showErrorAlert: Bool = false
     @State private var errorMessage: String = ""
     @State private var title: String
     @State private var content: String
@@ -97,18 +97,18 @@ struct EditAnnouncementView: View {
                 isActive = true
             case .error(let message):
                 errorMessage = message
-                showErrorDialog = true
+                showErrorAlert = true
             default:
                 errorMessage = ""
             }
         }
         .alert(
             "",
-            isPresented: $showErrorDialog,
+            isPresented: $showErrorAlert,
             presenting: ""
         ) { data in
             Button(getString(gedString: GedString.ok)) {
-                showErrorDialog = false
+                showErrorAlert = false
             }
         } message: { data in
             Text(errorMessage)

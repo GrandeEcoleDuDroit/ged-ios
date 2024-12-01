@@ -23,7 +23,8 @@
 "first_name" = "First name";
 "email" = "Email";
 "password" = "Password";
-"login" = "Login";
+"login" = "Log in";
+"logout" = "Log out";
 "register" = "Register";
 "registration" = "Registration";
 "not_register_yet" = "Not register yet ?";
@@ -38,22 +39,6 @@
 "send_email_verification_caption" = "A verification link will be sent.";
 "email_not_verified" = "Email not verified";
 "email_not_verified_dialog_message" = "Please confirm your email before to continue.";
-"verify_email" = "Verify email";
-
-// News
-"news" = "News";
-"recent_announcements" = "Recent announcements";
-"new_announcement" = "New Annnounement";
-"edit_announcement" = "Edit Announcement";
-"title" = "Title";
-"content" = "Content";
-"post" = "Post";
-"no_announcement" = "No announcement";
-"delete_announcemment_dialog_message" = "Do you want to delete this announcement ?";
-
-// News errors
-"error_creating_announcement " = "An error occured while creating the announcement.";
-"error_deleting_announcement" = "An error occured while deleting the announcement.";
 
 // Authentification errors
 "invalid_email_error" = "Please enter a valid email address.";
@@ -67,6 +52,32 @@
 "account_already_in_use_error" = "The account is already in use. Please log in or reset your password.";
 "unknown_error" = "An unknown error has occured. Please try again.";
 "too_many_request_error" = "You have made too many requests. Please try again in a few minutes.";
+"verify_email" = "Verify email";
+"logout_alert_message" = "Do you want to log out ?";
+
+// News
+"news" = "News";
+"recent_announcements" = "Recent announcements";
+"new_announcement" = "New Annnounement";
+"edit_announcement" = "Edit Announcement";
+"title" = "Title";
+"content" = "Content";
+"post" = "Post";
+"no_announcement" = "No announcement";
+"delete_announcemment_alert_message" = "Do you want to delete this announcement ?";
+
+// News errors
+"error_creating_announcement " = "An error occured while creating the announcement.";
+"error_deleting_announcement" = "An error occured while deleting the announcement.";
+
+
+// Profile
+"profile" = "Profile";
+"account" = "Account";
+"id" = "Account";
+
+// Profile errors
+"error_logout" = "An error occured while logging out.";
 
 "empty_inputs_error" = "Please fill out all fields.";
 "timed_out_error" = "The service took too long to respond. Please try again.";

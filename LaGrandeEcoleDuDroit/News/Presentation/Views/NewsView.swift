@@ -10,7 +10,6 @@ struct NewsView: View {
             VStack(alignment: .leading, spacing: GedSpacing.medium) {
                 RecentAnnouncementSection(
                     announcements: $newsViewModel.announcements,
-                    currentUser: newsViewModel.currentUser!,
                     maxHeight: geometry.size.height / 2.5,
                     onRefresh: {
                         try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
@@ -24,6 +23,7 @@ struct NewsView: View {
                     alignment: .top
                 )
                 .environmentObject(newsViewModel)
+                
                 newsSection
             }
         }
@@ -70,19 +70,16 @@ struct RecentAnnouncementSection: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
     @State private var selectedAnnouncement: Announcement? = nil
     @Binding private var announcements: [Announcement]
-    private var currentUser: User
     @State private var contentHeight: CGFloat = .zero
     private var onRefresh: () async -> Void
     private let maxHeight: CGFloat
     
     init(
         announcements: Binding<[Announcement]>,
-        currentUser: User,
         maxHeight: CGFloat,
         onRefresh: @escaping () async -> Void
     ) {
         self._announcements = announcements
-        self.currentUser = currentUser
         self.maxHeight = maxHeight
         self.onRefresh = onRefresh
     }
@@ -110,7 +107,7 @@ struct RecentAnnouncementSection: View {
                         .padding(.vertical, 5)
                         .background(
                             NavigationLink(
-                                destination: AnnouncementDetailView(announcement: $announcement, currentUser: currentUser)
+                                destination: AnnouncementDetailView(announcement: $announcement)
                                     .environmentObject(newsViewModel),
                                 tag: announcement,
                                 selection: $selectedAnnouncement,

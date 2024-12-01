@@ -73,8 +73,12 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
             }
         }
     }
+    
+    func signOut() throws {
+        try Auth.auth().signOut()
+    }
  
     func isAuthenticated() -> Bool {
-        return Auth.auth().currentUser != nil
+        Auth.auth().currentUser != nil
     }
 }

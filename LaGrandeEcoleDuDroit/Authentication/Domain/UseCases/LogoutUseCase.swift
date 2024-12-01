@@ -1,13 +1,14 @@
+import Foundation
 import Combine
 
-class IsAuthenticatedUseCase {
+class LogoutUseCase {
     private let authenticationRemoteRepository: AuthenticationRemoteRepository
     
     init(authenticationRemoteRepository: AuthenticationRemoteRepository) {
         self.authenticationRemoteRepository = authenticationRemoteRepository
     }
     
-    func execute() -> AnyPublisher<Bool, Never> {
-        authenticationRemoteRepository.isAuthenticated
+    func execute() throws {
+        try authenticationRemoteRepository.logout()
     }
 }

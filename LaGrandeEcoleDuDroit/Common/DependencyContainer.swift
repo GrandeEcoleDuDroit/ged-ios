@@ -74,11 +74,15 @@ class DependencyContainer {
     // UseCases
     
     lazy var isAuthenticatedUseCase: IsAuthenticatedUseCase = {
-        IsAuthenticatedUseCase(firebaseAuthApi: firebaseAuthApi)
+        IsAuthenticatedUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
     }()
     
     lazy var loginUseCase: LoginUseCase = {
         LoginUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
+    }()
+    
+    lazy var logoutUseCase: LogoutUseCase = {
+        LogoutUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
     }()
     
     lazy var registerUseCase: RegisterUseCase = {
@@ -129,6 +133,17 @@ class DependencyContainer {
         DeleteAnnouncementUseCase(
             announcementRemoteRepository: announcementRemoteRepository,
             announcementLocalRepository: announcementLocalRepository
+        )
+    }()
+    
+    // ---------------------------------- Profile ---------------------------------- //
+
+    // ViewModels
+    
+    lazy var profileViewModel: ProfileViewModel = {
+        ProfileViewModel(
+            getCurrentUserUseCase: getCurrentUserUseCase,
+            logoutUseCase: logoutUseCase
         )
     }()
     

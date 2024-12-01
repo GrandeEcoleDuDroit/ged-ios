@@ -41,7 +41,7 @@ private struct Header: View {
                 .frame(width: imageWidth, height: imageHeight)
             
             Text(titleAuthenticationPage)
-                .font(.title2)
+                .font(.title)
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, alignment: .center)
@@ -50,7 +50,7 @@ private struct Header: View {
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, alignment: .center)
-                .foregroundColor(.gedPrimary)
+                .foregroundStyle(.gedPrimary)
         }
     }
 }
@@ -90,7 +90,7 @@ private struct CredentialsInputs: View {
             
             NavigationLink(destination: {}) {
                 Text(forgottenPassword)
-                    .foregroundColor(.primary)
+                    .fontWeight(.medium)
             }.disabled(isLoading)
             
             if case .error(let message) = authenticationViewModel.authenticationState {
@@ -118,7 +118,7 @@ private struct Buttons: View {
     private let notRegisterYet = getString(gedString: GedString.not_register_yet)
     @State private var isLoading: Bool = false
     @State private var destination = AnyView(FirstRegistrationView())
-    @State private var showEmailNotVerifiedDialog: Bool = false
+    @State private var showEmailNotVerifiedAlert: Bool = false
     @State private var isActive: Bool = false
     
     var body: some View {
@@ -158,7 +158,7 @@ private struct Buttons: View {
             .onReceive(authenticationViewModel.$authenticationState) { state in
                 switch state {
                 case .emailNotVerified:
-                    showEmailNotVerifiedDialog = true
+                    showEmailNotVerifiedAlert = true
                 default:
                     destination = AnyView(NewsView())
                 }
@@ -166,15 +166,14 @@ private struct Buttons: View {
             }
             .alert(
                 getString(gedString: GedString.email_not_verified),
-                isPresented: $showEmailNotVerifiedDialog,
+                isPresented: $showEmailNotVerifiedAlert,
                 presenting: ""
             ) { data in
                 Button(getString(gedString: GedString.verify_email)) {
                     let registrationViewModel = DependencyContainer.shared.registrationViewModel
                     registrationViewModel.email = authenticationViewModel.email
                     destination = AnyView(
-                        EmailVerificationView()
-                            .environmentObject(registrationViewModel)
+                        EmailVerificationView().environmentObject(registrationViewModel)
                     )
                     isActive = true
                 }
