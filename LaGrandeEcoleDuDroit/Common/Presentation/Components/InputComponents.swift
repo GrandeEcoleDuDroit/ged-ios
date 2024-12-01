@@ -35,7 +35,6 @@ struct FocusableOutlinedTextField: View {
     
     var body: some View {
         TextField(title, text: $text)
-            .tint(.gedPrimary)
             .focused($focusedField, equals: defaultFocusValue)
             .textInputAutocapitalization(.never)
             .padding()
@@ -73,6 +72,20 @@ struct FocusableOutlinedPasswordTextField: View {
     @State private var showPassword = false
     @State private var padding: CGFloat = 16
     @FocusState private var focusedField: InputField?
+    
+    init(
+        title: String,
+        text: Binding<String>,
+        defaultFocusValue: InputField,
+        inputFocused: Binding<InputField?>,
+        isDisable: Binding<Bool>? = nil
+    ) {
+        self.title = title
+        self._text = text
+        self.defaultFocusValue = defaultFocusValue
+        self._inputFocused = inputFocused
+        self._isDisabled = isDisable ?? .constant(false)
+    }
     
     var body: some View {
         HStack {
@@ -114,7 +127,6 @@ struct FocusableOutlinedPasswordTextField: View {
                     }
             }
         }
-        .tint(.gedPrimary)
         .padding(padding)
         .cornerRadius(cornerRadius)
         .overlay(
@@ -122,20 +134,6 @@ struct FocusableOutlinedPasswordTextField: View {
                 .stroke(borderColor, lineWidth: borderWidth)
         )
         .disabled(isDisabled)
-    }
-    
-    init(
-        title: String,
-        text: Binding<String>,
-        defaultFocusValue: InputField,
-        inputFocused: Binding<InputField?>,
-        isDisable: Binding<Bool>? = nil
-    ) {
-        self.title = title
-        self._text = text
-        self.defaultFocusValue = defaultFocusValue
-        self._inputFocused = inputFocused
-        self._isDisabled = isDisable ?? .constant(false)
     }
 }
 

@@ -1,9 +1,11 @@
 import SwiftUI
+import Combine
 
 class AuthenticationViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var authenticationState: AuthenticationState = .idle
+    private var cancellables: Set<AnyCancellable> = []
     
     private let loginUseCase: LoginUseCase
     private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase
@@ -24,11 +26,7 @@ class AuthenticationViewModel: ObservableObject {
         self.getUserUseCase = getUserUseCase
         self.setCurrentUserUseCase = setCurrentUserUseCase
         
-        authenticationState = if self.isAuthenticatedUseCase.execute() {
-            .authenticated
-        } else {
-            .idle
-        }
+        listenAuthenticationState()
     }
     
     func validateInputs() -> Bool {
@@ -80,5 +78,21 @@ class AuthenticationViewModel: ObservableObject {
         await MainActor.run {
             authenticationState = state
         }
+    }
+    
+    private func listenAuthenticationState() {
+        isAuthenticatedUseCase.execute()
+            .receive(on: RunLoop.main)
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    print("Error retrieving authentication state: \(error)")
+                }
+            }, receiveValue: { [weak self] isAuthenticated in
+                self?.authenticationState = isAuthenticated ? .authenticated : .unauthenticated
+            })
+            .store(in: &cancellables)
     }
 }

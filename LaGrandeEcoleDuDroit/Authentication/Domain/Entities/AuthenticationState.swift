@@ -3,5 +3,6 @@ enum AuthenticationState: Equatable {
     case loading
     case error(message: String)
     case authenticated
+    case unauthenticated
     case emailNotVerified
 }

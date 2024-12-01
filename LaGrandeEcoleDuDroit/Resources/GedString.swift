@@ -24,6 +24,7 @@ struct GedString {
     static let email = "email"
     static let password = "password"
     static let login = "login"
+    static let logout = "logout"
     static let register = "register"
     static let registration = "registration"
     static let not_register_yet = "not_register_yet"
@@ -39,6 +40,7 @@ struct GedString {
     static let email_not_verified = "email_not_verified"
     static let email_not_verified_dialog_message = "email_not_verified_dialog_message"
     static let verify_email = "verify_email"
+    static let logout_alert_message = "logout_alert_message"
     
     // Authentication error
     static let invalid_email_error = "invalid_email_error"
@@ -63,11 +65,18 @@ struct GedString {
     static let post = "post"
     static let announcement_created = "announcement_created"
     static let no_announcement = "no_announcement"
-    static let delete_announcemment_dialog_message = "delete_announcemment_dialog_message"
+    static let delete_announcemment_alert_message = "delete_announcemment_alert_message"
     
     // News error
     static let error_creating_announcement = "error_creating_announcement"
     static let error_deleting_announcement = "error_deleting_announcement"
+    
+    // Profile
+    static let profile = "profile"
+    static let account = "account"
+    
+    // Profile error
+    static let error_logout = "error_logout"
     
     static let empty_inputs_error = "empty_inputs_error"
     static let timed_out_error = "timed_out_error"
