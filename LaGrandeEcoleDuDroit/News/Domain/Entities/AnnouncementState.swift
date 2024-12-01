@@ -3,6 +3,7 @@ enum AnnouncementState: Hashable, CustomStringConvertible {
     case loading
     case created
     case deleted
+    case updated
     case error(message: String)
     
     var description: String {
@@ -15,6 +16,8 @@ enum AnnouncementState: Hashable, CustomStringConvertible {
             "created"
         case .deleted:
             "deleted"
+        case .updated:
+            "updated"
         case .error(_):
             "error"
         }

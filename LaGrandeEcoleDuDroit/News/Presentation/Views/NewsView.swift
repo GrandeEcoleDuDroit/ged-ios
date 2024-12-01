@@ -9,20 +9,21 @@ struct NewsView: View {
         GeometryReader { geometry in
             VStack(alignment: .leading, spacing: GedSpacing.medium) {
                 RecentAnnouncementSection(
-                    announcements: newsViewModel.announcements,
-                    currentUser: newsViewModel.user!,
+                    announcements: $newsViewModel.announcements,
+                    currentUser: newsViewModel.currentUser!,
                     maxHeight: geometry.size.height / 2.5,
                     onRefresh: {
-                        isRefreshing = true
                         try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
-                        isRefreshing = false
+                        isRefreshing.toggle()
                     }
                 )
+                .id(isRefreshing)
                 .frame(
                     minHeight: geometry.size.height / 8,
                     idealHeight: geometry.size.height / 8,
                     alignment: .top
                 )
+                .environmentObject(newsViewModel)
                 newsSection
             }
         }
@@ -43,12 +44,13 @@ struct NewsView: View {
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                if newsViewModel.user?.isMember == true {
+                if newsViewModel.currentUser?.isMember == true {
                     Button(
                         action: { showBottomSheet = true },
                         label: { Image(systemName: "plus") }
                     ).sheet(isPresented: $showBottomSheet) {
                         CreateAnnouncementView()
+                            .environmentObject(newsViewModel)
                     }
                 }
             }
@@ -65,20 +67,21 @@ var newsSection: some View {
 }
 
 struct RecentAnnouncementSection: View {
+    @EnvironmentObject private var newsViewModel: NewsViewModel
     @State private var selectedAnnouncement: Announcement? = nil
-    private var announcements: [Announcement]
+    @Binding private var announcements: [Announcement]
     private var currentUser: User
     @State private var contentHeight: CGFloat = .zero
     private var onRefresh: () async -> Void
     private let maxHeight: CGFloat
     
     init(
-        announcements: [Announcement],
+        announcements: Binding<[Announcement]>,
         currentUser: User,
         maxHeight: CGFloat,
         onRefresh: @escaping () async -> Void
     ) {
-        self.announcements = announcements
+        self._announcements = announcements
         self.currentUser = currentUser
         self.maxHeight = maxHeight
         self.onRefresh = onRefresh
@@ -98,7 +101,7 @@ struct RecentAnnouncementSection: View {
                     .frame(maxWidth: .infinity, alignment: .top)
             } else {
                 ScrollView {
-                    ForEach(announcements, id: \.id) { announcement in
+                    ForEach($announcements, id: \.id) { $announcement in
                         GetAnnouncementItem(
                             announcement: announcement,
                             onClick: { selectedAnnouncement = announcement }
@@ -107,7 +110,8 @@ struct RecentAnnouncementSection: View {
                         .padding(.vertical, 5)
                         .background(
                             NavigationLink(
-                                destination: AnnouncementDetailView(announcement: announcement, currentUser: currentUser),
+                                destination: AnnouncementDetailView(announcement: $announcement, currentUser: currentUser)
+                                    .environmentObject(newsViewModel),
                                 tag: announcement,
                                 selection: $selectedAnnouncement,
                                 label: { EmptyView() }

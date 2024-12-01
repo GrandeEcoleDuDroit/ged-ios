@@ -4,7 +4,8 @@
 "cancel" = "Annuler";
 "ok" = "Ok";
 "delete" = "Supprimer";
-"modify" = "Modifier";
+"edit" = "Editer";
+"save" = "Enregistrer";
 "home" = "Accueil";
 "now" = "Maintenant";
 "minute_ago" = "%d min";
@@ -43,6 +44,7 @@
 "news" = "Actualités";
 "recent_announcements" = "Récentes annonces";
 "new_announcement" = "Nouvelle Annonce";
+"edit_announcement" = "Editer Annonce";
 "title" = "Titre";
 "content" = "Contenu";
 "post" = "Poster";
