@@ -4,6 +4,8 @@ struct GedString {
     static let back = "back"
     static let cancel = "cancel"
     static let ok = "ok"
+    static let delete = "delete"
+    static let modify = "modify"
     static let now = "now"
     static let minute_ago = "minute_ago"
     static let hour_ago = "hour_ago"
@@ -59,9 +61,11 @@ struct GedString {
     static let post = "post"
     static let announcement_created = "announcement_created"
     static let no_announcement = "no_announcement"
+    static let delete_announcemment_dialog_message = "delete_announcemment_dialog_message"
     
     // News error
     static let error_creating_announcement = "error_creating_announcement"
+    static let error_deleting_announcement = "error_deleting_announcement"
     
     static let empty_inputs_error = "empty_inputs_error"
     static let timed_out_error = "timed_out_error"

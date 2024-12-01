@@ -3,9 +3,10 @@ class DependencyContainer {
     
     private init() { }
     
-    // ---------------------------------- Repositories ----------------------------------//
+    // ---------------------------------- Common ----------------------------------//
     
-    // Common
+    // Repositories
+    
     private let gedConfig: GedConfig = GedConfig()
     private lazy var userFirestoreApi: UserFirestoreApi = UserFirestoreApiImpl()
     private lazy var userOracleApi: UserOracleApi = UserOracleApiImpl()
@@ -13,57 +14,8 @@ class DependencyContainer {
     private lazy var userRemoteRepository: UserRemoteRepository = UserRemoteRepositoryImpl(userFirestoreApi: userFirestoreApi, userOracleApi: userOracleApi)
     private lazy var gedDatabaseContainer: GedDatabaseContainer = GedDatabaseContainer()
     
-    // Authentication
-    private lazy var firebaseAuthApi: FirebaseAuthApi = FirebaseAuthApiImpl()
-    private lazy var authenticationRemoteRepository: AuthenticationRemoteRepository = AuthenticationRemoteRepositoryImpl(firebaseAuthApi: firebaseAuthApi)
-    
-    // News
-    private lazy var announcementApi: AnnouncementApi = AnnouncementApiImpl()
-    private lazy var announcementRemoteRepository: AnnouncementRemoteRepository = AnnouncementRemoteRepositoryImpl(announcementApi: announcementApi)
-    private lazy var announcementLocalRepository: AnnouncementLocalRepository = AnnouncementLocalRepositoryImpl(gedDatabaseContainer: gedDatabaseContainer)
-    
-    // ---------------------------------- ViewModels ---------------------------------- //
-    
-    // Authentication
-    lazy var authenticationViewModel: AuthenticationViewModel = {
-        AuthenticationViewModel(
-            loginUseCase: loginUseCase,
-            isEmailVerifiedUseCase: isEmailVerifiedUseCase,
-            isAuthenticatedUseCase: isAuthenticatedUseCase,
-            getUserUseCase: getUserUseCase,
-            setCurrentUserUseCase: setCurrentUserUseCase
-        )
-    }()
+    // UseCases
 
-    lazy var registrationViewModel: RegistrationViewModel = {
-        RegistrationViewModel(
-            registerUseCase: registerUseCase,
-            sendVerificationEmailUseCase: sendVerificationEmailUseCase,
-            isEmailVerifiedUseCase: isEmailVerifiedUseCase,
-            createUserUseCase: createUserUseCase
-        )
-    }()
-    
-    // News
-    lazy var newsViewModel: NewsViewModel = {
-        NewsViewModel(
-            getCurrentUserUseCase: getCurrentUserUseCase,
-            getAnnouncementsUseCase: getAnnouncementsUseCase
-        )
-    }()
-    
-    lazy var createAnnouncementViewModel: CreateAnnouncementViewModel = {
-        CreateAnnouncementViewModel(
-            getCurrentUserUseCase: getCurrentUserUseCase,
-            createAnnouncementUseCase: createAnnouncementUseCase
-        )
-    }()
-    
-    
-    
-    // ---------------------------------- UseCases ---------------------------------- //
-    
-    // Common
     lazy var createUserUseCase: CreateUserUseCase = {
         CreateUserUseCase(
             userRemoteRepository: userRemoteRepository,
@@ -83,7 +35,44 @@ class DependencyContainer {
         GetUserUseCase(userRemoteRepository: userRemoteRepository)
     }()
     
-    // Authentication
+    lazy var sendVerificationEmailUseCase: SendVerificationEmailUseCase = {
+        SendVerificationEmailUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
+    }()
+    
+    lazy var isEmailVerifiedUseCase: IsEmailVerifiedUseCase = {
+        IsEmailVerifiedUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
+    }()
+    
+    // ---------------------------------- Authentication ---------------------------------- //
+    
+    // Repositories
+    
+    private lazy var firebaseAuthApi: FirebaseAuthApi = FirebaseAuthApiImpl()
+    private lazy var authenticationRemoteRepository: AuthenticationRemoteRepository = AuthenticationRemoteRepositoryImpl(firebaseAuthApi: firebaseAuthApi)
+    
+    // ViewModels
+    
+    lazy var authenticationViewModel: AuthenticationViewModel = {
+        AuthenticationViewModel(
+            loginUseCase: loginUseCase,
+            isEmailVerifiedUseCase: isEmailVerifiedUseCase,
+            isAuthenticatedUseCase: isAuthenticatedUseCase,
+            getUserUseCase: getUserUseCase,
+            setCurrentUserUseCase: setCurrentUserUseCase
+        )
+    }()
+
+    lazy var registrationViewModel: RegistrationViewModel = {
+        RegistrationViewModel(
+            registerUseCase: registerUseCase,
+            sendVerificationEmailUseCase: sendVerificationEmailUseCase,
+            isEmailVerifiedUseCase: isEmailVerifiedUseCase,
+            createUserUseCase: createUserUseCase
+        )
+    }()
+    
+    // UseCases
+    
     lazy var isAuthenticatedUseCase: IsAuthenticatedUseCase = {
         IsAuthenticatedUseCase(firebaseAuthApi: firebaseAuthApi)
     }()
@@ -96,15 +85,33 @@ class DependencyContainer {
         RegisterUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
     }()
     
-    lazy var sendVerificationEmailUseCase: SendVerificationEmailUseCase = {
-        SendVerificationEmailUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
+    // ---------------------------------- News ---------------------------------- //
+
+    // Repositories
+    
+    private lazy var announcementApi: AnnouncementApi = AnnouncementApiImpl()
+    private lazy var announcementRemoteRepository: AnnouncementRemoteRepository = AnnouncementRemoteRepositoryImpl(announcementApi: announcementApi)
+    private lazy var announcementLocalRepository: AnnouncementLocalRepository = AnnouncementLocalRepositoryImpl(gedDatabaseContainer: gedDatabaseContainer)
+    
+    // ViewModels
+    
+    lazy var newsViewModel: NewsViewModel = {
+        NewsViewModel(
+            getCurrentUserUseCase: getCurrentUserUseCase,
+            getAnnouncementsUseCase: getAnnouncementsUseCase,
+            deleteAnnouncementUseCase: deleteAnnouncementUseCase
+        )
     }()
     
-    lazy var isEmailVerifiedUseCase: IsEmailVerifiedUseCase = {
-        IsEmailVerifiedUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
+    lazy var createAnnouncementViewModel: CreateAnnouncementViewModel = {
+        CreateAnnouncementViewModel(
+            getCurrentUserUseCase: getCurrentUserUseCase,
+            createAnnouncementUseCase: createAnnouncementUseCase
+        )
     }()
     
-    // News
+    // UseCases
+    
     lazy var getAnnouncementsUseCase: GetAnnouncementsUseCase = {
         GetAnnouncementsUseCase(announcementLocalRepository: announcementLocalRepository)
     }()
@@ -115,4 +122,12 @@ class DependencyContainer {
             announcementRemoteRepository: announcementRemoteRepository
         )
     }()
+    
+    lazy var deleteAnnouncementUseCase: DeleteAnnouncementUseCase = {
+        DeleteAnnouncementUseCase(
+            announcementRemoteRepository: announcementRemoteRepository,
+            announcementLocalRepository: announcementLocalRepository
+        )
+    }()
+    
 }

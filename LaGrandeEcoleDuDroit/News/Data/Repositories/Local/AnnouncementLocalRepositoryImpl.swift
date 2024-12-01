@@ -61,4 +61,15 @@ class AnnouncementLocalRepositoryImpl: AnnouncementLocalRepository {
             throw error
         }
     }
+    
+    func deleteAnnouncement(announcement: Announcement) async throws {
+        let localAnnouncement = try context.fetch(request).first {
+            $0.announcementId == announcement.id
+        }
+        if localAnnouncement != nil {
+            context.delete(localAnnouncement!)
+            try context.save()
+        }
+        _announcements.removeAll { $0.id == announcement.id }
+    }
 }

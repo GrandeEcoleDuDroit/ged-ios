@@ -2,19 +2,23 @@ import SwiftUI
 import Combine
 
 class NewsViewModel: ObservableObject {
-    @Published var user: User? = nil
-    @Published var announcements: [Announcement] = []
-    
+    @Published private(set) var user: User? = nil
+    @Published private(set) var announcements: [Announcement] = []
+    @Published private(set) var announcementState: AnnouncementState = .idle
+
     private let getCurrentUserUseCase: GetCurrentUserUseCase
     private let getAnnouncementsUseCase: GetAnnouncementsUseCase
+    private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
     private var cancellables: Set<AnyCancellable> = []
     
     init(
         getCurrentUserUseCase: GetCurrentUserUseCase,
-        getAnnouncementsUseCase: GetAnnouncementsUseCase
+        getAnnouncementsUseCase: GetAnnouncementsUseCase,
+        deleteAnnouncementUseCase: DeleteAnnouncementUseCase
     ) {
         self.getCurrentUserUseCase = getCurrentUserUseCase
         self.getAnnouncementsUseCase = getAnnouncementsUseCase
+        self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
         
         initCurrentUser()
         initAnnouncements()
@@ -50,5 +54,26 @@ class NewsViewModel: ObservableObject {
                 self?.announcements = announcements.sorted(by: { $0.date > $1.date })
             })
             .store(in: &cancellables)
+    }
+    
+    func deleteAnnouncement(announcement: Announcement) async {
+        do {
+            await updateAnnouncementState(to: .loading)
+            try await deleteAnnouncementUseCase.execute(announcement: announcement)
+            await updateAnnouncementState(to: .deleted)
+        } catch {
+            print(error.localizedDescription)
+            await updateAnnouncementState(to: .error(message: error.localizedDescription))
+        }
+    }
+    
+    func resetAnnouncementState() {
+        announcementState = .idle
+    }
+    
+    private func updateAnnouncementState(to state: AnnouncementState) async {
+        await MainActor.run {
+            announcementState = state
+        }
     }
 }

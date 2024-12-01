@@ -16,4 +16,10 @@ class DataUtils {
         
         return request
     }
+    
+    static func formatDeleteRequest(url: URL) throws -> URLRequest {
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        return request
+    }
 }

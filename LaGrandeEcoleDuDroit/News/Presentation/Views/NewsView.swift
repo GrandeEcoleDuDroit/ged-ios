@@ -3,14 +3,20 @@ import SwiftUI
 struct NewsView: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
     @State private var showBottomSheet: Bool = false
+    @State private var isRefreshing: Bool = false
     
     var body: some View {
         GeometryReader { geometry in
-            VStack(alignment: .leading, spacing: GedSpacing.large) {
+            VStack(alignment: .leading, spacing: GedSpacing.medium) {
                 RecentAnnouncementSection(
-                    announcements: $newsViewModel.announcements,
+                    announcements: newsViewModel.announcements,
+                    currentUser: newsViewModel.user!,
                     maxHeight: geometry.size.height / 2.5,
-                    onRefresh: { try? await Task.sleep(nanoseconds: 3 * 1_000_000_000) }
+                    onRefresh: {
+                        isRefreshing = true
+                        try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
+                        isRefreshing = false
+                    }
                 )
                 .frame(
                     minHeight: geometry.size.height / 8,
@@ -60,18 +66,20 @@ var newsSection: some View {
 
 struct RecentAnnouncementSection: View {
     @State private var selectedAnnouncement: Announcement? = nil
-    @Binding private var announcements: [Announcement]
+    private var announcements: [Announcement]
+    private var currentUser: User
     @State private var contentHeight: CGFloat = .zero
     private var onRefresh: () async -> Void
     private let maxHeight: CGFloat
-    @State private var isRefreshing: Bool = false
     
     init(
-        announcements: Binding<[Announcement]>,
+        announcements: [Announcement],
+        currentUser: User,
         maxHeight: CGFloat,
         onRefresh: @escaping () async -> Void
     ) {
-        self._announcements = announcements
+        self.announcements = announcements
+        self.currentUser = currentUser
         self.maxHeight = maxHeight
         self.onRefresh = onRefresh
     }
@@ -90,16 +98,16 @@ struct RecentAnnouncementSection: View {
                     .frame(maxWidth: .infinity, alignment: .top)
             } else {
                 ScrollView {
-                    ForEach($announcements, id: \.id) { $announcement in
+                    ForEach(announcements, id: \.id) { announcement in
                         GetAnnouncementItem(
-                            announcement: $announcement,
+                            announcement: announcement,
                             onClick: { selectedAnnouncement = announcement }
                         )
                         .padding(.horizontal)
                         .padding(.vertical, 5)
                         .background(
                             NavigationLink(
-                                destination: AnnouncementDetailView(announcement: $announcement),
+                                destination: AnnouncementDetailView(announcement: announcement, currentUser: currentUser),
                                 tag: announcement,
                                 selection: $selectedAnnouncement,
                                 label: { EmptyView() }
@@ -115,37 +123,39 @@ struct RecentAnnouncementSection: View {
                         )
                     }
                 }
-                .frame(maxHeight: min(maxHeight, contentHeight * CGFloat(announcements.count) + 20))
-                .refreshable(action: onRefresh)
+                .frame(maxHeight: min(maxHeight, contentHeight * CGFloat(announcements.count)))
+                .refreshable {
+                    await onRefresh()
+                }
             }
         }
     }
 }
 
 struct GetAnnouncementItem: View {
-    @Binding private var announcement: Announcement
+    private var announcement: Announcement
     private let onClick: () -> Void
     
-    init(announcement: Binding<Announcement>, onClick: @escaping () -> Void) {
-        self._announcement = announcement
+    init(announcement: Announcement, onClick: @escaping () -> Void) {
+        self.announcement = announcement
         self.onClick = onClick
     }
     
     var body: some View {
         if case .loading = announcement.state {
             LoadingAnnouncementItemWithContent(
-                announcement: $announcement,
+                announcement: announcement,
                 onClick: onClick
             )
         }
         else if case .error = announcement.state {
             ErrorAnnouncementItemWithContent(
-                announcement: $announcement,
+                announcement: announcement,
                 onClick: onClick
             )
         } else {
             AnnouncementItemWithContent(
-                announcement: $announcement,
+                announcement: announcement,
                 onClick: onClick
             )
         }
