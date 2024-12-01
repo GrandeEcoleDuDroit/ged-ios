@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AnnouncementDetailView: View {
     private let announcement: Announcement
-    @EnvironmentObject var newsViewModel: NewsViewModel
+    @EnvironmentObject private var newsViewModel: NewsViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var showErrorDialog: Bool = false
     @State private var showDeleteDialog: Bool = false
@@ -50,6 +50,7 @@ struct AnnouncementDetailView: View {
                     } else if case .error(let message) = state {
                         errorMessage = message
                         showErrorDialog = true
+                        newsViewModel.resetAnnouncementState()
                     }
                 }
                 

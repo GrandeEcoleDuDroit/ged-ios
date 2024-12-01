@@ -51,6 +51,7 @@
 
 // News errors
 "error_creating_announcement " = "An error occured while creating the announcement.";
+"error_deleting_announcement" = "An error occured while deleting the announcement.";
 
 // Authentification errors
 "invalid_email_error" = "Please enter a valid email address.";

@@ -50,6 +50,7 @@
 "delete_announcemment_dialog_message" = "Voulez-vous supprimer cette annonce ?";
 // News errors
 "error_creating_announcement" = "Une erreur est survenue lors de la création de l'annonce.";
+"error_deleting_announcement" = "Une erreur est survenue lors de la suppression de l'annonce.";
 
 // Authtentication errors
 "invalid_email_error" = "Veuillez entrer une adresse mail valide.";

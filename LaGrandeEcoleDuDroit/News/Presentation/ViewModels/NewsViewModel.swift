@@ -2,9 +2,9 @@ import SwiftUI
 import Combine
 
 class NewsViewModel: ObservableObject {
-    @Published var user: User? = nil
-    @Published var announcements: [Announcement] = []
-    @Published var announcementState: AnnouncementState = .idle
+    @Published private(set) var user: User? = nil
+    @Published private(set) var announcements: [Announcement] = []
+    @Published private(set) var announcementState: AnnouncementState = .idle
 
     private let getCurrentUserUseCase: GetCurrentUserUseCase
     private let getAnnouncementsUseCase: GetAnnouncementsUseCase
@@ -65,6 +65,10 @@ class NewsViewModel: ObservableObject {
             print(error.localizedDescription)
             await updateAnnouncementState(to: .error(message: error.localizedDescription))
         }
+    }
+    
+    func resetAnnouncementState() {
+        announcementState = .idle
     }
     
     private func updateAnnouncementState(to state: AnnouncementState) async {

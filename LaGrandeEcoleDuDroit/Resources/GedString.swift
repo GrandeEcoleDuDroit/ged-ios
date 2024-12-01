@@ -65,6 +65,7 @@ struct GedString {
     
     // News error
     static let error_creating_announcement = "error_creating_announcement"
+    static let error_deleting_announcement = "error_deleting_announcement"
     
     static let empty_inputs_error = "empty_inputs_error"
     static let timed_out_error = "timed_out_error"

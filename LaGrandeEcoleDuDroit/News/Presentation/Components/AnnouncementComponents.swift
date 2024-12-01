@@ -4,7 +4,7 @@ struct TopAnnouncementDetailItem: View {
     private var announcement: Announcement
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
-    @State private var announcementElapsedTime: String = ""
+    @State private var elapsedTimeText: String = ""
     
     init(announcement: Announcement) {
         self.announcement = announcement
@@ -24,7 +24,7 @@ struct TopAnnouncementDetailItem: View {
             Text(announcement.author.fullName)
                 .font(.titleSmall)
             
-            Text(announcementElapsedTime)
+            Text(elapsedTimeText)
                 .font(.bodyMedium)
                 .foregroundStyle(.textPreview)
             
@@ -32,20 +32,20 @@ struct TopAnnouncementDetailItem: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
-            announcementElapsedTime = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
+            elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
         }
     }
 }
 
 struct AnnouncementItemWithContent: View {
-    @Binding private var announcement: Announcement
+    private var announcement: Announcement
     private let onClick: () -> Void
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
-    @State private var announcementElapsedTime: String = ""
+    @State private var elapsedTimeText: String = ""
     
-    init(announcement: Binding<Announcement>, onClick: @escaping () -> Void) {
-        self._announcement = announcement
+    init(announcement: Announcement, onClick: @escaping () -> Void) {
+        self.announcement = announcement
         self.onClick = onClick
     }
     
@@ -65,7 +65,7 @@ struct AnnouncementItemWithContent: View {
                     Text(announcement.author.fullName)
                         .font(.titleSmall)
                     
-                    Text(announcementElapsedTime)
+                    Text(elapsedTimeText)
                         .font(.bodyMedium)
                         .foregroundStyle(.textPreview)
                 }
@@ -89,25 +89,21 @@ struct AnnouncementItemWithContent: View {
         .background(Color(UIColor.systemBackground))
         .clickable(isClicked: $isClicked, onClick: onClick)
         .onAppear {
-            do {
-                elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
-                announcementElapsedTime = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
-            } catch {
-                print("Error getting elapsed time")
-            }
+            elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
+            elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
         }
     }
 }
 
 struct LoadingAnnouncementItemWithContent: View {
-    @Binding private var announcement: Announcement
+    private var announcement: Announcement
     private let onClick: () -> Void
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
-    @State private var announcementElapsedTime: String = ""
+    @State private var elapsedTimeText: String = ""
     
-    init(announcement: Binding<Announcement>, onClick: @escaping () -> Void) {
-        self._announcement = announcement
+    init(announcement: Announcement, onClick: @escaping () -> Void) {
+        self.announcement = announcement
         self.onClick = onClick
     }
     
@@ -127,7 +123,7 @@ struct LoadingAnnouncementItemWithContent: View {
                     Text(announcement.author.fullName)
                         .font(.titleSmall)
                     
-                    Text(announcementElapsedTime)
+                    Text(elapsedTimeText)
                         .font(.bodyMedium)
                         .foregroundStyle(.textPreview)
                 }
@@ -150,20 +146,20 @@ struct LoadingAnnouncementItemWithContent: View {
         .clickable(isClicked: $isClicked, onClick: onClick)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
-            announcementElapsedTime = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
+            elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
         }
     }
 }
 
 struct ErrorAnnouncementItemWithContent: View {
-    @Binding private var announcement: Announcement
+    private var announcement: Announcement
     private let onClick: () -> Void
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
-    @State private var announcementElapsedTime: String = ""
+    @State private var elapsedTimeText: String = ""
     
-    init(announcement: Binding<Announcement>, onClick: @escaping () -> Void) {
-        self._announcement = announcement
+    init(announcement: Announcement, onClick: @escaping () -> Void) {
+        self.announcement = announcement
         self.onClick = onClick
     }
     
@@ -183,7 +179,7 @@ struct ErrorAnnouncementItemWithContent: View {
                     Text(announcement.author.fullName)
                         .font(.titleSmall)
                     
-                    Text(announcementElapsedTime)
+                    Text(elapsedTimeText)
                         .font(.bodyMedium)
                         .foregroundStyle(.textPreview)
                 }
@@ -208,7 +204,7 @@ struct ErrorAnnouncementItemWithContent: View {
         .clickable(isClicked: $isClicked, onClick: onClick)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
-            announcementElapsedTime = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
+            elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
         }
     }
 }
@@ -234,10 +230,10 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, announcementDate: Date
         TopAnnouncementDetailItem(announcement: announcementFixture)
             .padding(.horizontal)
         
-        AnnouncementItemWithContent(announcement: .constant(announcementFixture), onClick: {})
+        AnnouncementItemWithContent(announcement: announcementFixture, onClick: {})
         
-        LoadingAnnouncementItemWithContent(announcement: .constant(announcementFixture), onClick: {})
+        LoadingAnnouncementItemWithContent(announcement: announcementFixture, onClick: {})
         
-        ErrorAnnouncementItemWithContent(announcement: .constant(announcementFixture), onClick: {})
+        ErrorAnnouncementItemWithContent(announcement: announcementFixture, onClick: {})
     }
 }
