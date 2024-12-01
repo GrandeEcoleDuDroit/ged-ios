@@ -13,21 +13,19 @@ class CreateAnnouncementUseCase {
     }
     
     func execute(announcement: Announcement) async throws {
-        var formattedAnnouncement = announcement
-        formattedAnnouncement.state = .loading
-        formattedAnnouncement.id = UUID().uuidString
+        let loadingAnnouncement = announcement.copy(state: .loading)
         
         do {
-            async let localResult: Void = try announcementLocalRepository.insertAnnouncement(announcement: formattedAnnouncement)
-            async let remoteResult: Void = try announcementRemoteRepository.createAnnouncement(announcement: formattedAnnouncement)
+            async let localResult: Void = try announcementLocalRepository.insertAnnouncement(announcement: loadingAnnouncement)
+            async let remoteResult: Void = try announcementRemoteRepository.createAnnouncement(announcement: loadingAnnouncement)
             
             try await localResult
             try await remoteResult
-            formattedAnnouncement.state = .created
-            try await announcementLocalRepository.updateAnnouncement(announcement: formattedAnnouncement)
+            
+            let createdAnnouncement = announcement.copy(state: .created)
+            try await announcementLocalRepository.updateAnnouncement(announcement: createdAnnouncement)
         } catch {
-            var errorAnnouncement = formattedAnnouncement
-            errorAnnouncement.state = .error(message: "")
+            let errorAnnouncement = announcement.copy(state: .error(message: error.localizedDescription.description))
             try await announcementLocalRepository.updateAnnouncement(announcement: errorAnnouncement)
             print(error.localizedDescription)
             throw error

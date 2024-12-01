@@ -1,15 +1,22 @@
 import SwiftUI
 
-struct CreateAnnouncementView: View {
+struct EditAnnouncementView: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
+    private let announcement: Announcement
     @State private var textHeight: CGFloat = 40
     private let lineHeight: CGFloat = 24
     @State private var isActive: Bool = false
     @Environment(\.dismiss) var dismiss
     @State private var showErrorDialog: Bool = false
     @State private var errorMessage: String = ""
-    @State private var title: String = ""
-    @State private var content: String = ""
+    @State private var title: String
+    @State private var content: String
+
+    init(announcement: Announcement) {
+        self.announcement = announcement
+        self.title = announcement.title ?? ""
+        self.content = announcement.content
+    }
     
     var body: some View {
         GeometryReader { geometry in
@@ -20,28 +27,28 @@ struct CreateAnnouncementView: View {
                         label: { Text(getString(gedString: GedString.cancel)) }
                     )
                     
-                    Spacer()
+                   Spacer()
                     
                     Button(
                         action: {
                             Task {
-                                await newsViewModel.createAnnouncement(title: title, content: content)
-                                if newsViewModel.announcementState == .created {
+                                await newsViewModel.updateAnnouncement(id: announcement.id, title: title, content: content)
+                                if newsViewModel.announcementState == .updated {
                                     dismiss()
                                 }
                             }
                         },
                         label: {
-                            if content.isEmpty {
-                                Text(getString(gedString: GedString.post))
+                            if content.isEmpty || title == announcement.title && content == announcement.content {
+                                Text(getString(gedString: GedString.save))
                                     .fontWeight(.semibold)
                             } else {
-                                Text(getString(gedString: GedString.post))
+                                Text(getString(gedString: GedString.save))
                                     .foregroundColor(.gedPrimary)
                                     .fontWeight(.semibold)
                             }
                         }
-                    ).disabled(content.isEmpty)
+                    ).disabled(content.isEmpty || (title == announcement.title && content == announcement.content))
                 }.padding(.vertical, 5)
                 
                 TextEditor(text: $title)
@@ -111,7 +118,7 @@ struct CreateAnnouncementView: View {
 
 #Preview {
     NavigationView {
-        CreateAnnouncementView()
+        EditAnnouncementView(announcement: announcementFixture)
             .environmentObject(DependencyContainer.shared.newsViewModel)
     }
 }

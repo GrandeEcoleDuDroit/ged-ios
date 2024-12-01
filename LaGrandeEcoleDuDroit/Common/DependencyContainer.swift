@@ -99,14 +99,9 @@ class DependencyContainer {
         NewsViewModel(
             getCurrentUserUseCase: getCurrentUserUseCase,
             getAnnouncementsUseCase: getAnnouncementsUseCase,
+            createAnnouncementUseCase: createAnnouncementUseCase,
+            updateAnnouncementUseCase: updateAnnouncementUseCase,
             deleteAnnouncementUseCase: deleteAnnouncementUseCase
-        )
-    }()
-    
-    lazy var createAnnouncementViewModel: CreateAnnouncementViewModel = {
-        CreateAnnouncementViewModel(
-            getCurrentUserUseCase: getCurrentUserUseCase,
-            createAnnouncementUseCase: createAnnouncementUseCase
         )
     }()
     
@@ -118,6 +113,13 @@ class DependencyContainer {
     
     lazy var createAnnouncementUseCase: CreateAnnouncementUseCase = {
         CreateAnnouncementUseCase(
+            announcementLocalRepository: announcementLocalRepository,
+            announcementRemoteRepository: announcementRemoteRepository
+        )
+    }()
+    
+    lazy var updateAnnouncementUseCase: UpdateAnnouncementUseCase = {
+        UpdateAnnouncementUseCase(
             announcementLocalRepository: announcementLocalRepository,
             announcementRemoteRepository: announcementRemoteRepository
         )

@@ -1,19 +1,20 @@
 import SwiftUI
 
 struct AnnouncementDetailView: View {
-    private let announcement: Announcement
+    @Binding private var announcement: Announcement
     @EnvironmentObject private var newsViewModel: NewsViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var showErrorDialog: Bool = false
     @State private var showDeleteDialog: Bool = false
     @State private var errorMessage: String = ""
+    @State private var showEditBottomSheet: Bool = false
     private var currentUser: User
     
     init(
-        announcement: Announcement,
+        announcement: Binding<Announcement>,
         currentUser: User
     ) {
-        self.announcement = announcement
+        self._announcement = announcement
         self.currentUser = currentUser
     }
     
@@ -27,12 +28,13 @@ struct AnnouncementDetailView: View {
                     if currentUser.isMember && announcement.author.id == currentUser.id {
                         Menu {
                             Button(
-                                action: { print("Option 2 sélectionnée") },
+                                action: { showEditBottomSheet = true },
                                 label: {
-                                    Label(getString(gedString: GedString.modify), systemImage: "square.and.pencil")
+                                    Label(getString(gedString: GedString.edit), systemImage: "square.and.pencil")
                                 }
                             )
                             Button(
+                                role: .destructive,
                                 action: { showDeleteDialog = true },
                                 label: {
                                     Label(getString(gedString: GedString.delete), systemImage: "trash")
@@ -42,6 +44,10 @@ struct AnnouncementDetailView: View {
                             Image(systemName: "ellipsis")
                                 .imageScale(.large)
                                 .padding(5)
+                        }
+                        .sheet(isPresented: $showEditBottomSheet) {
+                            EditAnnouncementView(announcement: announcement)
+                                .environmentObject(newsViewModel)
                         }
                     }
                 }.onReceive(newsViewModel.$announcementState) { state in
@@ -66,6 +72,10 @@ struct AnnouncementDetailView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding(.horizontal)
+            .onAppear() {
+                
+                
+            }
             .alert(
                 "",
                 isPresented: $showErrorDialog,
@@ -73,6 +83,7 @@ struct AnnouncementDetailView: View {
             ) { data in
                 Button(getString(gedString: GedString.ok)) {
                     showErrorDialog = false
+                    newsViewModel.resetAnnouncementState()
                 }
             } message: { data in
                 Text(errorMessage)
@@ -99,7 +110,7 @@ struct AnnouncementDetailView: View {
 
 #Preview {
     AnnouncementDetailView(
-        announcement: announcementFixture,
+        announcement: .constant(announcementFixture),
         currentUser: userFixture
     ).environmentObject(DependencyContainer.shared.newsViewModel)
 }
