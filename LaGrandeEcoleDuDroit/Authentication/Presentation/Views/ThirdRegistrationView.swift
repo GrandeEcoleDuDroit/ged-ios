@@ -93,8 +93,6 @@ struct ThirdRegistrationView: View {
 }
 
 #Preview {
-    NavigationView {
-        ThirdRegistrationView()
-            .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
-    }
+    ThirdRegistrationView()
+        .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
 }

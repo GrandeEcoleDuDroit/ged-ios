@@ -54,8 +54,6 @@ struct SecondRegistrationView: View {
 }
 
 #Preview {
-    NavigationView {
-        SecondRegistrationView()
-            .environmentObject(DependencyContainer.shared.registrationViewModel)
-    }
+    SecondRegistrationView()
+        .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
 }
