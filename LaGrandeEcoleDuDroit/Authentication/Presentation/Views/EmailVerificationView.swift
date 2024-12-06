@@ -36,15 +36,15 @@ struct EmailVerificationView: View {
             
             HStack {
                 Spacer()
-                Button(action: {
-                    Task {
-                        await registrationViewModel.checkVerifiedEmail()
+                Button(
+                    action: {
+                        Task { await registrationViewModel.checkVerifiedEmail() }
+                    },
+                    label: {
+                        Text(getString(gedString: GedString.next))
+                            .font(.title2)
                     }
-                }) {
-                    Text(getString(gedString: GedString.next))
-                        .tint(.gedPrimary)
-                        .font(.title2)
-                }
+                )
             }.padding()
         }
         .task {
@@ -59,7 +59,7 @@ struct EmailVerificationView: View {
 
 struct EmailVerificationView_Previews: PreviewProvider {
     static var previews: some View {
-        let registrationViewModel = DependencyContainer.shared.registrationViewModel
+        let registrationViewModel = DependencyContainer.shared.mockRegistrationViewModel
         registrationViewModel.email = "example@email.com"
         
         return EmailVerificationView()

@@ -26,4 +26,9 @@ class UserRemoteRepositoryImpl: UserRemoteRepository {
             return nil
         }
     }
+    
+    func getUsers() async throws -> [User] {
+        let firestoreUsers = try await userFirestoreApi.getUsers()
+        return firestoreUsers.map { UserMapper.toDomain(firestoreUser: $0) }
+    }
 }

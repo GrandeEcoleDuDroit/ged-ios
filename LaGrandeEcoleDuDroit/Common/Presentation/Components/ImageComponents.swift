@@ -61,7 +61,7 @@ struct ClickableProfilePicture: View {
                     height: GedNumber.defaultImageSize * scale
                 )
                 .background(Color(UIColor.systemBackground))
-                .clickable(isClicked: $isClicked, onClick: onClick)
+                .onClick(isClicked: $isClicked, action: onClick)
                 .overlay {
                     Circle()
                         .stroke(Color(.lightGrey), lineWidth: 1)

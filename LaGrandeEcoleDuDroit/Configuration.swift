@@ -9,16 +9,16 @@ class GedConfig {
     #endif
     
     init() {
-        #if DEBUG
-//      Firebase Auth
-        Auth.auth().useEmulator(withHost:"127.0.0.1", port:9099)
-
-//      Firestore
-        let settings = FirestoreSettings()
-        settings.host = "127.0.0.1:8080"
-        settings.cacheSettings = MemoryCacheSettings()
-        settings.isSSLEnabled = false
-        Firestore.firestore().settings = settings
-        #endif
+//        #if DEBUG
+////      Firebase Auth
+//        Auth.auth().useEmulator(withHost:"127.0.0.1", port:9099)
+//
+////      Firestore
+//        let settings = FirestoreSettings()
+//        settings.host = "127.0.0.1:8080"
+//        settings.cacheSettings = MemoryCacheSettings()
+//        settings.isSSLEnabled = false
+//        Firestore.firestore().settings = settings
+//        #endif
     }
 }

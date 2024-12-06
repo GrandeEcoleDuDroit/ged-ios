@@ -1,7 +1,7 @@
 import SwiftUI
 
 extension View {
-    func clickable(isClicked: Binding<Bool>, onClick: @escaping () -> Void) -> some View {
+    func onClick(isClicked: Binding<Bool>, action: @escaping () -> Void) -> some View {
         self
             .overlay(
                 Color(UIColor.lightGray)
@@ -10,7 +10,7 @@ extension View {
             )
             .onTapGesture {
                 isClicked.wrappedValue = true
-                onClick()
+                action()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                     isClicked.wrappedValue = false
                 }

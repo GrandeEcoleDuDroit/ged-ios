@@ -83,7 +83,7 @@ class RegistrationViewModel: ObservableObject {
             await updateRegistrationState(to: .error(message: getString(gedString: GedString.account_already_in_use_error)))
         }
         catch AuthenticationError.userNotFound {
-            await updateRegistrationState(to: .error(message: getString(gedString: GedString.user_not_found)))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.auth_user_not_found)))
         }
         catch RequestError.invalidResponse(let error) {
             print(error ?? "Query error")
@@ -126,6 +126,10 @@ class RegistrationViewModel: ObservableObject {
         } else {
             await updateRegistrationState(to: .error(message: getString(gedString: GedString.email_not_verified_error)))
         }
+    }
+    
+    func resetState() {
+        registrationState = .idle
     }
     
     private func updateRegistrationState(to state: RegistrationState) async {

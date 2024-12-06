@@ -2,7 +2,7 @@ import SwiftUI
 
 struct NewsView: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
-    @State private var showBottomSheet: Bool = false
+    @State private var isActive: Bool = false
     @State private var isRefreshing: Bool = false
     
     var body: some View {
@@ -45,12 +45,14 @@ struct NewsView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 if newsViewModel.currentUser?.isMember == true {
-                    Button(
-                        action: { showBottomSheet = true },
-                        label: { Image(systemName: "plus") }
-                    ).sheet(isPresented: $showBottomSheet) {
-                        CreateAnnouncementView()
-                            .environmentObject(newsViewModel)
+                    NavigationLink(
+                        destination: CreateAnnouncementView().environmentObject(newsViewModel),
+                        isActive: $isActive
+                    ) {
+                        Button(
+                            action: { isActive = true },
+                            label: { Image(systemName: "plus") }
+                        )
                     }
                 }
             }
@@ -103,8 +105,6 @@ struct RecentAnnouncementSection: View {
                             announcement: announcement,
                             onClick: { selectedAnnouncement = announcement }
                         )
-                        .padding(.horizontal)
-                        .padding(.vertical, 5)
                         .background(
                             NavigationLink(
                                 destination: AnnouncementDetailView(announcement: $announcement)
@@ -167,6 +167,6 @@ struct GetAnnouncementItem: View {
 #Preview {
     NavigationView {
         NewsView()
-            .environmentObject(DependencyContainer.shared.newsViewModel)
+            .environmentObject(DependencyContainer.shared.mockNewsViewModel)
     }
 }

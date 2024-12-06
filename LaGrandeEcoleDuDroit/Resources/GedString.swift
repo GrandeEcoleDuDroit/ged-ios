@@ -1,4 +1,5 @@
 struct GedString {
+    // Common
     static let appName = "app_name"
     static let next = "next"
     static let back = "back"
@@ -8,13 +9,22 @@ struct GedString {
     static let edit = "edit"
     static let save = "save"
     static let now = "now"
-    static let minute_ago = "minute_ago"
-    static let hour_ago = "hour_ago"
-    static let day_ago = "day_ago"
-    static let week_ago = "week_ago"
+    static let minutes_ago_short = "minutes_ago_short"
+    static let hours_ago_short = "hours_ago_short"
+    static let days_ago_short = "days_ago_short"
+    static let weeks_ago_short = "weeks_ago_short"
+    static let minutes_ago_long = "minutes_ago_long"
+    static let hours_ago_long = "hours_ago_long"
+    static let days_ago_long = "days_ago_long"
+    static let weeks_ago_long = "weeks_ago_long"
     static let today = "today"
     static let yesterday = "yesterday"
     static let home = "home"
+    
+    // Common error
+    static let empty_inputs_error = "empty_inputs_error"
+    static let timed_out_error = "timed_out_error"
+    static let not_connected_to_internet_error = "not_connected_to_internet_error"
     
     // Authentication
     static let authenticationPageTitle = "authentication_page_title"
@@ -47,7 +57,7 @@ struct GedString {
     static let password_length_error = "password_length_error"
     static let invalid_credentials = "invalid_credentials"
     static let user_disabled = "user_disabled"
-    static let user_not_found = "user_not_found"
+    static let auth_user_not_found = "auth_user_not_found"
     static let user_not_exist = "user_not_exist"
     static let email_not_verified_error = "email_not_verified_error"
     static let registration_error = "registration_error"
@@ -78,7 +88,8 @@ struct GedString {
     // Profile error
     static let error_logout = "error_logout"
     
-    static let empty_inputs_error = "empty_inputs_error"
-    static let timed_out_error = "timed_out_error"
-    static let not_connected_to_internet_error = "not_connected_to_internet_error"
+    // Message
+    static let messages = "messages"
+    static let new_message = "new_message"
+    static let user_not_found = "user_not_found"
 }

@@ -14,36 +14,6 @@ struct CreateAnnouncementView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(alignment: .leading) {
-                HStack(alignment: .center) {
-                    Button(
-                        action: { dismiss() },
-                        label: { Text(getString(gedString: GedString.cancel)) }
-                    )
-                    
-                    Spacer()
-                    
-                    Button(
-                        action: {
-                            Task {
-                                await newsViewModel.createAnnouncement(title: title, content: content)
-                                if newsViewModel.announcementState == .created {
-                                    dismiss()
-                                }
-                            }
-                        },
-                        label: {
-                            if content.isEmpty {
-                                Text(getString(gedString: GedString.post))
-                                    .fontWeight(.semibold)
-                            } else {
-                                Text(getString(gedString: GedString.post))
-                                    .foregroundColor(.gedPrimary)
-                                    .fontWeight(.semibold)
-                            }
-                        }
-                    ).disabled(content.isEmpty)
-                }.padding(.vertical, 5)
-                
                 TextEditor(text: $title)
                     .font(.system(size: 22, weight: .semibold))
                     .overlay {
@@ -81,6 +51,8 @@ struct CreateAnnouncementView: View {
                     .frame(maxHeight: .infinity, alignment: .top)
             }
         }
+        .navigationTitle(getString(gedString: GedString.new_announcement))
+        .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
         .onReceive(newsViewModel.$announcementState) { state in

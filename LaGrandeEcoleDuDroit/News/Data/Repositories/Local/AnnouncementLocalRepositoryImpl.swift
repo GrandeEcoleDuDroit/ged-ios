@@ -7,11 +7,12 @@ private let announcementEntityName = "LocalAnnouncement"
 class AnnouncementLocalRepositoryImpl: AnnouncementLocalRepository {
     private let gedDatabaseContainer: GedDatabaseContainer
     private let request = NSFetchRequest<LocalAnnouncement>(entityName: announcementEntityName)
+    private let context: NSManagedObjectContext
+    
     @Published private var _announcements: [Announcement] = []
     var announcements: AnyPublisher<[Announcement], Never> {
         $_announcements.eraseToAnyPublisher()
     }
-    private let context: NSManagedObjectContext
     
     init(gedDatabaseContainer: GedDatabaseContainer) {
         self.gedDatabaseContainer = gedDatabaseContainer
