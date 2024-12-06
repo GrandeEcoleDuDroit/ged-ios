@@ -17,4 +17,9 @@ class UserFirestoreApiImpl: UserFirestoreApi {
         
         return try snapshot.data(as: FirestoreUser.self)
     }
+    
+    func getUsers() async throws -> [FirestoreUser] {
+        let snapshot = try await usersCollection.getDocuments()
+        return try snapshot.documents.compactMap { try $0.data(as: FirestoreUser.self) }
+    }
 }

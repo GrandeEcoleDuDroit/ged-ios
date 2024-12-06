@@ -64,7 +64,7 @@ class NewsViewModel: ObservableObject {
     
     func createAnnouncement(title: String?, content: String) async {
         guard let currentUser = currentUser else {
-            announcementState = .error(message: getString(gedString: GedString.user_not_found))
+            announcementState = .error(message: getString(gedString: GedString.auth_user_not_found))
             return
         }
         
@@ -87,7 +87,7 @@ class NewsViewModel: ObservableObject {
     
     func updateAnnouncement(id: String, title: String, content: String) async {
         guard let currentUser = currentUser else {
-            announcementState = .error(message: getString(gedString: GedString.user_not_found))
+            announcementState = .error(message: getString(gedString: GedString.auth_user_not_found))
             return
         }
         

@@ -2,7 +2,7 @@ import SwiftUI
 
 extension View {
     func registrationToolbar(step: Int, maxStep: Int) -> some View {
-        self.toolbar {
+        toolbar {
             ToolbarItem(placement: .principal) {
                 Text(getString(gedString: GedString.registration))
             }

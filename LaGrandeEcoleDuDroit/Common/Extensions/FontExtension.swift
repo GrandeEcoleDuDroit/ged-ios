@@ -26,6 +26,6 @@ extension Font {
     }
     
     static var bodyMedium: Font {
-        .gedFont(size: 15)
+        .gedFont(size: 15, weight: .regular)
     }
 }

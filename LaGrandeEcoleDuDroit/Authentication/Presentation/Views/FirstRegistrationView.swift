@@ -28,24 +28,27 @@ struct FirstRegistrationView: View {
             )
             
             if case .error(let message) = registrationViewModel.registrationState {
-                Text(message)
-                    .foregroundColor(.red)
+                Text(message).foregroundColor(.red)
             }
             
             Spacer()
             
             HStack {
                 Spacer()
-                NavigationLink(
-                    destination: SecondRegistrationView().environmentObject(registrationViewModel),
-                    isActive: $isValidNameInputs
-                ) {
-                    Button(action: {
+                Button(
+                    action: {
                         isValidNameInputs = registrationViewModel.validateNameInputs()
-                    }) {
+                    },
+                    label: {
                         Text(getString(gedString: GedString.next))
-                            .tint(.gedPrimary)
                             .font(.title2)
+                    }
+                ).overlay {
+                    NavigationLink(
+                        destination: SecondRegistrationView().environmentObject(registrationViewModel),
+                        isActive: $isValidNameInputs
+                    ) {
+                        EmptyView()
                     }
                 }
             }
@@ -54,14 +57,17 @@ struct FirstRegistrationView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color(UIColor.systemBackground))
         .padding()
+        .onAppear {
+            registrationViewModel.resetState()
+        }
         .onTapGesture {
             inputFocused = nil
         }
-        .registrationToolbar(step: 1, maxStep: registrationViewModel.maxStep)
+        .registrationToolbar(step: 1, maxStep: 3)
     }
 }
 
 #Preview {
     FirstRegistrationView()
-        .environmentObject(DependencyContainer.shared.registrationViewModel)
+        .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
 }

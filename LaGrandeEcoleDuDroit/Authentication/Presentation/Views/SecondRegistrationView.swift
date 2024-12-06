@@ -40,18 +40,20 @@ struct SecondRegistrationView: View {
                         .environmentObject(registrationViewModel)
                 ) {
                     Text(getString(gedString: GedString.next))
-                        .tint(.gedPrimary)
                         .font(.title2)
                 }
             }.padding()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
-        .registrationToolbar(step: 1, maxStep: registrationViewModel.maxStep)
+        .onAppear {
+            registrationViewModel.resetState()
+        }
+        .registrationToolbar(step: 2, maxStep: 3)
     }
 }
 
 #Preview {
     SecondRegistrationView()
-        .environmentObject(DependencyContainer.shared.registrationViewModel)
+        .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
 }

@@ -48,22 +48,28 @@ struct ThirdRegistrationView: View {
             
             HStack {
                 Spacer()
-                NavigationLink(
-                    destination: EmailVerificationView()
-                        .environmentObject(registrationViewModel),
-                    isActive: $isActive
-                ) {
-                    Button(action: {
+                
+                Button(
+                    action: {
                         Task {
                             if registrationViewModel.validateCredentialInputs() {
                                 await registrationViewModel.register()
                             }
                         }
-                    }) {
+                    },
+                    label: {
                         Text(getString(gedString: GedString.next))
-                            .tint(.gedPrimary)
                             .font(.title2)
-                    }.disabled(registrationViewModel.registrationState == .loading)
+                    }
+                )
+                .disabled(registrationViewModel.registrationState == .loading)
+                .overlay {
+                    NavigationLink(
+                        destination: EmailVerificationView()
+                            .environmentObject(registrationViewModel),
+                        isActive: $isActive,
+                        label: { EmptyView() }
+                    )
                 }
             }
             .onReceive(registrationViewModel.$registrationState) { state in
@@ -79,11 +85,14 @@ struct ThirdRegistrationView: View {
         .onTapGesture {
             inputFocused = nil
         }
-        .registrationToolbar(step: 1, maxStep: registrationViewModel.maxStep)
+        .onAppear {
+            registrationViewModel.resetState()
+        }
+        .registrationToolbar(step: 3, maxStep: 3)
     }
 }
 
 #Preview {
     ThirdRegistrationView()
-        .environmentObject(DependencyContainer.shared.registrationViewModel)
+        .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
 }

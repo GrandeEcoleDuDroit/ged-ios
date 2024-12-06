@@ -90,7 +90,7 @@ private struct CredentialsInputs: View {
             
             NavigationLink(destination: {}) {
                 Text(forgottenPassword)
-                    .fontWeight(.medium)
+                    .foregroundStyle(.accent)
             }.disabled(isLoading)
             
             if case .error(let message) = authenticationViewModel.authenticationState {
@@ -122,71 +122,60 @@ private struct Buttons: View {
     @State private var isActive: Bool = false
     
     var body: some View {
-        NavigationLink(
-            destination: destination,
-            isActive: $isActive
-        ) {
-            VStack(spacing: GedSpacing.medium) {
-                LoadingButton(
-                    label: login,
-                    onClick: {
-                        Task {
-                            if authenticationViewModel.validateInputs() {
-                                await authenticationViewModel.login()
-                            }
+        VStack(spacing: GedSpacing.medium) {
+            LoadingButton(
+                label: login,
+                onClick: {
+                    Task {
+                        if authenticationViewModel.validateInputs() {
+                            await authenticationViewModel.login()
                         }
-                    },
-                    isLoading: $isLoading
-                )
+                    }
+                },
+                isLoading: $isLoading
+            )
+            
+            HStack {
+                Text(notRegisterYet)
+                    .foregroundStyle(Color.primary)
                 
-                HStack {
-                    Text(notRegisterYet)
-                        .foregroundStyle(Color.primary)
+                NavigationLink(
+                    destination: FirstRegistrationView()
+                        .environmentObject(registrationViewModel)
+                ) {
                     Text(register)
                         .foregroundColor(.gedPrimary)
                         .fontWeight(.semibold)
                         .underline()
-                        .onTapGesture {
-                            destination = AnyView(
-                                FirstRegistrationView()
-                                    .environmentObject(registrationViewModel)
-                            )
-                            isActive = true
-                        }
-                }.disabled(isLoading)
-            }
-            .onReceive(authenticationViewModel.$authenticationState) { state in
-                switch state {
-                case .emailNotVerified:
-                    showEmailNotVerifiedAlert = true
-                default:
-                    destination = AnyView(NewsView())
                 }
-                isLoading = state == .loading
             }
-            .alert(
-                getString(gedString: GedString.email_not_verified),
-                isPresented: $showEmailNotVerifiedAlert,
-                presenting: ""
-            ) { data in
-                Button(getString(gedString: GedString.verify_email)) {
-                    let registrationViewModel = DependencyContainer.shared.registrationViewModel
-                    registrationViewModel.email = authenticationViewModel.email
-                    destination = AnyView(
-                        EmailVerificationView().environmentObject(registrationViewModel)
-                    )
-                    isActive = true
-                }
-                Button(getString(gedString: GedString.cancel), role: .cancel) {}
-            } message: { data in
-                Text(getString(gedString: GedString.email_not_verified_dialog_message))
+        }
+        .onReceive(authenticationViewModel.$authenticationState) { state in
+            showEmailNotVerifiedAlert = state == .emailNotVerified
+            isLoading = state == .loading
+        }
+        .alert(
+            getString(gedString: GedString.email_not_verified),
+            isPresented: $showEmailNotVerifiedAlert,
+            presenting: ""
+        ) { data in
+            Button(getString(gedString: GedString.verify_email)) {
+                let registrationViewModel = DependencyContainer.shared.registrationViewModel
+                registrationViewModel.email = authenticationViewModel.email
+                destination = AnyView(
+                    EmailVerificationView().environmentObject(registrationViewModel)
+                )
+                isActive = true
             }
+            Button(getString(gedString: GedString.cancel), role: .cancel) {}
+        } message: { data in
+            Text(getString(gedString: GedString.email_not_verified_dialog_message))
         }
     }
 }
 
 #Preview {
     AuthenticationView()
-        .environmentObject(DependencyContainer.shared.authenticationViewModel)
-        .environmentObject(DependencyContainer.shared.registrationViewModel)
+        .environmentObject(DependencyContainer.shared.mockAuthenticationViewModel)
+        .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
 }

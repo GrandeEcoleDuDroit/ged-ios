@@ -101,5 +101,5 @@ struct AnnouncementDetailView: View {
 #Preview {
     AnnouncementDetailView(
         announcement: .constant(announcementFixture)
-    ).environmentObject(DependencyContainer.shared.newsViewModel)
+    ).environmentObject(DependencyContainer.shared.mockNewsViewModel)
 }

@@ -1,3 +1,4 @@
+// Common
 "app_name" = "La Grande Ecole du Droit";
 "next" = "Suivant";
 "back" = "Retour";
@@ -8,13 +9,22 @@
 "save" = "Enregistrer";
 "home" = "Accueil";
 "now" = "Maintenant";
-"minute_ago" = "%d min";
-"hour_ago" = "%d h";
-"day_ago" = "%d j";
-"week_ago" = "%d sem";
+"minutes_ago_short" = "%d min";
+"hours_ago_short" = "%d h";
+"days_ago_short" = "%d j";
+"weeks_ago_short" = "%d sem";
+"minutes_ago_long" = "%d minutes";
+"hours_ago_long" = "%d heures";
+"days_ago_long" = "%d jours";
+"weeks_ago_long" = "%d semaines";
 "today" = "Aujourd'hui";
 "yester" = "Hier";
 "home" = "Accueil";
+
+// Common error
+"empty_inputs_error" = "Veuillez remplir tous les champs.";
+"timed_out_error" = "Le service a mis trop de temps à répondre. Veuillez réessayer.";
+"not_connected_to_internet_error" = "Une erreur réseau est survenue. Veuillez vérifier votre connexion à internet.";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";
@@ -47,7 +57,7 @@
 "password_length_error" = "Le mot de passe doit faire au moins 8 caractères.";
 "invalid_credentials" = "Adresse email ou mot de passe incorrect.";
 "user_disabled" = "Ce compte est désactivé. Veuillez contacter le support: application.ged@gmail.com pour le réactiver";
-"user_not_found" = "L'utilisateur n'a pas été trouvé. Veuillez vous re-authentifier puis réessayer.";
+"auth_user_not_found" = "L'utilisateur n'a pas été trouvé. Veuillez vous re-authentifier puis réessayer.";
 "user_not_exist" = "L'utilisateur n'existe pas.";
 "email_not_verified_error" = "Veuillez validez votre adresse mail avant de continuer.";
 "registration_error" = "Une erreur est survenue lors de l'inscription.";
@@ -77,7 +87,7 @@
 // Profile errors
 "error_logout" = "Une erreur est survenue lors de la déconnexion.";
 
-"empty_inputs_error" = "Veuillez remplir tous les champs.";
-"timed_out_error" = "Le service a mis trop de temps à répondre. Veuillez réessayer.";
-"not_connected_to_internet_error" = "Une erreur réseau est survenue. Veuillez vérifier votre connexion à internet.";
-
+// Message
+"messages" = "Messages";
+"new_message" = "Nouveau message";
+"user_not_found" = "Aucun utilisateur trouvé";

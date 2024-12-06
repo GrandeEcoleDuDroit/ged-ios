@@ -1,3 +1,4 @@
+// Common
 "app_name" = "La Grande Ecole du Droit";
 "next" = "Next";
 "back" = "Back";
@@ -8,13 +9,22 @@
 "save" = "Save";
 "home" = "Home";
 "now" = "Now";
-"minute_ago" = "%d min";
-"hour_ago" = "%d h";
-"day_ago" = "%d d";
-"week_ago" = "%d w";
+"minutes_ago_short" = "%d min";
+"hours_ago_short" = "%d h";
+"days_ago_short" = "%d d";
+"weeks_ago_short" = "%d w";
+"minutes_ago_long" = "%d minutes";
+"hours_ago_long" = "%d hours";
+"days_ago_long" = "%d days";
+"weeks_ago_long" = "%d weeks";
 "today" = "Today";
 "yesterday" = "Yesterday";
 "home" = "Home";
+
+// Common error
+"empty_inputs_error" = "Please fill out all fields.";
+"timed_out_error" = "The service took too long to respond. Please try again.";
+"not_connected_to_internet_error" = "A network error occurred. Please check your internet connection.";
 
 // Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";
@@ -45,7 +55,7 @@
 "password_length_error" = "The password must be at least 8 characters long.";
 "invalid_credentials" = "Incorrect email address or password.";
 "user_disabled" = "This account is disabled. Please contact the support: application.ged@gmail.com to re-enabled it";
-"user_not_found" = "User not found. Please re-authenticate and try again.";
+"auth_user_not_found" = "User not found. Please re-authenticate and try again.";
 "user_not_exist" = "User doesn't exist.";
 "email_not_verified_error" = "Please validate your email address before to continue.";
 "registration_error" = "An error occured while registration";
@@ -79,7 +89,7 @@
 // Profile errors
 "error_logout" = "An error occured while logging out.";
 
-"empty_inputs_error" = "Please fill out all fields.";
-"timed_out_error" = "The service took too long to respond. Please try again.";
-"not_connected_to_internet_error" = "A network error occurred. Please check your internet connection.";
-
+// Message
+"messages" = "Messages";
+"new_message" = "New message";
+"user_not_found" = "User not found";

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23507" systemVersion="24A348" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23507" systemVersion="24B91" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="LocalAnnouncement" representedClassName=".LocalAnnouncement" syncable="YES" codeGenerationType="class">
         <attribute name="announcementContent" attributeType="String" defaultValueString=""/>
         <attribute name="announcementDate" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
@@ -13,5 +13,11 @@
         <attribute name="userLastName" attributeType="String" defaultValueString=""/>
         <attribute name="userProfilePictureUrl" optional="YES" attributeType="String"/>
         <attribute name="userSchoolLevel" attributeType="String" defaultValueString=""/>
+    </entity>
+    <entity name="LocalConversation" representedClassName="LocalConversation" syncable="YES" codeGenerationType="class">
+        <attribute name="conversationId" attributeType="String"/>
+        <attribute name="interlocutorJson" attributeType="String"/>
+        <attribute name="isActive" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isSynchronized" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
     </entity>
 </model>

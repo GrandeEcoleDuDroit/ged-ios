@@ -2,7 +2,6 @@ import SwiftUI
 
 struct TopAnnouncementDetailItem: View {
     private var announcement: Announcement
-    @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
@@ -86,8 +85,10 @@ struct AnnouncementItemWithContent: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal)
+        .padding(.vertical, 5)
         .background(Color(UIColor.systemBackground))
-        .clickable(isClicked: $isClicked, onClick: onClick)
+        .onClick(isClicked: $isClicked, action: onClick)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
             elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
@@ -143,7 +144,7 @@ struct LoadingAnnouncementItemWithContent: View {
         .background(Color(UIColor.systemBackground))
         .padding(.horizontal)
         .padding(.vertical, 5)
-        .clickable(isClicked: $isClicked, onClick: onClick)
+        .onClick(isClicked: $isClicked, action: onClick)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
             elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
@@ -201,7 +202,7 @@ struct ErrorAnnouncementItemWithContent: View {
         .background(Color(UIColor.systemBackground))
         .padding(.horizontal)
         .padding(.vertical, 5)
-        .clickable(isClicked: $isClicked, onClick: onClick)
+        .onClick(isClicked: $isClicked, action: onClick)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
             elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
@@ -215,11 +216,13 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, announcementDate: Date
     case .now(_):
         getString(gedString: GedString.now)
     case.minute(let minutes):
-        getString(gedString: GedString.minute_ago, minutes)
+        getString(gedString: GedString.minutes_ago_long, minutes)
     case .hour(let hours):
-        getString(gedString: GedString.hour_ago, hours)
+        getString(gedString: GedString.hours_ago_long, hours)
     case .day(let days):
-        getString(gedString: GedString.day_ago, days)
+        getString(gedString: GedString.days_ago_long, days)
+    case .week(let weeks):
+        getString(gedString: GedString.weeks_ago_long, weeks)
     default:
         announcementDate.formatted(.dateTime.year().month().day())
     }

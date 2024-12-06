@@ -14,6 +14,11 @@ class DependencyContainer {
     private lazy var userRemoteRepository: UserRemoteRepository = UserRemoteRepositoryImpl(userFirestoreApi: userFirestoreApi, userOracleApi: userOracleApi)
     private lazy var gedDatabaseContainer: GedDatabaseContainer = GedDatabaseContainer()
     
+    // Mocks
+    
+    private var mockUserRemoteRepository: UserRemoteRepository = MockUserRemoteRepository()
+    private var mockUserLocalRepository: UserLocalRepository = MockUserLocalRepository()
+    
     // UseCases
 
     lazy var createUserUseCase: CreateUserUseCase = {
@@ -35,6 +40,10 @@ class DependencyContainer {
         GetUserUseCase(userRemoteRepository: userRemoteRepository)
     }()
     
+    lazy var getUsersUseCase: GetUsersUseCase = {
+        GetUsersUseCase(userRemoteRepository: userRemoteRepository)
+    }()
+    
     lazy var sendVerificationEmailUseCase: SendVerificationEmailUseCase = {
         SendVerificationEmailUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
     }()
@@ -51,7 +60,7 @@ class DependencyContainer {
     private lazy var authenticationRemoteRepository: AuthenticationRemoteRepository = AuthenticationRemoteRepositoryImpl(firebaseAuthApi: firebaseAuthApi)
     
     // ViewModels
-    
+
     lazy var authenticationViewModel: AuthenticationViewModel = {
         AuthenticationViewModel(
             loginUseCase: loginUseCase,
@@ -87,6 +96,32 @@ class DependencyContainer {
     
     lazy var registerUseCase: RegisterUseCase = {
         RegisterUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
+    }()
+    
+    // Mocks
+    
+    private lazy var mockAuthenticationRemoteRepository: AuthenticationRemoteRepository = MockAuthenticationRemoteRepository()
+    
+    lazy var mockAuthenticationViewModel: AuthenticationViewModel = {
+        AuthenticationViewModel(
+            loginUseCase: LoginUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
+            isEmailVerifiedUseCase: IsEmailVerifiedUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
+            isAuthenticatedUseCase: IsAuthenticatedUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
+            getUserUseCase: GetUserUseCase(userRemoteRepository: mockUserRemoteRepository),
+            setCurrentUserUseCase: SetCurrentUserUseCase(userLocalRepository: mockUserLocalRepository)
+        )
+    }()
+    
+    lazy var mockRegistrationViewModel: RegistrationViewModel = {
+        RegistrationViewModel(
+            registerUseCase: RegisterUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
+            sendVerificationEmailUseCase: SendVerificationEmailUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
+            isEmailVerifiedUseCase: IsEmailVerifiedUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
+            createUserUseCase: CreateUserUseCase(
+                userRemoteRepository: mockUserRemoteRepository,
+                userLocalRepository: mockUserLocalRepository
+            )
+        )
     }()
     
     // ---------------------------------- News ---------------------------------- //
@@ -136,6 +171,64 @@ class DependencyContainer {
         )
     }()
     
+    // Mocks
+    
+    private lazy var mockAnnouncementLocalRepository: AnnouncementLocalRepository = MockAnnouncementLocalRepository()
+    private lazy var mockAnnouncementRemoteRepository: AnnouncementRemoteRepository = MockAnnouncementRemoteRepository()
+    
+    lazy var mockNewsViewModel: NewsViewModel = {
+        NewsViewModel(
+            getCurrentUserUseCase: GetCurrentUserUseCase(userLocalRepository: mockUserLocalRepository),
+            getAnnouncementsUseCase: GetAnnouncementsUseCase(announcementLocalRepository: mockAnnouncementLocalRepository),
+            createAnnouncementUseCase: CreateAnnouncementUseCase(
+                announcementLocalRepository: mockAnnouncementLocalRepository,
+                announcementRemoteRepository: mockAnnouncementRemoteRepository
+            ),
+            updateAnnouncementUseCase: UpdateAnnouncementUseCase(
+                announcementLocalRepository: mockAnnouncementLocalRepository,
+                announcementRemoteRepository: mockAnnouncementRemoteRepository
+            ),
+            deleteAnnouncementUseCase: DeleteAnnouncementUseCase(
+                announcementRemoteRepository: mockAnnouncementRemoteRepository,
+                announcementLocalRepository: mockAnnouncementLocalRepository
+            )
+        )
+    }()
+    
+    // ---------------------------------- Message ---------------------------------- //
+
+    // Repositories
+    
+    lazy var conversationLocalRepository: ConversationLocalRepository = ConversationLocalRepositoryImpl(gedDatabaseContainer: gedDatabaseContainer)
+    
+    // ViewModels
+    
+    lazy var conversationViewModel: ConversationViewModel = {
+        ConversationViewModel(getConversationsUseCase: getConversationsUseCase)
+    }()
+    
+    lazy var createConversationViewModel: CreateConversationViewModel = {
+        CreateConversationViewModel(getUsersUseCase: getUsersUseCase)
+    }()
+    
+    // UseCases
+    
+    lazy var getConversationsUseCase: GetConversationsUseCase = {
+        GetConversationsUseCase(conversationLocalRepository: conversationLocalRepository)
+    }()
+    
+    // Mocks
+    
+    lazy var mockConversationLocalRepository: ConversationLocalRepository = MockConversationLocalRepository()
+    
+    lazy var mockConversationViewModel: ConversationViewModel = {
+        ConversationViewModel(getConversationsUseCase: GetConversationsUseCase(conversationLocalRepository: mockConversationLocalRepository))
+    }()
+    
+    lazy var mockCreateConversationViewModel: CreateConversationViewModel = {
+        CreateConversationViewModel(getUsersUseCase: GetUsersUseCase(userRemoteRepository: mockUserRemoteRepository))
+    }()
+    
     // ---------------------------------- Profile ---------------------------------- //
 
     // ViewModels
@@ -146,5 +239,4 @@ class DependencyContainer {
             logoutUseCase: logoutUseCase
         )
     }()
-    
 }
