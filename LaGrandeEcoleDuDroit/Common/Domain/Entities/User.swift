@@ -1,4 +1,4 @@
-struct User: Decodable, Hashable, Identifiable {
+struct User: Codable, Hashable, Identifiable {
     var id: String
     var firstName: String
     var lastName: String
@@ -15,7 +15,7 @@ struct User: Decodable, Hashable, Identifiable {
         lhs.id == rhs.id
     }
     
-    func copy(
+    func with(
         id: String? = nil,
         firstName: String? = nil,
         lastName: String? = nil,

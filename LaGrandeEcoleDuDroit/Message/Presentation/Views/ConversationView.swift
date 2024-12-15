@@ -6,11 +6,18 @@ struct ConversationView: View {
     
     var body: some View {
         ScrollView {
-            ForEach($conversationViewModel.conversations, id: \.id) { $conversation in
-                if conversation.message.isRead {
-                    ReadConversationItem(conversation: .constant(conversation), onClick: {})
-                } else {
-                    UnreadConversationItem(conversation: .constant(conversation), onClick: {})
+            VStack(spacing: 0) {
+                ForEach(conversationViewModel.conversationsMap.sortedByDate(), id: \.id) { conversation in
+                    if let lastMessage = conversation.lastMessage {
+                        if lastMessage.isRead {
+                            ReadConversationItem(conversationUI: conversation, onClick: {})
+                        } else {
+                            UnreadConversationItem(conversationUI: conversation, onClick: {})
+                        }
+                    }
+                    else {
+                        EmptyConversationItem(conversationUI: conversation, onClick: {})
+                    }
                 }
             }
         }
@@ -18,7 +25,8 @@ struct ConversationView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 NavigationLink(
-                    destination: CreateConversationView().environmentObject(DependencyContainer.shared.createConversationViewModel),
+                    destination:
+                        CreateConversationView().environmentObject(DependencyContainer.shared.createConversationViewModel),
                     isActive: $navigateToCreateAnnouncementView
                 ) {
                     Button(
@@ -30,6 +38,7 @@ struct ConversationView: View {
         }
     }
 }
+
 
 #Preview {
     NavigationView {

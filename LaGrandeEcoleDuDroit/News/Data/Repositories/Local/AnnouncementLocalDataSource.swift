@@ -1,11 +1,12 @@
 import Foundation
 import Combine
 import CoreData
+import os
 
 private let announcementEntityName = "LocalAnnouncement"
+private let logger = Logger(subsystem: "com.upsaclay.gedoise", category: "AnnouncementLocalDataSource")
 
-class AnnouncementLocalRepositoryImpl: AnnouncementLocalRepository {
-    private let gedDatabaseContainer: GedDatabaseContainer
+class AnnouncementLocalDataSource {
     private let request = NSFetchRequest<LocalAnnouncement>(entityName: announcementEntityName)
     private let context: NSManagedObjectContext
     
@@ -15,7 +16,6 @@ class AnnouncementLocalRepositoryImpl: AnnouncementLocalRepository {
     }
     
     init(gedDatabaseContainer: GedDatabaseContainer) {
-        self.gedDatabaseContainer = gedDatabaseContainer
         context = gedDatabaseContainer.container.viewContext
         fetchAnnouncements()
     }
@@ -26,7 +26,7 @@ class AnnouncementLocalRepositoryImpl: AnnouncementLocalRepository {
                 AnnouncementMapper.toDomain(localAnnouncement: localAnnouncement)
             })
         } catch {
-            print("Failed to fetch announcements: \(error)")
+            logger.error("Failed to fetch announcements: \(error)")
         }
     }
     
@@ -36,7 +36,7 @@ class AnnouncementLocalRepositoryImpl: AnnouncementLocalRepository {
             try context.save()
             _announcements.append(announcement)
         } catch {
-            print(error.localizedDescription)
+            logger.error("Failed to insert announcement: \(error)")
             throw error
         }
     }
@@ -58,7 +58,7 @@ class AnnouncementLocalRepositoryImpl: AnnouncementLocalRepository {
             try context.save()
             _announcements = _announcements.map({ $0.id == announcement.id ? announcement : $0 })
         } catch {
-            print(error.localizedDescription)
+            logger.error("Failed to update announcement: \(error)")
             throw error
         }
     }

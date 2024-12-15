@@ -1,13 +1,17 @@
 import Combine
 
 class GetConversationsUseCase {
-    private let conversationLocalRepository: ConversationLocalRepository
+    private let userConversationRepository: UserConversationRepository
     
-    init(conversationLocalRepository: ConversationLocalRepository) {
-        self.conversationLocalRepository = conversationLocalRepository
+    init(userConversationRepository: UserConversationRepository) {
+        self.userConversationRepository = userConversationRepository
     }
     
-    func execute() -> AnyPublisher<[Conversation], Never> {
-        conversationLocalRepository.conversations
+    func execute() -> AnyPublisher<ConversationUser, Error> {
+        userConversationRepository.getUserConversations()
+    }
+    
+    func stop() {
+        userConversationRepository.stopGettingUserConversations()
     }
 }

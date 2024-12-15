@@ -106,7 +106,7 @@ class RegistrationViewModel: ObservableObject {
             try await sendVerificationEmailUseCase.execute()
             await updateRegistrationState(to: .idle)
         }
-        catch AuthenticationError.tooManyRequest {
+        catch NetworkError.tooManyRequests {
             await updateRegistrationState(to: .error(message: getString(gedString: GedString.too_many_request_error)))
         }
         catch {

@@ -1,32 +1,22 @@
 import Foundation
 
 class CreateAnnouncementUseCase {
-    private let announcementLocalRepository: AnnouncementLocalRepository
-    private let announcementRemoteRepository: AnnouncementRemoteRepository
+    private let announcementRepository: AnnouncementRepository
     
-    init(
-        announcementLocalRepository: AnnouncementLocalRepository,
-        announcementRemoteRepository: AnnouncementRemoteRepository
-    ) {
-        self.announcementLocalRepository = announcementLocalRepository
-        self.announcementRemoteRepository = announcementRemoteRepository
+    init(announcementRepository: AnnouncementRepository) {
+        self.announcementRepository = announcementRepository
     }
     
     func execute(announcement: Announcement) async throws {
-        let loadingAnnouncement = announcement.copy(state: .loading)
+        let loadingAnnouncement = announcement.with(state: .loading)
         
         do {
-            async let localResult: Void = try announcementLocalRepository.insertAnnouncement(announcement: loadingAnnouncement)
-            async let remoteResult: Void = try announcementRemoteRepository.createAnnouncement(announcement: loadingAnnouncement)
-            
-            try await localResult
-            try await remoteResult
-            
-            let createdAnnouncement = announcement.copy(state: .created)
-            try await announcementLocalRepository.updateAnnouncement(announcement: createdAnnouncement)
+            try await announcementRepository.createAnnouncement(announcement: announcement)
+            let createdAnnouncement = announcement.with(state: .created)
+            try await announcementRepository.updateAnnouncement(announcement: createdAnnouncement)
         } catch {
-            let errorAnnouncement = announcement.copy(state: .error(message: error.localizedDescription.description))
-            try await announcementLocalRepository.updateAnnouncement(announcement: errorAnnouncement)
+            let errorAnnouncement = announcement.with(state: .error(message: error.localizedDescription.description))
+            try await announcementRepository.updateAnnouncement(announcement: errorAnnouncement)
             print(error.localizedDescription)
             throw error
         }

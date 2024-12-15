@@ -1,4 +1,4 @@
-class UserRemoteRepositoryImpl: UserRemoteRepository {
+class UserRemoteDataSource {
     private let userFirestoreApi: UserFirestoreApi
     private let userOracleApi: UserOracleApi
     

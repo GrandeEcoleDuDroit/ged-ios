@@ -2,6 +2,7 @@ import Foundation
 import Combine
 
 class NewsViewModel: ObservableObject {
+    private let tag = String(describing: NewsViewModel.self)
     @Published private(set) var currentUser: User? = nil
     @Published var announcements: [Announcement] = []
     @Published private(set) var announcementState: AnnouncementState = .idle
@@ -33,12 +34,12 @@ class NewsViewModel: ObservableObject {
     private func initCurrentUser() {
         getCurrentUserUseCase.executeWithPublisher()
             .receive(on: RunLoop.main)
-            .sink(receiveCompletion: { completion in
+            .sink(receiveCompletion: { [weak self] completion in
                 switch completion {
                 case .finished:
                     break
                 case .failure(let error):
-                    print("Error fetching user: \(error)")
+                    self?.updateAnnouncementState(to: .error(message: error.localizedDescription))
                 }
             }, receiveValue: { [weak self] user in
                 self?.currentUser = user
@@ -49,12 +50,12 @@ class NewsViewModel: ObservableObject {
     private func initAnnouncements() {
         getAnnouncementsUseCase.execute()
             .receive(on: RunLoop.main)
-            .sink(receiveCompletion: { completion in
+            .sink(receiveCompletion: { [weak self] completion in
                 switch completion {
                 case .finished:
                     break
                 case .failure(let error):
-                    print("Error fetching announcements: \(error)")
+                    self?.updateAnnouncementState(to: .error(message: error.localizedDescription))
                 }
             }, receiveValue: { [weak self] announcements in
                 self?.announcements = announcements.sorted(by: { $0.date > $1.date })
@@ -76,12 +77,12 @@ class NewsViewModel: ObservableObject {
             author: currentUser
         )
       
-        await updateAnnouncementState(to: .loading)
+        updateAnnouncementState(to: .loading)
         do {
             try await createAnnouncementUseCase.execute(announcement: announcement)
-            await updateAnnouncementState(to: .created)
+            updateAnnouncementState(to: .created)
         } catch {
-            await updateAnnouncementState(to: .error(message: getString(gedString: GedString.error_creating_announcement)))
+            updateAnnouncementState(to: .error(message: getString(gedString: GedString.error_creating_announcement)))
         }
     }
     
@@ -100,24 +101,24 @@ class NewsViewModel: ObservableObject {
         )
         
         do {
-            await updateAnnouncementState(to: .loading)
+            updateAnnouncementState(to: .loading)
             try await updateAnnouncementUseCase.execute(announcement: announcement)
             announcements = announcements.map { $0.id == id ? announcement : $0 }
-            await updateAnnouncementState(to: .updated)
+            updateAnnouncementState(to: .updated)
         } catch {
-            await updateAnnouncementState(to: .error(message: error.localizedDescription))
-            print(error.localizedDescription)
+            updateAnnouncementState(to: .error(message: error.localizedDescription))
+            e(tag, error.localizedDescription)
         }
     }
     
     func deleteAnnouncement(announcement: Announcement) async {
         do {
-            await updateAnnouncementState(to: .loading)
+            updateAnnouncementState(to: .loading)
             try await deleteAnnouncementUseCase.execute(announcement: announcement)
-            await updateAnnouncementState(to: .deleted)
+            updateAnnouncementState(to: .deleted)
         } catch {
-            print(error.localizedDescription)
-            await updateAnnouncementState(to: .error(message: error.localizedDescription))
+            e(tag, error.localizedDescription)
+            updateAnnouncementState(to: .error(message: error.localizedDescription))
         }
     }
     
@@ -125,9 +126,9 @@ class NewsViewModel: ObservableObject {
         announcementState = .idle
     }
     
-    private func updateAnnouncementState(to state: AnnouncementState) async {
-        await MainActor.run {
-            announcementState = state
+    private func updateAnnouncementState(to state: AnnouncementState) {
+        DispatchQueue.main.async { [weak self] in
+            self?.announcementState = state
         }
     }
 }

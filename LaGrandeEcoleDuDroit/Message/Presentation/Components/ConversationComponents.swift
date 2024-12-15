@@ -1,31 +1,150 @@
 import SwiftUI
 
 struct ReadConversationItem: View {
-    @Binding private var conversation: Conversation
+    private let conversationUI: ConversationUI
     private let onClick: () -> Void
+    
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
-    init(conversation: Binding<Conversation>, onClick: @escaping () -> Void) {
-        self._conversation = conversation
+    init(conversationUI: ConversationUI, onClick: @escaping () -> Void) {
+        self.conversationUI = conversationUI
+        self.onClick = onClick
+    }
+    
+    var body: some View {
+        if let lastMessage = conversationUI.lastMessage {
+            HStack(alignment: .center) {
+                if let profilePictureUrl = conversationUI.interlocutor.profilePictureUrl {
+                    ProfilePicture(url: profilePictureUrl, scale: 0.4)
+                } else {
+                    DefaultProfilePicture(scale: 0.4)
+                }
+                
+                VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
+                    HStack {
+                        Text(conversationUI.interlocutor.fullName)
+                            .font(.titleSmall)
+                        
+                        Text(elapsedTimeText)
+                            .font(.bodyMedium)
+                            .foregroundStyle(.textPreview)
+                    }
+                    
+                    Text(lastMessage.content)
+                        .foregroundStyle(.textPreview)
+                        .font(.bodyMedium)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal)
+            .padding(.vertical, GedSpacing.small)
+            .background(Color(UIColor.systemBackground))
+            .onClick(isClicked: $isClicked, action: onClick)
+            .onAppear {
+                elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
+            }
+            .onChange(of: lastMessage.date) { newDate in
+                elapsedTimeText = updateElapsedTimeText(for: newDate)
+            }
+        }
+        else {
+            EmptyConversationItem(conversationUI: conversationUI, onClick: onClick)
+        }
+    }
+}
+
+struct UnreadConversationItem:View {
+    private var conversationUI: ConversationUI
+    private let onClick: () -> Void
+    
+    @State private var isClicked: Bool = false
+    @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
+    @State private var elapsedTimeText: String = ""
+    
+    init(conversationUI: ConversationUI, onClick: @escaping () -> Void) {
+        self.conversationUI = conversationUI
+        self.onClick = onClick
+    }
+    
+    var body: some View {
+        if let lastMessage = conversationUI.lastMessage {
+            HStack(alignment: .center) {
+                if let profilePictureUrl = conversationUI.interlocutor.profilePictureUrl {
+                    ProfilePicture(url: profilePictureUrl, scale: 0.4)
+                } else {
+                    DefaultProfilePicture(scale: 0.4)
+                }
+                
+                VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
+                    HStack {
+                        Text(conversationUI.interlocutor.fullName)
+                            .font(.titleSmall)
+                            .fontWeight(.semibold)
+                        
+                        Text(elapsedTimeText)
+                            .font(.bodyMedium)
+                            .foregroundStyle(.black)
+                    }
+                    
+                    Text(lastMessage.content)
+                        .font(.bodyMedium)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.black)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+                
+                Spacer()
+                
+                Circle()
+                    .fill(.red)
+                    .frame(width: 10, height: 10)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal)
+            .padding(.vertical, GedSpacing.small)
+            .background(Color(UIColor.systemBackground))
+            .onClick(isClicked: $isClicked, action: onClick)
+            .onAppear {
+                elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
+            }
+            .onChange(of: lastMessage.date) { newDate in
+                elapsedTimeText = updateElapsedTimeText(for: newDate)
+            }
+        } else {
+            EmptyConversationItem(conversationUI: conversationUI, onClick: onClick)
+        }
+    }
+}
+
+struct EmptyConversationItem: View {
+    private var conversationUI: ConversationUI
+    private let onClick: () -> Void
+    
+    @State private var isClicked: Bool = false
+    @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
+    @State private var elapsedTimeText: String = ""
+    
+    init(conversationUI: ConversationUI, onClick: @escaping () -> Void) {
+        self.conversationUI = conversationUI
         self.onClick = onClick
     }
     
     var body: some View {
         HStack(alignment: .center) {
-            if let profilePictureUrl = conversation.interlocutor.profilePictureUrl {
-                ProfilePicture(
-                    url: profilePictureUrl,
-                    scale: 0.4
-                )
+            if let profilePictureUrl = conversationUI.interlocutor.profilePictureUrl {
+                ProfilePicture(url: profilePictureUrl, scale: 0.4)
             } else {
                 DefaultProfilePicture(scale: 0.4)
             }
             
             VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                 HStack {
-                    Text(conversation.interlocutor.fullName)
+                    Text(conversationUI.interlocutor.fullName)
                         .font(.titleSmall)
                     
                     Text(elapsedTimeText)
@@ -33,7 +152,7 @@ struct ReadConversationItem: View {
                         .foregroundStyle(.textPreview)
                 }
                 
-                Text(conversation.message.content)
+                Text(getString(gedString: GedString.tap_to_chat))
                     .foregroundStyle(.textPreview)
                     .font(.bodyMedium)
                     .lineLimit(1)
@@ -41,77 +160,17 @@ struct ReadConversationItem: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(UIColor.systemBackground))
         .padding(.horizontal)
-        .padding(.vertical, 5)
+        .padding(.vertical, GedSpacing.small)
+        .background(Color(UIColor.systemBackground))
         .onClick(isClicked: $isClicked, action: onClick)
-        .onAppear {
-            elapsedTime = GetElapsedTimeUseCase.execute(date: conversation.message.date)
-            elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, date: conversation.message.date)
-        }
     }
 }
 
-struct UnreadConversationItem: View {
-    @Binding private var conversation: Conversation
-    private let onClick: () -> Void
-    @State private var isClicked: Bool = false
-    @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
-    @State private var elapsedTimeText: String = ""
-    
-    init(conversation: Binding<Conversation>, onClick: @escaping () -> Void) {
-        self._conversation = conversation
-        self.onClick = onClick
-    }
-    
-    var body: some View {
-        HStack(alignment: .center) {
-            if let profilePictureUrl = conversation.interlocutor.profilePictureUrl {
-                ProfilePicture(
-                    url: profilePictureUrl,
-                    scale: 0.4
-                )
-            } else {
-                DefaultProfilePicture(scale: 0.4)
-            }
-            
-            VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
-                HStack {
-                    Text(conversation.interlocutor.fullName)
-                        .font(.titleSmall)
-                        .fontWeight(.semibold)
-                    
-                    Text(elapsedTimeText)
-                        .font(.bodyMedium)
-                        .foregroundStyle(.black)
-                }
-                
-                Text(conversation.message.content)
-                    .font(.bodyMedium)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.black)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-            }
-            
-            Spacer()
-            
-            Circle()
-                .fill(.red)
-                .frame(width: 10, height: 10)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(UIColor.systemBackground))
-        .padding(.horizontal)
-        .padding(.vertical, 5)
-        .onClick(isClicked: $isClicked, action: onClick)
-        .onAppear {
-            elapsedTime = GetElapsedTimeUseCase.execute(date: conversation.message.date)
-            elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, date: conversation.message.date)
-        }
-    }
-}
-
+private func updateElapsedTimeText(for date: Date) -> String {
+      let elapsedTime = GetElapsedTimeUseCase.execute(date: date)
+      return getElapsedTimeText(elapsedTime: elapsedTime, date: date)
+  }
 
 private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String {
     switch elapsedTime {
@@ -131,14 +190,19 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String 
 }
 
 #Preview {
-    VStack(alignment: .leading) {
+    VStack(alignment: .leading, spacing: 0) {
         ReadConversationItem(
-            conversation: .constant(conversationFixture),
+            conversationUI: conversationUIFixture,
             onClick: {}
         )
         
         UnreadConversationItem(
-            conversation: .constant(conversationFixture),
+            conversationUI: conversationUIFixture,
+            onClick: {}
+        )
+        
+        EmptyConversationItem(
+            conversationUI: conversationUIFixture,
             onClick: {}
         )
     }

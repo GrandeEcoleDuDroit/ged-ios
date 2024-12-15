@@ -1,12 +1,13 @@
+import Foundation
 import Combine
 
-class MockAnnouncementLocalRepository: AnnouncementLocalRepository {
+class MockAnnouncementRepository: AnnouncementRepository {
     @Published private var _announcements: [Announcement] = announcementsFixture
     var announcements: AnyPublisher<[Announcement], Never> {
         $_announcements.eraseToAnyPublisher()
     }
     
-    func insertAnnouncement(announcement: Announcement) async throws {
+    func createAnnouncement(announcement: Announcement) async throws {
         _announcements.append(announcement)
     }
     
@@ -17,4 +18,6 @@ class MockAnnouncementLocalRepository: AnnouncementLocalRepository {
     func deleteAnnouncement(announcement: Announcement) async throws {
         _announcements.removeAll(where: { $0 == announcement })
     }
+    
+    
 }

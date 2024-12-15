@@ -1,4 +1,7 @@
 import Foundation
+import os
+
+private let logger = Logger(subsystem: "com.upsaclay.gedoise", category: "AnnouncementApi")
 
 class AnnouncementApiImpl: AnnouncementApi {
     private func baseUrl(endPoint: String) -> URL? {
@@ -12,7 +15,7 @@ class AnnouncementApiImpl: AnnouncementApi {
         
         let request = URLRequest(url: url)
         let (data, _) = try await URLSession.shared.data(for: request)
-        return try JSONDecoder().decode([RemoteAnnouncementWithUser].self, from: data) 
+        return try JSONDecoder().decode([RemoteAnnouncementWithUser].self, from: data)
     }
     
     func createAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws {
@@ -20,21 +23,21 @@ class AnnouncementApiImpl: AnnouncementApi {
             throw RequestError.invalidURL
         }
         
-        let session = DataUtils.getUrlSession()
-        let postRequest = try DataUtils.formatPostRequest(dataToSend: remoteAnnouncement, url: url)
+        let session = RequestUtils.getUrlSession()
+        let postRequest = try RequestUtils.formatPostRequest(dataToSend: remoteAnnouncement, url: url)
         
         let (dataReceived, response) = try await session.data(for: postRequest)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
         
         if let httpResponse = response as? HTTPURLResponse {
             if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
-                print(serverResponse.message)
+                logger.error("Error to create announcement: \(serverResponse.error ?? "Unknown error")")
             } else {
-                print(serverResponse.error ?? "Error to create announcement")
+                logger.error("Error to create announcement: \(serverResponse.error ?? "Unknown error")")
                 throw RequestError.invalidResponse(serverResponse.error)
             }
         } else {
-            print(serverResponse.error ?? "Error to create announcement")
+            logger.error("Error to create announcement: \(serverResponse.error ?? "Unknown error")")
             throw RequestError.invalidResponse(serverResponse.error)
         }
     }
@@ -44,21 +47,21 @@ class AnnouncementApiImpl: AnnouncementApi {
             throw RequestError.invalidURL
         }
         
-        let session = DataUtils.getUrlSession()
-        let deleteRequest = try DataUtils.formatDeleteRequest(url: url)
+        let session = RequestUtils.getUrlSession()
+        let deleteRequest = try RequestUtils.formatDeleteRequest(url: url)
         
         let (dataReceived, response) = try await session.data(for: deleteRequest)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
         
         if let httpResponse = response as? HTTPURLResponse {
             if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
-                print(serverResponse.message)
+                logger.error("Error to delete announcement: \(serverResponse.error ?? "Unknown error")")
             } else {
-                print(serverResponse.error ?? "Error to delete announcement")
+                logger.error("Error to delete announcement: \(serverResponse.error ?? "Unknown error")")
                 throw RequestError.invalidResponse(serverResponse.error)
             }
         } else {
-            print(serverResponse.error ?? "Error to delete announcement")
+            logger.error("Error to delete announcement: \(serverResponse.error ?? "Unknown error")")
             throw RequestError.invalidResponse(serverResponse.error)
         }
     }
@@ -68,8 +71,8 @@ class AnnouncementApiImpl: AnnouncementApi {
             throw RequestError.invalidURL
         }
         
-        let session = DataUtils.getUrlSession()
-        let postRequest = try DataUtils.formatPostRequest(dataToSend: remoteAnnouncement, url: url)
+        let session = RequestUtils.getUrlSession()
+        let postRequest = try RequestUtils.formatPostRequest(dataToSend: remoteAnnouncement, url: url)
         
         let (dataReceived, response) = try await session.data(for: postRequest)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)

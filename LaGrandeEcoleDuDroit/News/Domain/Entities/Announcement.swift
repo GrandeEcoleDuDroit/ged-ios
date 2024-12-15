@@ -12,7 +12,7 @@ struct Announcement: Hashable {
         lhs.id == rhs.id
     }
     
-    func copy(
+    func with(
         id: String? = nil,
         title: String? = nil,
         content: String? = nil,
