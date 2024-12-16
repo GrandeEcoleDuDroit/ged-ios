@@ -1,13 +1,13 @@
 import Combine
 
 class GetAnnouncementsUseCase {
-    private let announcementLocalRepository: AnnouncementLocalRepository
+    private let announcementRepository: AnnouncementRepository
     
-    init(announcementLocalRepository: AnnouncementLocalRepository) {
-        self.announcementLocalRepository = announcementLocalRepository
+    init(announcementRepository: AnnouncementRepository) {
+        self.announcementRepository = announcementRepository
     }
     
     func execute() -> AnyPublisher<[Announcement], Never> {
-        announcementLocalRepository.announcements
+        announcementRepository.announcements
     }
 }

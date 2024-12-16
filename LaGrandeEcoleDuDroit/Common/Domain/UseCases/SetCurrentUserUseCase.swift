@@ -1,11 +1,11 @@
 class SetCurrentUserUseCase {
-    private let userLocalRepository: UserLocalRepository
+    private let userRepository: UserRepository
     
-    init(userLocalRepository: UserLocalRepository) {
-        self.userLocalRepository = userLocalRepository
+   init(userRepository: UserRepository) {
+        self.userRepository = userRepository
     }
     
     func execute(user: User) {
-        userLocalRepository.setCurrentUser(user: user)
+        userRepository.setCurrentUser(user: user)
     }
 }

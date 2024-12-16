@@ -1,6 +1,6 @@
 import Foundation
 
-class DataUtils {
+class RequestUtils {
     static func getUrlSession() -> URLSession {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 10.0

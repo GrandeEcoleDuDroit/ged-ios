@@ -1,20 +1,11 @@
 class DeleteAnnouncementUseCase {
-    private let announcementRemoteRepository: AnnouncementRemoteRepository
-    private let announcementLocalRepository: AnnouncementLocalRepository
+    private let announcementRepository: AnnouncementRepository
     
-    init(
-        announcementRemoteRepository: AnnouncementRemoteRepository,
-        announcementLocalRepository: AnnouncementLocalRepository
-    ) {
-        self.announcementRemoteRepository = announcementRemoteRepository
-        self.announcementLocalRepository = announcementLocalRepository
+    init(announcementRepository: AnnouncementRepository) {
+        self.announcementRepository = announcementRepository
     }
     
     func execute(announcement: Announcement) async throws {
-        async let localResult: Void = try announcementLocalRepository.deleteAnnouncement(announcement: announcement)
-        async let remoteResult: Void = try announcementRemoteRepository.deleteAnnouncement(announcementId: announcement.id)
-        
-        try await localResult
-        try await remoteResult
+        try await announcementRepository.deleteAnnouncement(announcement: announcement)
     }
 }

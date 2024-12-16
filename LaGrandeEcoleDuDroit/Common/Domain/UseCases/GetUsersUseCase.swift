@@ -1,11 +1,11 @@
 class GetUsersUseCase {
-    private let userRemoteRepository: UserRemoteRepository
+    private let userRepository: UserRepository
     
-    init(userRemoteRepository: UserRemoteRepository) {
-        self.userRemoteRepository = userRemoteRepository
+   init(userRepository: UserRepository) {
+        self.userRepository = userRepository
     }
     
     func execute() async throws -> [User] {
-        try await userRemoteRepository.getUsers()
+        try await userRepository.getUsers()
     }
 }

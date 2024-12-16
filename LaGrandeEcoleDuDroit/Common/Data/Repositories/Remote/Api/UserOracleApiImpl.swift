@@ -1,6 +1,8 @@
 import Foundation
 
 class UserOracleApiImpl: UserOracleApi {
+    private let tag = String(describing: UserOracleApiImpl.self)
+
     private func baseUrl(endPoint: String) -> URL? {
         URL.oracleUrl(endpoint: "/users/" + endPoint)
     }
@@ -10,21 +12,21 @@ class UserOracleApiImpl: UserOracleApi {
             throw RequestError.invalidURL
         }
         
-        let request = try DataUtils.formatPostRequest(dataToSend: user, url: url)
-        let session = DataUtils.getUrlSession()
+        let request = try RequestUtils.formatPostRequest(dataToSend: user, url: url)
+        let session = RequestUtils.getUrlSession()
         
         let (dataReceived, response) = try await session.data(for: request)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
         
         if let httpResponse = response as? HTTPURLResponse {
             if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
-                print(serverResponse.message)
+                e(self.tag, serverResponse.message)
             } else {
-                print(serverResponse.error ?? "Error to create user")
+                e(self.tag, serverResponse.error ?? "Error to create user")
                 throw RequestError.invalidResponse(serverResponse.error)
             }
         } else {
-            print(serverResponse.error ?? "Error to create user")
+            e(self.tag, serverResponse.error ?? "Error to create user")
             throw RequestError.invalidResponse(serverResponse.error)
         }
     }

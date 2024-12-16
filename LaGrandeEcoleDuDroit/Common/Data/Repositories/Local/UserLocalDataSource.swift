@@ -1,15 +1,11 @@
 import Combine
 import Foundation
 
-class UserLocalRepositoryImpl: UserLocalRepository {
+class UserLocalDataSource {
     private let userKey = "USER_KEY"
-    
     @Published private var _currentUser: User?
-    var currentUserPublisher: AnyPublisher<User?, Never> {
+    var currentUser: AnyPublisher<User?, Never> {
         $_currentUser.eraseToAnyPublisher()
-    }
-    var currentUser: User? {
-        _currentUser
     }
     
     init() {

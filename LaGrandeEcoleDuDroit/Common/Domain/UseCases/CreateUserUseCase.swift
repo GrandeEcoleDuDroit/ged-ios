@@ -1,18 +1,15 @@
 import Foundation
 
 class CreateUserUseCase {
-    private let userRemoteRepository: UserRemoteRepository
-    private let userLocalRepository: UserLocalRepository
+    private let userRepository: UserRepository
     
-    init(userRemoteRepository: UserRemoteRepository, userLocalRepository: UserLocalRepository) {
-        self.userRemoteRepository = userRemoteRepository
-        self.userLocalRepository = userLocalRepository
+   init(userRepository: UserRepository) {
+        self.userRepository = userRepository
     }
     
     func execute(user: User) async throws {
         do {
-            try await userRemoteRepository.createUser(user: user)
-            userLocalRepository.setCurrentUser(user: user)
+            try await userRepository.createUser(user: user)
         } catch {
             if let error = error as? URLError {
                 switch error.code {

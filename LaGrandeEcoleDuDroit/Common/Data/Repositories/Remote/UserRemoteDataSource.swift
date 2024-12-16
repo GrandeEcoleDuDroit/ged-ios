@@ -1,4 +1,6 @@
-class UserRemoteRepositoryImpl: UserRemoteRepository {
+import Combine
+
+class UserRemoteDataSource {
     private let userFirestoreApi: UserFirestoreApi
     private let userOracleApi: UserOracleApi
     
@@ -18,13 +20,24 @@ class UserRemoteRepositoryImpl: UserRemoteRepository {
         try await oracleResult
     }
     
-    func getUser(userId: String) async throws -> User? {
-        let firestoreUser = try await userFirestoreApi.getUser(userId: userId)
-        if firestoreUser != nil {
-            return UserMapper.toDomain(firestoreUser: firestoreUser!)
+    func getUser(userId: String) async -> User? {
+        let firestoreUser = await userFirestoreApi.getUser(userId: userId)
+        return if let firestoreUser = firestoreUser {
+            UserMapper.toDomain(firestoreUser: firestoreUser)
         } else {
-            return nil
+            nil
         }
+    }
+    
+    func listenUser(userId: String) -> AnyPublisher<User, Never> {
+        userFirestoreApi.listenUser(userId: userId)
+            .compactMap { firestoreUser in
+                return if let firestoreUser = firestoreUser {
+                    UserMapper.toDomain(firestoreUser: firestoreUser)
+                } else {
+                    nil
+                }
+            }.eraseToAnyPublisher()
     }
     
     func getUsers() async throws -> [User] {

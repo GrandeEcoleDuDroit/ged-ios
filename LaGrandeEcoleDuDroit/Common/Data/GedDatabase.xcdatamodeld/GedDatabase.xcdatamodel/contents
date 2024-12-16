@@ -16,8 +16,17 @@
     </entity>
     <entity name="LocalConversation" representedClassName="LocalConversation" syncable="YES" codeGenerationType="class">
         <attribute name="conversationId" attributeType="String"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="interlocutorJson" attributeType="String"/>
-        <attribute name="isActive" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="isSynchronized" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="LocalMessage" representedClassName="LocalMessage" syncable="YES" codeGenerationType="class">
+        <attribute name="content" attributeType="String"/>
+        <attribute name="conversationId" attributeType="String"/>
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="isRead" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="isSent" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="messageId" attributeType="String"/>
+        <attribute name="senderId" attributeType="String"/>
+        <attribute name="type" attributeType="String"/>
     </entity>
 </model>

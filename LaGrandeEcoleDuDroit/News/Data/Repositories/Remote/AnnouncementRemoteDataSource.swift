@@ -1,6 +1,6 @@
 import Foundation
 
-class AnnouncementRemoteRepositoryImpl: AnnouncementRemoteRepository {
+class AnnouncementRemoteDataSource {
     private let announcementApi: AnnouncementApi
     
     init(announcementApi: AnnouncementApi) {
