@@ -16,7 +16,7 @@ class MessageRepositoryImpl: MessageRepository {
         messageRemoteDataSource.listenMessages(conversationId: conversationId)
     }
     
-    func getLastMessage(conversationId: String) -> AnyPublisher<Message?, Error> {
+    func getLastMessage(conversationId: String) -> AnyPublisher<Message?, ConversationError> {
         messageRemoteDataSource.listenLastMessage(conversationId: conversationId)
     }
     

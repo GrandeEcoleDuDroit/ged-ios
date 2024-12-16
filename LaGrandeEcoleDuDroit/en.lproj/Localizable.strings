@@ -94,3 +94,6 @@
 "new_message" = "New message";
 "user_not_found" = "User not found";
 "tap_to_chat" = "Tap to chat";
+
+// Message errors
+"error_getting_conversations" = "An error occured while getting conversations.";

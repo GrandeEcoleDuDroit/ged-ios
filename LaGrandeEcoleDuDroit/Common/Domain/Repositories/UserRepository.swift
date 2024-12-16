@@ -9,6 +9,8 @@ protocol UserRepository {
     
     func getUser(userId: String) async -> User?
     
+    func getUserPublisher(userId: String) -> AnyPublisher<User, Never>
+    
     func getUsers() async throws -> [User]
     
     func setCurrentUser(user: User)

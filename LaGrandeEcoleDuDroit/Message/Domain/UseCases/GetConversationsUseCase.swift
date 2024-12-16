@@ -7,7 +7,7 @@ class GetConversationsUseCase {
         self.userConversationRepository = userConversationRepository
     }
     
-    func execute() -> AnyPublisher<ConversationUser, Error> {
+    func execute() -> AnyPublisher<ConversationUser, ConversationError> {
         userConversationRepository.getUserConversations()
     }
     

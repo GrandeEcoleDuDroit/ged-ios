@@ -2,6 +2,7 @@ import Foundation
 import Combine
 
 class ConversationViewModel: ObservableObject {
+    private let tag = String(describing: ConversationViewModel.self)
     private let getConversationsUIUseCase: GetConversationsUIUseCase
     private var cancellables: Set<AnyCancellable> = []
     
@@ -20,8 +21,12 @@ class ConversationViewModel: ObservableObject {
                 switch completion {
                 case .finished:
                     break
-                case .failure(let error):
-                    self?.updateConversationState(state: .error(message: error.localizedDescription))
+                case .failure(let conversationError):
+                    switch conversationError {
+                    case.notFound:
+                        e(self?.tag ?? "ConversationViewModel", getString(gedString: GedString.error_getting_conversations))
+                        self?.updateConversationState(state: .error(message: getString(gedString: GedString.error_getting_conversations)))
+                    }
                 }
             } receiveValue: { [weak self] conversationUI in
                 self?.conversationsMap[conversationUI.id] = conversationUI

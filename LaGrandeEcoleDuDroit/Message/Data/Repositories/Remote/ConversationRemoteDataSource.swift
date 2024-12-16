@@ -7,7 +7,7 @@ class ConversationRemoteDataSource {
         self.conversationApi = conversationApi
     }
     
-    func listenConversations(userId: String) -> AnyPublisher<[RemoteConversation], Error> {
+    func listenConversations(userId: String) -> AnyPublisher<RemoteConversation, Error> {
         conversationApi.listenConversations(userId: userId)
     }
     

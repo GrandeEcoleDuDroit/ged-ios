@@ -38,8 +38,8 @@ class MessageApiImpl: MessageApi {
         return subject.eraseToAnyPublisher()
     }
     
-    func listenLastMessage(conversationId: String) -> AnyPublisher<RemoteMessage?, any Error> {
-        let subject = CurrentValueSubject<RemoteMessage?, any Error>(nil)
+    func listenLastMessage(conversationId: String) -> AnyPublisher<RemoteMessage?, ConversationError> {
+        let subject = CurrentValueSubject<RemoteMessage?, ConversationError>(nil)
         
         let listener = conversationCollection
             .document(conversationId)
@@ -59,11 +59,13 @@ class MessageApiImpl: MessageApi {
                     return
                 }
                 
-                let remoteMessage = querySnapshot.documents.compactMap { document in
-                    try? document.data(as: RemoteMessage.self)
-                }.first
-                
-                subject.send(remoteMessage)
+                querySnapshot.documentChanges.forEach { documentChanges in
+                    if let remoteMessage = try? documentChanges.document.data(as: RemoteMessage.self) {
+                        subject.send(remoteMessage)
+                    } else {
+                        e(self.tag, "Error to convert remote message")
+                    }
+                }
             }
         
         listeners.append(listener)

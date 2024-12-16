@@ -1,7 +1,7 @@
 import Combine
 
 protocol UserConversationRepository {
-    func getUserConversations() -> AnyPublisher<ConversationUser, Error>
+    func getUserConversations() -> AnyPublisher<ConversationUser, ConversationError>
     
     func stopGettingUserConversations()
 }

@@ -2,6 +2,7 @@ import Foundation
 import Combine
 
 class MockUserRepository: UserRepository {
+    
     private var _users: [User] = usersFixture
     @Published private var _currentUser: User? = userFixture
     var currentUserPublisher: AnyPublisher<User?, Never> {
@@ -25,6 +26,10 @@ class MockUserRepository: UserRepository {
     
     func getUser(userId: String) async -> User? {
         userFixture
+    }
+    
+    func getUserPublisher(userId: String) -> AnyPublisher<User, Never> {
+        Just(userFixture).eraseToAnyPublisher()
     }
     
     func getUsers() async throws -> [User] {

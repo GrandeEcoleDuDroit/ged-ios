@@ -93,4 +93,7 @@ struct GedString {
     static let new_message = "new_message"
     static let user_not_found = "user_not_found"
     static let tap_to_chat = "tap_to_chat"
+    
+    // Message error
+    static let error_getting_conversations = "error_getting_conversations"
 }

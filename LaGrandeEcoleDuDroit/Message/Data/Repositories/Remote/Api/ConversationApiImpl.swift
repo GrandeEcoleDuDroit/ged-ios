@@ -8,8 +8,8 @@ class ConversationApiImpl: ConversationApi {
     private let conversationCollection: CollectionReference = Firestore.firestore().collection("conversations")
     private var cancellables: Set<AnyCancellable> = []
     
-    func listenConversations(userId: String) -> AnyPublisher<[RemoteConversation], Error> {
-        let subject = PassthroughSubject<[RemoteConversation], Error>()
+    func listenConversations(userId: String) -> AnyPublisher<RemoteConversation, Error> {
+        let subject = PassthroughSubject<RemoteConversation, Error>()
         
         let listener = conversationCollection
             .whereField("participants", arrayContains: userId)
@@ -24,15 +24,16 @@ class ConversationApiImpl: ConversationApi {
                 
                 guard let querySnapshot = querySnapshot else {
                     e(self.tag, "Error to listen conversations: querySnapshot is nil")
-                    subject.send([])
                     return
                 }
                 
-                let remoteConversations = querySnapshot.documents.compactMap { document -> RemoteConversation? in
-                    try? document.data(as: RemoteConversation.self)
+                querySnapshot.documentChanges.forEach { documentChanges in
+                    if let remoteConversation = try? documentChanges.document.data(as: RemoteConversation.self) {
+                        subject.send(remoteConversation)
+                    } else {
+                        e(self.tag, "Error to convert remote conversation")
+                    }
                 }
-                
-                subject.send(remoteConversations)
             }
         
         listeners.append(listener)
@@ -40,6 +41,6 @@ class ConversationApiImpl: ConversationApi {
     }
     
     func stopListeningConversations() {
-        listeners.forEach { $0.remove() }
+        listeners.removeAll()
     }
 }

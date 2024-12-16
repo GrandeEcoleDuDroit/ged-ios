@@ -12,7 +12,7 @@ class GetConversationsUIUseCase {
         self.getLastMessagesUseCase = getLastMessagesUseCase
     }
     
-    func execute() -> AnyPublisher<ConversationUI, Error> {
+    func execute() -> AnyPublisher<ConversationUI, ConversationError> {
         getConversationsUseCase.execute()
             .map { conversation in
                 ConversationUI(
@@ -21,11 +21,14 @@ class GetConversationsUIUseCase {
                     lastMessage: nil
                 )
             }
-            .flatMap { conversationUI in
-                self.getLastMessagesUseCase.execute(conversationId: conversationUI.id)
-                    .map { lastMessage in
-                        conversationUI.with(lastMessage: lastMessage)
-                    }
+            .flatMap { [weak self] conversationUI in
+                guard let self = self else {
+                    return Empty<ConversationUI, ConversationError>().eraseToAnyPublisher()
+                }
+                
+                return self.getLastMessagesUseCase.execute(conversationId: conversationUI.id)
+                    .map { conversationUI.with(lastMessage: $0) }
+                    .eraseToAnyPublisher()
             }.eraseToAnyPublisher()
     }
     

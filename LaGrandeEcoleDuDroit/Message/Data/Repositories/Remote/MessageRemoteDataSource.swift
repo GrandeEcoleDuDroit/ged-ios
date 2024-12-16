@@ -14,7 +14,7 @@ class MessageRemoteDataSource {
             }.eraseToAnyPublisher()
     }
     
-    func listenLastMessage(conversationId: String) -> AnyPublisher<Message?, Error> {
+    func listenLastMessage(conversationId: String) -> AnyPublisher<Message?, ConversationError> {
         messageApi.listenLastMessage(conversationId: conversationId)
             .map { remoteMessage in
                 guard let remoteMessage else { return nil }

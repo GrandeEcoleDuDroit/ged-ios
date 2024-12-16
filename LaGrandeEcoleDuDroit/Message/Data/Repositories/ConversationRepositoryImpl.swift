@@ -12,21 +12,24 @@ class ConversationRepositoryImpl: ConversationRepository {
         self.conversationRemoteDataSource = conversationRemoteDataSource
     }
     
-    func getConversations(userId: String) -> AnyPublisher<Conversation, Error> {
+    func getConversationsFromRemote(userId: String) -> AnyPublisher<Conversation, Error> {
         conversationRemoteDataSource.listenConversations(userId: userId)
-            .map { remoteConversations in
-                remoteConversations.compactMap {
-                    ConversationMapper.toConversation(remoteConversation: $0, currrentUserId: userId)
-                }
-            }
-            .flatMap { (conversation: [Conversation]) -> AnyPublisher<Conversation, Error> in
-                Publishers.Sequence(sequence: conversation)
-                    .eraseToAnyPublisher()
-            }
+            .compactMap { ConversationMapper.toConversation(remoteConversation: $0, currrentUserId: userId) }
             .eraseToAnyPublisher()
+    }
+    
+    func getConversationsFromLocal() -> AnyPublisher<(Conversation, User), ConversationError> {
+        conversationLocalDataSource.conversationSubject
+            .compactMap { ConversationMapper.toConversationWithInterlocutor(localConversation: $0) }
+            .eraseToAnyPublisher()
+    }
+    
+    func upsertLocalConversation(conversation: Conversation, interlocutor: User) {
+        conversationLocalDataSource.upsertConversation(conversation: conversation, interlocutor: interlocutor)
     }
     
     func stopGettingConversations() {
         conversationRemoteDataSource.stopListeningConversations()
+        conversationLocalDataSource.stopListeningConversations()
     }
 }

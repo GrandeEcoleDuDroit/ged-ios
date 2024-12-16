@@ -7,7 +7,7 @@ class GetLastMessagesUseCase {
         self.messageRepository = messageRepository
     }
     
-    func execute(conversationId: String) -> AnyPublisher<Message?, Error> {
+    func execute(conversationId: String) -> AnyPublisher<Message?, ConversationError> {
         messageRepository.getLastMessage(conversationId: conversationId)
     }
     

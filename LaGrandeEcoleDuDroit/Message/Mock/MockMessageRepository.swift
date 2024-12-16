@@ -6,10 +6,10 @@ class MockMessageRepository: MessageRepository {
         Just(messagesFixture).setFailureType(to: (any Error).self).eraseToAnyPublisher()
     }
     
-    func getLastMessage(conversationId: String) -> AnyPublisher<Message?, any Error> {
+    func getLastMessage(conversationId: String) -> AnyPublisher<Message?, ConversationError> {
         let lastMessageFixture = lastMessagesFixture.first(where: { $0.conversationId == conversationId })
         return Just(lastMessageFixture)
-            .setFailureType(to: (any Error).self)
+            .setFailureType(to: ConversationError.self)
             .eraseToAnyPublisher()
     }
 
