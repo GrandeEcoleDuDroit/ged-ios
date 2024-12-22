@@ -24,8 +24,8 @@ class ConversationViewModel: ObservableObject {
                 case .failure(let conversationError):
                     switch conversationError {
                     case.notFound:
-                        e(self?.tag ?? "ConversationViewModel", getString(gedString: GedString.error_getting_conversations))
-                        self?.updateConversationState(state: .error(message: getString(gedString: GedString.error_getting_conversations)))
+                        e(self?.tag ?? "ConversationViewModel", getString(.errorGettingConversations))
+                        self?.updateConversationState(state: .error(message: getString(.errorGettingConversations)))
                     }
                 }
             } receiveValue: { [weak self] conversationUI in

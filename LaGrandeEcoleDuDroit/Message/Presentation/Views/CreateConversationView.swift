@@ -11,14 +11,14 @@ struct CreateConversationView: View {
     var body: some View {
         ScrollView {
             if createConversationViewModel.users.isEmpty {
-                Text(getString(gedString: GedString.user_not_found))
+                Text(getString(.userNotFound))
             } else {
                 ForEach($createConversationViewModel.users) { $user in
                     UserItem(user: user, onClick: {})
                 }
             }
         }
-        .navigationTitle(getString(gedString: GedString.new_message))
+        .navigationTitle(getString(.newMessage))
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .onReceive(createConversationViewModel.$conversationState) { state in

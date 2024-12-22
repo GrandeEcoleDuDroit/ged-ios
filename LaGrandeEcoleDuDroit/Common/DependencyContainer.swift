@@ -235,6 +235,10 @@ class DependencyContainer {
         GetLastMessagesUseCase(messageRepository: messageRepository)
     }()
     
+    lazy var getMessagesUseCase: GetMessagesUseCase = {
+        GetMessagesUseCase(messageRepository: messageRepository)
+    }()
+    
     lazy var getConversationsUseCase: GetConversationsUseCase = {
         GetConversationsUseCase(userConversationRepository: userConversationRepository)
     }()
@@ -263,6 +267,13 @@ class DependencyContainer {
     
     lazy var mockCreateConversationViewModel: CreateConversationViewModel = {
         CreateConversationViewModel(getUsersUseCase: GetUsersUseCase(userRepository: mockUserRepository))
+    }()
+    
+    lazy var mockChatViewModel: ChatViewModel = {
+        ChatViewModel(
+            getMessagesUseCase: GetMessagesUseCase(messageRepository: mockMessageRepository),
+            conversation: conversationUIFixture
+        )
     }()
     
     // ---------------------------------- Profile ---------------------------------- //

@@ -92,6 +92,9 @@
 "new_message" = "Nouveau message";
 "user_not_found" = "Aucun utilisateur trouvé";
 "tap_to_chat" = "Appuyez pour discuter";
+"message_placeholder" = "Enovoyer un message";
+"start_conversation" = "Commencer une nouvelle discussion avec vos amis.";
+"new_conversation" = "Nouvelle conversation";
 
 // Message errors
 "error_getting_conversations" = "Une erreur est survenue lors de la récupération des conversations.";
