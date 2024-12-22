@@ -3,6 +3,8 @@ import SwiftUI
 struct EditAnnouncementView: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
     private let announcement: Announcement
+    @State private var textHeight: CGFloat = 40
+    private let lineHeight: CGFloat = 24
     @State private var isActive: Bool = false
     @Environment(\.dismiss) var dismiss
     @State private var showErrorAlert: Bool = false
@@ -19,20 +21,71 @@ struct EditAnnouncementView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(alignment: .leading) {
-                topBar
+                HStack(alignment: .center) {
+                    Button(
+                        action: { dismiss() },
+                        label: { Text(getString(gedString: GedString.cancel)) }
+                    )
+                    
+                   Spacer()
+                    
+                    Button(
+                        action: {
+                            Task {
+                                await newsViewModel.updateAnnouncement(id: announcement.id, title: title, content: content)
+                                if newsViewModel.announcementState == .updated {
+                                    dismiss()
+                                }
+                            }
+                        },
+                        label: {
+                            if content.isEmpty || title == announcement.title && content == announcement.content {
+                                Text(getString(gedString: GedString.save))
+                                    .fontWeight(.semibold)
+                            } else {
+                                Text(getString(gedString: GedString.save))
+                                    .foregroundColor(.gedPrimary)
+                                    .fontWeight(.semibold)
+                            }
+                        }
+                    ).disabled(content.isEmpty || (title == announcement.title && content == announcement.content))
+                }.padding(.vertical, 5)
                 
-                DynamicTextEditor(
-                    text: $title,
-                    placeholderText: Text(getString(.title)).font(.system(size: 22, weight: .semibold)),
-                    minHeight: geometry.size.height / 14,
-                    maxHeight: geometry.size.height / 6
-                )
-                .font(.system(size: 22, weight: .semibold))
+                TextEditor(text: $title)
+                    .font(.system(size: 22, weight: .semibold))
+                    .overlay {
+                        if title.isEmpty {
+                            Text(getString(gedString: GedString.title))
+                                .foregroundColor(.gray)
+                                .padding(.top, 10)
+                                .padding(.leading, 6)
+                                .font(.system(size: 22, weight: .semibold))
+                                .frame(
+                                    maxWidth: .infinity,
+                                    maxHeight: .infinity,
+                                    alignment: .topLeading
+                                )
+                        }
+                    }
+                    .frame(
+                        minHeight: geometry.size.height / 14,
+                        maxHeight: geometry.size.height / 6
+                    )
+                    .fixedSize(horizontal: false, vertical: true)
+                    .background(Color.blue)
                 
-                DynamicTextEditor(
-                    text: $content,
-                    placeholderText: Text(getString(.content))
-                )
+                TextEditor(text: $content)
+                    .overlay {
+                        if content.isEmpty {
+                            Text(getString(gedString: GedString.content))
+                                .foregroundColor(.gray)
+                                .padding(.top, 10)
+                                .padding(.leading, 6)
+                                .font(.body)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity,alignment: .topLeading)
+                        }
+                    }
+                    .frame(maxHeight: .infinity, alignment: .top)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -54,44 +107,12 @@ struct EditAnnouncementView: View {
             isPresented: $showErrorAlert,
             presenting: ""
         ) { data in
-            Button(getString(.ok)) {
+            Button(getString(gedString: GedString.ok)) {
                 showErrorAlert = false
             }
         } message: { data in
             Text(errorMessage)
         }
-    }
-    
-    var topBar: some View {
-        HStack(alignment: .center) {
-            Button(
-                action: { dismiss() },
-                label: { Text(getString(.cancel)) }
-            )
-            
-           Spacer()
-            
-            Button(
-                action: {
-                    Task {
-                        await newsViewModel.updateAnnouncement(id: announcement.id, title: title, content: content)
-                        if newsViewModel.announcementState == .updated {
-                            dismiss()
-                        }
-                    }
-                },
-                label: {
-                    if content.isEmpty || title == announcement.title && content == announcement.content {
-                        Text(getString(.save))
-                            .fontWeight(.semibold)
-                    } else {
-                        Text(getString(.save))
-                            .foregroundColor(.gedPrimary)
-                            .fontWeight(.semibold)
-                    }
-                }
-            ).disabled(content.isEmpty || (title == announcement.title && content == announcement.content))
-        }.padding(.vertical, 5)
     }
 }
 

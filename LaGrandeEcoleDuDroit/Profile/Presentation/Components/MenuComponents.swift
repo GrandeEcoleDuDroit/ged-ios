@@ -29,7 +29,7 @@ struct MenuItem: View {
     List {
         MenuItem(
             icon: Image(systemName: "person.fill"),
-            title: getString(.account)
+            title: getString(gedString: GedString.account)
         )
     }
 }

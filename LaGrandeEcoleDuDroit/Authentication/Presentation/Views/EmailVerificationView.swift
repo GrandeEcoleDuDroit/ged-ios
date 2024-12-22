@@ -8,7 +8,10 @@ struct EmailVerificationView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
             Text(
-                getString(.emailVerificationExplanation, registrationViewModel.email)
+                getString(
+                    gedString: GedString.email_verification_explanation,
+                    registrationViewModel.email
+                )
             ).font(.title3)
             
             if case .error(let message) = registrationViewModel.registrationState {
@@ -38,7 +41,7 @@ struct EmailVerificationView: View {
                         Task { await registrationViewModel.checkVerifiedEmail() }
                     },
                     label: {
-                        Text(getString(.next))
+                        Text(getString(gedString: GedString.next))
                             .font(.title2)
                     }
                 )
@@ -47,7 +50,7 @@ struct EmailVerificationView: View {
         .task {
             await registrationViewModel.sendVerificationEmail()
         }
-        .navigationTitle(getString(.emailVerificationTitle))
+        .navigationTitle(getString(gedString: GedString.email_verification_title))
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .navigationBarBackButtonHidden(true)
         .padding()

@@ -6,6 +6,4 @@ protocol MessageRepository {
     func getLastMessage(conversationId: String) -> AnyPublisher<Message?, ConversationError>
     
     func stopGettingLastMessages()
-    
-    func stopGettingMessages()
 }

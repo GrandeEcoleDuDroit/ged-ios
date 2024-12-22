@@ -38,7 +38,7 @@ struct NewsView: View {
                         .scaledToFit()
                         .frame(width: 38, height: 38)
                     
-                    Text(getString(.appName))
+                    Text(getString(gedString: GedString.appName))
                         .font(.title2)
                         .fontWeight(.bold)
                 }
@@ -62,7 +62,7 @@ struct NewsView: View {
 
 var newsSection: some View {
     VStack(alignment: .leading) {
-        Text(getString(.news))
+        Text(getString(gedString: GedString.news))
             .font(.titleMedium)
             .padding(.horizontal)
     }
@@ -88,12 +88,12 @@ struct RecentAnnouncementSection: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(getString(.recentAnnouncements))
+            Text(getString(gedString: GedString.recent_announcements))
                 .font(.titleMedium)
                 .padding(.horizontal)
             
             if announcements.isEmpty {
-                Text(getString(.noAnnouncement))
+                Text(getString(gedString: GedString.no_announcement))
                     .font(.bodyLarge)
                     .foregroundColor(Color(UIColor.lightGray))
                     .padding()

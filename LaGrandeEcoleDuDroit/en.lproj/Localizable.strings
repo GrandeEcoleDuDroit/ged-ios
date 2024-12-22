@@ -94,9 +94,6 @@
 "new_message" = "New message";
 "user_not_found" = "User not found";
 "tap_to_chat" = "Tap to chat";
-"message_placeholder" = "Send a message";
-"start_conversation" = "Start a new discussion with your friends.";
-"new_conversation" = "New conversation";
 
 // Message errors
 "error_getting_conversations" = "An error occured while getting conversations.";

@@ -214,15 +214,15 @@ struct ErrorAnnouncementItemWithContent: View {
 private func getElapsedTimeText(elapsedTime: ElapsedTime, announcementDate: Date) -> String {
     switch elapsedTime {
     case .now(_):
-        getString(.now)
+        getString(gedString: GedString.now)
     case.minute(let minutes):
-        getString(.minutesAgoLong, minutes)
+        getString(gedString: GedString.minutes_ago_long, minutes)
     case .hour(let hours):
-        getString(.hoursAgoLong, hours)
+        getString(gedString: GedString.hours_ago_long, hours)
     case .day(let days):
-        getString(.daysAgoLong, days)
+        getString(gedString: GedString.days_ago_long, days)
     case .week(let weeks):
-        getString(.weeksAgoLong, weeks)
+        getString(gedString: GedString.weeks_ago_long, weeks)
     default:
         announcementDate.formatted(.dateTime.year().month().day())
     }
