@@ -14,7 +14,7 @@ struct FocusableOutlinedTextField: View {
             Color.gray
         }
     }
-    
+
     private var borderWidth: CGFloat = 1
     private var cornerRadius: CGFloat = 5
     @FocusState private var focusedField: InputField?
@@ -137,56 +137,6 @@ struct FocusableOutlinedPasswordTextField: View {
     }
 }
 
-struct DynamicTextEditor: View {
-    @Binding var text: String
-    private let placeholderText: Text
-    private let minHeight: CGFloat?
-    private let maxHeight: CGFloat?
-    
-    init(
-        text: Binding<String>,
-        placeholderText: Text,
-        minHeight: CGFloat? = nil,
-        maxHeight: CGFloat? = nil
-    ) {
-        self._text = text
-        self.placeholderText = placeholderText
-        self.minHeight = minHeight
-        self.maxHeight = maxHeight
-    }
-    
-    var body: some View {
-        TextEditor(text: $text)
-            .overlay {
-                if text.isEmpty {
-                    if #available (iOS 17.0, *) {
-                        placeholderText
-                            .foregroundStyle(.gray)
-                            .padding(.top, GedSpacing.small)
-                            .padding(.leading, 6)
-                            .frame(
-                                maxWidth: .infinity,
-                                maxHeight: .infinity,
-                                alignment: .topLeading
-                            )
-                    } else {
-                        placeholderText
-                            .foregroundColor(.gray)
-                            .padding(.top, GedSpacing.small)
-                            .padding(.leading, 6)
-                            .frame(
-                                maxWidth: .infinity,
-                                maxHeight: .infinity,
-                                alignment: .topLeading
-                            )
-                    }
-                }
-            }
-            .frame(minHeight: minHeight, maxHeight: maxHeight)
-            .fixedSize(horizontal: false, vertical: true)
-    }
-}
-
 #Preview {
     VStack(spacing: GedSpacing.large) {
         FocusableOutlinedTextField(
@@ -204,13 +154,5 @@ struct DynamicTextEditor: View {
             inputFocused: .constant(InputField.password),
             isDisable: .constant(false)
         )
-        
-        DynamicTextEditor(
-            text: .constant(""),
-            placeholderText: Text("Placeholder"),
-            minHeight: 100,
-            maxHeight: 300
-        )
-        .border(.gray)
     }.padding()
 }

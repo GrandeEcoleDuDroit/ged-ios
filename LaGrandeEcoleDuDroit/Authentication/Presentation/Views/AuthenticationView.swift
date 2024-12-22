@@ -30,8 +30,8 @@ struct AuthenticationView: View {
 private struct Header: View {
     private let imageWidth = UIScreen.main.bounds.width * 0.4
     private let imageHeight = UIScreen.main.bounds.height * 0.2
-    private let titleAuthenticationPage = getString(.appName)
-    private let subtitleAuthenticationPage = getString(.authenticationPageSubtitle)
+    private let titleAuthenticationPage = getString(gedString: GedString.appName)
+    private let subtitleAuthenticationPage = getString(gedString: GedString.authenticationPageSubtitle)
     
     var body: some View {
         VStack(spacing: GedSpacing.small) {
@@ -60,9 +60,9 @@ private struct CredentialsInputs: View {
     @Binding var isInputsFocused: Bool
     @State private var isLoading: Bool = false
     @State private var inputFocused: InputField?
-    private let titleEmailTextField = getString(.email)
-    private let titlePasswordTextField = getString(.password)
-    private let forgottenPassword = getString(.forgottenPassword)
+    private let titleEmailTextField = getString(gedString: GedString.email)
+    private let titlePasswordTextField = getString(gedString: GedString.password)
+    private let forgottenPassword = getString(gedString: GedString.forgotten_password)
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
@@ -113,9 +113,9 @@ private struct Buttons: View {
     @EnvironmentObject private var authenticationViewModel: AuthenticationViewModel
     @EnvironmentObject private var registrationViewModel: RegistrationViewModel
     
-    private let login = getString(.login)
-    private let register = getString(.register)
-    private let notRegisterYet = getString(.notRegisterYet)
+    private let login = getString(gedString: GedString.login)
+    private let register = getString(gedString: GedString.register)
+    private let notRegisterYet = getString(gedString: GedString.not_register_yet)
     @State private var isLoading: Bool = false
     @State private var destination = AnyView(FirstRegistrationView())
     @State private var showEmailNotVerifiedAlert: Bool = false
@@ -155,11 +155,11 @@ private struct Buttons: View {
             isLoading = state == .loading
         }
         .alert(
-            getString(.emailNotVerified),
+            getString(gedString: GedString.email_not_verified),
             isPresented: $showEmailNotVerifiedAlert,
             presenting: ""
         ) { data in
-            Button(getString(.verifyEmail)) {
+            Button(getString(gedString: GedString.verify_email)) {
                 let registrationViewModel = DependencyContainer.shared.registrationViewModel
                 registrationViewModel.email = authenticationViewModel.email
                 destination = AnyView(
@@ -167,9 +167,9 @@ private struct Buttons: View {
                 )
                 isActive = true
             }
-            Button(getString(.cancel), role: .cancel) {}
+            Button(getString(gedString: GedString.cancel), role: .cancel) {}
         } message: { data in
-            Text(getString(.emailNotVerifiedDialogMessage))
+            Text(getString(gedString: GedString.email_not_verified_dialog_message))
         }
     }
 }

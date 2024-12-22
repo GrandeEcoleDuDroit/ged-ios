@@ -32,7 +32,7 @@ class RegistrationViewModel: ObservableObject {
     
     func validateNameInputs() -> Bool {
         guard !firstName.isEmpty, !lastName.isEmpty else {
-            registrationState = .error(message: getString(.emptyInputsError))
+            registrationState = .error(message: getString(gedString: GedString.empty_inputs_error))
             return false
         }
         
@@ -41,17 +41,17 @@ class RegistrationViewModel: ObservableObject {
     
     func validateCredentialInputs() -> Bool {
         guard !email.isEmpty, !password.isEmpty else {
-            registrationState = .error(message: getString(.emptyInputsError))
+            registrationState = .error(message: getString(gedString: GedString.empty_inputs_error))
             return false
         }
         
         guard VerifyEmailFormatUseCase.execute(email) else {
-            registrationState = .error(message: getString(.invalidEmailError))
+            registrationState = .error(message: getString(gedString: GedString.invalid_email_error))
             return false
         }
         
         guard password.count >= 8 else {
-            registrationState = .error(message: getString(.passwordLengthError))
+            registrationState = .error(message: getString(gedString: GedString.password_length_error))
             return false
         }
         
@@ -80,23 +80,23 @@ class RegistrationViewModel: ObservableObject {
             await updateRegistrationState(to: .registered)
         }
         catch AuthenticationError.accountAlreadyExist {
-            await updateRegistrationState(to: .error(message: getString(.accountAlreadyInUseError)))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.account_already_in_use_error)))
         }
         catch AuthenticationError.userNotFound {
-            await updateRegistrationState(to: .error(message: getString(.authUserNotFound)))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.auth_user_not_found)))
         }
         catch RequestError.invalidResponse(let error) {
             print(error ?? "Query error")
-            await updateRegistrationState(to: .error(message: getString(.registrationError)))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.registration_error)))
         }
         catch NetworkError.timedOut {
-            await updateRegistrationState(to: .error(message: getString(.timedOutError)))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.timed_out_error)))
         }
         catch NetworkError.notConnectedToInternet {
-            await updateRegistrationState(to: .error(message: getString(.notConnectedToInternetError)))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.not_connected_to_internet_error)))
         }
         catch {
-            await updateRegistrationState(to: .error(message: getString(.registrationError)))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.registration_error)))
         }
     }
     
@@ -107,10 +107,10 @@ class RegistrationViewModel: ObservableObject {
             await updateRegistrationState(to: .idle)
         }
         catch NetworkError.tooManyRequests {
-            await updateRegistrationState(to: .error(message: getString(.tooManyRequestError)))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.too_many_request_error)))
         }
         catch {
-            await updateRegistrationState(to: .error(message: getString(.registrationError)))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.registration_error)))
         }
     }
     
@@ -121,10 +121,10 @@ class RegistrationViewModel: ObservableObject {
             if emailVerified {
                 await updateRegistrationState(to: .emailVerified )
             } else {
-                await updateRegistrationState(to: .error(message: getString(.emailNotVerifiedError)))
+                await updateRegistrationState(to: .error(message: getString(gedString: GedString.email_not_verified_error)))
             }
         } else {
-            await updateRegistrationState(to: .error(message: getString(.emailNotVerifiedError)))
+            await updateRegistrationState(to: .error(message: getString(gedString: GedString.email_not_verified_error)))
         }
     }
     

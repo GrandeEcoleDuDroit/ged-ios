@@ -20,10 +20,6 @@ class MessageRepositoryImpl: MessageRepository {
         messageRemoteDataSource.listenLastMessage(conversationId: conversationId)
     }
     
-    func stopGettingMessages() {
-        
-    }
-    
     func stopGettingLastMessages() {
         messageRemoteDataSource.stopListeningLastMessages()
     }

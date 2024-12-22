@@ -8,18 +8,18 @@ struct ThirdRegistrationView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            Text(getString(.enterEmailPassword))
+            Text(getString(gedString: GedString.enter_email_password))
                 .font(.title2)
             
             FocusableOutlinedTextField(
-                title: getString(.email),
+                title: getString(gedString: GedString.email),
                 text: $registrationViewModel.email,
                 defaultFocusValue: InputField.email,
                 inputFocused: $inputFocused
             ).disabled(registrationViewModel.registrationState == .loading)
             
             FocusableOutlinedPasswordTextField(
-                title: getString(.password),
+                title: getString(gedString: GedString.password),
                 text: $registrationViewModel.password,
                 defaultFocusValue: InputField.password,
                 inputFocused: $inputFocused
@@ -29,7 +29,7 @@ struct ThirdRegistrationView: View {
                 Image(systemName: "info.circle")
                     .foregroundStyle(Color(UIColor.lightGray))
                 
-                Text(getString(.sendEmailVerificationCaption))
+                Text(getString(gedString: GedString.send_email_verification_caption))
                     .font(.caption)
                     .foregroundStyle(Color(UIColor.lightGray))
             }
@@ -58,7 +58,7 @@ struct ThirdRegistrationView: View {
                         }
                     },
                     label: {
-                        Text(getString(.next))
+                        Text(getString(gedString: GedString.next))
                             .font(.title2)
                     }
                 )

@@ -4,13 +4,13 @@ struct FirstRegistrationView: View {
     @EnvironmentObject private var registrationViewModel: RegistrationViewModel
     @State private var inputFocused: InputField?
     @State private var isValidNameInputs = false
-    private let firstNameTextFieldTitle = getString(.firstName)
-    private let lastNameTextFieldTitle = getString(.lastName)
+    private let firstNameTextFieldTitle = getString(gedString: GedString.firstName)
+    private let lastNameTextFieldTitle = getString(gedString: GedString.lastName)
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            Text(getString(.enterFirstNameAndLastName))
+            Text(getString(gedString: GedString.enter_first_name_and_last_name))
                 .font(.title2)
             
             FocusableOutlinedTextField(
@@ -40,7 +40,7 @@ struct FirstRegistrationView: View {
                         isValidNameInputs = registrationViewModel.validateNameInputs()
                     },
                     label: {
-                        Text(getString(.next))
+                        Text(getString(gedString: GedString.next))
                             .font(.title2)
                     }
                 ).overlay {

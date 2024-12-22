@@ -13,7 +13,7 @@ class ProfileViewModel: ObservableObject {
         MenuItemData(
             name: MenuItemData.Name.account,
             imageName: "person.fill",
-            title: getString(.account)
+            title: getString(gedString: GedString.account)
         )
     ]
     
@@ -31,7 +31,7 @@ class ProfileViewModel: ObservableObject {
         do {
             try logoutUseCase.execute()
         } catch {
-            profileState = .error(message: getString(.errorLogout))
+            profileState = .error(message: GedString.error_logout)
             print("Error logging out: \(error)")
         }
     }

@@ -13,10 +13,6 @@ class MockMessageRepository: MessageRepository {
             .eraseToAnyPublisher()
     }
 
-    func stopGettingMessages() {
-        // No implementation needed
-    }
-    
     func stopGettingLastMessages() {
         // No implementation needed
     }
