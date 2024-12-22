@@ -6,16 +6,16 @@ struct SecondRegistrationView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            Text(getString(gedString: GedString.select_school_level))
+            Text(getString(.selectSchoolLevel))
                 .font(.title2)
             
             HStack {
-                Text(getString(gedString: GedString.level))
+                Text(getString(.level))
                 
                 Spacer()
                 
                 Picker(
-                    getString(gedString: GedString.select_school_level),
+                    getString(.selectSchoolLevel),
                     selection: $registrationViewModel.schoolLevel
                 ) {
                     ForEach(registrationViewModel.schoolLevels, id: \.self) { level in
@@ -39,7 +39,7 @@ struct SecondRegistrationView: View {
                     destination: ThirdRegistrationView()
                         .environmentObject(registrationViewModel)
                 ) {
-                    Text(getString(gedString: GedString.next))
+                    Text(getString(.next))
                         .font(.title2)
                 }
             }.padding()

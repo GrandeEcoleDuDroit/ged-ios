@@ -26,11 +26,7 @@ struct ProfilePicture: View {
                 }
                 
             case .success(let image):
-                ZStack {
-                    image
-                        .fitCircle(scale: scale)
-                }
-                
+                image.fitCircle(scale: scale)
             default: DefaultProfilePicture()
             }
         }
@@ -69,17 +65,13 @@ struct ClickableProfilePicture: View {
                 .clipShape(Circle())
                 
             case .success(let image):
-                ZStack {
-                    image
-                        .fitCircleClickable(
-                            isClicked: $isClicked,
-                            onClick: onClick,
-                            scale: scale
-                        )
-                }
-                
-            default:
-                ClickableDefaultProfilePicture(onClick: onClick)
+                image
+                    .fitCircleClickable(
+                        isClicked: $isClicked,
+                        onClick: onClick,
+                        scale: scale
+                    )
+            default: ClickableDefaultProfilePicture(onClick: onClick)
             }
         }
     }
@@ -95,7 +87,6 @@ struct DefaultProfilePicture: View {
     var body: some View {
         Image(ImageResource.defaultProfilePicture)
             .fitCircle(scale: scale)
-            
     }
 }
 

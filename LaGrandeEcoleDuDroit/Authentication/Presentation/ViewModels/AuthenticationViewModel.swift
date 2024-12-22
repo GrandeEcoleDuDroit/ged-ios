@@ -31,17 +31,17 @@ class AuthenticationViewModel: ObservableObject {
     
     func validateInputs() -> Bool {
         guard !email.isEmpty, !password.isEmpty else {
-            authenticationState = .error(message: getString(gedString: GedString.empty_inputs_error))
+            authenticationState = .error(message: getString(.emptyInputsError))
             return false
         }
 
         guard VerifyEmailFormatUseCase.execute(email) else {
-            authenticationState = .error(message: getString(gedString: GedString.invalid_email_error))
+            authenticationState = .error(message: getString(.invalidEmailError))
             return false
         }
         
         guard password.count >= 8 else {
-            authenticationState = .error(message: getString(gedString: GedString.password_length_error))
+            authenticationState = .error(message: getString(.passwordLengthError))
             return false
         }
 
@@ -60,17 +60,17 @@ class AuthenticationViewModel: ObservableObject {
                     setCurrentUserUseCase.execute(user: user!)
                     await updateAuthenticationState(to: .authenticated)
                 } else {
-                    await updateAuthenticationState(to: .error(message: getString(gedString: GedString.user_not_exist)))
+                    await updateAuthenticationState(to: .error(message: getString(.userNotExist)))
                 }
             } else {
                 await updateAuthenticationState(to: .emailNotVerified)
             }
         } catch AuthenticationError.invalidCredentials {
-            await updateAuthenticationState(to: .error(message: getString(gedString: GedString.invalid_credentials)))
+            await updateAuthenticationState(to: .error(message: getString(.invalidCredentials)))
         } catch AuthenticationError.userDisabled {
-            await updateAuthenticationState(to: .error(message: getString(gedString: GedString.user_disabled)))
+            await updateAuthenticationState(to: .error(message: getString(.userDisabled)))
         } catch {
-            await updateAuthenticationState(to: .error(message: getString(gedString: GedString.unknown_error)))
+            await updateAuthenticationState(to: .error(message: getString(.unknownError)))
         }
     }
     

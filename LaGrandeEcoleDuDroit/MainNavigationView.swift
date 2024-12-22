@@ -1,10 +1,14 @@
 import SwiftUI
 
+private enum Tabs {
+    case news, conversation, profile
+}
+
 struct MainNavigationView: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
     @EnvironmentObject private var conversationViewModel: ConversationViewModel
     @EnvironmentObject private var profileViewModel: ProfileViewModel
-    @State private var selectedTab: Int = 0
+    @State private var selectedTab: Tabs = .news
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -13,40 +17,40 @@ struct MainNavigationView: View {
                     .environmentObject(newsViewModel)
             }
             .tabItem {
-                let icon = selectedTab == 0 ? "house.fill" : "house"
-                Label(getString(gedString: GedString.home), systemImage: icon)
+                let icon = selectedTab == .news ? "house.fill" : "house"
+                Label(getString(.home), systemImage: icon)
                     .environment(\.symbolVariants, .none)
             }
-            .tag(0)
+            .tag(Tabs.news)
             
             NavigationView {
                 ConversationView()
                     .environmentObject(conversationViewModel)
             }
             .tabItem {
-                let icon = selectedTab == 1 ? "message.fill" : "message"
-                Label(getString(gedString: GedString.messages), systemImage: icon)
+                let icon = selectedTab == .conversation ? "message.fill" : "message"
+                Label(getString(.messages), systemImage: icon)
                     .environment(\.symbolVariants, .none)
             }
-            .tag(1)
+            .tag(Tabs.conversation)
             
             NavigationView {
                 ProfileView()
                     .environmentObject(profileViewModel)
             }
             .tabItem {
-                let icon = selectedTab == 2 ? "person.fill" : "person"
-                Label(getString(gedString: GedString.profile), systemImage: icon)
+                let icon = selectedTab == .profile ? "person.fill" : "person"
+                Label(getString(.profile), systemImage: icon)
                     .environment(\.symbolVariants, .none)
             }
-            .tag(2)
+            .tag(Tabs.profile)
         }
     }
 }
 
 #Preview {
     MainNavigationView()
-        .environmentObject(DependencyContainer.shared.newsViewModel)
-        .environmentObject(DependencyContainer.shared.conversationViewModel)
+        .environmentObject(DependencyContainer.shared.mockNewsViewModel)
+        .environmentObject(DependencyContainer.shared.mockConversationViewModel)
         .environmentObject(DependencyContainer.shared.profileViewModel)
 }

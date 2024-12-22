@@ -30,13 +30,11 @@ struct LoadingButton: View {
 }
 
 #Preview {
-    var isLoading: Binding<Bool> = .constant(false)
-    
     VStack(spacing: GedSpacing.verylLarge) {
         LoadingButton(
             label: "Loading button",
             onClick: {},
-            isLoading : isLoading
+            isLoading : .constant(false)
         )        
     }.padding()
 }
