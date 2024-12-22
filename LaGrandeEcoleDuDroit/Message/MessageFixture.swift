@@ -31,7 +31,7 @@ let messagesFixture = [
         content: "Fine, and you ?",
         date: calendar.date(byAdding: .minute, value: -5, to: currentDate) ?? currentDate,
         isRead: true,
-        senderId: userFixture.id,
+        senderId: userFixture2.id,
         type: "text",
         isSent: true
     ),
@@ -51,7 +51,7 @@ let messagesFixture = [
         content: "Great !",
         date: calendar.date(byAdding: .minute, value: -1, to: currentDate) ?? currentDate,
         isRead: true,
-        senderId: userFixture.id,
+        senderId: userFixture2.id,
         type: "text",
         isSent: true
     ),

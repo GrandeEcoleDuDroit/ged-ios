@@ -152,7 +152,7 @@ struct EmptyConversationItem: View {
                         .foregroundStyle(.textPreview)
                 }
                 
-                Text(getString(gedString: GedString.tap_to_chat))
+                Text(getString(.tapToChat))
                     .foregroundStyle(.textPreview)
                     .font(.bodyMedium)
                     .lineLimit(1)
@@ -175,15 +175,15 @@ private func updateElapsedTimeText(for date: Date) -> String {
 private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String {
     switch elapsedTime {
     case .now(_):
-        getString(gedString: GedString.now)
+        getString(.now)
     case.minute(let minutes):
-        getString(gedString: GedString.minutes_ago_short, minutes)
+        getString(.minutesAgoShort, minutes)
     case .hour(let hours):
-        getString(gedString: GedString.hours_ago_short, hours)
+        getString(.hoursAgoShort, hours)
     case .day(let days):
-        getString(gedString: GedString.days_ago_short, days)
+        getString(.daysAgoShort, days)
     case .week(let weeks):
-        getString(gedString: GedString.weeks_ago_short, weeks)
+        getString(.weeksAgoShort, weeks)
     default:
         date.formatted(.dateTime.year().month().day())
     }

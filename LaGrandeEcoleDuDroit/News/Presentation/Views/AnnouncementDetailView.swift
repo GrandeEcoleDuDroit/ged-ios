@@ -25,14 +25,14 @@ struct AnnouncementDetailView: View {
                                 Button(
                                     action: { showEditBottomSheet = true },
                                     label: {
-                                        Label(getString(gedString: GedString.edit), systemImage: "square.and.pencil")
+                                        Label(getString(.edit), systemImage: "square.and.pencil")
                                     }
                                 )
                                 Button(
                                     role: .destructive,
                                     action: { showDeleteAlert = true },
                                     label: {
-                                        Label(getString(gedString: GedString.delete), systemImage: "trash")
+                                        Label(getString(.delete), systemImage: "trash")
                                     }
                                 )
                             } label: {
@@ -68,27 +68,23 @@ struct AnnouncementDetailView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding(.horizontal)
-            .onAppear() {
-                
-                
-            }
             .alert(
                 errorMessage,
                 isPresented: $showErrorAlert
             ) {
-                Button(getString(gedString: GedString.ok)) {
+                Button(getString(.ok)) {
                     showErrorAlert = false
                     newsViewModel.resetAnnouncementState()
                 }
             }
             .alert(
-                getString(gedString: GedString.delete_announcemment_alert_message),
+                getString(.deleteAnnouncementAlertMessage),
                 isPresented: $showDeleteAlert
             ) {
-                Button(getString(gedString: GedString.cancel), role: .cancel) {
+                Button(getString(.cancel), role: .cancel) {
                     showErrorAlert = false
                 }
-                Button(getString(gedString: GedString.delete), role: .destructive) {
+                Button(getString(.delete), role: .destructive) {
                     Task {
                         await newsViewModel.deleteAnnouncement(announcement: announcement)
                     }

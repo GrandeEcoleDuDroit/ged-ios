@@ -18,7 +18,7 @@ struct CreateAnnouncementView: View {
                     .font(.system(size: 22, weight: .semibold))
                     .overlay {
                         if title.isEmpty {
-                            Text(getString(gedString: GedString.title))
+                            Text(getString(.title))
                                 .foregroundColor(.gray)
                                 .padding(.top, 10)
                                 .padding(.leading, 6)
@@ -40,7 +40,7 @@ struct CreateAnnouncementView: View {
                 TextEditor(text: $content)
                     .overlay {
                         if content.isEmpty {
-                            Text(getString(gedString: GedString.content))
+                            Text(getString(.content))
                                 .foregroundColor(.gray)
                                 .padding(.top, 10)
                                 .padding(.leading, 6)
@@ -51,7 +51,7 @@ struct CreateAnnouncementView: View {
                     .frame(maxHeight: .infinity, alignment: .top)
             }
         }
-        .navigationTitle(getString(gedString: GedString.new_announcement))
+        .navigationTitle(getString(.newAnnouncement))
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
@@ -71,7 +71,7 @@ struct CreateAnnouncementView: View {
             errorMessage,
             isPresented: $showErrorAlert
         ) {
-            Button(getString(gedString: GedString.ok)) {
+            Button(getString(.ok)) {
                 showErrorAlert = false
             }
         }
