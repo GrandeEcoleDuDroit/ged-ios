@@ -21,7 +21,7 @@ let conversationsUIFixture = [
 
 var conversationsUserFixture = [
     conversationUserFixture,
-    conversationUserFixture.with(id: "2").with(interlocutor: userFixture2),
+    conversationUserFixture.with(id: "2"),
     conversationUserFixture.with(id: "3"),
     conversationUserFixture.with(id: "4"),
     conversationUserFixture.with(id: "5")

@@ -13,5 +13,7 @@ protocol ConversationRepository {
         currentUser: User
     ) async throws
     
+    func deleteConversation(conversationId: String) async throws
+    
     func stopGettingConversations()
 }

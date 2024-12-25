@@ -65,6 +65,18 @@ class ConversationLocalDataSource {
         }
     }
     
+    func deleteConversation(conversationId: String) throws {
+        do {
+            if let localConversation = try context.fetch(request).first(where: { $0.conversationId == conversationId }) {
+                context.delete(localConversation)
+                try context.save()
+            }
+        } catch {
+            e(tag, "Failed to delete conversation: \(error.localizedDescription)")
+            throw ConversationError.deleteFailed
+        }
+    }
+    
     func stopListeningConversations() {
         conversationSubject.send(completion: .finished)
     }

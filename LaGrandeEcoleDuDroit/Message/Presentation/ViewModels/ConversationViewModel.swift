@@ -4,6 +4,7 @@ import Combine
 class ConversationViewModel: ObservableObject {
     private let tag = String(describing: ConversationViewModel.self)
     private let getConversationsUIUseCase: GetConversationsUIUseCase
+    private let deleteConversationUseCase: DeleteConversationUseCase
     private var cancellables: Set<AnyCancellable> = []
     private var defaultConversations: [String: ConversationUI] = [:]
     
@@ -11,10 +12,24 @@ class ConversationViewModel: ObservableObject {
     @Published var conversationState: ConversationState = .idle
     @Published var searchConversations: String = ""
     
-    init(getConversationsUIUseCase: GetConversationsUIUseCase) {
+    init(
+        getConversationsUIUseCase: GetConversationsUIUseCase,
+        deleteConversationUseCase: DeleteConversationUseCase
+    ) {
         self.getConversationsUIUseCase = getConversationsUIUseCase
+        self.deleteConversationUseCase = deleteConversationUseCase
         listenConversations()
         listenSearchChanges()
+    }
+    
+    func deleteConversation(conversationId: String) {
+        Task {
+            do {
+                try await deleteConversationUseCase.execute(conversationId: conversationId)
+            } catch {
+                conversationState = .error(message: getString(.errorDeletingConversation))
+            }
+        }
     }
     
     private func listenConversations() {
@@ -26,12 +41,13 @@ class ConversationViewModel: ObservableObject {
                     break
                 case .failure(let conversationError):
                     switch conversationError {
-                    case.notFound:
-                        e(self?.tag ?? "ConversationViewModel", getString(.errorGettingConversations))
-                        self?.updateConversationState(state: .error(message: getString(.errorGettingConversations)))
-                    case .insertFailed:
-                        e(self?.tag ?? "ConversationViewModel", getString(.errorCreatingConversation))
-                        self?.updateConversationState(state: .error(message: getString(.errorCreatingConversation)))
+                        case.notFound:
+                            e(self?.tag ?? "ConversationViewModel", getString(.errorGettingConversations))
+                            self?.updateConversationState(state: .error(message: getString(.errorGettingConversations)))
+                        case .insertFailed:
+                            e(self?.tag ?? "ConversationViewModel", getString(.errorCreatingConversation))
+                            self?.updateConversationState(state: .error(message: getString(.errorCreatingConversation)))
+                        default: break
                     }
                 }
             } receiveValue: { [weak self] conversationUI in

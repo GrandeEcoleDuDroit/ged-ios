@@ -45,6 +45,11 @@ class ConversationRepositoryImpl: ConversationRepository {
         try await conversationRemoteDataSource.createConversation(remoteConversation: remoteConversation)
     }
     
+    func deleteConversation(conversationId: String) async throws {
+        try conversationLocalDataSource.deleteConversation(conversationId: conversationId)
+        try await conversationRemoteDataSource.deleteConversation(conversationId: conversationId)
+    }
+    
     func stopGettingConversations() {
         conversationRemoteDataSource.stopListeningConversations()
         conversationLocalDataSource.stopListeningConversations()

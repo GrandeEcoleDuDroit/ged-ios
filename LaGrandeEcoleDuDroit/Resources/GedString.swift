@@ -95,8 +95,10 @@ enum GedString: String {
     case messagePlaceholder = "message_placeholder"
     case newConversation = "new_conversation"
     case noConversation = "no_conversation"
+    case deleteConversationAlertMessage = "delete_conversation_alert_message"
     
     // Message errors
     case errorGettingConversations = "error_getting_conversations"
     case errorCreatingConversation = "error_creating_conversation"
+    case errorDeletingConversation = "error_deleting_conversation"
 }

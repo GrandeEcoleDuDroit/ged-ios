@@ -2,8 +2,12 @@ import SwiftUI
 
 struct ConversationView: View {
     @EnvironmentObject private var conversationViewModel: ConversationViewModel
+    @State private var conversationToOpen: ConversationUI? = nil
     @State private var selectedConversation: ConversationUI? = nil
     @State private var showCreateConversationView: Bool = false
+    @State private var showBottomSheet: Bool = false
+    @State private var isBottomSheetItemClicked: Bool = false
+    @State private var showDeleteAlert: Bool = false
     
     var body: some View {
         ZStack {
@@ -18,7 +22,11 @@ struct ConversationView: View {
                         ForEach(conversationViewModel.conversationsMap.sortedByDate(), id: \.id) { conversation in
                             GetConversationItem(
                                 conversation: conversation,
-                                onClick: { selectedConversation = conversation }
+                                onClick: { conversationToOpen = conversation },
+                                onLongClick: {
+                                    selectedConversation = conversation
+                                    showBottomSheet = true
+                                }
                             )
                             .background(
                                 NavigationLink(
@@ -33,13 +41,24 @@ struct ConversationView: View {
                                             )
                                         ),
                                     tag: conversation,
-                                    selection: $selectedConversation,
+                                    selection: $conversationToOpen,
                                     label: { EmptyView() }
                                 )
                                 .hidden()
                             )
                         }
                     }
+                }
+                .sheet(isPresented: $showBottomSheet) {
+                    Text(getString(.delete))
+                        .foregroundStyle(.red)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                        .contentShape(Rectangle())
+                        .onClick(isClicked: $isBottomSheetItemClicked) {
+                            showBottomSheet = false
+                            showDeleteAlert = true
+                        }
                 }
             }
         }
@@ -54,10 +73,24 @@ struct ConversationView: View {
                 NavigationLink(
                     destination:
                         CreateConversationView()
-                            .environmentObject(DependencyContainer.shared.createConversationViewModel)
+                        .environmentObject(DependencyContainer.shared.createConversationViewModel)
                 ) {
                     Image(systemName: "plus")
                 }
+            }
+        }
+        .alert(
+            getString(.deleteConversationAlertMessage),
+            isPresented: $showDeleteAlert
+        ) {
+            Button(getString(.cancel), role: .cancel) {
+                showDeleteAlert = false
+            }
+            Button(getString(.delete), role: .destructive) {
+                if let conversation = selectedConversation {
+                    conversationViewModel.deleteConversation(conversationId: conversation.id)
+                }
+                showDeleteAlert = false
             }
         }
     }
@@ -66,22 +99,40 @@ struct ConversationView: View {
 struct GetConversationItem: View {
     private var conversation: ConversationUI
     private let onClick: () -> Void
+    private let onLongClick: () -> Void
     
-    init(conversation: ConversationUI, onClick: @escaping () -> Void) {
+    init(
+        conversation: ConversationUI,
+        onClick: @escaping () -> Void,
+        onLongClick: @escaping () -> Void
+    ) {
         self.conversation = conversation
         self.onClick = onClick
+        self.onLongClick = onLongClick
     }
     
     var body: some View {
         if let lastMessage = conversation.lastMessage {
             if lastMessage.isRead {
-                ReadConversationItem(conversationUI: conversation, onClick: onClick)
+                ReadConversationItem(
+                    conversationUI: conversation,
+                    onClick: onClick,
+                    onLongClick: onLongClick
+                )
             } else {
-                UnreadConversationItem(conversationUI: conversation, onClick: onClick)
+                UnreadConversationItem(
+                    conversationUI: conversation,
+                    onClick: onClick,
+                    onLongClick: onLongClick
+                )
             }
         }
         else {
-            EmptyConversationItem(conversationUI: conversation, onClick: onClick)
+            EmptyConversationItem(
+                conversationUI: conversation,
+                onClick: onClick,
+                onLongClick: onLongClick
+            )
         }
     }
 }

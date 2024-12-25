@@ -230,7 +230,10 @@ class DependencyContainer {
     // ViewModels
     
     lazy var conversationViewModel: ConversationViewModel = {
-        ConversationViewModel(getConversationsUIUseCase: getConversationsUIUseCase)
+        ConversationViewModel(
+            getConversationsUIUseCase: getConversationsUIUseCase,
+            deleteConversationUseCase: deleteConversationUseCase
+        )
     }()
     
     lazy var createConversationViewModel: CreateConversationViewModel = {
@@ -266,6 +269,10 @@ class DependencyContainer {
             getLastMessagesUseCase: getLastMessagesUseCase
         )
     }()
+    
+    lazy var deleteConversationUseCase: DeleteConversationUseCase = {
+        DeleteConversationUseCase(userConversationRepository: userConversationRepository)
+    }()
 
     // Mocks
     
@@ -278,7 +285,8 @@ class DependencyContainer {
             getConversationsUIUseCase: GetConversationsUIUseCase(
                 getConversationsUserUseCase: GetConversationsUserUseCase(userConversationRepository: mockUserConversationRepository),
                 getLastMessagesUseCase: GetLastMessagesUseCase(messageRepository: mockMessageRepository)
-            )
+            ),
+            deleteConversationUseCase: DeleteConversationUseCase(userConversationRepository: mockUserConversationRepository)
         )
     }()
     
