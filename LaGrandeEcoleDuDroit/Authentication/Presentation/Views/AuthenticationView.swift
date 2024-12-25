@@ -90,6 +90,7 @@ private struct CredentialsInputs: View {
             
             NavigationLink(destination: {}) {
                 Text(forgottenPassword)
+                    .fontWeight(.medium)
                     .foregroundStyle(.accent)
             }.disabled(isLoading)
             
@@ -132,7 +133,7 @@ private struct Buttons: View {
                         }
                     }
                 },
-                isLoading: $isLoading
+                isLoading: isLoading
             )
             
             HStack {

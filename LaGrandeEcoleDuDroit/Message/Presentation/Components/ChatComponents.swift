@@ -64,25 +64,28 @@ struct ChatInputField: View {
             )
             .transparentScrolling()
             .padding(.leading)
-            .padding(.trailing, GedSpacing.small)
-            .padding(.vertical, GedSpacing.small)
-            .background(.receiveMessageComponentBackground)
-            .clipShape(.rect(cornerRadius: 30))
             .limitText($text, to: maxCharacters)
             
-            Button(
-                action: onSendClick,
-                label: {
-                    Image(systemName: "paperplane.fill")
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                }
-            )
-            .padding(GedSpacing.smallMedium + 1)
-            .background(.gedPrimary)
-            .foregroundStyle(.white)
-            .clipShape(.circle)
+            if !text.isBlank {
+                Button(
+                    action: onSendClick,
+                    label: {
+                        Image(systemName: "paperplane.fill")
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                    }
+                )
+                .padding(.horizontal, GedSpacing.medium)
+                .padding(.vertical, 10)
+                .background(.gedPrimary)
+                .foregroundStyle(.white)
+                .clipShape(.rect(cornerRadius: 20))
+            }
         }
+        .padding(.trailing, GedSpacing.small)
+        .padding(.vertical, GedSpacing.small)
+        .background(.receiveMessageComponentBackground)
+        .clipShape(.rect(cornerRadius: 30))
     }
     
     var messagePlaceholder: Text {

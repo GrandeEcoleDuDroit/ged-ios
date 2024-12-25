@@ -80,7 +80,6 @@
 "error_creating_announcement " = "An error occured while creating the announcement.";
 "error_deleting_announcement" = "An error occured while deleting the announcement.";
 
-
 // Profile
 "profile" = "Profile";
 "account" = "Account";
@@ -91,12 +90,12 @@
 
 // Message
 "messages" = "Messages";
-"new_message" = "New message";
-"user_not_found" = "User not found";
+"no_user_found" = "No user found";
 "tap_to_chat" = "Tap to chat";
 "message_placeholder" = "Send a message";
-"start_conversation" = "Start a new discussion with your friends.";
 "new_conversation" = "New conversation";
+"no_conversation" = "No conversation";
 
 // Message errors
 "error_getting_conversations" = "An error occured while getting conversations.";
+"error_creating_conversation" = "An error occured while creating the conversation.";

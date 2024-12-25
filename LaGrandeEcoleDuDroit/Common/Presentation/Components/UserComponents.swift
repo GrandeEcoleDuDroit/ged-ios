@@ -27,6 +27,7 @@ struct UserItem: View {
         .padding(.vertical, 5)
         .padding(.horizontal)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(UIColor.systemBackground))
         .onClick(isClicked: $isClicked, action: onClick)
     }
 }

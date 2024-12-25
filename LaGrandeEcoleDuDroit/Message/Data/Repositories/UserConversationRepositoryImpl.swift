@@ -18,11 +18,21 @@ class UserConversationRepositoryImpl: UserConversationRepository {
     func getUserConversations() -> AnyPublisher<ConversationUser, ConversationError> {
         conversationRepository.getConversationsFromLocal()
             .map { conversation, interlocutor in
-                ConversationMapper.toConversationUser(
-                    conversation: conversation,
-                    interlocutor: interlocutor
-                )
+                ConversationMapper.toConversationUser(conversation: conversation, interlocutor: interlocutor)
             }.eraseToAnyPublisher()
+    }
+    
+    func createConversation(conversationUser: ConversationUser) async throws {
+        let conversation = ConversationMapper.toConversation(conversationUser: conversationUser)
+        guard let currentUser = userRepository.currentUser else {
+            throw UserError.currentUserNotFound
+        }
+        
+        try await conversationRepository.createConversation(
+            conversation: conversation,
+            interlocutor: conversationUser.interlocutor,
+            currentUser: currentUser
+        )
     }
     
     func stopGettingUserConversations() {
@@ -43,7 +53,8 @@ class UserConversationRepositoryImpl: UserConversationRepository {
                 }
                 
                 return self.userRepository.getUserPublisher(userId: conversation.interlocutorId)
-                    .map { interlocutor in (conversation, interlocutor) }.eraseToAnyPublisher()
+                    .map { interlocutor in (conversation, interlocutor) }
+                    .eraseToAnyPublisher()
             }
             .sink(receiveCompletion: { [weak self] completion in
                 guard let self = self else { return }
@@ -51,11 +62,20 @@ class UserConversationRepositoryImpl: UserConversationRepository {
                 switch completion {
                 case .finished:
                     d(self.tag, "UserConversationRepositoryImpl: listenRemoteConversations finished")
+                    
                 case .failure(let error):
                     e(self.tag, "UserConversationRepositoryImpl: listenRemoteConversations error: \(error)")
                 }
             }, receiveValue: { [weak self] (conversation, interlocutor) in
-                self?.conversationRepository.upsertLocalConversation(conversation: conversation, interlocutor: interlocutor)
+                guard let self = self else { return }
+                do {
+                    try self.conversationRepository.upsertLocalConversation(
+                        conversation: conversation,
+                        interlocutor: interlocutor
+                    )
+                } catch {
+                    e(self.tag, "UserConversationRepositoryImpl: listenRemoteConversations error: \(error)")
+                }
             }).store(in: &cancellables)
     }
 }

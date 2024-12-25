@@ -29,7 +29,7 @@ class ConversationLocalDataSource {
         }
     }
     
-    func upsertConversation(conversation: Conversation, interlocutor: User) {
+    func upsertConversation(conversation: Conversation, interlocutor: User) throws {
         do {
             if let localConversation = try context.fetch(request).first(where: { $0.conversationId == conversation.id }) {
                 guard let interlocutorJson = try? JSONEncoder().encode(interlocutor),
@@ -42,14 +42,15 @@ class ConversationLocalDataSource {
                 try context.save()
                 conversationSubject.send(localConversation)
             } else {
-                insertConversation(conversation: conversation, interlocutor: interlocutor)
+                try insertConversation(conversation: conversation, interlocutor: interlocutor)
             }
         } catch {
             e(tag, "Failed to upsert conversation: \(error.localizedDescription)")
+            throw ConversationError.insertFailed
         }
     }
     
-    func insertConversation(conversation: Conversation, interlocutor: User) {
+    func insertConversation(conversation: Conversation, interlocutor: User) throws {
         do {
             let localConversation = try ConversationMapper.toLocal(
                 conversation: conversation,
@@ -59,7 +60,8 @@ class ConversationLocalDataSource {
             try context.save()
             conversationSubject.send(localConversation)
         } catch {
-            e(tag, "Failed to save conversation: \(error.localizedDescription)")
+            e(tag, "Failed to insert conversation: \(error.localizedDescription)")
+            throw ConversationError.insertFailed
         }
     }
     

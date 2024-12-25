@@ -3,17 +3,19 @@ import Foundation
 import FirebaseFirestore
 import os
 
+let messageTableName = "messages"
+
 class MessageApiImpl: MessageApi {
     private let tag = String(describing: MessageApiImpl.self)
     private var listeners: [ListenerRegistration] = []
-    private let conversationCollection: CollectionReference = Firestore.firestore().collection("conversations")
+    private let conversationCollection: CollectionReference = Firestore.firestore().collection(conversationTableName)
     
     func listenMessages(conversationId: String) -> AnyPublisher<[RemoteMessage], any Error> {
         let subject = CurrentValueSubject<[RemoteMessage], Error>([])
         
         let listener = conversationCollection
             .document(conversationId)
-            .collection("messages")
+            .collection(messageTableName)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self else { return }
                 
@@ -43,8 +45,8 @@ class MessageApiImpl: MessageApi {
         
         let listener = conversationCollection
             .document(conversationId)
-            .collection("messages")
-            .order(by: "timestamp", descending: true)
+            .collection(messageTableName)
+            .order(by: MessageDataFields.timestamp, descending: true)
             .limit(to: 1)
             .addSnapshotListener { [weak self] querySnapshot, error in
                 guard let self = self else { return }

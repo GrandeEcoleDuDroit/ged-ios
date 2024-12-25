@@ -50,12 +50,20 @@ class DependencyContainer {
         GetUsersUseCase(userRepository: userRepository)
     }()
     
+    lazy var getFilteredUsersUseCase: GetFilteredUsersUseCase = {
+        GetFilteredUsersUseCase(userRepository: userRepository)
+    }()
+    
     lazy var sendVerificationEmailUseCase: SendVerificationEmailUseCase = {
         SendVerificationEmailUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
     }()
     
     lazy var isEmailVerifiedUseCase: IsEmailVerifiedUseCase = {
         IsEmailVerifiedUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
+    }()
+    
+    lazy var generateIdUseCase: GenerateIdUseCase = {
+        GenerateIdUseCase()
     }()
     
     // ---------------------------------- Authentication ---------------------------------- //
@@ -226,10 +234,19 @@ class DependencyContainer {
     }()
     
     lazy var createConversationViewModel: CreateConversationViewModel = {
-        CreateConversationViewModel(getUsersUseCase: getUsersUseCase)
+        CreateConversationViewModel(
+            getUsersUseCase: getUsersUseCase,
+            getCurrentUserUseCase: getCurrentUserUseCase,
+            getFilteredUsersUseCase: getFilteredUsersUseCase,
+            generateIdUseCase: generateIdUseCase
+        )
     }()
     
     // UseCases
+    
+    lazy var createConversationUseCase: CreateConversationUseCase = {
+        CreateConversationUseCase(userConversationRepository: userConversationRepository)
+    }()
     
     lazy var getLastMessagesUseCase: GetLastMessagesUseCase = {
         GetLastMessagesUseCase(messageRepository: messageRepository)
@@ -239,13 +256,13 @@ class DependencyContainer {
         GetMessagesUseCase(messageRepository: messageRepository)
     }()
     
-    lazy var getConversationsUseCase: GetConversationsUseCase = {
-        GetConversationsUseCase(userConversationRepository: userConversationRepository)
+    lazy var getConversationsUseCase: GetConversationsUserUseCase = {
+        GetConversationsUserUseCase(userConversationRepository: userConversationRepository)
     }()
     
     lazy var getConversationsUIUseCase: GetConversationsUIUseCase = {
         GetConversationsUIUseCase(
-            getConversationsUseCase: getConversationsUseCase,
+            getConversationsUserUseCase: getConversationsUseCase,
             getLastMessagesUseCase: getLastMessagesUseCase
         )
     }()
@@ -259,19 +276,27 @@ class DependencyContainer {
     lazy var mockConversationViewModel: ConversationViewModel = {
         ConversationViewModel(
             getConversationsUIUseCase: GetConversationsUIUseCase(
-                getConversationsUseCase: GetConversationsUseCase(userConversationRepository: mockUserConversationRepository),
+                getConversationsUserUseCase: GetConversationsUserUseCase(userConversationRepository: mockUserConversationRepository),
                 getLastMessagesUseCase: GetLastMessagesUseCase(messageRepository: mockMessageRepository)
             )
         )
     }()
     
     lazy var mockCreateConversationViewModel: CreateConversationViewModel = {
-        CreateConversationViewModel(getUsersUseCase: GetUsersUseCase(userRepository: mockUserRepository))
+        CreateConversationViewModel(
+            getUsersUseCase: GetUsersUseCase(userRepository: mockUserRepository),
+            getCurrentUserUseCase: GetCurrentUserUseCase(userRepository: mockUserRepository),
+            getFilteredUsersUseCase: GetFilteredUsersUseCase(userRepository: mockUserRepository),
+            generateIdUseCase: GenerateIdUseCase()
+        )
     }()
     
     lazy var mockChatViewModel: ChatViewModel = {
         ChatViewModel(
             getMessagesUseCase: GetMessagesUseCase(messageRepository: mockMessageRepository),
+            getCurrentUserUseCase: GetCurrentUserUseCase(userRepository: mockUserRepository),
+            generateIdUseCase: GenerateIdUseCase(),
+            createConversationUseCase: CreateConversationUseCase(userConversationRepository: mockUserConversationRepository),
             conversation: conversationUIFixture
         )
     }()

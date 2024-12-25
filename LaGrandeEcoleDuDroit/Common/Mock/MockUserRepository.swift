@@ -33,6 +33,12 @@ class MockUserRepository: UserRepository {
     }
     
     func getUsers() async throws -> [User] {
-        _users
+        var users = _users
+        users.append(contentsOf: _users)
+        return users
+    }
+    
+    func getFilteredUsers(filter: String) async -> [User] {
+        _users.filter { $0.fullName.contains(filter) }
     }
 }

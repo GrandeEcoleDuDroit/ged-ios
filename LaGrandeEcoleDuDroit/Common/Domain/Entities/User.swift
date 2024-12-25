@@ -8,7 +8,7 @@ struct User: Codable, Hashable, Identifiable {
     var profilePictureUrl: String?
     
     var fullName: String {
-        return (firstName + " " + lastName).capitalized
+        (firstName + " " + lastName).capitalized
     }
     
     static func == (lhs: User, rhs: User) -> Bool {

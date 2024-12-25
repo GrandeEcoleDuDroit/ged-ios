@@ -2,7 +2,6 @@ import SwiftUI
 
 struct ChatView: View {
     @EnvironmentObject private var chatViewModel: ChatViewModel
-    @Environment(\.dismiss) var dismiss
     @State private var conversation: ConversationUI
     
     init(conversation: ConversationUI) {
@@ -51,10 +50,8 @@ struct ChatView: View {
             }
             
             ChatInputField(
-                text: $chatViewModel.messageToSend,
-                onSendClick: {
-                    chatViewModel.messageToSend = ""
-                }
+                text: $chatViewModel.textToSend,
+                onSendClick: { chatViewModel.sendMessage() }
             )
         }
         .padding(.horizontal)
@@ -72,9 +69,11 @@ struct ChatView: View {
                 }
             }
         }
+        .onAppear {
+            chatViewModel.fetchMessages()
+        }
     }
 }
-
 
 #Preview {
     NavigationView {
@@ -84,10 +83,7 @@ struct ChatView: View {
 }
 
 private extension View {
-    func messageItemPadding(
-        previousSenderId: String,
-        senderId: String
-    ) -> some View {
+    func messageItemPadding(previousSenderId: String, senderId: String) -> some View {
         Group {
             if previousSenderId == senderId {
                 self.padding(.top, GedSpacing.verySmall)

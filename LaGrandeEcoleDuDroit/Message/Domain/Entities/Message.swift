@@ -4,20 +4,20 @@ struct Message: Codable, Identifiable, Equatable {
     var id: String
     var conversationId: String
     var content: String
-    var date: Date
+    var date: Date = Date.now
     var isRead: Bool = false
     var senderId: String
     var type: String
-    var isSent: Bool
+    var state: MessageState = .loading
     
     static func == (lhs: Message, rhs: Message) -> Bool {
-        return lhs.id == rhs.id &&
+        lhs.id == rhs.id &&
         lhs.content == rhs.content &&
         lhs.date == rhs.date &&
         lhs.isRead == rhs.isRead &&
         lhs.senderId == rhs.senderId &&
         lhs.type == rhs.type &&
-        lhs.isSent == rhs.isSent
+        lhs.state == rhs.state
     }
     
     func with(
@@ -28,7 +28,7 @@ struct Message: Codable, Identifiable, Equatable {
         isRead: Bool? = nil,
         senderId: String? = nil,
         type: String? = nil,
-        isSent: Bool? = nil
+        state: MessageState? = nil
     ) -> Message {
         Message(
             id: id ?? self.id,
@@ -38,7 +38,7 @@ struct Message: Codable, Identifiable, Equatable {
             isRead: isRead ?? self.isRead,
             senderId: senderId ?? self.senderId,
             type: type ?? self.type,
-            isSent: self.isSent
+            state: state ?? self.state
         )
     }
 }

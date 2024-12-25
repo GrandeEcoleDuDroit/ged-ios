@@ -58,6 +58,7 @@ class AuthenticationViewModel: ObservableObject {
                 let user = await getUserUseCase.execute(userId: userId)
                 if user != nil {
                     setCurrentUserUseCase.execute(user: user!)
+                    resetInputs()
                     await updateAuthenticationState(to: .authenticated)
                 } else {
                     await updateAuthenticationState(to: .error(message: getString(.userNotExist)))
@@ -94,5 +95,10 @@ class AuthenticationViewModel: ObservableObject {
                 self?.authenticationState = isAuthenticated ? .authenticated : .unauthenticated
             })
             .store(in: &cancellables)
+    }
+    
+    private func resetInputs() {
+        email = ""
+        password = ""
     }
 }

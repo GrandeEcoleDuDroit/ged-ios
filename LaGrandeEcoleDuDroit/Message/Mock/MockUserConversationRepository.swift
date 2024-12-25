@@ -12,6 +12,10 @@ class MockUserConversationRepository: UserConversationRepository {
         ).eraseToAnyPublisher()
     }
     
+    func createConversation(conversationUser: ConversationUser) async throws {
+        conversationsUserFixture.append(conversationUser)
+    }
+    
     func stopGettingUserConversations() {
         // No implementation needed
     }
