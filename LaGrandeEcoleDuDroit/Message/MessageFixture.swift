@@ -11,7 +11,7 @@ let messageFixture = Message(
     isRead: true,
     senderId: userFixture.id,
     type: "text",
-    isSent: true
+    state: .sent
 )
 
 let messagesFixture = [
@@ -23,7 +23,7 @@ let messagesFixture = [
         isRead: true,
         senderId: userFixture.id,
         type: "text",
-        isSent: true
+        state: .sent
     ),
     Message(
         id: "3",
@@ -33,7 +33,7 @@ let messagesFixture = [
         isRead: true,
         senderId: userFixture2.id,
         type: "text",
-        isSent: true
+        state: .sent
     ),
     Message(
         id: "4",
@@ -43,7 +43,7 @@ let messagesFixture = [
         isRead: true,
         senderId: userFixture.id,
         type: "text",
-        isSent: true
+        state: .sent
     ),
     Message(
         id: "5",
@@ -53,7 +53,7 @@ let messagesFixture = [
         isRead: true,
         senderId: userFixture2.id,
         type: "text",
-        isSent: true
+        state: .sent
     ),
     Message(
         id: "6",
@@ -63,7 +63,7 @@ let messagesFixture = [
         isRead: false,
         senderId: userFixture.id,
         type: "text",
-        isSent: true
+        state: .sent
     )
 ]
 
@@ -77,7 +77,7 @@ let lastMessagesFixture = [
         isRead: true,
         senderId: userFixture.id,
         type: "text",
-        isSent: true
+        state: .sent
     ),
     Message(
         id: "1",
@@ -87,7 +87,7 @@ let lastMessagesFixture = [
         isRead: true,
         senderId: userFixture.id,
         type: "text",
-        isSent: true
+        state: .sent
     ),
     Message(
         id: "1",
@@ -97,7 +97,7 @@ let lastMessagesFixture = [
         isRead: true,
         senderId: userFixture.id,
         type: "text",
-        isSent: true
+        state: .sent
     ),
     Message(
         id: "1",
@@ -107,7 +107,7 @@ let lastMessagesFixture = [
         isRead: true,
         senderId: userFixture.id,
         type: "text",
-        isSent: false
+        state: .sent
     ),
     Message(
         id: "1",
@@ -117,6 +117,6 @@ let lastMessagesFixture = [
         isRead: false,
         senderId: userFixture.id,
         type: "text",
-        isSent: false
+        state: .sent
     )
 ]

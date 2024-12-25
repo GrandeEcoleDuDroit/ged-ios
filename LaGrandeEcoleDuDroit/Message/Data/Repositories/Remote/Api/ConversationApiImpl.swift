@@ -48,6 +48,17 @@ class ConversationApiImpl: ConversationApi {
             .setData(ConversationMapper.toFirestoreData(remoteConversation: remoteConversation))
     }
     
+    func deleteConversation(conversationId: String) async throws {
+        do {
+            try await conversationCollection
+                .document(conversationId)
+                .delete()
+        } catch {
+            e(tag, "Error to delete conversation: \(error.localizedDescription)")
+            throw ConversationError.deleteFailed
+        }
+    }
+    
     func stopListeningConversations() {
         listeners.removeAll()
     }

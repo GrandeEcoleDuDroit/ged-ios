@@ -3,14 +3,20 @@ import SwiftUI
 struct ReadConversationItem: View {
     private let conversationUI: ConversationUI
     private let onClick: () -> Void
+    private let onLongClick: () -> Void
     
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
-    init(conversationUI: ConversationUI, onClick: @escaping () -> Void) {
+    init(
+        conversationUI: ConversationUI,
+        onClick: @escaping () -> Void,
+        onLongClick: @escaping () -> Void
+    ) {
         self.conversationUI = conversationUI
         self.onClick = onClick
+        self.onLongClick = onLongClick
     }
     
     var body: some View {
@@ -42,8 +48,9 @@ struct ReadConversationItem: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
             .padding(.vertical, GedSpacing.small)
-            .background(Color(UIColor.systemBackground))
+            .contentShape(Rectangle())
             .onClick(isClicked: $isClicked, action: onClick)
+            .onLongClick(isClicked: $isClicked, action: onLongClick)
             .onAppear {
                 elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
             }
@@ -52,7 +59,11 @@ struct ReadConversationItem: View {
             }
         }
         else {
-            EmptyConversationItem(conversationUI: conversationUI, onClick: onClick)
+            EmptyConversationItem(
+                conversationUI: conversationUI,
+                onClick: onClick,
+                onLongClick: onLongClick
+            )
         }
     }
 }
@@ -60,14 +71,20 @@ struct ReadConversationItem: View {
 struct UnreadConversationItem:View {
     private var conversationUI: ConversationUI
     private let onClick: () -> Void
+    private let onLongClick: () -> Void
     
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
-    init(conversationUI: ConversationUI, onClick: @escaping () -> Void) {
+    init(
+        conversationUI: ConversationUI,
+        onClick: @escaping () -> Void,
+        onLongClick: @escaping () -> Void
+    ) {
         self.conversationUI = conversationUI
         self.onClick = onClick
+        self.onLongClick = onLongClick
     }
     
     var body: some View {
@@ -107,8 +124,9 @@ struct UnreadConversationItem:View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
             .padding(.vertical, GedSpacing.small)
-            .background(Color(UIColor.systemBackground))
+            .contentShape(Rectangle())
             .onClick(isClicked: $isClicked, action: onClick)
+            .onLongClick(isClicked: $isClicked, action: onLongClick)
             .onAppear {
                 elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
             }
@@ -116,7 +134,11 @@ struct UnreadConversationItem:View {
                 elapsedTimeText = updateElapsedTimeText(for: newDate)
             }
         } else {
-            EmptyConversationItem(conversationUI: conversationUI, onClick: onClick)
+            EmptyConversationItem(
+                conversationUI: conversationUI,
+                onClick: onClick,
+                onLongClick: onLongClick
+            )
         }
     }
 }
@@ -124,14 +146,20 @@ struct UnreadConversationItem:View {
 struct EmptyConversationItem: View {
     private var conversationUI: ConversationUI
     private let onClick: () -> Void
+    private let onLongClick: () -> Void
     
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
-    init(conversationUI: ConversationUI, onClick: @escaping () -> Void) {
+    init(
+        conversationUI: ConversationUI,
+        onClick: @escaping () -> Void,
+        onLongClick: @escaping () -> Void
+    ) {
         self.conversationUI = conversationUI
         self.onClick = onClick
+        self.onLongClick = onLongClick
     }
     
     var body: some View {
@@ -162,8 +190,9 @@ struct EmptyConversationItem: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)
         .padding(.vertical, GedSpacing.small)
-        .background(Color(UIColor.systemBackground))
+        .contentShape(Rectangle())
         .onClick(isClicked: $isClicked, action: onClick)
+        .onLongClick(isClicked: $isClicked, action: onLongClick)
     }
 }
 
@@ -193,17 +222,20 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String 
     VStack(alignment: .leading, spacing: 0) {
         ReadConversationItem(
             conversationUI: conversationUIFixture,
-            onClick: {}
+            onClick: {},
+            onLongClick: {}
         )
         
         UnreadConversationItem(
             conversationUI: conversationUIFixture,
-            onClick: {}
+            onClick: {},
+            onLongClick: {}
         )
         
         EmptyConversationItem(
             conversationUI: conversationUIFixture,
-            onClick: {}
+            onClick: {},
+            onLongClick: {}
         )
     }
 }

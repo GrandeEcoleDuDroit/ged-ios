@@ -5,5 +5,7 @@ protocol ConversationApi {
     
     func createConversation(remoteConversation: RemoteConversation) async throws
     
+    func deleteConversation(conversationId: String) async throws
+    
     func stopListeningConversations()
 }

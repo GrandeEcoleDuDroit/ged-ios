@@ -94,7 +94,9 @@
 "message_placeholder" = "Envoyer un message";
 "new_conversation" = "Nouvelle conversation";
 "no_conversation" = "Aucune conversation";
+"delete_conversation_alert_message" = "Voulez-vous supprimer cette conversation ?";
 
 // Message errors
 "error_getting_conversations" = "Une erreur est survenue lors de la récupération des conversations.";
 "error_creating_conversation" = "Une erreur est survenue lors de la création de la conversation.";
+"error_delete_conversation" = "Une erreur est survenue lors de la suppression de la conversation.";

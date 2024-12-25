@@ -35,6 +35,10 @@ class UserConversationRepositoryImpl: UserConversationRepository {
         )
     }
     
+    func deleteConversation(conversationId: String) async throws {
+        try await conversationRepository.deleteConversation(conversationId: conversationId)
+    }
+    
     func stopGettingUserConversations() {
         conversationRepository.stopGettingConversations()
         cancellables.removeAll()

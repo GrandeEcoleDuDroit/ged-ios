@@ -82,7 +82,7 @@ struct AnnouncementDetailView: View {
                 isPresented: $showDeleteAlert
             ) {
                 Button(getString(.cancel), role: .cancel) {
-                    showErrorAlert = false
+                    showDeleteAlert = false
                 }
                 Button(getString(.delete), role: .destructive) {
                     Task {
