@@ -2,27 +2,16 @@ import SwiftUI
 
 struct ConversationView: View {
     @EnvironmentObject private var conversationViewModel: ConversationViewModel
-    @State private var navigateToCreateAnnouncementView: Bool = false
     @State private var selectedConversation: ConversationUI? = nil
+    @State private var showCreateConversationView: Bool = false
     
     var body: some View {
         ZStack {
             if conversationViewModel.conversationsMap.isEmpty {
-                VStack {
-                    Text(getString(.startConversation))
-                        .font(.bodyLarge)
-                        .foregroundColor(.secondary)
-                    
-                    NavigationLink(
-                        destination: CreateConversationView()
-                            .environmentObject(DependencyContainer.shared.createConversationViewModel)
-                    ) {
-                        Text(getString(.newConversation))
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.gedPrimary)
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                Text(getString(.noConversation))
+                    .font(.bodyLarge)
+                    .foregroundColor(.secondary)
+                    .padding(.vertical)
             } else {
                 ScrollView {
                     VStack(spacing: 0) {
@@ -37,6 +26,9 @@ struct ConversationView: View {
                                         .environmentObject(
                                             ChatViewModel(
                                                 getMessagesUseCase: DependencyContainer.shared.getMessagesUseCase,
+                                                getCurrentUserUseCase: DependencyContainer.shared.getCurrentUserUseCase,
+                                                generateIdUseCase: DependencyContainer.shared.generateIdUseCase,
+                                                createConversationUseCase: DependencyContainer.shared.createConversationUseCase,
                                                 conversation: conversation
                                             )
                                         ),
@@ -51,19 +43,20 @@ struct ConversationView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .searchable(
+            text: $conversationViewModel.searchConversations,
+            placement: .navigationBarDrawer(displayMode: .always)
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .navigationTitle(getString(.messages))
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink(
                     destination:
-                        CreateConversationView().environmentObject(DependencyContainer.shared.createConversationViewModel),
-                    isActive: $navigateToCreateAnnouncementView
+                        CreateConversationView()
+                            .environmentObject(DependencyContainer.shared.createConversationViewModel)
                 ) {
-                    Button(
-                        action: { navigateToCreateAnnouncementView = true },
-                        label: { Image(systemName: "plus") }
-                    )
+                    Image(systemName: "plus")
                 }
             }
         }

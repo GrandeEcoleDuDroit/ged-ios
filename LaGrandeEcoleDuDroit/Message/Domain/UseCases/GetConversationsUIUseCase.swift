@@ -1,29 +1,24 @@
 import Combine
 
 class GetConversationsUIUseCase {
-    private let getConversationsUseCase: GetConversationsUseCase
+    private let getConversationsUserUseCase: GetConversationsUserUseCase
     private let getLastMessagesUseCase: GetLastMessagesUseCase
     
     init(
-        getConversationsUseCase: GetConversationsUseCase,
+        getConversationsUserUseCase: GetConversationsUserUseCase,
         getLastMessagesUseCase: GetLastMessagesUseCase
     ) {
-        self.getConversationsUseCase = getConversationsUseCase
+        self.getConversationsUserUseCase = getConversationsUserUseCase
         self.getLastMessagesUseCase = getLastMessagesUseCase
     }
     
     func execute() -> AnyPublisher<ConversationUI, ConversationError> {
-        getConversationsUseCase.execute()
-            .map { conversation in
-                ConversationUI(
-                    id: conversation.id,
-                    interlocutor: conversation.interlocutor,
-                    lastMessage: nil
-                )
-            }
+        getConversationsUserUseCase.execute()
+            .map { ConversationMapper.toConversationUI(conversationUser: $0) }
             .flatMap { [weak self] conversationUI in
                 guard let self = self else {
-                    return Empty<ConversationUI, ConversationError>().eraseToAnyPublisher()
+                    return Empty<ConversationUI, ConversationError>()
+                        .eraseToAnyPublisher()
                 }
                 
                 return self.getLastMessagesUseCase.execute(conversationId: conversationUI.id)
@@ -33,7 +28,7 @@ class GetConversationsUIUseCase {
     }
     
     func stop() {
-        getConversationsUseCase.stop()
+        getConversationsUserUseCase.stop()
         getLastMessagesUseCase.stop()
     }
 }

@@ -30,7 +30,7 @@ class UserRemoteDataSource {
     }
     
     func listenUser(userId: String) -> AnyPublisher<User, Never> {
-        userFirestoreApi.listenUser(userId: userId)
+        userFirestoreApi.listenCurrentUser(userId: userId)
             .compactMap { firestoreUser in
                 return if let firestoreUser = firestoreUser {
                     UserMapper.toDomain(firestoreUser: firestoreUser)
@@ -44,4 +44,14 @@ class UserRemoteDataSource {
         let firestoreUsers = try await userFirestoreApi.getUsers()
         return firestoreUsers.map { UserMapper.toDomain(firestoreUser: $0) }
     }
+    
+    func getFilteredUsers(filter: String) async -> [User] {
+        do {
+            let firestoreUsers = try await userFirestoreApi.getFilteredUsers(filter: filter)
+            return firestoreUsers.map { UserMapper.toDomain(firestoreUser: $0) }
+        } catch {
+            return []
+        }
+    }
+        
 }

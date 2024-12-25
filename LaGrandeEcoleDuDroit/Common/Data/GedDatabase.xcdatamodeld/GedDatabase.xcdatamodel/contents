@@ -24,9 +24,9 @@
         <attribute name="conversationId" attributeType="String"/>
         <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="isRead" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="isSent" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="messageId" attributeType="String"/>
         <attribute name="senderId" attributeType="String"/>
+        <attribute name="state" optional="YES" attributeType="String"/>
         <attribute name="type" attributeType="String"/>
     </entity>
 </model>

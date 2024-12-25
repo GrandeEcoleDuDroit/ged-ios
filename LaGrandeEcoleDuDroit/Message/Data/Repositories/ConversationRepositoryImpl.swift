@@ -24,8 +24,25 @@ class ConversationRepositoryImpl: ConversationRepository {
             .eraseToAnyPublisher()
     }
     
-    func upsertLocalConversation(conversation: Conversation, interlocutor: User) {
-        conversationLocalDataSource.upsertConversation(conversation: conversation, interlocutor: interlocutor)
+    func upsertLocalConversation(conversation: Conversation, interlocutor: User) throws {
+        try conversationLocalDataSource.upsertConversation(conversation: conversation, interlocutor: interlocutor)
+    }
+    
+    func createConversation(
+        conversation: Conversation,
+        interlocutor: User,
+        currentUser: User
+    ) async throws {
+        let remoteConversation = ConversationMapper.toRemote(
+            conversation: conversation,
+            currentUserId: currentUser.id
+        )
+        
+        try conversationLocalDataSource.insertConversation(
+            conversation: conversation,
+            interlocutor: interlocutor
+        )
+        try await conversationRemoteDataSource.createConversation(remoteConversation: remoteConversation)
     }
     
     func stopGettingConversations() {

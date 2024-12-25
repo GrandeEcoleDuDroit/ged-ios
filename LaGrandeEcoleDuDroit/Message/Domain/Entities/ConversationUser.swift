@@ -4,6 +4,7 @@ struct ConversationUser: Hashable {
     var id: String
     var interlocutor: User
     var createdAt: Date = Date.now
+    var isCreated: Bool = false
   
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -15,11 +16,13 @@ struct ConversationUser: Hashable {
     
     func with(
         id: String? = nil,
-        interlocutor: User? = nil
+        interlocutor: User? = nil,
+        isCreated: Bool? = nil
     ) -> ConversationUser {
         ConversationUser(
             id: id ?? self.id,
-            interlocutor: interlocutor ?? self.interlocutor
+            interlocutor: interlocutor ?? self.interlocutor,
+            isCreated: isCreated ?? self.isCreated
         )
     }
 }

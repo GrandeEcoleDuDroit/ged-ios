@@ -2,13 +2,13 @@ import Foundation
 
 let conversationUIFixture = ConversationUI(
     id: "1",
-    interlocutor: userFixture,
+    interlocutor: userFixture2,
     lastMessage: messageFixture
 )
 
 let conversationUserFixture = ConversationUser(
     id: "1",
-    interlocutor: userFixture
+    interlocutor: userFixture2
 )
 
 let conversationsUIFixture = [
@@ -19,10 +19,10 @@ let conversationsUIFixture = [
     conversationUIFixture.with(id: "5", lastMessage: messagesFixture[4])
 ]
 
-let conversationsUserFixture = [
-//    conversationUserFixture,
-//    conversationUserFixture.with(id: "2"),
+var conversationsUserFixture = [
+    conversationUserFixture,
+    conversationUserFixture.with(id: "2").with(interlocutor: userFixture2),
     conversationUserFixture.with(id: "3"),
     conversationUserFixture.with(id: "4"),
-//    conversationUserFixture.with(id: "5")
+    conversationUserFixture.with(id: "5")
 ]

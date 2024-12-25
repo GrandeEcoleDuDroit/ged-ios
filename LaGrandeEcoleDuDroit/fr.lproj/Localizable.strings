@@ -89,12 +89,12 @@
 
 // Message
 "messages" = "Messages";
-"new_message" = "Nouveau message";
-"user_not_found" = "Aucun utilisateur trouvé";
+"no_user_found" = "Aucun utilisateur trouvé";
 "tap_to_chat" = "Appuyez pour discuter";
-"message_placeholder" = "Enovoyer un message";
-"start_conversation" = "Commencer une nouvelle discussion avec vos amis.";
+"message_placeholder" = "Envoyer un message";
 "new_conversation" = "Nouvelle conversation";
+"no_conversation" = "Aucune conversation";
 
 // Message errors
 "error_getting_conversations" = "Une erreur est survenue lors de la récupération des conversations.";
+"error_creating_conversation" = "Une erreur est survenue lors de la création de la conversation.";

@@ -1,6 +1,6 @@
 import Combine
 
-class GetConversationsUseCase {
+class GetConversationsUserUseCase {
     private let userConversationRepository: UserConversationRepository
     
     init(userConversationRepository: UserConversationRepository) {

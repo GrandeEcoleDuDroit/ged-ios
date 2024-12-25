@@ -5,7 +5,13 @@ protocol ConversationRepository {
     
     func getConversationsFromLocal() -> AnyPublisher<(Conversation, User), ConversationError>
     
-    func upsertLocalConversation(conversation: Conversation, interlocutor: User)
+    func upsertLocalConversation(conversation: Conversation, interlocutor: User) throws
+    
+    func createConversation(
+        conversation: Conversation,
+        interlocutor: User,
+        currentUser: User
+    ) async throws
     
     func stopGettingConversations()
 }

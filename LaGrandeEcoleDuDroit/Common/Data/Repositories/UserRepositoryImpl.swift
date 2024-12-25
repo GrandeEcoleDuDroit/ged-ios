@@ -41,6 +41,11 @@ class UserRepositoryImpl: UserRepository {
         try await userRemoteDataSource.getUsers()
     }
     
+    func getFilteredUsers(filter: String) async -> [User] {
+        await userRemoteDataSource.getFilteredUsers(filter: filter)
+    }
+        
+    
     func setCurrentUser(user: User) {
         userLocalDataSource.setCurrentUser(user: user)
     }

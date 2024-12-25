@@ -1,4 +1,8 @@
 extension String {
+    var isBlank: Bool {
+        self.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+    
     var trimmedAndCapitalizedFirstLetter: String {
         let trimmedText = self.trimmingCharacters(in: .whitespacesAndNewlines)
         

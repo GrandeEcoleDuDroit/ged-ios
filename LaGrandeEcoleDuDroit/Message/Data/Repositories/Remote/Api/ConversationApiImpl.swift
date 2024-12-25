@@ -2,17 +2,19 @@ import Combine
 import FirebaseFirestore
 import os
 
+let conversationTableName = "conversations"
+
 class ConversationApiImpl: ConversationApi {
     private let tag = String(describing: ConversationApiImpl.self)
     private var listeners: [ListenerRegistration] = []
-    private let conversationCollection: CollectionReference = Firestore.firestore().collection("conversations")
+    private let conversationCollection: CollectionReference = Firestore.firestore().collection(conversationTableName)
     private var cancellables: Set<AnyCancellable> = []
     
     func listenConversations(userId: String) -> AnyPublisher<RemoteConversation, Error> {
         let subject = PassthroughSubject<RemoteConversation, Error>()
         
         let listener = conversationCollection
-            .whereField("participants", arrayContains: userId)
+            .whereField(ConversationDataFields.participants, arrayContains: userId)
             .addSnapshotListener { [weak self] querySnapshot, error in
                 guard let self = self else { return }
                 
@@ -38,6 +40,12 @@ class ConversationApiImpl: ConversationApi {
         
         listeners.append(listener)
         return subject.eraseToAnyPublisher()
+    }
+    
+    func createConversation(remoteConversation: RemoteConversation) async throws {
+        try await conversationCollection
+            .document(remoteConversation.conversationId)
+            .setData(ConversationMapper.toFirestoreData(remoteConversation: remoteConversation))
     }
     
     func stopListeningConversations() {

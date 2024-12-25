@@ -90,13 +90,13 @@ enum GedString: String {
     
     // Message
     case messages = "messages"
-    case newMessage = "new_message"
-    case userNotFound = "user_not_found"
+    case noUserFound = "no_user_found"
     case tapToChat = "tap_to_chat"
     case messagePlaceholder = "message_placeholder"
-    case startConversation = "start_conversation"
     case newConversation = "new_conversation"
+    case noConversation = "no_conversation"
     
     // Message errors
     case errorGettingConversations = "error_getting_conversations"
+    case errorCreatingConversation = "error_creating_conversation"
 }

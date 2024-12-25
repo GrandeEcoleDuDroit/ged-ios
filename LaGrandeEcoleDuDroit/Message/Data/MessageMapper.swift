@@ -11,7 +11,7 @@ class MessageMapper {
             isRead: remoteMessage.isRead,
             senderId: remoteMessage.senderId,
             type: remoteMessage.type,
-            isSent: true
+            state: .sent
         )
     }
     
@@ -21,7 +21,10 @@ class MessageMapper {
               let content = localMessage.content,
               let date = localMessage.date,
               let senderId = localMessage.senderId,
-              let type = localMessage.type else {
+              let type = localMessage.type,
+              let stateString = localMessage.state,
+              let state = MessageState.from(stateString)
+        else {
             return nil
         }
         
@@ -33,7 +36,7 @@ class MessageMapper {
             isRead: localMessage.isRead,
             senderId: senderId,
             type: type,
-            isSent: localMessage.isSent
+            state: state
         )
     }
 
@@ -46,8 +49,8 @@ class MessageMapper {
         localMessage.content = message.content
         localMessage.date = message.date
         localMessage.isRead = message.isRead
-        localMessage.isSent = message.isSent
         localMessage.type = message.type
+        localMessage.state = message.state.rawValue
     }
     
     static func toLocal(message: Message) -> LocalMessage {
@@ -58,8 +61,8 @@ class MessageMapper {
         localMessage.content = message.content
         localMessage.date = message.date
         localMessage.isRead = message.isRead
-        localMessage.isSent = message.isSent
         localMessage.type = message.type
+        localMessage.state = message.state.rawValue
         return localMessage
     }
 }

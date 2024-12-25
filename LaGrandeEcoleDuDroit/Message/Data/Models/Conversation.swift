@@ -4,6 +4,7 @@ struct Conversation {
     var id: String
     var interlocutorId: String
     var createdAt: Date = Date.now
+    var isCreated: Bool = false
     
     func with(
         id: String? = nil,
