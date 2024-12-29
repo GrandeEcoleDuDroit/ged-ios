@@ -12,6 +12,7 @@ class NewsViewModel: ObservableObject {
     private let createAnnouncementUseCase: CreateAnnouncementUseCase
     private let updateAnnouncementUseCase: UpdateAnnouncementUseCase
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
+    private let generateIdUseCase: GenerateIdUseCase
     private var cancellables: Set<AnyCancellable> = []
     
     init(
@@ -19,13 +20,15 @@ class NewsViewModel: ObservableObject {
         getAnnouncementsUseCase: GetAnnouncementsUseCase,
         createAnnouncementUseCase: CreateAnnouncementUseCase,
         updateAnnouncementUseCase: UpdateAnnouncementUseCase,
-        deleteAnnouncementUseCase: DeleteAnnouncementUseCase
+        deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
+        generateIdUseCase: GenerateIdUseCase
     ) {
         self.getCurrentUserUseCase = getCurrentUserUseCase
         self.getAnnouncementsUseCase = getAnnouncementsUseCase
         self.createAnnouncementUseCase = createAnnouncementUseCase
         self.updateAnnouncementUseCase = updateAnnouncementUseCase
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
+        self.generateIdUseCase = generateIdUseCase
         
         initCurrentUser()
         initAnnouncements()
@@ -70,7 +73,7 @@ class NewsViewModel: ObservableObject {
         }
         
         let announcement = Announcement(
-            id: UUID().uuidString,
+            id: generateIdUseCase.execute(),
             title: title,
             content: content,
             date: Date.now,

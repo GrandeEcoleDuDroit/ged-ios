@@ -9,6 +9,7 @@
 "save" = "Enregistrer";
 "home" = "Accueil";
 "now" = "Maintenant";
+"terminate" = "Terminer";
 "minutes_ago_short" = "%d min";
 "hours_ago_short" = "%d h";
 "days_ago_short" = "%d j";
@@ -45,7 +46,8 @@
 "level" = "Niveau";
 "enter_email_password" = "Entrez votre adresse mail et votre mot de passe";
 "email_verification_title" = "Vérification de l'email";
-"email_verification_explanation" = "Un lien a été à l'adresse suivante : %@. Veuillez cliquez dessus pour terminer l'inscription";
+"email_verification_explanation_begining" = "Un lien a été à l'adresse suivante : ";
+"email_verification_explanation_end" = ". Veuillez cliquer dessus pour finaliser l'inscription.";
 "send_email_verification_caption" = "Un lien de vérification vous sera envoyé.";
 "email_not_verified" = "Email non vérifié";
 "email_not_verified_dialog_message" = "Veuillez vérifier votre adresse mail avant de continuer.";

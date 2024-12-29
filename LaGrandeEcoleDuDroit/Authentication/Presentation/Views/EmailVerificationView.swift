@@ -7,42 +7,52 @@ struct EmailVerificationView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            Text(
-                getString(.emailVerificationExplanation, registrationViewModel.email)
-            ).font(.title3)
+            Text(getString(.emailVerificationExplanationBegining))
+                .font(.title3)
+            
+             + Text(registrationViewModel.email)
+                .fontWeight(.medium)
+                .font(.title3)
+            
+             + Text(getString(.emailVerificationExplanationEnd))
+                .font(.title3)
             
             if case .error(let message) = registrationViewModel.registrationState {
                 HStack {
                     Image(systemName: "exclamationmark.octagon")
                     Text(message)
-                }.foregroundStyle(Color.red)
+                }
+                .foregroundStyle(Color.red)
             }
             
             Image(systemName: "envelope.circle.fill")
                 .resizable()
                 .scaledToFit()
-                .scaleEffect(isAnimating ? 0.35 : 0.3)
+                .scaleEffect(isAnimating ? 0.4 : 0.35)
                 .onAppear() {
                     withAnimation(.easeInOut(duration: 1.3).repeatForever(autoreverses: true)) {
                         isAnimating = true
                     }
                 }
                 .foregroundStyle(.gedPrimary)
-            
-            Spacer()
+                .frame(maxHeight: .infinity, alignment: .center)
             
             HStack {
-                Spacer()
                 Button(
                     action: {
                         Task { await registrationViewModel.checkVerifiedEmail() }
                     },
                     label: {
-                        Text(getString(.next))
+                        Text(getString(.terminate))
                             .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.gedPrimary)
                     }
                 )
-            }.padding()
+                .padding()
+            }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .task {
             await registrationViewModel.sendVerificationEmail()
@@ -54,12 +64,9 @@ struct EmailVerificationView: View {
     }
 }
 
-struct EmailVerificationView_Previews: PreviewProvider {
-    static var previews: some View {
-        let registrationViewModel = DependencyContainer.shared.mockRegistrationViewModel
-        registrationViewModel.email = "example@email.com"
-        
-        return EmailVerificationView()
-            .environmentObject(registrationViewModel)
+#Preview {
+    NavigationStack {
+        EmailVerificationView()
+            .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
     }
 }

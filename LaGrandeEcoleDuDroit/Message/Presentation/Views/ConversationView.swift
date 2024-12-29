@@ -2,9 +2,9 @@ import SwiftUI
 
 struct ConversationView: View {
     @EnvironmentObject private var conversationViewModel: ConversationViewModel
-    @State private var conversationToOpen: ConversationUI? = nil
+    @EnvironmentObject private var tabBarVisibility: TabBarVisibility
+    @EnvironmentObject private var coordinator: MessageNavigationCoordinator
     @State private var selectedConversation: ConversationUI? = nil
-    @State private var showCreateConversationView: Bool = false
     @State private var showBottomSheet: Bool = false
     @State private var isBottomSheetItemClicked: Bool = false
     @State private var showDeleteAlert: Bool = false
@@ -20,46 +20,57 @@ struct ConversationView: View {
                 ScrollView {
                     VStack(spacing: 0) {
                         ForEach(conversationViewModel.conversationsMap.sortedByDate(), id: \.id) { conversation in
-                            GetConversationItem(
-                                conversation: conversation,
-                                onClick: { conversationToOpen = conversation },
-                                onLongClick: {
-                                    selectedConversation = conversation
-                                    showBottomSheet = true
-                                }
-                            )
-                            .background(
-                                NavigationLink(
-                                    destination: ChatView(conversation: conversation)
-                                        .environmentObject(
-                                            ChatViewModel(
-                                                getMessagesUseCase: DependencyContainer.shared.getMessagesUseCase,
-                                                getCurrentUserUseCase: DependencyContainer.shared.getCurrentUserUseCase,
-                                                generateIdUseCase: DependencyContainer.shared.generateIdUseCase,
-                                                createConversationUseCase: DependencyContainer.shared.createConversationUseCase,
-                                                conversation: conversation
-                                            )
-                                        ),
-                                    tag: conversation,
-                                    selection: $conversationToOpen,
-                                    label: { EmptyView() }
+                            NavigationLink(value: MessageScreen.chat(conversation: conversation)) {
+                                GetConversationItem(
+                                    conversation: conversation,
+                                    onLongClick: {
+                                        selectedConversation = conversation
+                                        showBottomSheet = true
+                                    }
                                 )
-                                .hidden()
-                            )
+                            }
+                            .buttonStyle(PlainButtonStyle())
                         }
                     }
                 }
                 .sheet(isPresented: $showBottomSheet) {
-                    Text(getString(.delete))
-                        .foregroundStyle(.red)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
-                        .contentShape(Rectangle())
-                        .onClick(isClicked: $isBottomSheetItemClicked) {
-                            showBottomSheet = false
-                            showDeleteAlert = true
-                        }
+                    ItemWithIcon(
+                        icon: Image(systemName: "trash"),
+                        text: Text(getString(.delete))
+                    )
+                    .font(.title3)
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .contentShape(Rectangle())
+                    .onClick(isClicked: $isBottomSheetItemClicked) {
+                        showBottomSheet = false
+                        showDeleteAlert = true
+                    }
+                    .presentationDetents([.fraction(0.10)])
                 }
+            }
+        }
+        .navigationDestination(for: MessageScreen.self) { screen in
+            switch screen {
+            case .chat(let conversation):
+                ChatView(conversation: conversation)
+                    .environmentObject(
+                        ChatViewModel(
+                            getMessagesUseCase: DependencyContainer.shared.getMessagesUseCase,
+                            getCurrentUserUseCase: DependencyContainer.shared.getCurrentUserUseCase,
+                            generateIdUseCase: DependencyContainer.shared.generateIdUseCase,
+                            createConversationUseCase: DependencyContainer.shared.createConversationUseCase,
+                            conversation: conversation
+                        )
+                    )
+                    .environmentObject(tabBarVisibility)
+                    .environmentObject(coordinator)
+            case .createConversation:
+                CreateConversationView()
+                    .environmentObject(DependencyContainer.shared.createConversationViewModel)
+                    .environmentObject(tabBarVisibility)
+                    .environmentObject(coordinator)
             }
         }
         .searchable(
@@ -70,11 +81,7 @@ struct ConversationView: View {
         .navigationTitle(getString(.messages))
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                NavigationLink(
-                    destination:
-                        CreateConversationView()
-                        .environmentObject(DependencyContainer.shared.createConversationViewModel)
-                ) {
+                NavigationLink(value: MessageScreen.createConversation) {
                     Image(systemName: "plus")
                 }
             }
@@ -93,21 +100,21 @@ struct ConversationView: View {
                 showDeleteAlert = false
             }
         }
+        .onAppear {
+            tabBarVisibility.show = true
+        }
     }
 }
 
 struct GetConversationItem: View {
     private var conversation: ConversationUI
-    private let onClick: () -> Void
     private let onLongClick: () -> Void
     
     init(
         conversation: ConversationUI,
-        onClick: @escaping () -> Void,
         onLongClick: @escaping () -> Void
     ) {
         self.conversation = conversation
-        self.onClick = onClick
         self.onLongClick = onLongClick
     }
     
@@ -116,13 +123,11 @@ struct GetConversationItem: View {
             if lastMessage.isRead {
                 ReadConversationItem(
                     conversationUI: conversation,
-                    onClick: onClick,
                     onLongClick: onLongClick
                 )
             } else {
                 UnreadConversationItem(
                     conversationUI: conversation,
-                    onClick: onClick,
                     onLongClick: onLongClick
                 )
             }
@@ -130,7 +135,6 @@ struct GetConversationItem: View {
         else {
             EmptyConversationItem(
                 conversationUI: conversation,
-                onClick: onClick,
                 onLongClick: onLongClick
             )
         }
@@ -138,8 +142,10 @@ struct GetConversationItem: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         ConversationView()
             .environmentObject(DependencyContainer.shared.mockConversationViewModel)
+            .environmentObject(TabBarVisibility())
+            .environmentObject(MessageNavigationCoordinator())
     }
 }

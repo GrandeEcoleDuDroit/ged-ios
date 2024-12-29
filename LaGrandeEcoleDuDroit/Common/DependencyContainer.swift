@@ -128,6 +128,7 @@ class DependencyContainer {
     
     lazy var mockRegistrationViewModel: RegistrationViewModel = {
         RegistrationViewModel(
+            email: "email@example.com",
             registerUseCase: RegisterUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
             sendVerificationEmailUseCase: SendVerificationEmailUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
             isEmailVerifiedUseCase: IsEmailVerifiedUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
@@ -160,7 +161,8 @@ class DependencyContainer {
             getAnnouncementsUseCase: getAnnouncementsUseCase,
             createAnnouncementUseCase: createAnnouncementUseCase,
             updateAnnouncementUseCase: updateAnnouncementUseCase,
-            deleteAnnouncementUseCase: deleteAnnouncementUseCase
+            deleteAnnouncementUseCase: deleteAnnouncementUseCase,
+            generateIdUseCase: generateIdUseCase
         )
     }()
     
@@ -192,7 +194,8 @@ class DependencyContainer {
             getAnnouncementsUseCase: GetAnnouncementsUseCase(announcementRepository: mockAnnouncementRepository),
             createAnnouncementUseCase: CreateAnnouncementUseCase(announcementRepository: mockAnnouncementRepository),
             updateAnnouncementUseCase: UpdateAnnouncementUseCase(announcementRepository: mockAnnouncementRepository),
-            deleteAnnouncementUseCase: DeleteAnnouncementUseCase(announcementRepository: mockAnnouncementRepository)
+            deleteAnnouncementUseCase: DeleteAnnouncementUseCase(announcementRepository: mockAnnouncementRepository),
+            generateIdUseCase: GenerateIdUseCase()
         )
     }()
     
@@ -317,6 +320,14 @@ class DependencyContainer {
         ProfileViewModel(
             getCurrentUserUseCase: getCurrentUserUseCase,
             logoutUseCase: logoutUseCase
+        )
+    }()
+    
+    // Mocks
+    lazy var mockProfileViewModel: ProfileViewModel = {
+        ProfileViewModel(
+            getCurrentUserUseCase: GetCurrentUserUseCase(userRepository: mockUserRepository),
+            logoutUseCase: LogoutUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository)
         )
     }()
 }

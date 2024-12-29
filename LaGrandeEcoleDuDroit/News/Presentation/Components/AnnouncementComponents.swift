@@ -11,14 +11,7 @@ struct TopAnnouncementDetailItem: View {
     
     var body: some View {
         HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
-            if let profilePictureUrl = announcement.author.profilePictureUrl {
-                ProfilePicture(
-                    url: profilePictureUrl,
-                    scale: 0.4
-                )
-            } else {
-                DefaultProfilePicture(scale: 0.4)
-            }
+            ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
             
             Text(announcement.author.fullName)
                 .font(.titleSmall)
@@ -38,26 +31,17 @@ struct TopAnnouncementDetailItem: View {
 
 struct AnnouncementItemWithContent: View {
     private var announcement: Announcement
-    private let onClick: () -> Void
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
-    init(announcement: Announcement, onClick: @escaping () -> Void) {
+    init(announcement: Announcement) {
         self.announcement = announcement
-        self.onClick = onClick
     }
     
     var body: some View {
         HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
-            if let profilePictureUrl = announcement.author.profilePictureUrl {
-                ProfilePicture(
-                    url: profilePictureUrl,
-                    scale: 0.4
-                )
-            } else {
-                DefaultProfilePicture(scale: 0.4)
-            }
+            ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
             
             VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                 HStack {
@@ -88,7 +72,7 @@ struct AnnouncementItemWithContent: View {
         .padding(.horizontal)
         .padding(.vertical, 5)
         .background(Color(UIColor.systemBackground))
-        .onClick(isClicked: $isClicked, action: onClick)
+        .clickEffect(isClicked: $isClicked)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
             elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
@@ -98,27 +82,18 @@ struct AnnouncementItemWithContent: View {
 
 struct LoadingAnnouncementItemWithContent: View {
     private var announcement: Announcement
-    private let onClick: () -> Void
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
-    init(announcement: Announcement, onClick: @escaping () -> Void) {
+    init(announcement: Announcement) {
         self.announcement = announcement
-        self.onClick = onClick
     }
     
     var body: some View {
         HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
-            if let profilePictureUrl = announcement.author.profilePictureUrl {
-                ProfilePicture(
-                    url: profilePictureUrl,
-                    scale: 0.4
-                )
-            } else {
-                DefaultProfilePicture(scale: 0.4)
-            }
-            
+            ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
+
             VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                 HStack {
                     Text(announcement.author.fullName)
@@ -144,7 +119,7 @@ struct LoadingAnnouncementItemWithContent: View {
         .background(Color(UIColor.systemBackground))
         .padding(.horizontal)
         .padding(.vertical, 5)
-        .onClick(isClicked: $isClicked, action: onClick)
+        .clickEffect(isClicked: $isClicked)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
             elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
@@ -154,27 +129,18 @@ struct LoadingAnnouncementItemWithContent: View {
 
 struct ErrorAnnouncementItemWithContent: View {
     private var announcement: Announcement
-    private let onClick: () -> Void
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
-    init(announcement: Announcement, onClick: @escaping () -> Void) {
+    init(announcement: Announcement) {
         self.announcement = announcement
-        self.onClick = onClick
     }
     
     var body: some View {
         HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
-            if let profilePictureUrl = announcement.author.profilePictureUrl {
-                ProfilePicture(
-                    url: profilePictureUrl,
-                    scale: 0.4
-                )
-            } else {
-                DefaultProfilePicture(scale: 0.4)
-            }
-            
+            ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
+
             VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                 HStack {
                     Text(announcement.author.fullName)
@@ -202,7 +168,7 @@ struct ErrorAnnouncementItemWithContent: View {
         .background(Color(UIColor.systemBackground))
         .padding(.horizontal)
         .padding(.vertical, 5)
-        .onClick(isClicked: $isClicked, action: onClick)
+        .clickEffect(isClicked: $isClicked)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
             elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
@@ -233,10 +199,10 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, announcementDate: Date
         TopAnnouncementDetailItem(announcement: announcementFixture)
             .padding(.horizontal)
         
-        AnnouncementItemWithContent(announcement: announcementFixture, onClick: {})
+        AnnouncementItemWithContent(announcement: announcementFixture)
         
-        LoadingAnnouncementItemWithContent(announcement: announcementFixture, onClick: {})
+        LoadingAnnouncementItemWithContent(announcement: announcementFixture)
         
-        ErrorAnnouncementItemWithContent(announcement: announcementFixture, onClick: {})
+        ErrorAnnouncementItemWithContent(announcement: announcementFixture)
     }
 }

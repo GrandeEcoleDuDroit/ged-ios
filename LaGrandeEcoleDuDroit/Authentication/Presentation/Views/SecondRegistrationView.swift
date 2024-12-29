@@ -2,12 +2,12 @@ import SwiftUI
 
 struct SecondRegistrationView: View {
     @EnvironmentObject private var registrationViewModel: RegistrationViewModel
-    @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject private var coordinator: AuthenticationNavigationCoordinator
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
             Text(getString(.selectSchoolLevel))
-                .font(.title2)
+                .font(.title3)
             
             HStack {
                 Text(getString(.level))
@@ -21,11 +21,10 @@ struct SecondRegistrationView: View {
                     ForEach(registrationViewModel.schoolLevels, id: \.self) { level in
                         Text(level)
                     }
-                    
                 }
             }
-            .padding([.horizontal], 20)
-            .padding([.vertical], 10)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
             .background(
                 RoundedRectangle(cornerRadius: 5)
                     .stroke(Color.black, lineWidth: 0.5)
@@ -35,25 +34,36 @@ struct SecondRegistrationView: View {
             
             HStack {
                 Spacer()
-                NavigationLink(
-                    destination: ThirdRegistrationView()
-                        .environmentObject(registrationViewModel)
-                ) {
+                NavigationLink(value: AuthenticationScreen.thirdRegistration) {
                     Text(getString(.next))
                         .font(.title2)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.gedPrimary)
                 }
-            }.padding()
+                
+            }
+            .padding()
+        }
+        .navigationDestination(for: AuthenticationScreen.self) { screen in
+            if case .thirdRegistration = screen {
+                ThirdRegistrationView()
+                    .environmentObject(registrationViewModel)
+                    .environmentObject(coordinator)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .contentShape(Rectangle())
+        .navigationBarTitleDisplayMode(.inline)
         .padding()
-        .onAppear {
-            registrationViewModel.resetState()
-        }
+        .onAppear { registrationViewModel.resetState() }
         .registrationToolbar(step: 2, maxStep: 3)
     }
 }
 
 #Preview {
-    SecondRegistrationView()
-        .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
+    NavigationStack {
+        SecondRegistrationView()
+            .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
+            .environmentObject(AuthenticationNavigationCoordinator())
+    }
 }

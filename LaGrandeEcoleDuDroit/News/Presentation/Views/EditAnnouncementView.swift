@@ -2,9 +2,9 @@ import SwiftUI
 
 struct EditAnnouncementView: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
+    @Environment(\.dismiss) var dismiss
     private let announcement: Announcement
     @State private var isActive: Bool = false
-    @Environment(\.dismiss) var dismiss
     @State private var showErrorAlert: Bool = false
     @State private var errorMessage: String = ""
     @State private var title: String
@@ -60,6 +60,9 @@ struct EditAnnouncementView: View {
         } message: { data in
             Text(errorMessage)
         }
+        .onAppear {
+            print("title: \(title) content: \(content)")
+        }
     }
     
     var topBar: some View {
@@ -86,7 +89,7 @@ struct EditAnnouncementView: View {
                             .fontWeight(.semibold)
                     } else {
                         Text(getString(.save))
-                            .foregroundColor(.gedPrimary)
+                            .foregroundStyle(.gedPrimary)
                             .fontWeight(.semibold)
                     }
                 }
@@ -96,7 +99,7 @@ struct EditAnnouncementView: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         EditAnnouncementView(announcement: announcementFixture)
             .environmentObject(DependencyContainer.shared.newsViewModel)
     }

@@ -2,7 +2,10 @@ import SwiftUI
 import FirebaseCore
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
+    ) -> Bool {
         FirebaseApp.configure()
         return true
     }
@@ -16,32 +19,31 @@ struct LaGrandeEcolueDuDroitApp: App {
     @StateObject private var newsViewModel = DependencyContainer.shared.newsViewModel
     @StateObject private var conversationViewModel = DependencyContainer.shared.conversationViewModel
     @StateObject private var profileViewModel = DependencyContainer.shared.profileViewModel
-    @State private var isAuthenticated: Bool = false
+    @State private var authenticationState: AuthenticationState = .idle
 
     var body: some Scene {
         WindowGroup {
             HStack {
-                if isAuthenticated {
-                    MainNavigationView()
-                        .environmentObject(newsViewModel)
-                        .environmentObject(conversationViewModel)
-                        .environmentObject(profileViewModel)
-                } else {
-                    AuthenticationView()
-                        .environmentObject(authenticationViewModel)
-                        .environmentObject(registrationViewModel)
+                switch authenticationState {
+                    case .authenticated:
+                        MainNavigationView()
+                            .environmentObject(newsViewModel)
+                            .environmentObject(conversationViewModel)
+                            .environmentObject(profileViewModel)
+                    case .unauthenticated:
+                        AuthenticationView()
+                            .environmentObject(authenticationViewModel)
+                            .environmentObject(registrationViewModel)
+                    default:
+                        SplashScreen()
                 }
             }
             .onReceive(authenticationViewModel.$authenticationState) { state in
-                if state == .authenticated {
-                    isAuthenticated = true
-                } else if state == .unauthenticated {
-                    isAuthenticated = false
-                }
+                authenticationState = state
             }
             .onReceive(registrationViewModel.$registrationState) { state in
                 if state == .emailVerified {
-                    isAuthenticated = true
+                    authenticationState = .authenticated
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

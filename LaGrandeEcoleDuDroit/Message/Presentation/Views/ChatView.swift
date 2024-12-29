@@ -2,6 +2,8 @@ import SwiftUI
 
 struct ChatView: View {
     @EnvironmentObject private var chatViewModel: ChatViewModel
+    @EnvironmentObject private var tabBarVisibility: TabBarVisibility
+    @EnvironmentObject private var coordinator: MessageNavigationCoordinator
     @State private var conversation: ConversationUI
     
     init(conversation: ConversationUI) {
@@ -58,11 +60,15 @@ struct ChatView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 HStack {
-                    if let profilePictureUrl = conversation.interlocutor.profilePictureUrl {
-                        ProfilePicture(url: profilePictureUrl, scale: 0.4)
-                    } else {
-                        DefaultProfilePicture(scale: 0.4)
+                    Button(action: {
+                        coordinator.popToRoot()
+                    }) {
+                        Image(systemName: "chevron.backward")
+                            .fontWeight(.semibold)
+                            .padding(.trailing)
                     }
+                    
+                    ProfilePicture(url: conversation.interlocutor.profilePictureUrl, scale: 0.4)
                     
                     Text(conversation.interlocutor.fullName)
                         .font(.bodyLarge)
@@ -70,15 +76,10 @@ struct ChatView: View {
             }
         }
         .onAppear {
+            tabBarVisibility.show = false
             chatViewModel.fetchMessages()
         }
-    }
-}
-
-#Preview {
-    NavigationView {
-        ChatView(conversation: conversationUIFixture)
-            .environmentObject(DependencyContainer.shared.mockChatViewModel)
+        .navigationBarBackButtonHidden()
     }
 }
 
@@ -91,5 +92,14 @@ private extension View {
                 self.padding(.top, GedSpacing.smallMedium)
             }
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        ChatView(conversation: conversationUIFixture)
+            .environmentObject(DependencyContainer.shared.mockChatViewModel)
+            .environmentObject(TabBarVisibility())
+            .environmentObject(MessageNavigationCoordinator())
     }
 }

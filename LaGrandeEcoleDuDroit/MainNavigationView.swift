@@ -8,13 +8,16 @@ struct MainNavigationView: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
     @EnvironmentObject private var conversationViewModel: ConversationViewModel
     @EnvironmentObject private var profileViewModel: ProfileViewModel
+    @StateObject private var tabBarVisibility = TabBarVisibility()
+    @StateObject private var messageNavigationCoordinator = MessageNavigationCoordinator()
     @State private var selectedTab: Tabs = .news
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            NavigationView {
+            NavigationStack {
                 NewsView()
                     .environmentObject(newsViewModel)
+                    .environmentObject(tabBarVisibility)
             }
             .tabItem {
                 let icon = selectedTab == .news ? "house.fill" : "house"
@@ -22,10 +25,13 @@ struct MainNavigationView: View {
                     .environment(\.symbolVariants, .none)
             }
             .tag(Tabs.news)
+            .toolbar(tabBarVisibility.show ? .visible : .hidden, for: .tabBar)
             
-            NavigationView {
+            NavigationStack(path: $messageNavigationCoordinator.paths) {
                 ConversationView()
                     .environmentObject(conversationViewModel)
+                    .environmentObject(tabBarVisibility)
+                    .environmentObject(messageNavigationCoordinator)
             }
             .tabItem {
                 let icon = selectedTab == .conversation ? "message.fill" : "message"
@@ -33,8 +39,9 @@ struct MainNavigationView: View {
                     .environment(\.symbolVariants, .none)
             }
             .tag(Tabs.conversation)
+            .toolbar(tabBarVisibility.show ? .visible : .hidden, for: .tabBar)
             
-            NavigationView {
+            NavigationStack {
                 ProfileView()
                     .environmentObject(profileViewModel)
             }
@@ -44,6 +51,7 @@ struct MainNavigationView: View {
                     .environment(\.symbolVariants, .none)
             }
             .tag(Tabs.profile)
+            .toolbar(tabBarVisibility.show ? .visible : .hidden, for: .tabBar)
         }
     }
 }

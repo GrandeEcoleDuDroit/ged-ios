@@ -1,16 +1,16 @@
 import SwiftUI
 
 struct AnnouncementDetailView: View {
-    @Binding private var announcement: Announcement
     @EnvironmentObject private var newsViewModel: NewsViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var showErrorAlert: Bool = false
     @State private var showDeleteAlert: Bool = false
     @State private var errorMessage: String = ""
     @State private var showEditBottomSheet: Bool = false
+    private var announcement: Announcement
     
-    init(announcement: Binding<Announcement>) {
-        self._announcement = announcement
+    init(announcement: Announcement) {
+        self.announcement = announcement
     }
     
     var body: some View {
@@ -19,6 +19,7 @@ struct AnnouncementDetailView: View {
                 HStack {
                     TopAnnouncementDetailItem(announcement: announcement)
                         .padding(.top, 5)
+                    
                     if let currentUser = newsViewModel.currentUser {
                         if currentUser.isMember && announcement.author.id == currentUser.id {
                             Menu {
@@ -46,7 +47,8 @@ struct AnnouncementDetailView: View {
                             }
                         }
                     }
-                }.onReceive(newsViewModel.$announcementState) { state in
+                }
+                .onReceive(newsViewModel.$announcementState) { state in
                     if case .deleted = state {
                         dismiss()
                     } else if case .error(let message) = state {
@@ -95,7 +97,6 @@ struct AnnouncementDetailView: View {
 }
 
 #Preview {
-    AnnouncementDetailView(
-        announcement: .constant(announcementFixture)
-    ).environmentObject(DependencyContainer.shared.mockNewsViewModel)
+    AnnouncementDetailView(announcement: announcementFixture)
+        .environmentObject(DependencyContainer.shared.mockNewsViewModel)
 }

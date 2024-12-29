@@ -2,9 +2,6 @@ import SwiftUI
 
 struct CreateAnnouncementView: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
-    @State private var textHeight: CGFloat = 40
-    private let lineHeight: CGFloat = 24
-    @State private var isActive: Bool = false
     @Environment(\.dismiss) var dismiss
     @State private var showErrorAlert: Bool = false
     @State private var errorMessage: String = ""
@@ -59,7 +56,6 @@ struct CreateAnnouncementView: View {
             switch state {
             case .created:
                 errorMessage = ""
-                isActive = true
             case .error(let message):
                 errorMessage = message
                 showErrorAlert = true
@@ -75,11 +71,35 @@ struct CreateAnnouncementView: View {
                 showErrorAlert = false
             }
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(
+                    action: {
+                        Task {
+                            await newsViewModel.createAnnouncement(title: title, content: content)
+                            if newsViewModel.announcementState == .created {
+                                dismiss()
+                            }
+                        }
+                    },
+                    label: {
+                        if content.isEmpty {
+                            Text(getString(.post))
+                                .fontWeight(.semibold)
+                        } else {
+                            Text(getString(.post))
+                                .foregroundColor(.gedPrimary)
+                                .fontWeight(.semibold)
+                        }
+                    }
+                ).disabled(content.isEmpty)
+            }
+        }
     }
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         CreateAnnouncementView()
             .environmentObject(DependencyContainer.shared.newsViewModel)
     }

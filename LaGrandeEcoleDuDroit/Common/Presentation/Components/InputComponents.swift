@@ -5,7 +5,7 @@ struct FocusableOutlinedTextField: View {
     @Binding var text: String
     @Binding var inputFocused: InputField?
     let defaultFocusValue: InputField
-    @Binding var isDisabled: Bool
+    let isDisabled: Bool
     
     private var borderColor: Color {
         if isDisabled == false {
@@ -24,13 +24,13 @@ struct FocusableOutlinedTextField: View {
         text: Binding<String>,
         defaultFocusValue: InputField,
         inputFocused: Binding<InputField?>,
-        isDisable: Binding<Bool>? = nil
+        isDisable: Bool = false
     ) {
         self.title = title
         self._text = text
         self.defaultFocusValue = defaultFocusValue
         self._inputFocused = inputFocused
-        self._isDisabled = isDisable ?? .constant(false)
+        self.isDisabled = isDisable
     }
     
     var body: some View {
@@ -58,7 +58,7 @@ struct FocusableOutlinedPasswordTextField: View {
     @Binding var text: String
     @Binding var inputFocused: InputField?
     let defaultFocusValue: InputField
-    @Binding var isDisabled: Bool
+    let isDisabled: Bool
     
     private var borderColor: Color {
         if isDisabled == false {
@@ -78,13 +78,13 @@ struct FocusableOutlinedPasswordTextField: View {
         text: Binding<String>,
         defaultFocusValue: InputField,
         inputFocused: Binding<InputField?>,
-        isDisable: Binding<Bool>? = nil
+        isDisable: Bool = false
     ) {
         self.title = title
         self._text = text
         self.defaultFocusValue = defaultFocusValue
         self._inputFocused = inputFocused
-        self._isDisabled = isDisable ?? .constant(false)
+        self.isDisabled = isDisable
     }
     
     var body: some View {
@@ -140,13 +140,13 @@ struct FocusableOutlinedPasswordTextField: View {
 struct DynamicTextEditor: View {
     @Binding var text: String
     private let placeholderText: Text
-    private let minHeight: CGFloat?
+    private let minHeight: CGFloat
     private let maxHeight: CGFloat?
     
     init(
         text: Binding<String>,
         placeholderText: Text,
-        minHeight: CGFloat? = nil,
+        minHeight: CGFloat = 100,
         maxHeight: CGFloat? = nil
     ) {
         self._text = text
@@ -158,7 +158,7 @@ struct DynamicTextEditor: View {
     var body: some View {
         TextEditor(text: $text)
             .overlay {
-                if text.isEmpty {
+                if text.isBlank {
                     if #available (iOS 17.0, *) {
                         placeholderText
                             .foregroundStyle(.gray)
@@ -194,7 +194,7 @@ struct DynamicTextEditor: View {
             text: .constant(""),
             defaultFocusValue: InputField.email,
             inputFocused: .constant(InputField.email),
-            isDisable: .constant(false)
+            isDisable: false
         )
         
         FocusableOutlinedPasswordTextField(
@@ -202,7 +202,7 @@ struct DynamicTextEditor: View {
             text: .constant(""),
             defaultFocusValue: InputField.password,
             inputFocused: .constant(InputField.password),
-            isDisable: .constant(false)
+            isDisable: false
         )
         
         DynamicTextEditor(

@@ -2,24 +2,15 @@ import SwiftUI
 
 struct UserItem: View {
     private let user: User
-    private let onClick: () -> Void
     @State private var isClicked: Bool = false
     
-    init(user: User, onClick: @escaping () -> Void) {
+    init(user: User) {
         self.user = user
-        self.onClick = onClick
     }
     
     var body: some View {
         HStack(alignment: .center) {
-            if let profilePictureUrl = user.profilePictureUrl {
-                ProfilePicture(
-                    url: profilePictureUrl,
-                    scale: 0.4
-                )
-            } else {
-                DefaultProfilePicture(scale: 0.4)
-            }
+            ProfilePicture(url: user.profilePictureUrl, scale: 0.4)
             
             Text(user.fullName)
                 .font(.titleSmall)
@@ -27,11 +18,11 @@ struct UserItem: View {
         .padding(.vertical, 5)
         .padding(.horizontal)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(UIColor.systemBackground))
-        .onClick(isClicked: $isClicked, action: onClick)
+        .contentShape(Rectangle())
+        .clickEffect(isClicked: $isClicked)
     }
 }
 
 #Preview {
-    UserItem(user: userFixture, onClick: {})
+    UserItem(user: userFixture)
 }

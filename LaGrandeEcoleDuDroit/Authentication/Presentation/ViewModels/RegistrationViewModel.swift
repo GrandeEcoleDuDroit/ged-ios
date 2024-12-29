@@ -4,7 +4,7 @@ import Combine
 class RegistrationViewModel: ObservableObject {
     @Published var firstName: String = ""
     @Published var lastName: String = ""
-    @Published var email: String = ""
+    @Published var email: String
     @Published var password: String = ""
     @Published var schoolLevel: String
     @Published var registrationState: RegistrationState = .idle
@@ -17,11 +17,13 @@ class RegistrationViewModel: ObservableObject {
     private let createUserUseCase: CreateUserUseCase
     
     init(
+        email: String = "",
         registerUseCase: RegisterUseCase,
         sendVerificationEmailUseCase: SendVerificationEmailUseCase,
         isEmailVerifiedUseCase: IsEmailVerifiedUseCase,
         createUserUseCase: CreateUserUseCase
     ) {
+        self.email = email
         self.registerUseCase = registerUseCase
         self.sendVerificationEmailUseCase = sendVerificationEmailUseCase
         self.isEmailVerifiedUseCase = isEmailVerifiedUseCase
@@ -30,21 +32,15 @@ class RegistrationViewModel: ObservableObject {
         schoolLevel = schoolLevels[0]
     }
     
-    func validateNameInputs() -> Bool {
-        guard !firstName.isEmpty, !lastName.isEmpty else {
-            registrationState = .error(message: getString(.emptyInputsError))
-            return false
-        }
-        
-        return true
+    func nameInputsNotEmpty() -> Bool {
+        !(firstName.isBlank || lastName.isBlank)
+    }
+    
+    func credentialInputsNotEmpty() -> Bool {
+        !(email.isBlank || password.isBlank)
     }
     
     func validateCredentialInputs() -> Bool {
-        guard !email.isEmpty, !password.isEmpty else {
-            registrationState = .error(message: getString(.emptyInputsError))
-            return false
-        }
-        
         guard VerifyEmailFormatUseCase.execute(email) else {
             registrationState = .error(message: getString(.invalidEmailError))
             return false

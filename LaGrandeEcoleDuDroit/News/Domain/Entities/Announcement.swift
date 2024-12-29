@@ -1,6 +1,6 @@
 import Foundation
 
-struct Announcement: Hashable {
+struct Announcement: Identifiable, Hashable {
     var id: String
     var title: String? = nil
     var content: String
@@ -8,8 +8,8 @@ struct Announcement: Hashable {
     var author: User
     var state: AnnouncementState = .idle
     
-    static func == (lhs: Announcement, rhs: Announcement) -> Bool {
-        lhs.id == rhs.id
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
     
     func with(

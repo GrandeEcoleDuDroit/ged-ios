@@ -49,7 +49,7 @@ class AuthenticationViewModel: ObservableObject {
     }
     
     func login() async {
-        await updateAuthenticationState(to: .loading)
+        updateAuthenticationState(to: .loading)
         
         do {
             let userId = try await loginUseCase.execute(email: email, password: password)
@@ -59,25 +59,25 @@ class AuthenticationViewModel: ObservableObject {
                 if user != nil {
                     setCurrentUserUseCase.execute(user: user!)
                     resetInputs()
-                    await updateAuthenticationState(to: .authenticated)
+                    updateAuthenticationState(to: .authenticated)
                 } else {
-                    await updateAuthenticationState(to: .error(message: getString(.userNotExist)))
+                    updateAuthenticationState(to: .error(message: getString(.userNotExist)))
                 }
             } else {
-                await updateAuthenticationState(to: .emailNotVerified)
+                updateAuthenticationState(to: .emailNotVerified)
             }
         } catch AuthenticationError.invalidCredentials {
-            await updateAuthenticationState(to: .error(message: getString(.invalidCredentials)))
+            updateAuthenticationState(to: .error(message: getString(.invalidCredentials)))
         } catch AuthenticationError.userDisabled {
-            await updateAuthenticationState(to: .error(message: getString(.userDisabled)))
+            updateAuthenticationState(to: .error(message: getString(.userDisabled)))
         } catch {
-            await updateAuthenticationState(to: .error(message: getString(.unknownError)))
+            updateAuthenticationState(to: .error(message: getString(.unknownError)))
         }
     }
     
-    private func updateAuthenticationState(to state: AuthenticationState) async {
-        await MainActor.run {
-            authenticationState = state
+    func updateAuthenticationState(to state: AuthenticationState) {
+        DispatchQueue.main.async { [weak self] in
+            self?.authenticationState = state
         }
     }
     

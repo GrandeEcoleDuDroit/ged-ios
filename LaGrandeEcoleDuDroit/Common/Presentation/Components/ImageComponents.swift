@@ -1,41 +1,45 @@
 import SwiftUI
 
 struct ProfilePicture: View {
-    var url: String
+    var url: String?
     let scale: CGFloat
     
-    init(url: String, scale: CGFloat = 1.0) {
+    init(url: String?, scale: CGFloat = 1.0) {
         self.url = url
         self.scale = scale
     }
     
     var body: some View {
-        AsyncImage(url: URL(string: url)) { phase in
-            switch phase {
-            case .empty:
-                ZStack {
-                    ProgressView()
-                        .frame(
-                            width: GedNumber.defaultImageSize * scale,
-                            height: GedNumber.defaultImageSize * scale
-                        )
-                        .clipShape(Circle())
-                }.overlay {
-                    Circle()
-                        .stroke(Color(.lightGrey), lineWidth: 1)
+        if let url = url {
+            AsyncImage(url: URL(string: url)) { phase in
+                switch phase {
+                case .empty:
+                    ZStack {
+                        ProgressView()
+                            .frame(
+                                width: GedNumber.defaultImageSize * scale,
+                                height: GedNumber.defaultImageSize * scale
+                            )
+                            .clipShape(Circle())
+                    }.overlay {
+                        Circle()
+                            .stroke(Color(.lightGrey), lineWidth: 1)
+                    }
+                    
+                case .success(let image):
+                    image.fitCircle(scale: scale)
+                default: DefaultProfilePicture()
                 }
-                
-            case .success(let image):
-                image.fitCircle(scale: scale)
-            default: DefaultProfilePicture()
             }
+        } else {
+            DefaultProfilePicture(scale: scale)
         }
     }
 }
 
 struct ClickableProfilePicture: View {
     @State private var isClicked: Bool = false
-    var url: String
+    var url: String?
     let scale: CGFloat
     let onClick: () -> Void
     
@@ -46,33 +50,38 @@ struct ClickableProfilePicture: View {
     }
     
     var body: some View {
-        AsyncImage(url: URL(string: url)) { phase in
-            switch phase {
-            case .empty:
-                ZStack {
-                    ProgressView()
-                }
-                .frame(
-                    width: GedNumber.defaultImageSize * scale,
-                    height: GedNumber.defaultImageSize * scale
-                )
-                .background(Color(UIColor.systemBackground))
-                .onClick(isClicked: $isClicked, action: onClick)
-                .overlay {
-                    Circle()
-                        .stroke(Color(.lightGrey), lineWidth: 1)
-                }
-                .clipShape(Circle())
-                
-            case .success(let image):
-                image
-                    .fitCircleClickable(
-                        isClicked: $isClicked,
-                        onClick: onClick,
-                        scale: scale
+        if let url = url {
+            AsyncImage(url: URL(string: url)) { phase in
+                switch phase {
+                case .empty:
+                    ZStack {
+                        ProgressView()
+                    }
+                    .frame(
+                        width: GedNumber.defaultImageSize * scale,
+                        height: GedNumber.defaultImageSize * scale
                     )
-            default: ClickableDefaultProfilePicture(onClick: onClick)
+                    .background(Color(UIColor.systemBackground))
+                    .onClick(isClicked: $isClicked, action: onClick)
+                    .overlay {
+                        Circle()
+                            .stroke(Color(.lightGrey), lineWidth: 1)
+                    }
+                    .clipShape(Circle())
+                    
+                case .success(let image):
+                    image
+                        .fitCircleClickable(
+                            isClicked: $isClicked,
+                            onClick: onClick,
+                            scale: scale
+                        )
+                default: ClickableDefaultProfilePicture(onClick: onClick)
+                }
             }
+        }
+        else {
+            DefaultProfilePicture(scale: scale)
         }
     }
 }
@@ -83,7 +92,7 @@ struct DefaultProfilePicture: View {
     init(scale: CGFloat = 1.0) {
         self.scale = scale
     }
-
+    
     var body: some View {
         Image(ImageResource.defaultProfilePicture)
             .fitCircle(scale: scale)
@@ -99,7 +108,7 @@ struct ClickableDefaultProfilePicture: View {
         self.onClick = onClick
         self.scale = scale
     }
-
+    
     var body: some View {
         Image(ImageResource.defaultProfilePicture)
             .fitCircleClickable(isClicked: $isClicked, onClick: onClick)
@@ -109,7 +118,7 @@ struct ClickableDefaultProfilePicture: View {
 
 #Preview {
     let url = "https://icons.veryicon.com/png/o/miscellaneous/user-avatar/user-avatar-male-5.png"
-
+    
     VStack {
         Text("Default profile picture")
             .font(.caption)

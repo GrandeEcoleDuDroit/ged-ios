@@ -7,13 +7,10 @@ struct ProfileView: View {
     var body: some View {
         List {
             Section {
-                NavigationLink(destination: destinationView(for: MenuItemData.Name.account)) {
+                NavigationLink(value: ProfileScreen.account) {
                     HStack {
-                        if let profilePictureUrl = profileViewModel.currentUser?.profilePictureUrl {
-                            ProfilePicture(url: profilePictureUrl, scale: 0.2)
-                        } else {
-                            DefaultProfilePicture(scale: 0.5)
-                        }
+                        ProfilePicture(url: profileViewModel.currentUser?.profilePictureUrl, scale: 0.5)
+                        
                         if let currentUser = profileViewModel.currentUser {
                             Text(currentUser.fullName)
                                 .font(.titleMedium)
@@ -30,15 +27,18 @@ struct ProfileView: View {
                 Button(
                     action: { showLogoutAlert = true }
                 ) {
-                    MenuItem(
+                    ItemWithIcon(
                         icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
-                        title: getString(.logout),
-                        color: .red
+                        text: Text(getString(.logout))
                     )
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.clear)
-                    .contentShape(Rectangle())
+                    .foregroundStyle(.red)
                 }
+            }
+        }
+        .navigationDestination(for: ProfileScreen.self) { screen in
+            switch screen {
+            case .account:
+                AccountView()
             }
         }
         .navigationTitle(getString(.profile))
@@ -55,18 +55,11 @@ struct ProfileView: View {
             }
         }
     }
-    
-    func destinationView(for menuName: MenuItemData.Name) -> some View {
-        switch menuName {
-        case .account:
-            AnyView(AccountView())
-        }
-    }
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         ProfileView()
-            .environmentObject(DependencyContainer.shared.profileViewModel)
+            .environmentObject(DependencyContainer.shared.mockProfileViewModel)
     }
 }
