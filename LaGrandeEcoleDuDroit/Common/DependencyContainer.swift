@@ -26,7 +26,7 @@ class DependencyContainer {
     
     // Mocks
     
-    private var mockUserRepository: UserRepository = MockUserRepository()
+    lazy var mockUserRepository: UserRepository = MockUserRepository()
     
     // UseCases
 
@@ -55,11 +55,11 @@ class DependencyContainer {
     }()
     
     lazy var sendVerificationEmailUseCase: SendVerificationEmailUseCase = {
-        SendVerificationEmailUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
+        SendVerificationEmailUseCase(authenticationRemoteRepository: authenticationRepository)
     }()
     
     lazy var isEmailVerifiedUseCase: IsEmailVerifiedUseCase = {
-        IsEmailVerifiedUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
+        IsEmailVerifiedUseCase(authenticationRemoteRepository: authenticationRepository)
     }()
     
     lazy var generateIdUseCase: GenerateIdUseCase = {
@@ -71,7 +71,7 @@ class DependencyContainer {
     // Repositories
     
     private lazy var firebaseAuthApi: FirebaseAuthApi = FirebaseAuthApiImpl()
-    private lazy var authenticationRemoteRepository: AuthenticationRemoteRepository = AuthenticationRemoteRepositoryImpl(firebaseAuthApi: firebaseAuthApi)
+    private lazy var authenticationRepository: AuthenticationRepository = AuthenticationRepositoryImpl(firebaseAuthApi: firebaseAuthApi)
     
     // ViewModels
 
@@ -97,30 +97,30 @@ class DependencyContainer {
     // UseCases
     
     lazy var isAuthenticatedUseCase: IsAuthenticatedUseCase = {
-        IsAuthenticatedUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
+        IsAuthenticatedUseCase(authenticationRemoteRepository: authenticationRepository)
     }()
     
     lazy var loginUseCase: LoginUseCase = {
-        LoginUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
+        LoginUseCase(authenticationRemoteRepository: authenticationRepository)
     }()
     
     lazy var logoutUseCase: LogoutUseCase = {
-        LogoutUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
+        LogoutUseCase(authenticationRemoteRepository: authenticationRepository)
     }()
     
     lazy var registerUseCase: RegisterUseCase = {
-        RegisterUseCase(authenticationRemoteRepository: authenticationRemoteRepository)
+        RegisterUseCase(authenticationRemoteRepository: authenticationRepository)
     }()
     
     // Mocks
     
-    private lazy var mockAuthenticationRemoteRepository: AuthenticationRemoteRepository = MockAuthenticationRemoteRepository()
+    lazy var mockAuthenticationRepository: AuthenticationRepository = MockAuthenticationRepository()
     
     lazy var mockAuthenticationViewModel: AuthenticationViewModel = {
         AuthenticationViewModel(
-            loginUseCase: LoginUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
-            isEmailVerifiedUseCase: IsEmailVerifiedUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
-            isAuthenticatedUseCase: IsAuthenticatedUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
+            loginUseCase: LoginUseCase(authenticationRemoteRepository: mockAuthenticationRepository),
+            isEmailVerifiedUseCase: IsEmailVerifiedUseCase(authenticationRemoteRepository: mockAuthenticationRepository),
+            isAuthenticatedUseCase: IsAuthenticatedUseCase(authenticationRemoteRepository: mockAuthenticationRepository),
             getUserUseCase: GetUserUseCase(userRepository: mockUserRepository),
             setCurrentUserUseCase: SetCurrentUserUseCase(userRepository: mockUserRepository)
         )
@@ -128,10 +128,9 @@ class DependencyContainer {
     
     lazy var mockRegistrationViewModel: RegistrationViewModel = {
         RegistrationViewModel(
-            email: "email@example.com",
-            registerUseCase: RegisterUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
-            sendVerificationEmailUseCase: SendVerificationEmailUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
-            isEmailVerifiedUseCase: IsEmailVerifiedUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository),
+            registerUseCase: RegisterUseCase(authenticationRemoteRepository: mockAuthenticationRepository),
+            sendVerificationEmailUseCase: SendVerificationEmailUseCase(authenticationRemoteRepository: mockAuthenticationRepository),
+            isEmailVerifiedUseCase: IsEmailVerifiedUseCase(authenticationRemoteRepository: mockAuthenticationRepository),
             createUserUseCase: CreateUserUseCase(userRepository: mockUserRepository)
         )
     }()
@@ -327,7 +326,7 @@ class DependencyContainer {
     lazy var mockProfileViewModel: ProfileViewModel = {
         ProfileViewModel(
             getCurrentUserUseCase: GetCurrentUserUseCase(userRepository: mockUserRepository),
-            logoutUseCase: LogoutUseCase(authenticationRemoteRepository: mockAuthenticationRemoteRepository)
+            logoutUseCase: LogoutUseCase(authenticationRemoteRepository: mockAuthenticationRepository)
         )
     }()
 }

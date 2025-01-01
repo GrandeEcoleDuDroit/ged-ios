@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct EmailVerificationView: View {
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @EnvironmentObject private var registrationViewModel: RegistrationViewModel
     @State private var isValid = false
     @State private var isAnimating = false
@@ -11,9 +12,9 @@ struct EmailVerificationView: View {
                 .font(.title3)
             
              + Text(registrationViewModel.email)
-                .fontWeight(.medium)
+                .fontWeight(.semibold)
                 .font(.title3)
-            
+                
              + Text(getString(.emailVerificationExplanationEnd))
                 .font(.title3)
             
@@ -37,36 +38,43 @@ struct EmailVerificationView: View {
                 .foregroundStyle(.gedPrimary)
                 .frame(maxHeight: .infinity, alignment: .center)
             
-            HStack {
-                Button(
-                    action: {
-                        Task { await registrationViewModel.checkVerifiedEmail() }
-                    },
-                    label: {
-                        Text(getString(.terminate))
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.gedPrimary)
-                    }
-                )
+                Button(getString(.finish)) {
+                    registrationViewModel.checkVerifiedEmail()
+                }
+                .font(.title2)
+                .fontWeight(.semibold)
+                .foregroundStyle(.gedPrimary)
                 .padding()
-            }
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .trailing)
+                .frame(maxWidth: .infinity, alignment: .trailing)
         }
-        .task {
-            await registrationViewModel.sendVerificationEmail()
+        .onAppear {
+            registrationViewModel.sendVerificationEmail()
         }
         .navigationTitle(getString(.emailVerificationTitle))
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .navigationBarBackButtonHidden(true)
         .padding()
     }
 }
 
 #Preview {
+    let registrationViewModel = RegistrationViewModel(
+        email: "email@example.com",
+        registerUseCase: RegisterUseCase(
+            authenticationRemoteRepository: DependencyContainer.shared.mockAuthenticationRepository
+        ),
+        sendVerificationEmailUseCase: SendVerificationEmailUseCase(
+            authenticationRemoteRepository: DependencyContainer.shared.mockAuthenticationRepository
+        ),
+        isEmailVerifiedUseCase: IsEmailVerifiedUseCase(
+            authenticationRemoteRepository: DependencyContainer.shared.mockAuthenticationRepository
+        ),
+        createUserUseCase: CreateUserUseCase(
+            userRepository: DependencyContainer.shared.mockUserRepository
+        )
+    )
+    
     NavigationStack {
         EmailVerificationView()
-            .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
+            .environmentObject(registrationViewModel)
     }
 }

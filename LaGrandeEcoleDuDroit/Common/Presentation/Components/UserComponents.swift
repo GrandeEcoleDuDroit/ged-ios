@@ -2,10 +2,12 @@ import SwiftUI
 
 struct UserItem: View {
     private let user: User
+    private let onClick: () -> Void
     @State private var isClicked: Bool = false
     
-    init(user: User) {
+    init(user: User, onClick: @escaping () -> Void) {
         self.user = user
+        self.onClick = onClick
     }
     
     var body: some View {
@@ -18,11 +20,10 @@ struct UserItem: View {
         .padding(.vertical, 5)
         .padding(.horizontal)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .contentShape(Rectangle())
-        .clickEffect(isClicked: $isClicked)
+        .onClick(isClicked: $isClicked, action: onClick)
     }
 }
 
 #Preview {
-    UserItem(user: userFixture)
+    UserItem(user: userFixture, onClick: {})
 }

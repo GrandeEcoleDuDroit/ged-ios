@@ -14,6 +14,7 @@ class NewsViewModel: ObservableObject {
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
     private let generateIdUseCase: GenerateIdUseCase
     private var cancellables: Set<AnyCancellable> = []
+    private var newsTasks: [Task<Void, Never>] = []
     
     init(
         getCurrentUserUseCase: GetCurrentUserUseCase,
@@ -66,7 +67,7 @@ class NewsViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func createAnnouncement(title: String?, content: String) async {
+    func createAnnouncement(title: String?, content: String) {
         guard let currentUser = currentUser else {
             announcementState = .error(message: getString(.authUserNotFound))
             return
@@ -81,48 +82,50 @@ class NewsViewModel: ObservableObject {
         )
       
         updateAnnouncementState(to: .loading)
-        do {
-            try await createAnnouncementUseCase.execute(announcement: announcement)
-            updateAnnouncementState(to: .created)
-        } catch {
-            updateAnnouncementState(to: .error(message: getString(.errorCreatingAnnouncement)))
-        }
-    }
-    
-    func updateAnnouncement(id: String, title: String, content: String) async {
-        guard let currentUser = currentUser else {
-            announcementState = .error(message: getString(.authUserNotFound))
-            return
+        
+        let task = Task {
+            do {
+                try await createAnnouncementUseCase.execute(announcement: announcement)
+                updateAnnouncementState(to: .created)
+            } catch {
+                updateAnnouncementState(to: .error(message: getString(.errorCreatingAnnouncement)))
+            }
         }
         
-        let announcement = Announcement(
-            id: id,
-            title: title,
-            content: content,
-            date: Date.now,
-            author: currentUser
-        )
-        
-        do {
-            updateAnnouncementState(to: .loading)
-            try await updateAnnouncementUseCase.execute(announcement: announcement)
-            announcements = announcements.map { $0.id == id ? announcement : $0 }
-            updateAnnouncementState(to: .updated)
-        } catch {
-            updateAnnouncementState(to: .error(message: error.localizedDescription))
-            e(tag, error.localizedDescription)
-        }
+        newsTasks.append(task)
     }
     
-    func deleteAnnouncement(announcement: Announcement) async {
-        do {
-            updateAnnouncementState(to: .loading)
-            try await deleteAnnouncementUseCase.execute(announcement: announcement)
-            updateAnnouncementState(to: .deleted)
-        } catch {
-            e(tag, error.localizedDescription)
-            updateAnnouncementState(to: .error(message: error.localizedDescription))
+    func updateAnnouncement(announcement: Announcement) {
+        updateAnnouncementState(to: .loading)
+        
+        let task = Task {
+            do {
+                try await updateAnnouncementUseCase.execute(announcement: announcement)
+                announcements = announcements.map { $0.id == announcement.id ? announcement : $0 }
+                updateAnnouncementState(to: .updated)
+            } catch {
+                updateAnnouncementState(to: .error(message: error.localizedDescription))
+                e(tag, error.localizedDescription)
+            }
         }
+        
+        newsTasks.append(task)
+    }
+    
+    func deleteAnnouncement(announcement: Announcement) {
+        updateAnnouncementState(to: .loading)
+        
+        let task = Task {
+            do {
+                try await deleteAnnouncementUseCase.execute(announcement: announcement)
+                updateAnnouncementState(to: .deleted)
+            } catch {
+                e(tag, error.localizedDescription)
+                updateAnnouncementState(to: .error(message: error.localizedDescription))
+            }
+        }
+        
+        newsTasks.append(task)
     }
     
     func resetAnnouncementState() {
@@ -133,5 +136,9 @@ class NewsViewModel: ObservableObject {
         DispatchQueue.main.async { [weak self] in
             self?.announcementState = state
         }
+    }
+    
+    deinit {
+        newsTasks.forEach { $0.cancel() }
     }
 }

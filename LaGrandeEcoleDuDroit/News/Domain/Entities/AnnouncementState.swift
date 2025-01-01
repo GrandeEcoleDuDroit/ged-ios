@@ -25,16 +25,13 @@ enum AnnouncementState: Hashable, CustomStringConvertible {
     
     static func from(description: String) -> AnnouncementState? {
         switch description.lowercased() {
-        case "idle":
-            return .idle
-        case "loading":
-            return .loading
-        case "created":
-            return .created
-        case "error":
-            return .error(message: "")
-        default:
-            return nil
+            case "idle": .idle
+            case "loading": .loading
+            case "created": .created
+            case "deleted": .deleted
+            case "updated": .updated
+            case "error": .error(message: "")
+            default: nil
         }
     }
 }

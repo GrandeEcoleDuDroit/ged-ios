@@ -3,8 +3,9 @@ import SwiftUI
 struct ChatView: View {
     @EnvironmentObject private var chatViewModel: ChatViewModel
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
-    @EnvironmentObject private var coordinator: MessageNavigationCoordinator
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var conversation: ConversationUI
+    @State private var inputFocused: InputField? = nil
     
     init(conversation: ConversationUI) {
         self.conversation = conversation
@@ -53,15 +54,18 @@ struct ChatView: View {
             
             ChatInputField(
                 text: $chatViewModel.textToSend,
-                onSendClick: { chatViewModel.sendMessage() }
+                onSendClick: { chatViewModel.sendMessage() },
+                inputFocused: $inputFocused
             )
         }
         .padding(.horizontal)
+        .contentShape(Rectangle())
+        .onTapGesture { inputFocused = nil }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 HStack {
                     Button(action: {
-                        coordinator.popToRoot()
+                        navigationCoordinator.popToRoot()
                     }) {
                         Image(systemName: "chevron.backward")
                             .fontWeight(.semibold)
@@ -100,6 +104,6 @@ private extension View {
         ChatView(conversation: conversationUIFixture)
             .environmentObject(DependencyContainer.shared.mockChatViewModel)
             .environmentObject(TabBarVisibility())
-            .environmentObject(MessageNavigationCoordinator())
+            .environmentObject(NavigationCoordinator())
     }
 }

@@ -9,7 +9,7 @@
 "save" = "Enregistrer";
 "home" = "Accueil";
 "now" = "Maintenant";
-"terminate" = "Terminer";
+"finish" = "Terminer";
 "minutes_ago_short" = "%d min";
 "hours_ago_short" = "%d h";
 "days_ago_short" = "%d j";
@@ -76,7 +76,7 @@
 "content" = "Contenu";
 "post" = "Poster";
 "no_announcement" = "Aucune annonce";
-"delete_announcemment_alert_message" = "Voulez-vous supprimer cette annonce ?";
+"delete_announcemment_alert_message" = "Êtes-vous sûr de vouloir supprimer cette annonce ?";
 
 // News errors
 "error_creating_announcement" = "Une erreur est survenue lors de la création de l'annonce.";

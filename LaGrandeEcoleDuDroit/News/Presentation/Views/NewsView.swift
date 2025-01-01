@@ -3,6 +3,7 @@ import SwiftUI
 struct NewsView: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var isActive: Bool = false
     @State private var isRefreshing: Bool = false
     
@@ -24,6 +25,7 @@ struct NewsView: View {
                     alignment: .top
                 )
                 .environmentObject(newsViewModel)
+                .environmentObject(navigationCoordinator)
                 
                 newsSection
             }
@@ -44,20 +46,21 @@ struct NewsView: View {
                         .fontWeight(.bold)
                 }
             }
+            
             ToolbarItem(placement: .topBarTrailing) {
                 if newsViewModel.currentUser?.isMember == true {
                     Button(
-                        action: { isActive = true },
+                        action: {
+                            navigationCoordinator.push(NewsScreen.createAnnouncement)
+                        },
                         label: { Image(systemName: "plus") }
                     )
-                    .navigationDestination(isPresented: $isActive) {
-                        CreateAnnouncementView().environmentObject(newsViewModel)
-                    }
                 }
             }
         }
         .onAppear {
             tabBarVisibility.show = true
+            newsViewModel.resetAnnouncementState()
         }
     }
 }
@@ -72,7 +75,8 @@ var newsSection: some View {
 
 struct RecentAnnouncementSection: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
-    @State private var selectedAnnouncement: Announcement? = nil
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
+    @State private var isClicked: Bool = false
     private var announcements: [Announcement]
     private var onRefresh: () async -> Void
     private let maxHeight: CGFloat
@@ -102,15 +106,14 @@ struct RecentAnnouncementSection: View {
             } else {
                 ScrollView {
                     ForEach(announcements) { announcement in
-                        NavigationLink(value: announcement) {
-                            GetAnnouncementItem(announcement: announcement)
-                        }
+                        GetAnnouncementItem(
+                            announcement: announcement,
+                            onClick: {
+                                navigationCoordinator.push(NewsScreen.announcementDetail(announcement))
+                            }
+                        )
                     }
                 }
-                .navigationDestination(for: Announcement.self, destination: { announcement in
-                    AnnouncementDetailView(announcement: announcement)
-                        .environmentObject(newsViewModel)
-                })
                 .frame(maxHeight: maxHeight)
                 .fixedSize(horizontal: false, vertical: true)
                 .refreshable {
@@ -123,27 +126,53 @@ struct RecentAnnouncementSection: View {
 
 struct GetAnnouncementItem: View {
     private var announcement: Announcement
+    private let onClick: () -> Void
     
-    init(announcement: Announcement) {
+    init(
+        announcement: Announcement,
+        onClick: @escaping () -> Void
+    ) {
         self.announcement = announcement
+        self.onClick = onClick
     }
     
     var body: some View {
         if case .loading = announcement.state {
-            LoadingAnnouncementItemWithContent(announcement: announcement)
+            LoadingAnnouncementItemWithContent(announcement: announcement, onClick: onClick)
         }
         else if case .error = announcement.state {
-            ErrorAnnouncementItemWithContent(announcement: announcement)
+            ErrorAnnouncementItemWithContent(announcement: announcement, onClick: onClick)
         } else {
-            AnnouncementItemWithContent(announcement: announcement)
+            AnnouncementItemWithContent(announcement: announcement, onClick: onClick)
         }
     }
 }
 
 
 #Preview {
-    NavigationStack {
-        NewsView()
-            .environmentObject(DependencyContainer.shared.mockNewsViewModel)
+    struct NewsView_Previews: View {
+        @StateObject private var navigationCoordinator = NavigationCoordinator()
+        
+        var body: some View {
+            NavigationStack(path: $navigationCoordinator.path) {
+                NewsView()
+                    .environmentObject(DependencyContainer.shared.mockNewsViewModel)
+                    .environmentObject(TabBarVisibility())
+                    .environmentObject(navigationCoordinator)
+                    .navigationDestination(for: NewsScreen.self) { screen in
+                        if case .createAnnouncement = screen {
+                            CreateAnnouncementView()
+                                .environmentObject(DependencyContainer.shared.mockNewsViewModel)
+                                .environmentObject(navigationCoordinator)
+                        } else if case .announcementDetail(let announcement) = screen {
+                            AnnouncementDetailView(announcement: announcement)
+                                .environmentObject(DependencyContainer.shared.mockNewsViewModel)
+                        }
+                    }
+            }
+            .environmentObject(navigationCoordinator)
+        }
     }
+    
+    return NewsView_Previews()
 }

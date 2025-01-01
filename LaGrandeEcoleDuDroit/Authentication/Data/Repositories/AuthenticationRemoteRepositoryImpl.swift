@@ -2,7 +2,7 @@ import Combine
 import os
 import FirebaseAuth
 
-class AuthenticationRemoteRepositoryImpl: AuthenticationRemoteRepository {
+class AuthenticationRepositoryImpl: AuthenticationRepository {
     private let firebaseAuthApi: FirebaseAuthApi
     @Published private var _isAuthenticated: Bool = false
     var isAuthenticated: AnyPublisher<Bool, Never> {

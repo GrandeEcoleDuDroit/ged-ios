@@ -2,8 +2,8 @@ import SwiftUI
 
 struct ThirdRegistrationView: View {
     @EnvironmentObject private var registrationViewModel: RegistrationViewModel
-    @EnvironmentObject private var coordinator: AuthenticationNavigationCoordinator
-    @State private var inputFocused: InputField?
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
+    @State private var inputFieldFocused: InputField?
     @State private var isLoading: Bool = false
     
     var body: some View {
@@ -14,16 +14,16 @@ struct ThirdRegistrationView: View {
             FocusableOutlinedTextField(
                 title: getString(.email),
                 text: $registrationViewModel.email,
-                defaultFocusValue: InputField.email,
-                inputFocused: $inputFocused,
+                inputField: InputField.email,
+                inputFieldFocused: $inputFieldFocused,
                 isDisable: isLoading
             )
             
             FocusableOutlinedPasswordTextField(
                 title: getString(.password),
                 text: $registrationViewModel.password,
-                defaultFocusValue: InputField.password,
-                inputFocused: $inputFocused,
+                inputField: InputField.password,
+                inputFieldFocused: $inputFieldFocused,
                 isDisable: isLoading
             )
                         
@@ -47,53 +47,43 @@ struct ThirdRegistrationView: View {
             }
             
             Spacer()
-            
-            HStack {
-                Spacer()
-                
-                Button(action: {
-                    Task {
-                       if registrationViewModel.validateCredentialInputs() {
-                           await registrationViewModel.register()
-                       }
+           
+            Button(
+                action: {
+                   if registrationViewModel.validateCredentialInputs() {
+                       registrationViewModel.register()
                    }
-                }) {
-                    if isLoading || !registrationViewModel.credentialInputsNotEmpty() {
-                        Text(getString(.next))
-                           .font(.title2)
-                           .fontWeight(.medium)
-                    } else {
-                        Text(getString(.next))
-                            .font(.title2)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.gedPrimary)
-                    }
                 }
-                .disabled(isLoading || !registrationViewModel.credentialInputsNotEmpty())
-                .padding()
+            ) {
+                if isLoading || !registrationViewModel.credentialInputsNotEmpty() {
+                    Text(getString(.next))
+                       .font(.title2)
+                       .fontWeight(.medium)
+                } else {
+                    Text(getString(.next))
+                        .font(.title2)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.gedPrimary)
+                }
             }
+            .disabled(isLoading || !registrationViewModel.credentialInputsNotEmpty())
             .padding()
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .onReceive(registrationViewModel.$registrationState) { state in
             if state == .registered {
-                coordinator.push(AuthenticationScreen.emailVerification)
+                navigationCoordinator.push(AuthenticationScreen.emailVerification(email: registrationViewModel.email))
             } else if case .loading = state {
                 isLoading = true
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .contentShape(Rectangle())
         .padding()
         .navigationBarTitleDisplayMode(.inline)
-        .onTapGesture { inputFocused = nil }
+        .contentShape(Rectangle())
+        .onTapGesture { inputFieldFocused = nil }
         .onAppear { registrationViewModel.resetState() }
         .registrationToolbar(step: 3, maxStep: 3)
-        .navigationDestination(for: AuthenticationScreen.self) { screen in
-            if case .emailVerification = screen {
-                EmailVerificationView()
-                    .environmentObject(registrationViewModel)
-            }
-        }
     }
 }
 
@@ -101,6 +91,6 @@ struct ThirdRegistrationView: View {
     NavigationStack {
         ThirdRegistrationView()
             .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
-            .environmentObject(AuthenticationNavigationCoordinator())
+            .environmentObject(NavigationCoordinator())
     }
 }

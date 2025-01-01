@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SecondRegistrationView: View {
     @EnvironmentObject private var registrationViewModel: RegistrationViewModel
-    @EnvironmentObject private var coordinator: AuthenticationNavigationCoordinator
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
@@ -32,28 +32,17 @@ struct SecondRegistrationView: View {
             
             Spacer()
             
-            HStack {
-                Spacer()
-                NavigationLink(value: AuthenticationScreen.thirdRegistration) {
-                    Text(getString(.next))
-                        .font(.title2)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.gedPrimary)
-                }
-                
+            
+            Button(getString(.next)) {
+                navigationCoordinator.push(AuthenticationScreen.thirdRegistration)
             }
+            .font(.title2)
+            .fontWeight(.medium)
+            .foregroundStyle(.gedPrimary)
             .padding()
-        }
-        .navigationDestination(for: AuthenticationScreen.self) { screen in
-            if case .thirdRegistration = screen {
-                ThirdRegistrationView()
-                    .environmentObject(registrationViewModel)
-                    .environmentObject(coordinator)
-            }
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .contentShape(Rectangle())
-        .navigationBarTitleDisplayMode(.inline)
         .padding()
         .onAppear { registrationViewModel.resetState() }
         .registrationToolbar(step: 2, maxStep: 3)
@@ -64,6 +53,6 @@ struct SecondRegistrationView: View {
     NavigationStack {
         SecondRegistrationView()
             .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
-            .environmentObject(AuthenticationNavigationCoordinator())
+            .environmentObject(NavigationCoordinator())
     }
 }

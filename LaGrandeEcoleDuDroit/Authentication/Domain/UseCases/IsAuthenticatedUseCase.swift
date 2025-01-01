@@ -1,9 +1,9 @@
 import Combine
 
 class IsAuthenticatedUseCase {
-    private let authenticationRemoteRepository: AuthenticationRemoteRepository
+    private let authenticationRemoteRepository: AuthenticationRepository
     
-    init(authenticationRemoteRepository: AuthenticationRemoteRepository) {
+    init(authenticationRemoteRepository: AuthenticationRepository) {
         self.authenticationRemoteRepository = authenticationRemoteRepository
     }
     

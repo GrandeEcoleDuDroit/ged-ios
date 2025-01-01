@@ -3,7 +3,7 @@ import SwiftUI
 struct CreateConversationView: View {
     @EnvironmentObject private var createConversationViewModel: CreateConversationViewModel
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
-    @EnvironmentObject private var coordinator: MessageNavigationCoordinator
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var errorMessage: String = ""
     @State private var isClicked: Bool = false
     @State private var isLoading: Bool = false
@@ -25,29 +25,14 @@ struct CreateConversationView: View {
                 } else {
                     ScrollView {
                         ForEach(createConversationViewModel.users, id: \.id) { user in
-                            NavigationLink(value: user) {
-                                UserItem(user: user)
+                            let conversation = createConversationViewModel.generateConversation(interlocutor: user)
+                            UserItem(user: user) {
+                                navigationCoordinator.push(MessageScreen.chat(conversation: conversation))
                             }
-                            .buttonStyle(PlainButtonStyle())
                         }
                     }
                 }
             }
-        }
-        .navigationDestination(for: User.self) { user in
-            let conversation = createConversationViewModel.generateConversation(interlocutor: user)
-            ChatView(conversation: conversation)
-                .environmentObject(
-                    ChatViewModel(
-                        getMessagesUseCase: DependencyContainer.shared.getMessagesUseCase,
-                        getCurrentUserUseCase: DependencyContainer.shared.getCurrentUserUseCase,
-                        generateIdUseCase: DependencyContainer.shared.generateIdUseCase,
-                        createConversationUseCase: DependencyContainer.shared.createConversationUseCase,
-                        conversation: conversation
-                    )
-                )
-                .environmentObject(tabBarVisibility)
-                .environmentObject(coordinator)
         }
         .navigationTitle(getString(.newConversation))
         .navigationBarTitleDisplayMode(.inline)
@@ -72,10 +57,26 @@ struct CreateConversationView: View {
 }
 
 #Preview {
-    NavigationStack {
-        CreateConversationView()
-            .environmentObject(DependencyContainer.shared.mockCreateConversationViewModel)
-            .environmentObject(TabBarVisibility())
-            .environmentObject(MessageNavigationCoordinator())
+    struct CreateConversationView_Previews: View {
+        @StateObject private var navigationCoordinator = NavigationCoordinator()
+        
+        var body: some View {
+            NavigationStack(path: $navigationCoordinator.path) {
+                CreateConversationView()
+                    .environmentObject(DependencyContainer.shared.mockCreateConversationViewModel)
+                    .environmentObject(TabBarVisibility())
+                    .environmentObject(navigationCoordinator)
+                    .navigationDestination(for: MessageScreen.self) { screen in
+                        if case let .chat(conversation) = screen {
+                            ChatView(conversation: conversation)
+                                .environmentObject(DependencyContainer.shared.mockChatViewModel)
+                                .environmentObject(navigationCoordinator)
+                                .environmentObject(TabBarVisibility())
+                        }
+                    }
+            }
+        }
     }
+    
+    return CreateConversationView_Previews()
 }

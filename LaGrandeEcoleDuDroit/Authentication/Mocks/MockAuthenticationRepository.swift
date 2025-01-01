@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class MockAuthenticationRemoteRepository: AuthenticationRemoteRepository {
+class MockAuthenticationRepository: AuthenticationRepository {
     @Published private var _isAuthenticated: Bool = false
     var isAuthenticated: AnyPublisher<Bool, Never> {
         $_isAuthenticated.eraseToAnyPublisher()

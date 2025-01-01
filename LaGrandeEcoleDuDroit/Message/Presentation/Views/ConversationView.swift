@@ -3,7 +3,7 @@ import SwiftUI
 struct ConversationView: View {
     @EnvironmentObject private var conversationViewModel: ConversationViewModel
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
-    @EnvironmentObject private var coordinator: MessageNavigationCoordinator
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var selectedConversation: ConversationUI? = nil
     @State private var showBottomSheet: Bool = false
     @State private var isBottomSheetItemClicked: Bool = false
@@ -20,16 +20,16 @@ struct ConversationView: View {
                 ScrollView {
                     VStack(spacing: 0) {
                         ForEach(conversationViewModel.conversationsMap.sortedByDate(), id: \.id) { conversation in
-                            NavigationLink(value: MessageScreen.chat(conversation: conversation)) {
-                                GetConversationItem(
-                                    conversation: conversation,
-                                    onLongClick: {
-                                        selectedConversation = conversation
-                                        showBottomSheet = true
-                                    }
-                                )
-                            }
-                            .buttonStyle(PlainButtonStyle())
+                            GetConversationItem(
+                                conversation: conversation,
+                                onClick: {
+                                    navigationCoordinator.push(MessageScreen.chat(conversation: conversation))
+                                },
+                                onLongClick: {
+                                    selectedConversation = conversation
+                                    showBottomSheet = true
+                                }
+                            )
                         }
                     }
                 }
@@ -42,35 +42,12 @@ struct ConversationView: View {
                     .foregroundStyle(.red)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
-                    .contentShape(Rectangle())
                     .onClick(isClicked: $isBottomSheetItemClicked) {
                         showBottomSheet = false
                         showDeleteAlert = true
                     }
                     .presentationDetents([.fraction(0.10)])
                 }
-            }
-        }
-        .navigationDestination(for: MessageScreen.self) { screen in
-            switch screen {
-            case .chat(let conversation):
-                ChatView(conversation: conversation)
-                    .environmentObject(
-                        ChatViewModel(
-                            getMessagesUseCase: DependencyContainer.shared.getMessagesUseCase,
-                            getCurrentUserUseCase: DependencyContainer.shared.getCurrentUserUseCase,
-                            generateIdUseCase: DependencyContainer.shared.generateIdUseCase,
-                            createConversationUseCase: DependencyContainer.shared.createConversationUseCase,
-                            conversation: conversation
-                        )
-                    )
-                    .environmentObject(tabBarVisibility)
-                    .environmentObject(coordinator)
-            case .createConversation:
-                CreateConversationView()
-                    .environmentObject(DependencyContainer.shared.createConversationViewModel)
-                    .environmentObject(tabBarVisibility)
-                    .environmentObject(coordinator)
             }
         }
         .searchable(
@@ -81,7 +58,9 @@ struct ConversationView: View {
         .navigationTitle(getString(.messages))
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                NavigationLink(value: MessageScreen.createConversation) {
+                Button(
+                    action: { navigationCoordinator.push(MessageScreen.createConversation) }
+                ) {
                     Image(systemName: "plus")
                 }
             }
@@ -107,14 +86,17 @@ struct ConversationView: View {
 }
 
 struct GetConversationItem: View {
-    private var conversation: ConversationUI
+    private let conversation: ConversationUI
+    private let onClick: () -> Void
     private let onLongClick: () -> Void
     
     init(
         conversation: ConversationUI,
+        onClick: @escaping () -> Void,
         onLongClick: @escaping () -> Void
     ) {
         self.conversation = conversation
+        self.onClick = onClick
         self.onLongClick = onLongClick
     }
     
@@ -123,11 +105,13 @@ struct GetConversationItem: View {
             if lastMessage.isRead {
                 ReadConversationItem(
                     conversationUI: conversation,
+                    onClick: onClick,
                     onLongClick: onLongClick
                 )
             } else {
                 UnreadConversationItem(
                     conversationUI: conversation,
+                    onClick: onClick,
                     onLongClick: onLongClick
                 )
             }
@@ -135,6 +119,7 @@ struct GetConversationItem: View {
         else {
             EmptyConversationItem(
                 conversationUI: conversation,
+                onClick: onClick,
                 onLongClick: onLongClick
             )
         }
@@ -142,10 +127,27 @@ struct GetConversationItem: View {
 }
 
 #Preview {
-    NavigationStack {
-        ConversationView()
-            .environmentObject(DependencyContainer.shared.mockConversationViewModel)
+    struct ConversationView_Previews: View {
+        @StateObject var navigationCoordinator = NavigationCoordinator()
+        
+        var body: some View {
+            NavigationStack(path: $navigationCoordinator.path) {
+                ConversationView()
+                    .environmentObject(DependencyContainer.shared.mockConversationViewModel)
+                    .navigationDestination(for: MessageScreen.self) { screen in
+                        if case .chat(let conversation) = screen {
+                            ChatView(conversation: conversation)
+                                .environmentObject(DependencyContainer.shared.mockChatViewModel)
+                        } else if case .createConversation = screen {
+                            CreateConversationView()
+                                .environmentObject(DependencyContainer.shared.mockCreateConversationViewModel)
+                        }
+                    }
+            }
+            .environmentObject(navigationCoordinator)
             .environmentObject(TabBarVisibility())
-            .environmentObject(MessageNavigationCoordinator())
+        }
     }
+    
+    return ConversationView_Previews()
 }

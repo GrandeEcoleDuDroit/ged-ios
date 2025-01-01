@@ -31,12 +31,17 @@ struct TopAnnouncementDetailItem: View {
 
 struct AnnouncementItemWithContent: View {
     private var announcement: Announcement
+    private let onClick: () -> Void
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
-    init(announcement: Announcement) {
+    init(
+        announcement: Announcement,
+        onClick: @escaping () -> Void
+    ) {
         self.announcement = announcement
+        self.onClick = onClick
     }
     
     var body: some View {
@@ -71,8 +76,7 @@ struct AnnouncementItemWithContent: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)
         .padding(.vertical, 5)
-        .background(Color(UIColor.systemBackground))
-        .clickEffect(isClicked: $isClicked)
+        .onClick(isClicked: $isClicked, action: onClick)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
             elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
@@ -82,12 +86,17 @@ struct AnnouncementItemWithContent: View {
 
 struct LoadingAnnouncementItemWithContent: View {
     private var announcement: Announcement
+    private var onClick: () -> Void
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
-    init(announcement: Announcement) {
+    init(
+        announcement: Announcement,
+        onClick: @escaping () -> Void
+    ) {
         self.announcement = announcement
+        self.onClick = onClick
     }
     
     var body: some View {
@@ -116,10 +125,9 @@ struct LoadingAnnouncementItemWithContent: View {
             ProgressView()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(UIColor.systemBackground))
         .padding(.horizontal)
         .padding(.vertical, 5)
-        .clickEffect(isClicked: $isClicked)
+        .onClick(isClicked: $isClicked, action: onClick)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
             elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
@@ -129,12 +137,17 @@ struct LoadingAnnouncementItemWithContent: View {
 
 struct ErrorAnnouncementItemWithContent: View {
     private var announcement: Announcement
+    private var onClick: () -> Void
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
-    init(announcement: Announcement) {
+    init(
+        announcement: Announcement,
+        onClick: @escaping () -> Void
+    ) {
         self.announcement = announcement
+        self.onClick = onClick
     }
     
     var body: some View {
@@ -165,10 +178,9 @@ struct ErrorAnnouncementItemWithContent: View {
                 
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(UIColor.systemBackground))
         .padding(.horizontal)
         .padding(.vertical, 5)
-        .clickEffect(isClicked: $isClicked)
+        .onClick(isClicked: $isClicked, action: onClick)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
             elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
@@ -199,10 +211,10 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, announcementDate: Date
         TopAnnouncementDetailItem(announcement: announcementFixture)
             .padding(.horizontal)
         
-        AnnouncementItemWithContent(announcement: announcementFixture)
+        AnnouncementItemWithContent(announcement: announcementFixture, onClick: {})
         
-        LoadingAnnouncementItemWithContent(announcement: announcementFixture)
+        LoadingAnnouncementItemWithContent(announcement: announcementFixture, onClick: {})
         
-        ErrorAnnouncementItemWithContent(announcement: announcementFixture)
+        ErrorAnnouncementItemWithContent(announcement: announcementFixture, onClick: {})
     }
 }

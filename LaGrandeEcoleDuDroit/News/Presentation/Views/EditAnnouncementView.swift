@@ -2,40 +2,42 @@ import SwiftUI
 
 struct EditAnnouncementView: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
-    @Environment(\.dismiss) var dismiss
-    private let announcement: Announcement
+    @FocusState private var inputFieldFocused: InputField?
     @State private var isActive: Bool = false
     @State private var showErrorAlert: Bool = false
     @State private var errorMessage: String = ""
     @State private var title: String
     @State private var content: String
+    
+    private let announcement: Announcement
+    private let onCancelClick: () -> Void
+    private let onSaveClick: (String, String) -> Void
 
-    init(announcement: Announcement) {
+    init(
+        announcement: Announcement,
+        onCancelClick: @escaping () -> Void,
+        onSaveClick: @escaping (String, String) -> Void
+    ) {
         self.announcement = announcement
-        self.title = announcement.title ?? ""
+        self.onCancelClick = onCancelClick
+        self.onSaveClick = onSaveClick
+        self.title =  announcement.title ?? ""
         self.content = announcement.content
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            VStack(alignment: .leading) {
-                topBar
-                
-                DynamicTextEditor(
-                    text: $title,
-                    placeholderText: Text(getString(.title)).font(.system(size: 22, weight: .semibold)),
-                    minHeight: geometry.size.height / 14,
-                    maxHeight: geometry.size.height / 6
-                )
-                .font(.system(size: 22, weight: .semibold))
-                
-                DynamicTextEditor(
-                    text: $content,
-                    placeholderText: Text(getString(.content))
-                )
-            }
+        VStack(alignment: .leading, spacing: GedSpacing.medium) {
+            TextField(getString(.title), text: $title, axis: .vertical)
+                .font(.title2)
+                .fontWeight(.semibold)
+                .focused($inputFieldFocused, equals: InputField.title)
+            
+            TextField(getString(.content), text: $content, axis: .vertical)
+                .font(.bodyLarge)
+                .lineSpacing(5)
+                .focused($inputFieldFocused, equals: InputField.content)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
         .onReceive(newsViewModel.$announcementState) { state in
             switch state {
@@ -60,47 +62,52 @@ struct EditAnnouncementView: View {
         } message: { data in
             Text(errorMessage)
         }
-        .onAppear {
-            print("title: \(title) content: \(content)")
-        }
-    }
-    
-    var topBar: some View {
-        HStack(alignment: .center) {
-            Button(
-                action: { dismiss() },
-                label: { Text(getString(.cancel)) }
-            )
+        .navigationTitle(getString(.edit))
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button(
+                    action: onCancelClick,
+                    label: { Text(getString(.cancel)) }
+                )
+            }
             
-           Spacer()
-            
-            Button(
-                action: {
-                    Task {
-                        await newsViewModel.updateAnnouncement(id: announcement.id, title: title, content: content)
-                        if newsViewModel.announcementState == .updated {
-                            dismiss()
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(
+                    action: { onSaveClick(title, content) },
+                    label: {
+                        if content.isEmpty || title == announcement.title && content == announcement.content {
+                            Text(getString(.save))
+                                .fontWeight(.semibold)
+                        } else {
+                            Text(getString(.save))
+                                .foregroundStyle(.gedPrimary)
+                                .fontWeight(.semibold)
                         }
                     }
-                },
-                label: {
-                    if content.isEmpty || title == announcement.title && content == announcement.content {
-                        Text(getString(.save))
-                            .fontWeight(.semibold)
-                    } else {
-                        Text(getString(.save))
-                            .foregroundStyle(.gedPrimary)
-                            .fontWeight(.semibold)
-                    }
-                }
-            ).disabled(content.isEmpty || (title == announcement.title && content == announcement.content))
-        }.padding(.vertical, 5)
+                )
+                .disabled(content.isEmpty || (title == announcement.title && content == announcement.content))
+            }
+        }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                inputFieldFocused = InputField.title
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            inputFieldFocused = nil
+        }
     }
 }
 
 #Preview {
     NavigationStack {
-        EditAnnouncementView(announcement: announcementFixture)
-            .environmentObject(DependencyContainer.shared.newsViewModel)
+        EditAnnouncementView(
+            announcement: announcementFixture,
+            onCancelClick: {},
+            onSaveClick: { _, _ in }
+        )
+        .environmentObject(DependencyContainer.shared.mockNewsViewModel)
     }
 }

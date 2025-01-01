@@ -2,18 +2,22 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject private var profileViewModel: ProfileViewModel
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var showLogoutAlert: Bool = false
     
     var body: some View {
         List {
             Section {
-                NavigationLink(value: ProfileScreen.account) {
+                Button(
+                    action: { navigationCoordinator.push(ProfileScreen.account) }
+                ) {
                     HStack {
                         ProfilePicture(url: profileViewModel.currentUser?.profilePictureUrl, scale: 0.5)
                         
                         if let currentUser = profileViewModel.currentUser {
                             Text(currentUser.fullName)
-                                .font(.titleMedium)
+                                .font(.title3)
+                                .fontWeight(.semibold)
                         } else {
                             Text("Unknown")
                                 .font(.title3)
@@ -35,12 +39,6 @@ struct ProfileView: View {
                 }
             }
         }
-        .navigationDestination(for: ProfileScreen.self) { screen in
-            switch screen {
-            case .account:
-                AccountView()
-            }
-        }
         .navigationTitle(getString(.profile))
         .alert(
             getString(.logoutAlertMessage),
@@ -58,8 +56,23 @@ struct ProfileView: View {
 }
 
 #Preview {
-    NavigationStack {
-        ProfileView()
-            .environmentObject(DependencyContainer.shared.mockProfileViewModel)
+    struct ProfileView_Previews: View {
+        @StateObject private var navigationCoordinator = NavigationCoordinator()
+        
+        var body: some View {
+            NavigationStack(path: $navigationCoordinator.path) {
+                ProfileView()
+                    .environmentObject(DependencyContainer.shared.mockProfileViewModel)
+                    .environmentObject(navigationCoordinator)
+                    .navigationDestination(for: ProfileScreen.self) { screen in
+                        if case .account = screen {
+                            AccountView()
+                                .environmentObject(DependencyContainer.shared.mockProfileViewModel)
+                        }
+                    }
+            }
+        }
     }
+    
+    return ProfileView_Previews()
 }

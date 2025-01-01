@@ -3,13 +3,13 @@ import SwiftUI
 struct AuthenticationView: View {
     @EnvironmentObject private var authenticationViewModel: AuthenticationViewModel
     @EnvironmentObject private var registrationViewModel: RegistrationViewModel
-    @StateObject private var coordinator = AuthenticationNavigationCoordinator()
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var isInputsFocused: Bool = false
     @State private var isLoading: Bool = false
     @State private var showEmailNotVerifiedAlert: Bool = false
     
     var body: some View {
-        NavigationStack(path: $coordinator.paths) {
+        NavigationStack(path: $navigationCoordinator.path) {
             VStack(spacing: GedSpacing.verylLarge) {
                 Header()
                 
@@ -20,6 +20,7 @@ struct AuthenticationView: View {
                     isLoading: isLoading,
                     authenticationState: authenticationViewModel.authenticationState
                 )
+                .environmentObject(navigationCoordinator)
                 
                 Buttons(
                     onLoadingButtonClick: {
@@ -32,44 +33,27 @@ struct AuthenticationView: View {
                     isLoading: isLoading
                 )
                 .environmentObject(authenticationViewModel)
+                .environmentObject(navigationCoordinator)
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .contentShape(Rectangle())
             .onReceive(authenticationViewModel.$authenticationState) { state in
                 showEmailNotVerifiedAlert = state == .emailNotVerified
                 isLoading = state == .loading
             }
+            .contentShape(Rectangle())
             .onTapGesture {
                 isInputsFocused = false
-            }
-            .navigationDestination(for: AuthenticationScreen.self) { screen in
-                switch screen {
-                case .forgottenPassword:
-                    Text(getString(.forgottenPassword))
-                case .emailVerification:
-                    let registrationViewModel = RegistrationViewModel(
-                        email: authenticationViewModel.email,
-                        registerUseCase: DependencyContainer.shared.registerUseCase,
-                        sendVerificationEmailUseCase: DependencyContainer.shared.sendVerificationEmailUseCase,
-                        isEmailVerifiedUseCase: DependencyContainer.shared.isEmailVerifiedUseCase,
-                        createUserUseCase: DependencyContainer.shared.createUserUseCase
-                    )
-                    EmailVerificationView().environmentObject(registrationViewModel)
-                case .firstRegistration:
-                    FirstRegistrationView()
-                        .environmentObject(registrationViewModel)
-                default: EmptyView()
-                }
             }
             .alert(
                 getString(.emailNotVerified),
                 isPresented: $showEmailNotVerifiedAlert,
                 presenting: ""
             ) { _ in
-                NavigationLink(value: AuthenticationScreen.emailVerification) {
-                    Text(getString(.verifyEmail))
+                Button(getString(.verifyEmail)) {
+                    navigationCoordinator.push(AuthenticationScreen.emailVerification(email: authenticationViewModel.email))
                 }
+                
                 Button(getString(.cancel), role: .cancel) {}
             } message: { _ in
                 Text(getString(.emailNotVerifiedDialogMessage))
@@ -105,10 +89,11 @@ private struct Header: View {
 }
 
 private struct CredentialsInputs: View {
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @Binding private var email: String
     @Binding private var password: String
     @Binding var isInputsFocused: Bool
-    @State private var inputFocused: InputField?
+    @State private var inputFieldFocused: InputField?
     @State private var forgottenPasswordClicked: Bool = false
     private var isLoading: Bool
     private var authenticationState: AuthenticationState
@@ -132,8 +117,8 @@ private struct CredentialsInputs: View {
             FocusableOutlinedTextField(
                 title: getString(.email),
                 text: $email,
-                defaultFocusValue: InputField.email,
-                inputFocused: $inputFocused,
+                inputField: InputField.email,
+                inputFieldFocused: $inputFieldFocused,
                 isDisable: isLoading
             )
             .simultaneousGesture(TapGesture().onEnded({
@@ -143,17 +128,15 @@ private struct CredentialsInputs: View {
             FocusableOutlinedPasswordTextField(
                 title: getString(.password),
                 text: $password,
-                defaultFocusValue: InputField.password,
-                inputFocused: $inputFocused,
+                inputField: InputField.password,
+                inputFieldFocused: $inputFieldFocused,
                 isDisable: isLoading
             )
             .simultaneousGesture(TapGesture().onEnded({
                 isInputsFocused = true
             }))
             
-            NavigationLink(value: AuthenticationScreen.forgottenPassword) {
-                Text(getString(.forgottenPassword))
-                    .foregroundStyle(.accent)
+            Button(getString(.forgottenPassword)) { navigationCoordinator.push(AuthenticationScreen.forgottenPassword)
             }
             .disabled(isLoading)
             
@@ -164,13 +147,14 @@ private struct CredentialsInputs: View {
         }
         .onChange(of: isInputsFocused) { isFocused in
             if !isFocused {
-                inputFocused = nil
+                inputFieldFocused = nil
             }
         }
     }
 }
 
 private struct Buttons: View {
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var isActive: Bool = false
     private var onLoadingButtonClick: () -> Void
     private var isLoading: Bool
@@ -195,12 +179,12 @@ private struct Buttons: View {
                 Text(getString(.notRegisterYet))
                     .foregroundStyle(Color.primary)
                 
-                NavigationLink(value: AuthenticationScreen.firstRegistration) {
-                    Text(getString(.register))
-                        .foregroundColor(.gedPrimary)
-                        .fontWeight(.semibold)
-                        .underline()
+                Button(getString(.register)) {
+                    navigationCoordinator.push(AuthenticationScreen.firstRegistration)
                 }
+                .foregroundColor(.gedPrimary)
+                .fontWeight(.semibold)
+                .underline()
             }
         }
     }
@@ -210,5 +194,5 @@ private struct Buttons: View {
     AuthenticationView()
         .environmentObject(DependencyContainer.shared.mockAuthenticationViewModel)
         .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
-        .environmentObject(AuthenticationNavigationCoordinator())
+        .environmentObject(NavigationCoordinator())
 }

@@ -15,6 +15,7 @@ class RegistrationViewModel: ObservableObject {
     private let sendVerificationEmailUseCase: SendVerificationEmailUseCase
     private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase
     private let createUserUseCase: CreateUserUseCase
+    private var registrationTasks: [Task<Void, Never>] = []
     
     init(
         email: String = "",
@@ -54,83 +55,101 @@ class RegistrationViewModel: ObservableObject {
         return true
     }
     
-    func register() async {
-        await updateRegistrationState(to: .loading)
+    func register() {
+        updateRegistrationState(to: .loading)
+        
         let formattedFirstName = self.firstName.trimmedAndCapitalizedFirstLetter
         let formattedLastName = self.lastName.trimmedAndCapitalizedFirstLetter
         let formattedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
         let formattedPassword = password.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        do {
-            let userId = try await registerUseCase.execute(email: formattedEmail, password: formattedPassword)
-            let user = User(
-                id: userId,
-                firstName: formattedFirstName,
-                lastName: formattedLastName,
-                email: formattedEmail,
-                schoolLevel: schoolLevel,
-                isMember: false,
-                profilePictureUrl: nil
-            )
-            try await createUserUseCase.execute(user: user)
-            await updateRegistrationState(to: .registered)
-        }
-        catch AuthenticationError.accountAlreadyExist {
-            await updateRegistrationState(to: .error(message: getString(.accountAlreadyInUseError)))
-        }
-        catch AuthenticationError.userNotFound {
-            await updateRegistrationState(to: .error(message: getString(.authUserNotFound)))
-        }
-        catch RequestError.invalidResponse(let error) {
-            print(error ?? "Query error")
-            await updateRegistrationState(to: .error(message: getString(.registrationError)))
-        }
-        catch NetworkError.timedOut {
-            await updateRegistrationState(to: .error(message: getString(.timedOutError)))
-        }
-        catch NetworkError.notConnectedToInternet {
-            await updateRegistrationState(to: .error(message: getString(.notConnectedToInternetError)))
-        }
-        catch {
-            await updateRegistrationState(to: .error(message: getString(.registrationError)))
-        }
-    }
-    
-    func sendVerificationEmail() async {
-        await updateRegistrationState(to: .loading)
-        do {
-            try await sendVerificationEmailUseCase.execute()
-            await updateRegistrationState(to: .idle)
-        }
-        catch NetworkError.tooManyRequests {
-            await updateRegistrationState(to: .error(message: getString(.tooManyRequestError)))
-        }
-        catch {
-            await updateRegistrationState(to: .error(message: getString(.registrationError)))
-        }
-    }
-    
-    func checkVerifiedEmail() async {
-        await updateRegistrationState(to: .loading)
-
-        if let emailVerified = try? await isEmailVerifiedUseCase.execute() {
-            if emailVerified {
-                await updateRegistrationState(to: .emailVerified )
-            } else {
-                await updateRegistrationState(to: .error(message: getString(.emailNotVerifiedError)))
+        let task = Task {
+            do {
+                let userId = try await registerUseCase.execute(email: formattedEmail, password: formattedPassword)
+                let user = User(
+                    id: userId,
+                    firstName: formattedFirstName,
+                    lastName: formattedLastName,
+                    email: formattedEmail,
+                    schoolLevel: schoolLevel,
+                    isMember: false,
+                    profilePictureUrl: nil
+                )
+                
+                try await createUserUseCase.execute(user: user)
+                updateRegistrationState(to: .registered)
             }
-        } else {
-            await updateRegistrationState(to: .error(message: getString(.emailNotVerifiedError)))
+            catch AuthenticationError.accountAlreadyExist {
+                updateRegistrationState(to: .error(message: getString(.accountAlreadyInUseError)))
+            }
+            catch AuthenticationError.userNotFound {
+                updateRegistrationState(to: .error(message: getString(.authUserNotFound)))
+            }
+            catch RequestError.invalidResponse(let error) {
+                updateRegistrationState(to: .error(message: getString(.registrationError)))
+            }
+            catch NetworkError.timedOut {
+                updateRegistrationState(to: .error(message: getString(.timedOutError)))
+            }
+            catch NetworkError.notConnectedToInternet {
+                updateRegistrationState(to: .error(message: getString(.notConnectedToInternetError)))
+            }
+            catch {
+                updateRegistrationState(to: .error(message: getString(.registrationError)))
+            }
         }
+        
+        registrationTasks.append(task)
+    }
+    
+    func sendVerificationEmail() {
+        updateRegistrationState(to: .loading)
+        
+        let task = Task {
+            do {
+                try await sendVerificationEmailUseCase.execute()
+                updateRegistrationState(to: .idle)
+            }
+            catch NetworkError.tooManyRequests {
+                updateRegistrationState(to: .error(message: getString(.tooManyRequestError)))
+            }
+            catch {
+                updateRegistrationState(to: .error(message: getString(.registrationError)))
+            }
+        }
+        
+        registrationTasks.append(task)
+    }
+    
+    func checkVerifiedEmail() {
+        updateRegistrationState(to: .loading)
+
+        let task = Task {
+            if let emailVerified = try? await isEmailVerifiedUseCase.execute() {
+                if emailVerified {
+                    updateRegistrationState(to: .emailVerified )
+                } else {
+                    updateRegistrationState(to: .error(message: getString(.emailNotVerifiedError)))
+                }
+            } else {
+                updateRegistrationState(to: .error(message: getString(.emailNotVerifiedError)))
+            }
+        }
+        
+        registrationTasks.append(task)
     }
     
     func resetState() {
         registrationState = .idle
     }
     
-    private func updateRegistrationState(to state: RegistrationState) async {
-        await MainActor.run {
-            registrationState = state
+    private func updateRegistrationState(to state: RegistrationState) {
+        DispatchQueue.main.async { [weak self] in
+            self?.registrationState = state
         }
+    }
+    
+    deinit {
+        registrationTasks.forEach { $0.cancel() }
     }
 }

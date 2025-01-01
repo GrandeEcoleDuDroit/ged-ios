@@ -9,7 +9,7 @@ enum GedString: String {
     case edit = "edit"
     case save = "save"
     case now = "now"
-    case terminate = "terminate"
+    case finish = "finish"
     case minutesAgoShort = "minutes_ago_short"
     case hoursAgoShort = "hours_ago_short"
     case daysAgoShort = "days_ago_short"

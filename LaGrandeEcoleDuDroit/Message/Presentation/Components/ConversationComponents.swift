@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct ReadConversationItem: View {
-    private let conversationUI: ConversationUI
+    private var conversationUI: ConversationUI
+    private let onClick: () -> Void
     private let onLongClick: () -> Void
     
     @State private var isClicked: Bool = false
@@ -10,9 +11,11 @@ struct ReadConversationItem: View {
     
     init(
         conversationUI: ConversationUI,
+        onClick: @escaping () -> Void,
         onLongClick: @escaping () -> Void
     ) {
         self.conversationUI = conversationUI
+        self.onClick = onClick
         self.onLongClick = onLongClick
     }
     
@@ -42,7 +45,7 @@ struct ReadConversationItem: View {
             .padding(.horizontal)
             .padding(.vertical, GedSpacing.small)
             .contentShape(Rectangle())
-            .clickEffect(isClicked: $isClicked)
+            .onClick(isClicked: $isClicked, action: onClick)
             .onLongClick(isClicked: $isClicked, action: onLongClick)
             .onAppear {
                 elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
@@ -54,6 +57,7 @@ struct ReadConversationItem: View {
         else {
             EmptyConversationItem(
                 conversationUI: conversationUI,
+                onClick: onClick,
                 onLongClick: onLongClick
             )
         }
@@ -62,17 +66,19 @@ struct ReadConversationItem: View {
 
 struct UnreadConversationItem:View {
     private var conversationUI: ConversationUI
+    private let onClick: () -> Void
     private let onLongClick: () -> Void
-    
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
     init(
         conversationUI: ConversationUI,
+        onClick: @escaping () -> Void,
         onLongClick: @escaping () -> Void
     ) {
         self.conversationUI = conversationUI
+        self.onClick = onClick
         self.onLongClick = onLongClick
     }
     
@@ -110,7 +116,7 @@ struct UnreadConversationItem:View {
             .padding(.horizontal)
             .padding(.vertical, GedSpacing.small)
             .contentShape(Rectangle())
-            .clickEffect(isClicked: $isClicked)
+            .onClick(isClicked: $isClicked, action: onClick)
             .onLongClick(isClicked: $isClicked, action: onLongClick)
             .onAppear {
                 elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
@@ -121,6 +127,7 @@ struct UnreadConversationItem:View {
         } else {
             EmptyConversationItem(
                 conversationUI: conversationUI,
+                onClick: onClick,
                 onLongClick: onLongClick
             )
         }
@@ -129,17 +136,19 @@ struct UnreadConversationItem:View {
 
 struct EmptyConversationItem: View {
     private var conversationUI: ConversationUI
+    private let onClick: () -> Void
     private let onLongClick: () -> Void
-    
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
     init(
         conversationUI: ConversationUI,
+        onClick: @escaping () -> Void,
         onLongClick: @escaping () -> Void
     ) {
         self.conversationUI = conversationUI
+        self.onClick = onClick
         self.onLongClick = onLongClick
     }
     
@@ -168,7 +177,7 @@ struct EmptyConversationItem: View {
         .padding(.horizontal)
         .padding(.vertical, GedSpacing.small)
         .contentShape(Rectangle())
-        .clickEffect(isClicked: $isClicked)
+        .onClick(isClicked: $isClicked, action: onClick)
         .onLongClick(isClicked: $isClicked, action: onLongClick)
     }
 }
@@ -199,16 +208,19 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String 
     VStack(alignment: .leading, spacing: 0) {
         ReadConversationItem(
             conversationUI: conversationUIFixture,
+            onClick: {},
             onLongClick: {}
         )
         
         UnreadConversationItem(
             conversationUI: conversationUIFixture,
+            onClick: {},
             onLongClick: {}
         )
         
         EmptyConversationItem(
             conversationUI: conversationUIFixture,
+            onClick: {},
             onLongClick: {}
         )
     }

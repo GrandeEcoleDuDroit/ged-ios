@@ -2,12 +2,18 @@ import Foundation
 import SwiftUI
 import Combine
 
-protocol NavigationCoordinator: ObservableObject {
-    var paths: NavigationPath { get set }
+class NavigationCoordinator: ObservableObject {
+    @Published var path: NavigationPath = NavigationPath()
     
-    func push(_ screen: any Screen)
+    func push(_ screen: any Screen) {
+        path.append(screen)
+    }
 
-    func pop()
+    func pop() {
+        path.removeLast()
+    }
 
-    func popToRoot()
+    func popToRoot() {
+        path.removeLast(path.count)
+    }
 }

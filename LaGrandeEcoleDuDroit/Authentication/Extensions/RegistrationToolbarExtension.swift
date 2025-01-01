@@ -2,7 +2,9 @@ import SwiftUI
 
 extension View {
     func registrationToolbar(step: Int, maxStep: Int) -> some View {
-        toolbar {
+        self
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
             ToolbarItem(placement: .principal) {
                 Text(getString(.registration))
             }
