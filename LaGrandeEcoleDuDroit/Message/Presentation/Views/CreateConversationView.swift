@@ -2,8 +2,9 @@ import SwiftUI
 
 struct CreateConversationView: View {
     @EnvironmentObject private var createConversationViewModel: CreateConversationViewModel
+    @EnvironmentObject private var tabBarVisibility: TabBarVisibility
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var errorMessage: String = ""
-    @State private var background: Color = Color.white
     @State private var isClicked: Bool = false
     @State private var isLoading: Bool = false
     @State private var selectedUser: User? = nil
@@ -23,28 +24,11 @@ struct CreateConversationView: View {
                         .padding(.vertical)
                 } else {
                     ScrollView {
-                        ForEach(createConversationViewModel.users) { user in
+                        ForEach(createConversationViewModel.users, id: \.id) { user in
                             let conversation = createConversationViewModel.generateConversation(interlocutor: user)
-                            
-                            UserItem(user: user, onClick: { selectedUser = user })
-                                .background(
-                                    NavigationLink(
-                                        destination: ChatView(conversation: conversation)
-                                            .environmentObject(
-                                                ChatViewModel(
-                                                    getMessagesUseCase: DependencyContainer.shared.getMessagesUseCase,
-                                                    getCurrentUserUseCase: DependencyContainer.shared.getCurrentUserUseCase,
-                                                    generateIdUseCase: DependencyContainer.shared.generateIdUseCase,
-                                                    createConversationUseCase: DependencyContainer.shared.createConversationUseCase,
-                                                    conversation: conversation
-                                                )
-                                            ),
-                                        tag: user,
-                                        selection: $selectedUser,
-                                        label: { EmptyView() }
-                                    )
-                                    .hidden()
-                                )
+                            UserItem(user: user) {
+                                navigationCoordinator.push(MessageScreen.chat(conversation: conversation))
+                            }
                         }
                     }
                 }
@@ -73,8 +57,26 @@ struct CreateConversationView: View {
 }
 
 #Preview {
-    NavigationView {
-        CreateConversationView()
-            .environmentObject(DependencyContainer.shared.mockCreateConversationViewModel)
+    struct CreateConversationView_Previews: View {
+        @StateObject private var navigationCoordinator = NavigationCoordinator()
+        
+        var body: some View {
+            NavigationStack(path: $navigationCoordinator.path) {
+                CreateConversationView()
+                    .environmentObject(DependencyContainer.shared.mockCreateConversationViewModel)
+                    .environmentObject(TabBarVisibility())
+                    .environmentObject(navigationCoordinator)
+                    .navigationDestination(for: MessageScreen.self) { screen in
+                        if case let .chat(conversation) = screen {
+                            ChatView(conversation: conversation)
+                                .environmentObject(DependencyContainer.shared.mockChatViewModel)
+                                .environmentObject(navigationCoordinator)
+                                .environmentObject(TabBarVisibility())
+                        }
+                    }
+            }
+        }
     }
+    
+    return CreateConversationView_Previews()
 }

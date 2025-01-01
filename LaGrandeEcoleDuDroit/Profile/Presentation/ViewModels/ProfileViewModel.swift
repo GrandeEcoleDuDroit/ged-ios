@@ -9,14 +9,6 @@ class ProfileViewModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
     private let logoutUseCase: LogoutUseCase
     
-    let menuItemDatas: [MenuItemData] = [
-        MenuItemData(
-            name: MenuItemData.Name.account,
-            imageName: "person.fill",
-            title: getString(.account)
-        )
-    ]
-    
     init(
         getCurrentUserUseCase: GetCurrentUserUseCase,
         logoutUseCase: LogoutUseCase

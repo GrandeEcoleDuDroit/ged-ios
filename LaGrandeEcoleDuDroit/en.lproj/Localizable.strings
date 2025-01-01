@@ -9,6 +9,7 @@
 "save" = "Save";
 "home" = "Home";
 "now" = "Now";
+"finish" = "Finish";
 "minutes_ago_short" = "%d min";
 "hours_ago_short" = "%d h";
 "days_ago_short" = "%d d";
@@ -45,7 +46,8 @@
 "level" = "Level";
 "enter_email_password" = "Enter your email and password";
 "email_verification_title" = "Email verification";
-"email_verification_explanation" = "A link has been sent to the following address : %@. Please click on it to complete registration.";
+"email_verification_explanation_begining" = "A link has been sent to the following address : ";
+"email_verification_explanation_end" = ". Please click on it to finalize the registration.";
 "send_email_verification_caption" = "A verification link will be sent.";
 "email_not_verified" = "Email not verified";
 "email_not_verified_dialog_message" = "Please confirm your email before to continue.";
@@ -74,7 +76,7 @@
 "content" = "Content";
 "post" = "Post";
 "no_announcement" = "No announcement";
-"delete_announcemment_alert_message" = "Do you want to delete this announcement ?";
+"delete_announcemment_alert_message" = "Are you sure you want to delete this announcement ?";
 
 // News errors
 "error_creating_announcement " = "An error occured while creating the announcement.";

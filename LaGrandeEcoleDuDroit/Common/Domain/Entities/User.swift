@@ -11,10 +11,6 @@ struct User: Codable, Hashable, Identifiable {
         (firstName + " " + lastName).capitalized
     }
     
-    static func == (lhs: User, rhs: User) -> Bool {
-        lhs.id == rhs.id
-    }
-    
     func with(
         id: String? = nil,
         firstName: String? = nil,

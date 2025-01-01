@@ -3,6 +3,7 @@ import Combine
 
 class MockAnnouncementRepository: AnnouncementRepository {
     @Published private var _announcements: [Announcement] = announcementsFixture
+    
     var announcements: AnyPublisher<[Announcement], Never> {
         $_announcements.eraseToAnyPublisher()
     }

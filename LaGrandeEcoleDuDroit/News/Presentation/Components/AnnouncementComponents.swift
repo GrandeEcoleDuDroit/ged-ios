@@ -11,14 +11,7 @@ struct TopAnnouncementDetailItem: View {
     
     var body: some View {
         HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
-            if let profilePictureUrl = announcement.author.profilePictureUrl {
-                ProfilePicture(
-                    url: profilePictureUrl,
-                    scale: 0.4
-                )
-            } else {
-                DefaultProfilePicture(scale: 0.4)
-            }
+            ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
             
             Text(announcement.author.fullName)
                 .font(.titleSmall)
@@ -43,21 +36,17 @@ struct AnnouncementItemWithContent: View {
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
-    init(announcement: Announcement, onClick: @escaping () -> Void) {
+    init(
+        announcement: Announcement,
+        onClick: @escaping () -> Void
+    ) {
         self.announcement = announcement
         self.onClick = onClick
     }
     
     var body: some View {
         HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
-            if let profilePictureUrl = announcement.author.profilePictureUrl {
-                ProfilePicture(
-                    url: profilePictureUrl,
-                    scale: 0.4
-                )
-            } else {
-                DefaultProfilePicture(scale: 0.4)
-            }
+            ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
             
             VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                 HStack {
@@ -87,7 +76,6 @@ struct AnnouncementItemWithContent: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)
         .padding(.vertical, 5)
-        .background(Color(UIColor.systemBackground))
         .onClick(isClicked: $isClicked, action: onClick)
         .onAppear {
             elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
@@ -98,27 +86,23 @@ struct AnnouncementItemWithContent: View {
 
 struct LoadingAnnouncementItemWithContent: View {
     private var announcement: Announcement
-    private let onClick: () -> Void
+    private var onClick: () -> Void
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
-    init(announcement: Announcement, onClick: @escaping () -> Void) {
+    init(
+        announcement: Announcement,
+        onClick: @escaping () -> Void
+    ) {
         self.announcement = announcement
         self.onClick = onClick
     }
     
     var body: some View {
         HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
-            if let profilePictureUrl = announcement.author.profilePictureUrl {
-                ProfilePicture(
-                    url: profilePictureUrl,
-                    scale: 0.4
-                )
-            } else {
-                DefaultProfilePicture(scale: 0.4)
-            }
-            
+            ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
+
             VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                 HStack {
                     Text(announcement.author.fullName)
@@ -141,7 +125,6 @@ struct LoadingAnnouncementItemWithContent: View {
             ProgressView()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(UIColor.systemBackground))
         .padding(.horizontal)
         .padding(.vertical, 5)
         .onClick(isClicked: $isClicked, action: onClick)
@@ -154,27 +137,23 @@ struct LoadingAnnouncementItemWithContent: View {
 
 struct ErrorAnnouncementItemWithContent: View {
     private var announcement: Announcement
-    private let onClick: () -> Void
+    private var onClick: () -> Void
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
     
-    init(announcement: Announcement, onClick: @escaping () -> Void) {
+    init(
+        announcement: Announcement,
+        onClick: @escaping () -> Void
+    ) {
         self.announcement = announcement
         self.onClick = onClick
     }
     
     var body: some View {
         HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
-            if let profilePictureUrl = announcement.author.profilePictureUrl {
-                ProfilePicture(
-                    url: profilePictureUrl,
-                    scale: 0.4
-                )
-            } else {
-                DefaultProfilePicture(scale: 0.4)
-            }
-            
+            ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
+
             VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                 HStack {
                     Text(announcement.author.fullName)
@@ -199,7 +178,6 @@ struct ErrorAnnouncementItemWithContent: View {
                 
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(UIColor.systemBackground))
         .padding(.horizontal)
         .padding(.vertical, 5)
         .onClick(isClicked: $isClicked, action: onClick)

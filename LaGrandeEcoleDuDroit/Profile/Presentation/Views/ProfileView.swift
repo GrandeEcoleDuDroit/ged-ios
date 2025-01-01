@@ -2,21 +2,22 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject private var profileViewModel: ProfileViewModel
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var showLogoutAlert: Bool = false
     
     var body: some View {
         List {
             Section {
-                NavigationLink(destination: destinationView(for: MenuItemData.Name.account)) {
+                Button(
+                    action: { navigationCoordinator.push(ProfileScreen.account) }
+                ) {
                     HStack {
-                        if let profilePictureUrl = profileViewModel.currentUser?.profilePictureUrl {
-                            ProfilePicture(url: profilePictureUrl, scale: 0.2)
-                        } else {
-                            DefaultProfilePicture(scale: 0.5)
-                        }
+                        ProfilePicture(url: profileViewModel.currentUser?.profilePictureUrl, scale: 0.5)
+                        
                         if let currentUser = profileViewModel.currentUser {
                             Text(currentUser.fullName)
-                                .font(.titleMedium)
+                                .font(.title3)
+                                .fontWeight(.semibold)
                         } else {
                             Text("Unknown")
                                 .font(.title3)
@@ -30,14 +31,11 @@ struct ProfileView: View {
                 Button(
                     action: { showLogoutAlert = true }
                 ) {
-                    MenuItem(
+                    ItemWithIcon(
                         icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
-                        title: getString(.logout),
-                        color: .red
+                        text: Text(getString(.logout))
                     )
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.clear)
-                    .contentShape(Rectangle())
+                    .foregroundStyle(.red)
                 }
             }
         }
@@ -55,18 +53,26 @@ struct ProfileView: View {
             }
         }
     }
-    
-    func destinationView(for menuName: MenuItemData.Name) -> some View {
-        switch menuName {
-        case .account:
-            AnyView(AccountView())
-        }
-    }
 }
 
 #Preview {
-    NavigationView {
-        ProfileView()
-            .environmentObject(DependencyContainer.shared.profileViewModel)
+    struct ProfileView_Previews: View {
+        @StateObject private var navigationCoordinator = NavigationCoordinator()
+        
+        var body: some View {
+            NavigationStack(path: $navigationCoordinator.path) {
+                ProfileView()
+                    .environmentObject(DependencyContainer.shared.mockProfileViewModel)
+                    .environmentObject(navigationCoordinator)
+                    .navigationDestination(for: ProfileScreen.self) { screen in
+                        if case .account = screen {
+                            AccountView()
+                                .environmentObject(DependencyContainer.shared.mockProfileViewModel)
+                        }
+                    }
+            }
+        }
     }
+    
+    return ProfileView_Previews()
 }

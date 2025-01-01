@@ -2,9 +2,9 @@ import Foundation
 import Combine
 
 class LogoutUseCase {
-    private let authenticationRemoteRepository: AuthenticationRemoteRepository
+    private let authenticationRemoteRepository: AuthenticationRepository
     
-    init(authenticationRemoteRepository: AuthenticationRemoteRepository) {
+    init(authenticationRemoteRepository: AuthenticationRepository) {
         self.authenticationRemoteRepository = authenticationRemoteRepository
     }
     

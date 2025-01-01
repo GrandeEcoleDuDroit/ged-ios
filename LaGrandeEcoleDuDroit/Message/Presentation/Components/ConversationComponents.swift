@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ReadConversationItem: View {
-    private let conversationUI: ConversationUI
+    private var conversationUI: ConversationUI
     private let onClick: () -> Void
     private let onLongClick: () -> Void
     
@@ -22,12 +22,8 @@ struct ReadConversationItem: View {
     var body: some View {
         if let lastMessage = conversationUI.lastMessage {
             HStack(alignment: .center) {
-                if let profilePictureUrl = conversationUI.interlocutor.profilePictureUrl {
-                    ProfilePicture(url: profilePictureUrl, scale: 0.4)
-                } else {
-                    DefaultProfilePicture(scale: 0.4)
-                }
-                
+                ProfilePicture(url: conversationUI.interlocutor.profilePictureUrl, scale: 0.4)
+               
                 VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                     HStack {
                         Text(conversationUI.interlocutor.fullName)
@@ -72,7 +68,6 @@ struct UnreadConversationItem:View {
     private var conversationUI: ConversationUI
     private let onClick: () -> Void
     private let onLongClick: () -> Void
-    
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
@@ -90,11 +85,7 @@ struct UnreadConversationItem:View {
     var body: some View {
         if let lastMessage = conversationUI.lastMessage {
             HStack(alignment: .center) {
-                if let profilePictureUrl = conversationUI.interlocutor.profilePictureUrl {
-                    ProfilePicture(url: profilePictureUrl, scale: 0.4)
-                } else {
-                    DefaultProfilePicture(scale: 0.4)
-                }
+                ProfilePicture(url: conversationUI.interlocutor.profilePictureUrl, scale: 0.4)
                 
                 VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                     HStack {
@@ -147,7 +138,6 @@ struct EmptyConversationItem: View {
     private var conversationUI: ConversationUI
     private let onClick: () -> Void
     private let onLongClick: () -> Void
-    
     @State private var isClicked: Bool = false
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
@@ -164,12 +154,8 @@ struct EmptyConversationItem: View {
     
     var body: some View {
         HStack(alignment: .center) {
-            if let profilePictureUrl = conversationUI.interlocutor.profilePictureUrl {
-                ProfilePicture(url: profilePictureUrl, scale: 0.4)
-            } else {
-                DefaultProfilePicture(scale: 0.4)
-            }
-            
+            ProfilePicture(url: conversationUI.interlocutor.profilePictureUrl, scale: 0.4)
+
             VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                 HStack {
                     Text(conversationUI.interlocutor.fullName)

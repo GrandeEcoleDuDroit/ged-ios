@@ -3,9 +3,9 @@ import SwiftUI
 struct FocusableOutlinedTextField: View {
     let title: String
     @Binding var text: String
-    @Binding var inputFocused: InputField?
-    let defaultFocusValue: InputField
-    @Binding var isDisabled: Bool
+    @Binding var inputFieldFocused: InputField?
+    let inputField: InputField
+    let isDisabled: Bool
     
     private var borderColor: Color {
         if isDisabled == false {
@@ -22,20 +22,20 @@ struct FocusableOutlinedTextField: View {
     init(
         title: String,
         text: Binding<String>,
-        defaultFocusValue: InputField,
-        inputFocused: Binding<InputField?>,
-        isDisable: Binding<Bool>? = nil
+        inputField: InputField,
+        inputFieldFocused: Binding<InputField?>,
+        isDisable: Bool = false
     ) {
         self.title = title
         self._text = text
-        self.defaultFocusValue = defaultFocusValue
-        self._inputFocused = inputFocused
-        self._isDisabled = isDisable ?? .constant(false)
+        self.inputField = inputField
+        self._inputFieldFocused = inputFieldFocused
+        self.isDisabled = isDisable
     }
     
     var body: some View {
         TextField(title, text: $text)
-            .focused($focusedField, equals: defaultFocusValue)
+            .focused($focusedField, equals: inputField)
             .textInputAutocapitalization(.never)
             .padding()
             .overlay(
@@ -43,12 +43,12 @@ struct FocusableOutlinedTextField: View {
                     .stroke(borderColor, lineWidth: borderWidth)
             )
             .cornerRadius(cornerRadius)
-            .onChange(of: inputFocused) { newValue in
+            .onChange(of: inputFieldFocused) { newValue in
                 focusedField = newValue
             }
             .disabled(isDisabled)
             .simultaneousGesture(TapGesture().onEnded({
-                inputFocused = self.defaultFocusValue
+                inputFieldFocused = self.inputField
             }))
     }
 }
@@ -56,9 +56,9 @@ struct FocusableOutlinedTextField: View {
 struct FocusableOutlinedPasswordTextField: View {
     let title: String
     @Binding var text: String
-    @Binding var inputFocused: InputField?
-    let defaultFocusValue: InputField
-    @Binding var isDisabled: Bool
+    @Binding var inputFieldFocused: InputField?
+    let inputField: InputField
+    let isDisabled: Bool
     
     private var borderColor: Color {
         if isDisabled == false {
@@ -76,15 +76,15 @@ struct FocusableOutlinedPasswordTextField: View {
     init(
         title: String,
         text: Binding<String>,
-        defaultFocusValue: InputField,
-        inputFocused: Binding<InputField?>,
-        isDisable: Binding<Bool>? = nil
+        inputField: InputField,
+        inputFieldFocused: Binding<InputField?>,
+        isDisable: Bool = false
     ) {
         self.title = title
         self._text = text
-        self.defaultFocusValue = defaultFocusValue
-        self._inputFocused = inputFocused
-        self._isDisabled = isDisable ?? .constant(false)
+        self.inputField = inputField
+        self._inputFieldFocused = inputFieldFocused
+        self.isDisabled = isDisable
     }
     
     var body: some View {
@@ -92,37 +92,37 @@ struct FocusableOutlinedPasswordTextField: View {
             if(!showPassword) {
                 SecureField(title, text: $text)
                     .textInputAutocapitalization(.never)
-                    .focused($focusedField, equals: defaultFocusValue)
-                    .onChange(of: inputFocused) { newValue in
+                    .focused($focusedField, equals: inputField)
+                    .onChange(of: inputFieldFocused) { newValue in
                         focusedField = newValue
                     }
                     .simultaneousGesture(TapGesture().onEnded({
-                        inputFocused = self.defaultFocusValue
+                        inputFieldFocused = self.inputField
                     }))
                 Image(systemName: "eye.slash")
                     .onTapGesture {
                         padding = 16
                         showPassword = true
                         DispatchQueue.main.async {
-                            focusedField = defaultFocusValue
+                            focusedField = inputField
                         }
                     }
             } else {
                 TextField(title, text: $text)
                     .textInputAutocapitalization(.never)
-                    .focused($focusedField, equals: defaultFocusValue)
-                    .onChange(of: inputFocused) { newValue in
+                    .focused($focusedField, equals: inputField)
+                    .onChange(of: inputFieldFocused) { newValue in
                         focusedField = newValue
                     }
                     .simultaneousGesture(TapGesture().onEnded({
-                        inputFocused = self.defaultFocusValue
+                        inputFieldFocused = self.inputField
                     }))
                 Image(systemName: "eye")
                     .onTapGesture {
                         padding = 16.5
                         showPassword = false
                         DispatchQueue.main.async {
-                            focusedField = defaultFocusValue
+                            focusedField = inputField
                         }
                     }
             }
@@ -140,14 +140,14 @@ struct FocusableOutlinedPasswordTextField: View {
 struct DynamicTextEditor: View {
     @Binding var text: String
     private let placeholderText: Text
-    private let minHeight: CGFloat?
-    private let maxHeight: CGFloat?
+    private let minHeight: CGFloat
+    private let maxHeight: CGFloat
     
     init(
         text: Binding<String>,
         placeholderText: Text,
-        minHeight: CGFloat? = nil,
-        maxHeight: CGFloat? = nil
+        minHeight: CGFloat = 100,
+        maxHeight: CGFloat = .infinity
     ) {
         self._text = text
         self.placeholderText = placeholderText
@@ -158,7 +158,7 @@ struct DynamicTextEditor: View {
     var body: some View {
         TextEditor(text: $text)
             .overlay {
-                if text.isEmpty {
+                if text.isBlank {
                     if #available (iOS 17.0, *) {
                         placeholderText
                             .foregroundStyle(.gray)
@@ -192,17 +192,17 @@ struct DynamicTextEditor: View {
         FocusableOutlinedTextField(
             title: "Email",
             text: .constant(""),
-            defaultFocusValue: InputField.email,
-            inputFocused: .constant(InputField.email),
-            isDisable: .constant(false)
+            inputField: InputField.email,
+            inputFieldFocused: .constant(InputField.email),
+            isDisable: false
         )
         
         FocusableOutlinedPasswordTextField(
             title: "Password",
             text: .constant(""),
-            defaultFocusValue: InputField.password,
-            inputFocused: .constant(InputField.password),
-            isDisable: .constant(false)
+            inputField: InputField.password,
+            inputFieldFocused: .constant(InputField.password),
+            isDisable: false
         )
         
         DynamicTextEditor(

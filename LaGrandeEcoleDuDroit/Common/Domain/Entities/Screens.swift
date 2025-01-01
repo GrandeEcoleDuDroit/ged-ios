@@ -1,0 +1,1 @@
+protocol Screen: Hashable {}

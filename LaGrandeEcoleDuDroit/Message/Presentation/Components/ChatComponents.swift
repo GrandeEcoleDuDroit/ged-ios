@@ -46,25 +46,34 @@ struct ReceiveMessageItem: View {
 
 struct ChatInputField: View {
     @Binding var text: String
+    @Binding var inputFocused: InputField?
+    @FocusState private var focusedField: InputField?
     private var onSendClick: () -> Void
     private let maxCharacters = 1000
     
-    init(text: Binding<String>, onSendClick: @escaping () -> Void) {
+    init(
+        text: Binding<String>,
+        onSendClick: @escaping () -> Void,
+        inputFocused: Binding<InputField?>
+    ) {
         self._text = text
         self.onSendClick = onSendClick
+        self._inputFocused = inputFocused
     }
     
     var body: some View {
         HStack(alignment: .center) {
-            DynamicTextEditor(
+            TextField(
+                "",
                 text: $text,
-                placeholderText: Text(getString(.messagePlaceholder)),
-                minHeight: 34,
-                maxHeight: 200
+                prompt: messagePlaceholder,
+                axis: .vertical
             )
-            .transparentScrolling()
-            .padding(.leading)
-            .limitText($text, to: maxCharacters)
+            .padding(.vertical, GedSpacing.medium)
+            .focused($focusedField, equals: InputField.chat)
+            .simultaneousGesture(TapGesture().onEnded({
+                inputFocused = InputField.chat
+            }))
             
             if !text.isBlank {
                 Button(
@@ -82,10 +91,13 @@ struct ChatInputField: View {
                 .clipShape(.rect(cornerRadius: 20))
             }
         }
+        .padding(.leading, GedSpacing.medium)
         .padding(.trailing, GedSpacing.small)
-        .padding(.vertical, GedSpacing.small)
         .background(.receiveMessageComponentBackground)
         .clipShape(.rect(cornerRadius: 30))
+        .onChange(of: inputFocused) { newValue in
+            focusedField = newValue
+        }
     }
     
     var messagePlaceholder: Text {
@@ -100,17 +112,18 @@ struct ChatInputField: View {
 }
 
 #Preview {
-    VStack {
-        GeometryReader { geometry in
-            ScrollView {
-                VStack(spacing: GedSpacing.medium) {
-                    SendMessageItem(text: announcementFixture.content, screenWidth: geometry.size.width)
-                    ReceiveMessageItem(text: announcementFixture.title!, screenWidth: geometry.size.width)
-                }
-            }
-        }
+    struct ChatComponents_Previews: View {
+        @State private var text: String = ""
+        @State private var inputFocused: InputField? = nil
         
-        ChatInputField(text: .constant(""), onSendClick: {})
+        var body: some View {
+            ChatInputField(
+                text: $text,
+                onSendClick: {},
+                inputFocused: $inputFocused
+            )
+        }
     }
-    .padding(.horizontal)
+    
+    return ChatComponents_Previews()
 }

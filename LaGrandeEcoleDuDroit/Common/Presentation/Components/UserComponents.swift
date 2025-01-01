@@ -12,14 +12,7 @@ struct UserItem: View {
     
     var body: some View {
         HStack(alignment: .center) {
-            if let profilePictureUrl = user.profilePictureUrl {
-                ProfilePicture(
-                    url: profilePictureUrl,
-                    scale: 0.4
-                )
-            } else {
-                DefaultProfilePicture(scale: 0.4)
-            }
+            ProfilePicture(url: user.profilePictureUrl, scale: 0.4)
             
             Text(user.fullName)
                 .font(.titleSmall)
@@ -27,7 +20,6 @@ struct UserItem: View {
         .padding(.vertical, 5)
         .padding(.horizontal)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(UIColor.systemBackground))
         .onClick(isClicked: $isClicked, action: onClick)
     }
 }

@@ -1,7 +1,7 @@
 class IsEmailVerifiedUseCase {
-    private let authenticationRemoteRepository: AuthenticationRemoteRepository
+    private let authenticationRemoteRepository: AuthenticationRepository
     
-    init(authenticationRemoteRepository: AuthenticationRemoteRepository) {
+    init(authenticationRemoteRepository: AuthenticationRepository) {
         self.authenticationRemoteRepository = authenticationRemoteRepository
     }
     
