@@ -6,5 +6,5 @@ struct GedSpacing {
     static let smallMedium: CGFloat = 12
     static let medium: CGFloat = 16
     static let large: CGFloat = 20
-    static let verylLarge: CGFloat = 32
+    static let veryLarge: CGFloat = 32
 }

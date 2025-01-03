@@ -1,5 +1,6 @@
 enum ConversationError: Error {
     case notFound
-    case insertFailed
+    case createFailed
+    case upsertFailed
     case deleteFailed
 }

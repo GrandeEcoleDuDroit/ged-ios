@@ -5,18 +5,10 @@ struct ConversationUI: Identifiable, Hashable {
     var interlocutor: User
     var lastMessage: Message? = nil
     var createdAt: Date = Date.now
-    var isCreated: Bool = false
+    var state: ConversationState
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
-    }
-    
-    static func == (lhs: ConversationUI, rhs: ConversationUI) -> Bool {
-        lhs.id == rhs.id &&
-        lhs.interlocutor == rhs.interlocutor &&
-        lhs.lastMessage == rhs.lastMessage &&
-        lhs.createdAt == rhs.createdAt &&
-        lhs.isCreated == rhs.isCreated
     }
     
     func with(
@@ -24,14 +16,14 @@ struct ConversationUI: Identifiable, Hashable {
         interlocutor: User? = nil,
         lastMessage: Message? = nil,
         createdAt: Date? = nil,
-        isCreated: Bool? = nil
+        state: ConversationState? = nil
     ) -> ConversationUI {
         ConversationUI(
             id: id ?? self.id,
             interlocutor: interlocutor ?? self.interlocutor,
             lastMessage: lastMessage ?? self.lastMessage,
             createdAt: createdAt ?? self.createdAt,
-            isCreated: isCreated ?? self.isCreated
+            state: state ?? self.state
         )
     }
 }

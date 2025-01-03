@@ -1,47 +1,47 @@
 import Foundation
 import Combine
 
+private let tag = String(describing: ChatViewModel.self)
+
 class ChatViewModel: ObservableObject {
-    private let tag = String(describing: ChatViewModel.self)
     private let getMessagesUseCase: GetMessagesUseCase
     private let getCurrentUserUseCase: GetCurrentUserUseCase
     private let generateIdUseCase: GenerateIdUseCase
     private let createConversationUseCase: CreateConversationUseCase
+    private let sendMessageUseCase: SendMessageUseCase
     private var cancellables: Set<AnyCancellable> = []
-    private let conversation: ConversationUI
+    private var conversation: ConversationUI
     
-    @Published var messages: [Message] = []
+    @Published var messages: [String:Message] = [:]
     @Published var textToSend: String = ""
-    @Published var conversationState: ConversationState = .notActive
     
     init(
         getMessagesUseCase: GetMessagesUseCase,
         getCurrentUserUseCase: GetCurrentUserUseCase,
         generateIdUseCase: GenerateIdUseCase,
         createConversationUseCase: CreateConversationUseCase,
+        sendMessageUseCase: SendMessageUseCase,
         conversation: ConversationUI
     ) {
         self.getMessagesUseCase = getMessagesUseCase
         self.getCurrentUserUseCase = getCurrentUserUseCase
         self.generateIdUseCase = generateIdUseCase
         self.createConversationUseCase = createConversationUseCase
+        self.sendMessageUseCase = sendMessageUseCase
         self.conversation = conversation
     }
     
     func fetchMessages() {
-        if conversation.isCreated {
-            conversationState = .active
+        if case .created = conversation.state {
             getMessagesUseCase.execute(conversationId: conversation.id)
                 .receive(on: DispatchQueue.main)
                 .sink { completion in
                     switch completion {
-                    case .finished:
-                        break
-                    case .failure(let error):
-                        print("Error: \(error)")
+                        case .finished: break
+                        case .failure(let error): e(tag, "Error: \(error)")
                     }
-                } receiveValue: { [weak self] messages in
-                    self?.messages.append(contentsOf: messages.sorted(by: { $0.date < $1.date }))
+                } receiveValue: { [weak self] message in
+                    self?.messages[message.id] = message
                 }
                 .store(in: &cancellables)
         }
@@ -52,35 +52,47 @@ class ChatViewModel: ObservableObject {
             return
         }
         
-        let messageToSend = Message(
+        let message = Message(
             id: generateIdUseCase.execute(),
             conversationId: conversation.id,
             content: textToSend,
             senderId: currentUser.id,
-            type: "text"
+            type: .text,
+            state: .loading
         )
         
-        if case .notActive = conversationState {
-            conversationState = .creating
+        if case .notCreated = conversation.state {
+            updateConversationState(.creating)
+            
             Task {
                 do {
                     try await createConversationUseCase.execute(conversationUI: conversation)
+                    updateConversationState(.created)
+                    
+                    try await sendMessageUseCase.execute(message: message)
+                    
                     fetchMessages()
-                    updateConversationState(.active)
                 } catch {
-                    e(tag, "Error creating conversation: \(error)")
-                    updateConversationState(.error(message: "Failed to create conversation"))
+                    e(tag, "Error sending message: \(error)")
+                    updateConversationState(.error(message: "Failed to sending message"))
+                }
+            }
+        } else {
+            Task {
+                do {
+                    try await sendMessageUseCase.execute(message: message)
+                } catch {
+                    e(tag, "Error sending message: \(error)")
                 }
             }
         }
         
-        messages.append(messageToSend)
         textToSend = ""
     }
     
     private func updateConversationState(_ state: ConversationState) {
-        DispatchQueue.main.async {
-            self.conversationState = state
+        DispatchQueue.main.async { [weak self] in
+            self?.conversation.state = state
         }
     }
 }

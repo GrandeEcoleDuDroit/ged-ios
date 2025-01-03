@@ -272,6 +272,10 @@ class DependencyContainer {
         )
     }()
     
+    lazy var sendMessageUseCase: SendMessageUseCase = {
+        SendMessageUseCase(messageRepository: messageRepository)
+    }()
+    
     lazy var deleteConversationUseCase: DeleteConversationUseCase = {
         DeleteConversationUseCase(userConversationRepository: userConversationRepository)
     }()
@@ -307,6 +311,7 @@ class DependencyContainer {
             getCurrentUserUseCase: GetCurrentUserUseCase(userRepository: mockUserRepository),
             generateIdUseCase: GenerateIdUseCase(),
             createConversationUseCase: CreateConversationUseCase(userConversationRepository: mockUserConversationRepository),
+            sendMessageUseCase: SendMessageUseCase(messageRepository: mockMessageRepository),
             conversation: conversationUIFixture
         )
     }()

@@ -29,7 +29,11 @@ class CreateConversationViewModel: ObservableObject {
     }
     
     func generateConversation(interlocutor: User) -> ConversationUI {
-        ConversationUI(id: generateIdUseCase.execute(), interlocutor: interlocutor)
+        ConversationUI(
+            id: generateIdUseCase.execute(),
+            interlocutor: interlocutor,
+            state: .notCreated
+        )
     }
     
     private func fetchAllUsers() {

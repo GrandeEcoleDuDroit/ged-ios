@@ -37,19 +37,18 @@ class ConversationViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] completion in
                 switch completion {
-                case .finished:
-                    break
-                case .failure(let conversationError):
-                    switch conversationError {
-                        case.notFound:
-                            e(self?.tag ?? "ConversationViewModel", getString(.errorGettingConversations))
-                            self?.updateConversationState(state: .error(message: getString(.errorGettingConversations)))
-                        case .insertFailed:
-                            e(self?.tag ?? "ConversationViewModel", getString(.errorCreatingConversation))
-                            self?.updateConversationState(state: .error(message: getString(.errorCreatingConversation)))
-                        default: break
+                    case .finished: break
+                    case .failure(let conversationError):
+                        switch conversationError {
+                            case.notFound:
+                                e(self?.tag ?? "ConversationViewModel", getString(.errorGettingConversations))
+                                self?.updateConversationState(state: .error(message: getString(.errorGettingConversations)))
+                            case .createFailed:
+                                e(self?.tag ?? "ConversationViewModel", getString(.errorCreatingConversation))
+                                self?.updateConversationState(state: .error(message: getString(.errorCreatingConversation)))
+                            default: break
+                        }
                     }
-                }
             } receiveValue: { [weak self] conversationUI in
                 guard let self else { return }
                 

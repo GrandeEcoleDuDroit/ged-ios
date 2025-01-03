@@ -7,8 +7,8 @@ struct Message: Codable, Identifiable, Equatable {
     var date: Date = Date.now
     var isRead: Bool = false
     var senderId: String
-    var type: String
-    var state: MessageState = .loading
+    var type: MessageType
+    var state: MessageState
     
     static func == (lhs: Message, rhs: Message) -> Bool {
         lhs.id == rhs.id &&
@@ -27,7 +27,7 @@ struct Message: Codable, Identifiable, Equatable {
         date: Date? = nil,
         isRead: Bool? = nil,
         senderId: String? = nil,
-        type: String? = nil,
+        type: MessageType? = nil,
         state: MessageState? = nil
     ) -> Message {
         Message(
@@ -41,4 +41,8 @@ struct Message: Codable, Identifiable, Equatable {
             state: state ?? self.state
         )
     }
+}
+
+enum MessageType: String, Codable {
+    case text = "text"
 }

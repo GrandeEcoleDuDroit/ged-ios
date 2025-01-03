@@ -1,8 +1,8 @@
-enum ConversationState {
+enum ConversationState: Equatable {
     case idle
-    case notActive
-    case active
+    case notCreated
     case loading
     case creating
+    case created
     case error(message: String)
 }

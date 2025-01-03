@@ -6,6 +6,7 @@ struct ChatView: View {
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var conversation: ConversationUI
     @State private var inputFocused: InputField? = nil
+    @State private var messages: [Message] = []
     
     init(conversation: ConversationUI) {
         self.conversation = conversation
@@ -17,37 +18,37 @@ struct ChatView: View {
                 ScrollViewReader { proxy in
                     ScrollView(.vertical, showsIndicators: false) {
                         VStack(spacing: 0) {
-                            ForEach(chatViewModel.messages, id: \.id) { message in
-                                if let index = chatViewModel.messages.firstIndex(where: { $0.id == message.id }) {
-                                    let previousSenderId = (index > 0) ? chatViewModel.messages[index - 1].senderId : ""
+                            ForEach(messages, id: \.id) { message in
+                                if let index = messages.firstIndex(where: { $0.id == message.id }) {
+                                    let previousSenderId = (index > 0) ? messages[index - 1].senderId : ""
                                     
-                                    if message.senderId == conversation.interlocutor.id {
-                                        ReceiveMessageItem(
-                                            text: message.content,
-                                            screenWidth: geometry.size.width
-                                        )
-                                        .messageItemPadding(
-                                            previousSenderId: previousSenderId,
-                                            senderId: message.senderId
-                                        )
-                                    } else {
-                                        SendMessageItem(
-                                            text: message.content,
-                                            screenWidth: geometry.size.width
-                                        )
-                                        .messageItemPadding(
-                                            previousSenderId: previousSenderId,
-                                            senderId: message.senderId
-                                        )
-                                    }
+                                    let nextSenderId = (index < messages.count - 1) ? messages[index + 1].senderId : ""
+                                    
+                                    let displayProfilePicture = message.senderId != nextSenderId && message.senderId == conversation.interlocutor.id
+                                    
+                                    GetMessageItem(
+                                        message: message,
+                                        screenWidth: geometry.size.width,
+                                        interlocutorId: conversation.interlocutor.id,
+                                        displayProfilePicture: displayProfilePicture,
+                                        profilePictureUrl: conversation.interlocutor.profilePictureUrl,
+                                        isLastMessage: index == messages.count - 1
+                                    )
+                                    .messageItemPadding(
+                                        previousSenderId: previousSenderId,
+                                        senderId: message.senderId
+                                    )
                                 }
                             }
                         }
                         .rotationEffect(.degrees(180))
                     }
                     .rotationEffect(.degrees(180))
-                    .onChange(of: chatViewModel.messages.count) { _ in
-                        proxy.scrollTo(chatViewModel.messages.last?.id)
+                    .onReceive(chatViewModel.$messages) {
+                        messages = $0.sortedByDate()
+                    }
+                    .onChange(of: messages.count) { _ in
+                        proxy.scrollTo(messages.last?.id)
                     }
                 }
             }
@@ -87,11 +88,61 @@ struct ChatView: View {
     }
 }
 
+private struct GetMessageItem: View {
+    private let message: Message
+    private let screenWidth: CGFloat
+    private let interlocutorId: String
+    private let displayProfilePicture: Bool
+    private let profilePictureUrl: String?
+    private let isLastMessage: Bool
+    
+    init(
+        message: Message,
+        screenWidth: CGFloat,
+        interlocutorId: String,
+        displayProfilePicture: Bool,
+        profilePictureUrl: String?,
+        isLastMessage: Bool
+    ) {
+        self.message = message
+        self.screenWidth = screenWidth
+        self.interlocutorId = interlocutorId
+        self.displayProfilePicture = displayProfilePicture
+        self.profilePictureUrl = profilePictureUrl
+        self.isLastMessage = isLastMessage
+    }
+    
+    var body: some View {
+        if message.senderId == interlocutorId {
+            ReceiveMessageItem(
+                text: message.content,
+                screenWidth: screenWidth,
+                displayProfilePicture: displayProfilePicture,
+                profilePictureUrl: profilePictureUrl
+            )
+        } else {
+            VStack(alignment: .trailing) {
+                SendMessageItem(
+                    text: message.content,
+                    screenWidth: screenWidth,
+                    state: message.state
+                )
+                
+                if message.isRead && isLastMessage {
+                    Text(getString(.seen))
+                        .foregroundStyle(.gray)
+                        .font(.bodyMedium)
+                }
+            }
+        }
+    }
+}
+
 private extension View {
     func messageItemPadding(previousSenderId: String, senderId: String) -> some View {
         Group {
             if previousSenderId == senderId {
-                self.padding(.top, GedSpacing.verySmall)
+                self.padding(.top, 2)
             } else {
                 self.padding(.top, GedSpacing.smallMedium)
             }

@@ -3,9 +3,9 @@ import FirebaseFirestore
 import os
 
 let conversationTableName = "conversations"
+private let tag = String(describing: ConversationApiImpl.self)
 
 class ConversationApiImpl: ConversationApi {
-    private let tag = String(describing: ConversationApiImpl.self)
     private var listeners: [ListenerRegistration] = []
     private let conversationCollection: CollectionReference = Firestore.firestore().collection(conversationTableName)
     private var cancellables: Set<AnyCancellable> = []
@@ -15,17 +15,15 @@ class ConversationApiImpl: ConversationApi {
         
         let listener = conversationCollection
             .whereField(ConversationDataFields.participants, arrayContains: userId)
-            .addSnapshotListener { [weak self] querySnapshot, error in
-                guard let self = self else { return }
-                
+            .addSnapshotListener { querySnapshot, error in
                 if let error = error {
-                    e(self.tag, "Error to listen conversations: \(error.localizedDescription)")
+                    e(tag, "Error to listen conversations: \(error.localizedDescription)")
                     subject.send(completion: .failure(error))
                     return
                 }
                 
                 guard let querySnapshot = querySnapshot else {
-                    e(self.tag, "Error to listen conversations: querySnapshot is nil")
+                    e(tag, "Error to listen conversations: querySnapshot is nil")
                     return
                 }
                 
@@ -33,7 +31,7 @@ class ConversationApiImpl: ConversationApi {
                     if let remoteConversation = try? documentChanges.document.data(as: RemoteConversation.self) {
                         subject.send(remoteConversation)
                     } else {
-                        e(self.tag, "Error to convert remote conversation")
+                        e(tag, "Error to convert remote conversation")
                     }
                 }
             }
@@ -43,9 +41,14 @@ class ConversationApiImpl: ConversationApi {
     }
     
     func createConversation(remoteConversation: RemoteConversation) async throws {
-        try await conversationCollection
-            .document(remoteConversation.conversationId)
-            .setData(ConversationMapper.toFirestoreData(remoteConversation: remoteConversation))
+        do {
+            try conversationCollection
+                .document(remoteConversation.conversationId)
+                .setData(from: remoteConversation)
+        } catch {
+            e(tag, "Error to create conversation: \(error.localizedDescription)")
+            throw ConversationError.createFailed
+        }
     }
     
     func deleteConversation(conversationId: String) async throws {
