@@ -8,7 +8,28 @@ class ConversationMapper {
             id: conversationUser.id,
             interlocutorId: conversationUser.interlocutor.id,
             createdAt: conversationUser.createdAt,
-            isCreated: conversationUser.isCreated
+            state: conversationUser.state
+        )
+    }
+    
+    static func toConversation(localConversation: LocalConversation) -> Conversation? {
+        guard let interlocutorJson = localConversation.interlocutorJson,
+              let data = interlocutorJson.data(using: .utf8),
+              let conversationId = localConversation.conversationId,
+              let createdAt = localConversation.createdAt
+        else {
+            return nil
+        }
+        
+        guard let interlocutor = try? JSONDecoder().decode(User.self, from: data) else {
+            return nil
+        }
+        
+        return Conversation(
+            id: conversationId,
+            interlocutorId: interlocutor.id,
+            createdAt: createdAt,
+            state: .created
         )
     }
     
@@ -16,7 +37,8 @@ class ConversationMapper {
         guard let interlocutorJson = localConversation.interlocutorJson,
               let data = interlocutorJson.data(using: .utf8),
               let conversationId = localConversation.conversationId,
-              let createdAt = localConversation.createdAt else {
+              let createdAt = localConversation.createdAt
+        else {
             return nil
         }
 
@@ -28,7 +50,7 @@ class ConversationMapper {
             id: conversationId,
             interlocutorId: interlocutor.id,
             createdAt: createdAt,
-            isCreated: true
+            state: .created
         )
         
         return (conversation, interlocutor)
@@ -39,7 +61,7 @@ class ConversationMapper {
             id: conversationUI.id,
             interlocutor: conversationUI.interlocutor,
             createdAt: conversationUI.createdAt,
-            isCreated: conversationUI.isCreated
+            state: conversationUI.state
         )
     }
     
@@ -48,7 +70,7 @@ class ConversationMapper {
             id: conversation.id,
             interlocutor: interlocutor,
             createdAt: conversation.createdAt,
-            isCreated: conversation.isCreated
+            state: conversation.state
         )
     }
     
@@ -61,7 +83,7 @@ class ConversationMapper {
             id: remoteConversation.conversationId,
             interlocutorId: interlocutorId,
             createdAt: remoteConversation.createdAt.dateValue(),
-            isCreated: true
+            state: .created
         )
     }
     
@@ -71,7 +93,7 @@ class ConversationMapper {
             interlocutor: conversationUser.interlocutor,
             lastMessage: nil,
             createdAt: conversationUser.createdAt,
-            isCreated: conversationUser.isCreated
+            state: conversationUser.state
         )
     }
     
@@ -107,13 +129,5 @@ class ConversationMapper {
             participants: [currentUserId, conversation.interlocutorId],
             createdAt: Timestamp(date: conversation.createdAt)
         )
-    }
-    
-    static func toFirestoreData(remoteConversation: RemoteConversation) -> [String: Any] {
-        [
-            ConversationDataFields.conversationId: remoteConversation.conversationId,
-            ConversationDataFields.participants: remoteConversation.participants,
-            ConversationDataFields.createdAt: remoteConversation.createdAt
-        ]
     }
 }

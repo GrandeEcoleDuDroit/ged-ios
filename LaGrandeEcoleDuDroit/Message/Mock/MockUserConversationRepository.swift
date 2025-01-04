@@ -18,6 +18,10 @@ class MockUserConversationRepository: UserConversationRepository {
         conversationsUserFixture.append(conversationUser)
     }
     
+    func updateConversation(conversationUser: ConversationUser) async throws {
+        // Cannot be implementated
+    }
+    
     func deleteConversation(conversationId: String) async throws {
         // Cannot be implementated
     }

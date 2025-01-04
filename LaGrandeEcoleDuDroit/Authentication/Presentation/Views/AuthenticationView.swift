@@ -10,7 +10,7 @@ struct AuthenticationView: View {
     
     var body: some View {
         NavigationStack(path: $navigationCoordinator.path) {
-            VStack(spacing: GedSpacing.verylLarge) {
+            VStack(spacing: GedSpacing.veryLarge) {
                 Header()
                 
                 CredentialsInputs(
@@ -121,6 +121,7 @@ private struct CredentialsInputs: View {
                 inputFieldFocused: $inputFieldFocused,
                 isDisable: isLoading
             )
+            .textInputAutocapitalization(.never)
             .simultaneousGesture(TapGesture().onEnded({
                 isInputsFocused = true
             }))

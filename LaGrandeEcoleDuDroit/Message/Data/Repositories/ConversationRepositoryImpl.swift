@@ -38,10 +38,7 @@ class ConversationRepositoryImpl: ConversationRepository {
             currentUserId: currentUser.id
         )
         
-        try conversationLocalDataSource.insertConversation(
-            conversation: conversation,
-            interlocutor: interlocutor
-        )
+        try conversationLocalDataSource.insertConversation(conversation: conversation, interlocutor: interlocutor)
         try await conversationRemoteDataSource.createConversation(remoteConversation: remoteConversation)
     }
     

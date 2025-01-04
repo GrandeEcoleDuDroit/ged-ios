@@ -20,6 +20,7 @@ struct MessageNavigation: View {
                                         getCurrentUserUseCase: DependencyContainer.shared.getCurrentUserUseCase,
                                         generateIdUseCase: DependencyContainer.shared.generateIdUseCase,
                                         createConversationUseCase: DependencyContainer.shared.createConversationUseCase,
+                                        sendMessageUseCase: DependencyContainer.shared.sendMessageUseCase,
                                         conversation: conversation
                                     )
                                 )
@@ -52,6 +53,7 @@ struct MessageNavigation: View {
                                             getCurrentUserUseCase: DependencyContainer.shared.getCurrentUserUseCase,
                                             generateIdUseCase: DependencyContainer.shared.generateIdUseCase,
                                             createConversationUseCase: DependencyContainer.shared.createConversationUseCase,
+                                            sendMessageUseCase: DependencyContainer.shared.sendMessageUseCase,
                                             conversation: conversation
                                         )
                                     )

@@ -3,9 +3,10 @@ import Combine
 
 let userTableName = "users"
 
+private let tag = String(describing: UserFirestoreApiImpl.self)
+
 class UserFirestoreApiImpl: UserFirestoreApi {
     private let usersCollection: CollectionReference = Firestore.firestore().collection(userTableName)
-    private let tag = String(describing: UserFirestoreApiImpl.self)
     private var listeners: [ListenerRegistration] = []
     
     func createUser(firestoreUser: FirestoreUser) async throws {
@@ -28,17 +29,15 @@ class UserFirestoreApiImpl: UserFirestoreApi {
         
         let listener = usersCollection
             .document(userId)
-            .addSnapshotListener { [weak self] snapshot, error in
-                guard let self = self else { return }
-                
+            .addSnapshotListener { snapshot, error in
                 if let error = error {
-                    e(self.tag, "UserFirestoreApiImpl: Query error : \(error)")
+                    e(tag, "UserFirestoreApiImpl: Query error : \(error)")
                     subject.send(nil)
                     return
                 }
                 
                 guard let snapshot = snapshot else {
-                    e(self.tag, "UserFirestoreApiImpl: No snapshot for user: \(userId)")
+                    e(tag, "UserFirestoreApiImpl: No snapshot for user: \(userId)")
                     subject.send(nil)
                     return
                 }

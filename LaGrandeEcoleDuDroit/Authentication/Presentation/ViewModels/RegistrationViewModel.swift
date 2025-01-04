@@ -85,7 +85,7 @@ class RegistrationViewModel: ObservableObject {
             catch AuthenticationError.userNotFound {
                 updateRegistrationState(to: .error(message: getString(.authUserNotFound)))
             }
-            catch RequestError.invalidResponse(let error) {
+            catch RequestError.invalidResponse {
                 updateRegistrationState(to: .error(message: getString(.registrationError)))
             }
             catch NetworkError.timedOut {

@@ -97,6 +97,7 @@
 "new_conversation" = "Nouvelle conversation";
 "no_conversation" = "Aucune conversation";
 "delete_conversation_alert_message" = "Voulez-vous supprimer cette conversation ?";
+"seen" = "Vu";
 
 // Message errors
 "error_getting_conversations" = "Une erreur est survenue lors de la récupération des conversations.";
