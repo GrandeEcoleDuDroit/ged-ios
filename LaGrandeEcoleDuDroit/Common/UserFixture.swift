@@ -16,6 +16,15 @@ let userFixture2 = User(
     isMember: false
 )
 
+let userFixture3 = User(
+    id: "3",
+    firstName: "Evelyne",
+    lastName: "Aubin",
+    email: "evelyne.aubin@email.com",
+    schoolLevel: "GED 2",
+    isMember: false
+)
+
 let usersFixture = [
     userFixture,
     userFixture.with(id: "2", firstName: "Marc", lastName: "Boucher", profilePictureUrl: "https://avatarfiles.alphacoders.com/375/375590.png"),

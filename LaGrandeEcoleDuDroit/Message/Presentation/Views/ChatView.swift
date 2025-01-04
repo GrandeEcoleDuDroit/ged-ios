@@ -82,7 +82,6 @@ struct ChatView: View {
         }
         .onAppear {
             tabBarVisibility.show = false
-            chatViewModel.fetchMessages()
         }
         .navigationBarBackButtonHidden()
     }

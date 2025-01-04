@@ -121,6 +121,7 @@ private struct CredentialsInputs: View {
                 inputFieldFocused: $inputFieldFocused,
                 isDisable: isLoading
             )
+            .textInputAutocapitalization(.never)
             .simultaneousGesture(TapGesture().onEnded({
                 isInputsFocused = true
             }))
