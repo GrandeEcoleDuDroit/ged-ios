@@ -18,6 +18,7 @@ struct ThirdRegistrationView: View {
                 inputFieldFocused: $inputFieldFocused,
                 isDisable: isLoading
             )
+            .textInputAutocapitalization(.never)
             
             FocusableOutlinedPasswordTextField(
                 title: getString(.password),

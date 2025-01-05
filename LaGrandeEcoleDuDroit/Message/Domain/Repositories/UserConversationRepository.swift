@@ -5,6 +5,8 @@ protocol UserConversationRepository {
     
     func createConversation(conversationUser: ConversationUser) async throws
     
+    func updateConversation(conversationUser: ConversationUser) async throws
+    
     func deleteConversation(conversationId: String) async throws
         
     func stopGettingUserConversations()

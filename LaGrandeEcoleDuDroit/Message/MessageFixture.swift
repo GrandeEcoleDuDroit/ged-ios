@@ -10,7 +10,7 @@ let messageFixture = Message(
     date: Date.now,
     isRead: true,
     senderId: userFixture.id,
-    type: "text",
+    type: MessageType.text,
     state: .sent
 )
 
@@ -22,7 +22,7 @@ let messagesFixture = [
         date: calendar.date(byAdding: .minute, value: -10, to: currentDate) ?? currentDate,
         isRead: true,
         senderId: userFixture.id,
-        type: "text",
+        type: MessageType.text,
         state: .sent
     ),
     Message(
@@ -32,7 +32,7 @@ let messagesFixture = [
         date: calendar.date(byAdding: .minute, value: -5, to: currentDate) ?? currentDate,
         isRead: true,
         senderId: userFixture2.id,
-        type: "text",
+        type: MessageType.text,
         state: .sent
     ),
     Message(
@@ -42,7 +42,7 @@ let messagesFixture = [
         date: calendar.date(byAdding: .minute, value: -2, to: currentDate) ?? currentDate,
         isRead: true,
         senderId: userFixture.id,
-        type: "text",
+        type: MessageType.text,
         state: .sent
     ),
     Message(
@@ -52,7 +52,7 @@ let messagesFixture = [
         date: calendar.date(byAdding: .minute, value: -1, to: currentDate) ?? currentDate,
         isRead: true,
         senderId: userFixture2.id,
-        type: "text",
+        type: MessageType.text,
         state: .sent
     ),
     Message(
@@ -62,7 +62,37 @@ let messagesFixture = [
         date: currentDate,
         isRead: false,
         senderId: userFixture.id,
-        type: "text",
+        type: MessageType.text,
+        state: .sent
+    ),
+    Message(
+        id: "7",
+        conversationId: "1",
+        content: "Ok, see you later !",
+        date: currentDate,
+        isRead: false,
+        senderId: userFixture2.id,
+        type: MessageType.text,
+        state: .sent
+    ),
+    Message(
+        id: "8",
+        conversationId: "1",
+        content: "Ok, see you later !",
+        date: currentDate,
+        isRead: false,
+        senderId: userFixture2.id,
+        type: MessageType.text,
+        state: .sent
+    ),
+    Message(
+        id: "9",
+        conversationId: "1",
+        content: "Ok, see you later !",
+        date: currentDate,
+        isRead: false,
+        senderId: userFixture2.id,
+        type: MessageType.text,
         state: .sent
     )
 ]
@@ -76,7 +106,7 @@ let lastMessagesFixture = [
         date: calendar.date(byAdding: .minute, value: -10, to: currentDate) ?? currentDate,
         isRead: true,
         senderId: userFixture.id,
-        type: "text",
+        type: MessageType.text,
         state: .sent
     ),
     Message(
@@ -86,7 +116,7 @@ let lastMessagesFixture = [
         date: calendar.date(byAdding: .minute, value: -5, to: currentDate) ?? currentDate,
         isRead: true,
         senderId: userFixture.id,
-        type: "text",
+        type: MessageType.text,
         state: .sent
     ),
     Message(
@@ -96,7 +126,7 @@ let lastMessagesFixture = [
         date: calendar.date(byAdding: .minute, value: -2, to: currentDate) ?? currentDate,
         isRead: true,
         senderId: userFixture.id,
-        type: "text",
+        type: MessageType.text,
         state: .sent
     ),
     Message(
@@ -106,7 +136,7 @@ let lastMessagesFixture = [
         date: calendar.date(byAdding: .minute, value: -1, to: currentDate) ?? currentDate,
         isRead: true,
         senderId: userFixture.id,
-        type: "text",
+        type: MessageType.text,
         state: .sent
     ),
     Message(
@@ -116,7 +146,7 @@ let lastMessagesFixture = [
         date: currentDate,
         isRead: false,
         senderId: userFixture.id,
-        type: "text",
+        type: MessageType.text,
         state: .sent
     )
 ]

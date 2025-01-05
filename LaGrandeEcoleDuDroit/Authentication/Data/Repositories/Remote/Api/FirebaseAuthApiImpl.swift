@@ -1,21 +1,19 @@
 import FirebaseAuth
 import os
 
+private let tag = String(describing: FirebaseAuthApiImpl.self)
+
 class FirebaseAuthApiImpl: FirebaseAuthApi {
-    private let tag = String(describing: MessageApiImpl.self)
-    
     func createUserWithEmail(email: String, password: String) async throws -> AuthDataResult {
         return try await withCheckedThrowingContinuation { continuation in
-            Auth.auth().createUser(withEmail: email, password: password) { [weak self] authResult, error in
-                guard let self = self else { return }
-                
+            Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
                 if let authResult = authResult {
                     continuation.resume(returning: authResult)
                 } else if let error = error {
-                    e(self.tag, "FirebaseAuth create user error: \(error.localizedDescription)")
+                    e(tag, "FirebaseAuth create user error: \(error.localizedDescription)")
                     continuation.resume(throwing: error)
                 } else {
-                    e(self.tag, "FirebaseAuth create user error: unknown")
+                    e(tag, "FirebaseAuth create user error: unknown")
                     continuation.resume(throwing: NSError(domain: "com.upsaclay.gedoise", code: 1, userInfo: nil))
                 }
             }
@@ -25,14 +23,14 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
     func sendEmailVerification() async throws {
         return try await withCheckedThrowingContinuation { continuation in
             guard let currentUser = Auth.auth().currentUser else {
-                e(self.tag, "FirebaseAuth send email verification error: User not connected")
+                e(tag, "FirebaseAuth send email verification error: User not connected")
                 continuation.resume(throwing: AuthenticationError.userNotConnected)
                 return
             }
             
             currentUser.sendEmailVerification { error in
                 if let error = error {
-                    e(self.tag, "FirebaseAuth send email verification error: \(error.localizedDescription)")
+                    e(tag, "FirebaseAuth send email verification error: \(error.localizedDescription)")
                     continuation.resume(throwing: error)
                 } else {
                     continuation.resume()
@@ -44,14 +42,14 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
     func isEmailVerified() async throws -> Bool {
         return try await withCheckedThrowingContinuation { continuation in
             guard let currentUser = Auth.auth().currentUser else {
-                e(self.tag, "FirebaseAuth is email verified error: User not connected")
+                e(tag, "FirebaseAuth is email verified error: User not connected")
                 continuation.resume(throwing: AuthenticationError.userNotConnected)
                 return
             }
             
             currentUser.reload { error in
                 if let error = error {
-                    e(self.tag, "Error while reloading user : \(error.localizedDescription)")
+                    e(tag, "Error while reloading user : \(error.localizedDescription)")
                     continuation.resume(returning: false)
                 } else {
                     continuation.resume(returning: currentUser.isEmailVerified)
@@ -66,10 +64,10 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
                 if let authResult = authResult {
                     continuation.resume(returning: authResult)
                 } else if let error = error {
-                    e(self.tag, "FirebaseAuth sign in user error: \(error.localizedDescription)")
+                    e(tag, "FirebaseAuth sign in user error: \(error.localizedDescription)")
                     continuation.resume(throwing: error)
                 } else {
-                    e(self.tag, "FirebaseAuth sign in user error: unknown")
+                    e(tag, "FirebaseAuth sign in user error: unknown")
                     continuation.resume(throwing: NSError(domain: "com.upsaclay.gedoise", code: 1, userInfo: nil))
                 }
             }

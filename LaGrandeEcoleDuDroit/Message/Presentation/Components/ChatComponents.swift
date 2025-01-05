@@ -1,41 +1,82 @@
 import SwiftUI
 
 struct SendMessageItem: View {
-    @State var text: String
-    @State var screenWidth: CGFloat
+    private var text: String
+    private var screenWidth: CGFloat
+    private var state: MessageState
     
-    init(text: String, screenWidth: CGFloat) {
+    init(
+        text: String,
+        screenWidth: CGFloat,
+        state: MessageState
+    ) {
         self.text = text
         self.screenWidth = screenWidth
+        self.state = state
     }
     
     var body: some View {
-        ZStack {
+        HStack(alignment: .bottom) {
             Text(text)
                 .foregroundStyle(.white)
-                .padding()
+                .padding(GedSpacing.smallMedium)
                 .background(.gedPrimary)
                 .clipShape(.rect(cornerRadius: 30))
                 .frame(maxWidth: screenWidth / 1.5, alignment: .trailing)
+            
+            switch state {
+            case .loading:
+                Image(systemName: "paperplane")
+                    .resizable()
+                    .foregroundColor(.gray)
+                    .frame(width: 20, height: 20)
+            case .error:
+                Image(systemName: "exclamationmark.circle")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(.red)
+            default:
+                EmptyView()
+            }
         }
         .frame(maxWidth: .infinity, alignment: .trailing)
     }
 }
 
 struct ReceiveMessageItem: View {
-    @State var text: String
-    @State var screenWidth: CGFloat
+    private let text: String
+    private let screenWidth: CGFloat
+    private let displayProfilePicture: Bool
+    private let profilePictureUrl: String?
     
-    init(text: String, screenWidth: CGFloat) {
+    init(
+        text: String,
+        screenWidth: CGFloat,
+        displayProfilePicture: Bool,
+        profilePictureUrl: String?
+    ) {
         self.text = text
         self.screenWidth = screenWidth
+        self.displayProfilePicture = displayProfilePicture
+        self.profilePictureUrl = profilePictureUrl
     }
     
     var body: some View {
-        ZStack {
+        Grid(alignment: .bottom) {
+            
+        }
+        HStack(alignment: .bottom) {
+            if displayProfilePicture {
+                ProfilePicture(url: profilePictureUrl, scale: 0.3)
+            }
+            else {
+                Spacer()
+                    .frame(width: GedSpacing.veryLarge)
+            }
+            
             Text(text)
                 .foregroundStyle(.black)
-                .padding()
+                .padding(GedSpacing.smallMedium)
                 .background(.receiveMessageComponentBackground)
                 .clipShape(.rect(cornerRadius: 30))
                 .frame(maxWidth: screenWidth / 1.5, alignment: .leading)
@@ -69,7 +110,7 @@ struct ChatInputField: View {
                 prompt: messagePlaceholder,
                 axis: .vertical
             )
-            .padding(.vertical, GedSpacing.medium)
+            .padding(.vertical, GedSpacing.smallMedium)
             .focused($focusedField, equals: InputField.chat)
             .simultaneousGesture(TapGesture().onEnded({
                 inputFocused = InputField.chat
@@ -93,8 +134,10 @@ struct ChatInputField: View {
         }
         .padding(.leading, GedSpacing.medium)
         .padding(.trailing, GedSpacing.small)
+        .padding(.vertical, GedSpacing.verySmall)
         .background(.receiveMessageComponentBackground)
         .clipShape(.rect(cornerRadius: 30))
+        .padding(.bottom, GedSpacing.small)
         .onChange(of: inputFocused) { newValue in
             focusedField = newValue
         }
@@ -117,11 +160,41 @@ struct ChatInputField: View {
         @State private var inputFocused: InputField? = nil
         
         var body: some View {
-            ChatInputField(
-                text: $text,
-                onSendClick: {},
-                inputFocused: $inputFocused
-            )
+            VStack {
+                ReceiveMessageItem(
+                    text: "Received",
+                    screenWidth: 375,
+                    displayProfilePicture: true,
+                    profilePictureUrl: nil
+                )
+                
+                SendMessageItem(
+                    text: "Sended",
+                    screenWidth: 375,
+                    state: .sent
+                )
+                
+                SendMessageItem(
+                    text: "Loading",
+                    screenWidth: 375,
+                    state: .loading
+                )
+                
+                SendMessageItem(
+                    text: "Error",
+                    screenWidth: 375,
+                    state: .error
+                )
+                 
+                Spacer()
+                
+                ChatInputField(
+                    text: $text,
+                    onSendClick: {},
+                    inputFocused: $inputFocused
+                )
+            }
+            .padding()
         }
     }
     

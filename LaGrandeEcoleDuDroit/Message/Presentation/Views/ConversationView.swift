@@ -85,7 +85,7 @@ struct ConversationView: View {
     }
 }
 
-struct GetConversationItem: View {
+private struct GetConversationItem: View {
     private let conversation: ConversationUI
     private let onClick: () -> Void
     private let onLongClick: () -> Void
@@ -102,14 +102,14 @@ struct GetConversationItem: View {
     
     var body: some View {
         if let lastMessage = conversation.lastMessage {
-            if lastMessage.isRead {
-                ReadConversationItem(
+            if !lastMessage.isRead && lastMessage.senderId == conversation.interlocutor.id {
+                UnreadConversationItem(
                     conversationUI: conversation,
                     onClick: onClick,
                     onLongClick: onLongClick
                 )
             } else {
-                UnreadConversationItem(
+                ReadConversationItem(
                     conversationUI: conversation,
                     onClick: onClick,
                     onLongClick: onLongClick

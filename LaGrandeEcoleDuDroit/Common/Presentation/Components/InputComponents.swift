@@ -36,7 +36,6 @@ struct FocusableOutlinedTextField: View {
     var body: some View {
         TextField(title, text: $text)
             .focused($focusedField, equals: inputField)
-            .textInputAutocapitalization(.never)
             .padding()
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius)
