@@ -2,9 +2,9 @@ import SwiftUI
 
 struct MessageNavigation: View {
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
-    @StateObject private var messageNavigationCoordinator = NavigationCoordinator()
-    @StateObject private var conversationViewModel = DependencyContainer.shared.conversationViewModel
-    @StateObject private var createConversationViewModel = DependencyContainer.shared.createConversationViewModel
+    @StateObject private var messageNavigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)
+    @StateObject private var conversationViewModel = MessageDependencyInjectionContainer.shared.resolve(ConversationViewModel.self)
+    @StateObject private var createConversationViewModel = MessageDependencyInjectionContainer.shared.resolve(CreateConversationViewModel.self)
     
     var body: some View {
         NavigationStack(path: $messageNavigationCoordinator.path) {
@@ -15,17 +15,11 @@ struct MessageNavigation: View {
                         case .chat(let conversation):
                             ChatView(conversation: conversation)
                                 .environmentObject(
-                                    ChatViewModel(
-                                        getMessagesUseCase: DependencyContainer.shared.getMessagesUseCase,
-                                        getCurrentUserUseCase: DependencyContainer.shared.getCurrentUserUseCase,
-                                        generateIdUseCase: DependencyContainer.shared.generateIdUseCase,
-                                        createConversationUseCase: DependencyContainer.shared.createConversationUseCase,
-                                        conversation: conversation
-                                    )
+                                    MessageDependencyInjectionContainer.shared.resolve(ChatViewModel.self, arguments: conversation)!
                                 )
                         case .createConversation:
                             CreateConversationView()
-                                .environmentObject(DependencyContainer.shared.createConversationViewModel)
+                                .environmentObject(createConversationViewModel)
                     }
                 }
         }
@@ -35,36 +29,33 @@ struct MessageNavigation: View {
 }
 
 #Preview {
-    struct ConversationView_Previews: View {
-        @StateObject var navigationCoordinator = NavigationCoordinator()
+    struct MessageNavigation_Preview: View {
+        @StateObject var navigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)
+        let mockConversationViewModel = MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(ConversationViewModel.self)!
+        let mockCreateConversationViewModel = MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(CreateConversationViewModel.self)!
+        let tabBarVisibility = CommonDependencyInjectionContainer.shared.resolve(TabBarVisibility.self)
         
         var body: some View {
             NavigationStack(path: $navigationCoordinator.path) {
                 ConversationView()
-                    .environmentObject(DependencyContainer.shared.mockConversationViewModel)
+                    .environmentObject(mockConversationViewModel)
                     .navigationDestination(for: MessageScreen.self) { screen in
                         switch screen {
-                            case .chat(let conversation):
-                                ChatView(conversation: conversation)
-                                    .environmentObject(
-                                        ChatViewModel(
-                                            getMessagesUseCase: DependencyContainer.shared.getMessagesUseCase,
-                                            getCurrentUserUseCase: DependencyContainer.shared.getCurrentUserUseCase,
-                                            generateIdUseCase: DependencyContainer.shared.generateIdUseCase,
-                                            createConversationUseCase: DependencyContainer.shared.createConversationUseCase,
-                                            conversation: conversation
-                                        )
-                                    )
-                            case .createConversation:
-                                CreateConversationView()
-                                    .environmentObject(DependencyContainer.shared.mockCreateConversationViewModel)
+                        case .chat(let conversation):
+                            ChatView(conversation: conversation)
+                                .environmentObject(
+                                    MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(ChatViewModel.self, argument: conversation)!
+                                )
+                        case .createConversation:
+                            CreateConversationView()
+                                .environmentObject(mockCreateConversationViewModel)
                         }
                     }
             }
-            .environmentObject(TabBarVisibility())
+            .environmentObject(tabBarVisibility)
             .environmentObject(navigationCoordinator)
         }
     }
     
-    return ConversationView_Previews()
+    return MessageNavigation_Preview()
 }

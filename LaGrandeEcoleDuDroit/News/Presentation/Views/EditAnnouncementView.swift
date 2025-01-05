@@ -102,12 +102,15 @@ struct EditAnnouncementView: View {
 }
 
 #Preview {
-    NavigationStack {
+    let navigationCoordinator = StateObject(wrappedValue: CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self))
+    let mockNewsViewModel = NewsDependencyInjectionContainer.shared.resolveWithMock().resolve(NewsViewModel.self)!
+    
+    NavigationStack(path: navigationCoordinator.projectedValue.path) {
         EditAnnouncementView(
             announcement: announcementFixture,
             onCancelClick: {},
             onSaveClick: { _, _ in }
         )
-        .environmentObject(DependencyContainer.shared.mockNewsViewModel)
+        .environmentObject(mockNewsViewModel)
     }
 }

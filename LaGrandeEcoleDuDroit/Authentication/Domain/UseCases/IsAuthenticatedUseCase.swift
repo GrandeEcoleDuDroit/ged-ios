@@ -1,13 +1,13 @@
 import Combine
 
 class IsAuthenticatedUseCase {
-    private let authenticationRemoteRepository: AuthenticationRepository
+    private let authenticationRepository: AuthenticationRepository
     
-    init(authenticationRemoteRepository: AuthenticationRepository) {
-        self.authenticationRemoteRepository = authenticationRemoteRepository
+    init(authenticationRepository: AuthenticationRepository) {
+        self.authenticationRepository = authenticationRepository
     }
     
     func execute() -> AnyPublisher<Bool, Never> {
-        authenticationRemoteRepository.isAuthenticated
+        authenticationRepository.isAuthenticated
     }
 }

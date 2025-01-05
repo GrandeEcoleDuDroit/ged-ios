@@ -3,12 +3,14 @@ import Foundation
 let conversationUIFixture = ConversationUI(
     id: "1",
     interlocutor: userFixture2,
-    lastMessage: messageFixture
+    lastMessage: messageFixture,
+    isCreated: true
 )
 
 let conversationUserFixture = ConversationUser(
     id: "1",
-    interlocutor: userFixture2
+    interlocutor: userFixture2,
+    isCreated: true
 )
 
 let conversationsUIFixture = [

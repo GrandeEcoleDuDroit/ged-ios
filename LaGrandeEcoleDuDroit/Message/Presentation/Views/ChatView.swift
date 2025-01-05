@@ -100,10 +100,21 @@ private extension View {
 }
 
 #Preview {
-    NavigationStack {
-        ChatView(conversation: conversationUIFixture)
-            .environmentObject(DependencyContainer.shared.mockChatViewModel)
-            .environmentObject(TabBarVisibility())
-            .environmentObject(NavigationCoordinator())
+    struct ChatView_Preview: View {
+        @StateObject var navigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)
+        let tabBarVisibility = CommonDependencyInjectionContainer.shared.resolve(TabBarVisibility.self)
+        
+        var body: some View {
+            NavigationStack(path: $navigationCoordinator.path) {
+                ChatView(conversation: conversationUIFixture)
+                    .environmentObject(
+                        MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(ChatViewModel.self, argument: conversationUIFixture)!
+                    )
+                    .environmentObject(navigationCoordinator)
+                    .environmentObject(tabBarVisibility)
+            }
+        }
     }
+    
+    return ChatView_Preview()
 }

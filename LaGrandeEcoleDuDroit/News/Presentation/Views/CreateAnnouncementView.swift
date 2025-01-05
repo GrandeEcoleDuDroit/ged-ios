@@ -77,9 +77,12 @@ struct CreateAnnouncementView: View {
 }
 
 #Preview {
-    NavigationStack {
+    let mockNewsViewModel = NewsDependencyInjectionContainer.shared.resolveWithMock().resolve(NewsViewModel.self)!
+    let navigationCoordinator = StateObject(wrappedValue: CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self))
+    
+    NavigationStack(path: navigationCoordinator.projectedValue.path) {
         CreateAnnouncementView()
-            .environmentObject(DependencyContainer.shared.mockNewsViewModel)
-            .environmentObject(NavigationCoordinator())
+            .environmentObject(mockNewsViewModel)
+            .environmentObject(navigationCoordinator.wrappedValue)
     }
 }

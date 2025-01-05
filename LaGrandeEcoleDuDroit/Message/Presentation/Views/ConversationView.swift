@@ -127,27 +127,32 @@ struct GetConversationItem: View {
 }
 
 #Preview {
-    struct ConversationView_Previews: View {
-        @StateObject var navigationCoordinator = NavigationCoordinator()
+    struct ConversationView_Preview: View {
+        @StateObject var navigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)
+        let mockConversationViewModel = MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(ConversationViewModel.self)!
+        let mockCreateConversationViewModel = MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(CreateConversationViewModel.self)!
+        let tabBarVisibility = CommonDependencyInjectionContainer.shared.resolve(TabBarVisibility.self)
         
         var body: some View {
             NavigationStack(path: $navigationCoordinator.path) {
                 ConversationView()
-                    .environmentObject(DependencyContainer.shared.mockConversationViewModel)
+                    .environmentObject(mockConversationViewModel)
                     .navigationDestination(for: MessageScreen.self) { screen in
                         if case .chat(let conversation) = screen {
                             ChatView(conversation: conversation)
-                                .environmentObject(DependencyContainer.shared.mockChatViewModel)
+                                .environmentObject(
+                                    MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(ChatViewModel.self, argument: conversation)!
+                                )
                         } else if case .createConversation = screen {
                             CreateConversationView()
-                                .environmentObject(DependencyContainer.shared.mockCreateConversationViewModel)
+                                .environmentObject(mockCreateConversationViewModel)
                         }
                     }
             }
             .environmentObject(navigationCoordinator)
-            .environmentObject(TabBarVisibility())
+            .environmentObject(tabBarVisibility)
         }
     }
     
-    return ConversationView_Previews()
+    return ConversationView_Preview()
 }

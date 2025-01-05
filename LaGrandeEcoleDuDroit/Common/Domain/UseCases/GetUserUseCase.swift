@@ -6,10 +6,6 @@ class GetUserUseCase {
     }
     
     func execute(userId: String) async -> User? {
-        do {
-            return try await userRepository.getUser(userId: userId)
-        } catch {
-            return nil
-        }
+        await userRepository.getUser(userId: userId)
     }
 }

@@ -57,26 +57,28 @@ struct CreateConversationView: View {
 }
 
 #Preview {
-    struct CreateConversationView_Previews: View {
-        @StateObject private var navigationCoordinator = NavigationCoordinator()
+    struct CreateConversationView_Preview: View {
+        @StateObject var navigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)
+        let mockCreateConversationViewModel = MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(CreateConversationViewModel.self)!
+        let tabBarVisibility = CommonDependencyInjectionContainer.shared.resolve(TabBarVisibility.self)
         
         var body: some View {
             NavigationStack(path: $navigationCoordinator.path) {
                 CreateConversationView()
-                    .environmentObject(DependencyContainer.shared.mockCreateConversationViewModel)
-                    .environmentObject(TabBarVisibility())
-                    .environmentObject(navigationCoordinator)
+                    .environmentObject(mockCreateConversationViewModel)
                     .navigationDestination(for: MessageScreen.self) { screen in
                         if case let .chat(conversation) = screen {
                             ChatView(conversation: conversation)
-                                .environmentObject(DependencyContainer.shared.mockChatViewModel)
-                                .environmentObject(navigationCoordinator)
-                                .environmentObject(TabBarVisibility())
+                                .environmentObject(
+                                    MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(ChatViewModel.self, argument: conversation)!
+                                )
                         }
                     }
             }
+            .environmentObject(navigationCoordinator)
+            .environmentObject(tabBarVisibility)
         }
     }
     
-    return CreateConversationView_Previews()
+    return CreateConversationView_Preview()
 }
