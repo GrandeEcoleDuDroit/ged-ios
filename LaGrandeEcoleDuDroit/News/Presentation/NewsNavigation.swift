@@ -2,8 +2,8 @@ import SwiftUI
 
 struct NewsNavigation: View {
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
-    @StateObject private var newsNavigationCoordinator = NavigationCoordinator()
-    @StateObject private var newsViewModel = DependencyContainer.shared.newsViewModel
+    @StateObject private var newsNavigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)
+    @StateObject private var newsViewModel = NewsDependencyInjectionContainer.shared.resolve(NewsViewModel.self)
     
     var body: some View {
         NavigationStack(path: $newsNavigationCoordinator.path) {
@@ -26,29 +26,28 @@ struct NewsNavigation: View {
 }
 
 #Preview {
-    struct NewsNavigation_Previews: View {
-        @StateObject private var navigationCoordinator = NavigationCoordinator()
+    struct NewsNavigation_Preview: View {
+        @StateObject var navigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)
+        let tabBarVisibility = CommonDependencyInjectionContainer.shared.resolve(TabBarVisibility.self)
+        let mockNewsViewModel = NewsDependencyInjectionContainer.shared.resolveWithMock().resolve(NewsViewModel.self)!
         
         var body: some View {
             NavigationStack(path: $navigationCoordinator.path) {
                 NewsView()
-                    .environmentObject(DependencyContainer.shared.mockNewsViewModel)
-                    .environmentObject(TabBarVisibility())
-                    .environmentObject(navigationCoordinator)
                     .navigationDestination(for: NewsScreen.self) { screen in
                         switch screen {
                         case .announcementDetail(let announcement):
                             AnnouncementDetailView(announcement: announcement)
-                                .environmentObject(DependencyContainer.shared.mockNewsViewModel)
                         case .createAnnouncement:
                             CreateAnnouncementView()
-                                .environmentObject(DependencyContainer.shared.mockNewsViewModel)
                         }
                     }
             }
             .environmentObject(navigationCoordinator)
+            .environmentObject(mockNewsViewModel)
+            .environmentObject(tabBarVisibility)
         }
     }
     
-    return NewsNavigation_Previews()
+    return NewsNavigation_Preview()
 }

@@ -128,9 +128,12 @@ struct AnnouncementDetailView: View {
 
 
 #Preview {
+    let navigationCoordinator = StateObject(wrappedValue: CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self))
+    let mockNewsViewModel = NewsDependencyInjectionContainer.shared.resolveWithMock().resolve(NewsViewModel.self)!
+
     NavigationStack {
         AnnouncementDetailView(announcement: announcementFixture)
-            .environmentObject(DependencyContainer.shared.mockNewsViewModel)
-            .environmentObject(NavigationCoordinator())
+            .environmentObject(mockNewsViewModel)
+            .environmentObject(navigationCoordinator.wrappedValue)
     }
 }

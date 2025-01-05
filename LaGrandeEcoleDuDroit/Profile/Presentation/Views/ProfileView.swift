@@ -56,23 +56,17 @@ struct ProfileView: View {
 }
 
 #Preview {
-    struct ProfileView_Previews: View {
-        @StateObject private var navigationCoordinator = NavigationCoordinator()
-        
-        var body: some View {
-            NavigationStack(path: $navigationCoordinator.path) {
-                ProfileView()
-                    .environmentObject(DependencyContainer.shared.mockProfileViewModel)
-                    .environmentObject(navigationCoordinator)
-                    .navigationDestination(for: ProfileScreen.self) { screen in
-                        if case .account = screen {
-                            AccountView()
-                                .environmentObject(DependencyContainer.shared.mockProfileViewModel)
-                        }
-                    }
-            }
-        }
-    }
+    let navigationCoordinator = StateObject(wrappedValue: CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self))
+    let mockProfileViewModel = ProfileDependencyInjectionContainer.shared.resolveWithMock().resolve(ProfileViewModel.self)!
     
-    return ProfileView_Previews()
+    NavigationStack(path: navigationCoordinator.projectedValue.path) {
+        ProfileView()
+            .navigationDestination(for: ProfileScreen.self) { screen in
+                if case .account = screen {
+                    AccountView()
+                }
+            }
+    }
+    .environmentObject(navigationCoordinator.wrappedValue)
+    .environmentObject(mockProfileViewModel)
 }

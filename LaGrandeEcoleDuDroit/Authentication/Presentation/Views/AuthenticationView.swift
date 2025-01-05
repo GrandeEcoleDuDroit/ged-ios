@@ -192,8 +192,36 @@ private struct Buttons: View {
 }
 
 #Preview {
-    AuthenticationView()
-        .environmentObject(DependencyContainer.shared.mockAuthenticationViewModel)
-        .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
-        .environmentObject(NavigationCoordinator())
+    struct AuthenticationView_Preview: View {
+        @StateObject var navigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)
+        let mockAuthenticationViewModel = AuthenticationDependencyInjectionContainer.shared.resolveWithMock().resolve(AuthenticationViewModel.self)!
+        let mockRegistrationViewModel = AuthenticationDependencyInjectionContainer.shared.resolveWithMock().resolve(RegistrationViewModel.self)!
+        
+        var body: some View {
+            NavigationStack(path: $navigationCoordinator.path) {
+                AuthenticationView()
+                    .environmentObject(mockAuthenticationViewModel)
+                    .environmentObject(mockRegistrationViewModel)
+                    .navigationDestination(for: AuthenticationScreen.self) { screen in
+                       if case .emailVerification(let email) = screen {
+                           EmailVerificationView()
+                               .environmentObject(
+                                AuthenticationDependencyInjectionContainer.shared.resolveWithMock()
+                                    .resolve(RegistrationViewModel.self, argument: email)!
+                               )
+                       }
+                       else if case .firstRegistration = screen {
+                           FirstRegistrationView()
+                               .environmentObject(mockRegistrationViewModel)
+                       }
+                       else if case .forgottenPassword = screen {
+                           ForgottenPasswordView()
+                       }
+                    }
+            }
+            .environmentObject(navigationCoordinator)
+        }
+    }
+    
+    return AuthenticationView_Preview()
 }

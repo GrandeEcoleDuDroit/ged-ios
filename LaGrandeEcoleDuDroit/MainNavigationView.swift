@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct MainNavigationView: View {
-    @StateObject private var authenticationViewModel = DependencyContainer.shared.authenticationViewModel
-    @StateObject private var registrationViewModel = DependencyContainer.shared.registrationViewModel
+    @StateObject private var authenticationViewModel = AuthenticationDependencyInjectionContainer.shared.resolve(AuthenticationViewModel.self)
+    @StateObject private var registrationViewModel = AuthenticationDependencyInjectionContainer.shared.resolve(RegistrationViewModel.self)
     @State private var authenticationState: AuthenticationState = .idle
     
     var body: some View {
@@ -46,7 +46,7 @@ private enum Tabs {
 }
  
 struct Main: View {
-    @StateObject private var tabBarVisibility = TabBarVisibility()
+    @StateObject private var tabBarVisibility = CommonDependencyInjectionContainer.shared.resolve(TabBarVisibility.self)
     @State private var selectedTab: Tabs = .news
 
     var body: some View {

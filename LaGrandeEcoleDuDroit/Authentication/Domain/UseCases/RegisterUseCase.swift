@@ -1,11 +1,11 @@
 class RegisterUseCase {
-    private let authenticationRemoteRepository: AuthenticationRepository
+    private let authenticationRepository: AuthenticationRepository
     
-    init(authenticationRemoteRepository: AuthenticationRepository) {
-        self.authenticationRemoteRepository = authenticationRemoteRepository
+    init(authenticationRepository: AuthenticationRepository) {
+        self.authenticationRepository = authenticationRepository
     }
     
     func execute(email: String, password: String) async throws -> String {
-        try await authenticationRemoteRepository.register(email: email, password: password)
+        try await authenticationRepository.register(email: email, password: password)
     }
 }

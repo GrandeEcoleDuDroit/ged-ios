@@ -12,6 +12,7 @@
 		5EC0EA482CC5644100632199 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 5EC0EA472CC5644100632199 /* FirebaseCore */; };
 		5EC0EA4A2CC5644100632199 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 5EC0EA492CC5644100632199 /* FirebaseCrashlytics */; };
 		5EC0EA4C2CC5644100632199 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 5EC0EA4B2CC5644100632199 /* FirebaseFirestore */; };
+		5EE765C82D2A1B2600EC8447 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 5EE765C72D2A1B2600EC8447 /* Swinject */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +66,7 @@
 				5EC0EA482CC5644100632199 /* FirebaseCore in Frameworks */,
 				5EC0EA4C2CC5644100632199 /* FirebaseFirestore in Frameworks */,
 				5EC0EA462CC5644100632199 /* FirebaseAuth in Frameworks */,
+				5EE765C82D2A1B2600EC8447 /* Swinject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,6 +132,7 @@
 				5EC0EA472CC5644100632199 /* FirebaseCore */,
 				5EC0EA492CC5644100632199 /* FirebaseCrashlytics */,
 				5EC0EA4B2CC5644100632199 /* FirebaseFirestore */,
+				5EE765C72D2A1B2600EC8447 /* Swinject */,
 			);
 			productName = gedoise;
 			productReference = 5EB5784D2CB3CCD3004524AD /* La Grande Ecole Du Droit.app */;
@@ -216,6 +219,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				5EC0EA422CC5644100632199 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				5EE765C62D2A1B2600EC8447 /* XCRemoteSwiftPackageReference "Swinject" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5EB5784E2CB3CCD3004524AD /* Products */;
@@ -594,6 +598,14 @@
 				minimumVersion = 11.3.0;
 			};
 		};
+		5EE765C62D2A1B2600EC8447 /* XCRemoteSwiftPackageReference "Swinject" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Swinject/Swinject.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -621,6 +633,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5EC0EA422CC5644100632199 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		5EE765C72D2A1B2600EC8447 /* Swinject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5EE765C62D2A1B2600EC8447 /* XCRemoteSwiftPackageReference "Swinject" */;
+			productName = Swinject;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

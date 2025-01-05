@@ -57,24 +57,19 @@ struct EmailVerificationView: View {
 }
 
 #Preview {
-    let registrationViewModel = RegistrationViewModel(
-        email: "email@example.com",
-        registerUseCase: RegisterUseCase(
-            authenticationRemoteRepository: DependencyContainer.shared.mockAuthenticationRepository
-        ),
-        sendVerificationEmailUseCase: SendVerificationEmailUseCase(
-            authenticationRemoteRepository: DependencyContainer.shared.mockAuthenticationRepository
-        ),
-        isEmailVerifiedUseCase: IsEmailVerifiedUseCase(
-            authenticationRemoteRepository: DependencyContainer.shared.mockAuthenticationRepository
-        ),
-        createUserUseCase: CreateUserUseCase(
-            userRepository: DependencyContainer.shared.mockUserRepository
-        )
-    )
-    
-    NavigationStack {
-        EmailVerificationView()
-            .environmentObject(registrationViewModel)
+    struct EmailVerificationView_Preview: View {
+        @StateObject var navigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)!
+        let registrationViewModel = AuthenticationDependencyInjectionContainer.shared.resolveWithMock()
+            .resolve(RegistrationViewModel.self, argument: "example@email.com")!
+        
+        var body: some View {
+            NavigationStack(path: $navigationCoordinator.path) {
+                EmailVerificationView()
+                    .environmentObject(registrationViewModel)
+            }
+            .environmentObject(navigationCoordinator)
+        }
     }
+    
+    return EmailVerificationView_Preview()
 }

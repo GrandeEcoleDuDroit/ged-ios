@@ -55,9 +55,11 @@ struct FirstRegistrationView: View {
 }
 
 #Preview {
+    let mockRegistrationViewModel = AuthenticationDependencyInjectionContainer.shared.resolveWithMock().resolve(RegistrationViewModel.self)!
+    
     NavigationStack {
         FirstRegistrationView()
-            .environmentObject(DependencyContainer.shared.mockRegistrationViewModel)
-            .environmentObject(NavigationCoordinator())
+            .environmentObject(mockRegistrationViewModel)
+            .environmentObject(CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self))
     }
 }

@@ -1,11 +1,11 @@
 class SendVerificationEmailUseCase {
-    private let authenticationRemoteRepository: AuthenticationRepository
+    private let authenticationRepository: AuthenticationRepository
     
-    init(authenticationRemoteRepository: AuthenticationRepository) {
-        self.authenticationRemoteRepository = authenticationRemoteRepository
+    init(authenticationRepository: AuthenticationRepository) {
+        self.authenticationRepository = authenticationRepository
     }
     
     func execute() async throws {
-        try await authenticationRemoteRepository.sendEmailVerification()
+        try await authenticationRepository.sendEmailVerification()
     }
 }

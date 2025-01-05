@@ -150,29 +150,23 @@ struct GetAnnouncementItem: View {
 
 
 #Preview {
-    struct NewsView_Previews: View {
-        @StateObject private var navigationCoordinator = NavigationCoordinator()
-        
-        var body: some View {
-            NavigationStack(path: $navigationCoordinator.path) {
-                NewsView()
-                    .environmentObject(DependencyContainer.shared.mockNewsViewModel)
-                    .environmentObject(TabBarVisibility())
-                    .environmentObject(navigationCoordinator)
-                    .navigationDestination(for: NewsScreen.self) { screen in
-                        if case .createAnnouncement = screen {
-                            CreateAnnouncementView()
-                                .environmentObject(DependencyContainer.shared.mockNewsViewModel)
-                                .environmentObject(navigationCoordinator)
-                        } else if case .announcementDetail(let announcement) = screen {
-                            AnnouncementDetailView(announcement: announcement)
-                                .environmentObject(DependencyContainer.shared.mockNewsViewModel)
-                        }
-                    }
-            }
-            .environmentObject(navigationCoordinator)
-        }
-    }
+    let navigationCoordinator = StateObject(wrappedValue: CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self))
+    let mockNewsViewModel = NewsDependencyInjectionContainer.shared.resolveWithMock().resolve(NewsViewModel.self)!
+    let tabBarVisibility = CommonDependencyInjectionContainer.shared.resolve(TabBarVisibility.self)
     
-    return NewsView_Previews()
+    NavigationStack(path: navigationCoordinator.projectedValue.path) {
+        NewsView()
+            .environmentObject(mockNewsViewModel)
+            .environmentObject(tabBarVisibility)
+            .navigationDestination(for: NewsScreen.self) { screen in
+                if case .createAnnouncement = screen {
+                    CreateAnnouncementView()
+                        .environmentObject(mockNewsViewModel)
+                } else if case .announcementDetail(let announcement) = screen {
+                    AnnouncementDetailView(announcement: announcement)
+                        .environmentObject(mockNewsViewModel)
+                }
+            }
+    }
+    .environmentObject(navigationCoordinator.wrappedValue)
 }

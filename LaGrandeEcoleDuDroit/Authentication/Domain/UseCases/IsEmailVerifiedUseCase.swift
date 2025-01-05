@@ -1,11 +1,11 @@
 class IsEmailVerifiedUseCase {
-    private let authenticationRemoteRepository: AuthenticationRepository
+    private let authenticationRepository: AuthenticationRepository
     
-    init(authenticationRemoteRepository: AuthenticationRepository) {
-        self.authenticationRemoteRepository = authenticationRemoteRepository
+    init(authenticationRepository: AuthenticationRepository) {
+        self.authenticationRepository = authenticationRepository
     }
     
     func execute() async throws -> Bool {
-        try await authenticationRemoteRepository.isEmailVerified()
+        try await authenticationRepository.isEmailVerified()
     }
 }
