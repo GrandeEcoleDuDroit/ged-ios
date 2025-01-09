@@ -4,14 +4,11 @@ import FirebaseAuth
 
 class AuthenticationRepositoryImpl: AuthenticationRepository {
     private let firebaseAuthApi: FirebaseAuthApi
-    @Published private var _isAuthenticated: Bool = false
-    var isAuthenticated: AnyPublisher<Bool, Never> {
-        $_isAuthenticated.eraseToAnyPublisher()
-    }
+    var isAuthenticated: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
     
     init(firebaseAuthApi: FirebaseAuthApi) {
         self.firebaseAuthApi = firebaseAuthApi
-        _isAuthenticated = firebaseAuthApi.isAuthenticated()
+        isAuthenticated.send(firebaseAuthApi.isAuthenticated())
     }
     
     func register(email: String, password: String) async throws -> String {
@@ -43,7 +40,7 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     func login(email: String, password: String) async throws -> String {
         do {
             let authDataResult = try await firebaseAuthApi.signIn(email: email, password: password)
-            _isAuthenticated = true
+            isAuthenticated.send(true)
             return authDataResult.user.uid
         } catch let error as NSError {
             if let authErrorCode = AuthErrorCode(rawValue: error.code) {
@@ -65,7 +62,7 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     func logout() throws {
         do {
             try firebaseAuthApi.signOut()
-            _isAuthenticated = false
+            isAuthenticated.send(false)
         } catch {
             throw AuthenticationError.unknown
         }

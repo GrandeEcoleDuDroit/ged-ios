@@ -27,10 +27,28 @@ struct ChatView: View {
                                     let previousSenderId = !isFirstMessage ? messages[index - 1].senderId : ""
                                     
                                     let sameSender = message.senderId == previousSenderId
-
+                                    
                                     let nextSenderId = (index < messages.count - 1) ? messages[index + 1].senderId : ""
                                     
-                                    let displayProfilePicture = (index > 0 && !sameDateTime(date1: message.date, date2: messages[index - 1].date)) || message.senderId != nextSenderId && message.senderId == conversation.interlocutor.id
+                                    let sameTime = index > 0 ? sameDateTime(
+                                        date1: message.date,
+                                        date2: messages[index - 1].date
+                                    ) : false
+                                    
+                                    let sameDay = index > 0 ? sameDay(
+                                        date1: message.date,
+                                        date2: messages[index - 1].date
+                                    ) : false
+                                    
+                                    let displayProfilePicture = !sameTime || message.senderId != nextSenderId && message.senderId == conversation.interlocutor.id
+                                    
+                                    if isFirstMessage || !sameDay {
+                                        Text(formatDate(date: message.date))
+                                            .foregroundStyle(.gray)
+                                            .padding(.vertical, GedSpacing.large)
+                                            .font(.footnote)
+                                            .frame(maxWidth: .infinity, alignment: .center)
+                                    }
                                     
                                     GetMessageItem(
                                         message: message,
@@ -40,7 +58,11 @@ struct ChatView: View {
                                         profilePictureUrl: conversation.interlocutor.profilePictureUrl,
                                         isLastMessage: isLastMessage
                                     )
-                                    .messageItemPadding(sameSender: sameSender)
+                                    .messageItemPadding(
+                                        sameSender: sameSender,
+                                        sameTime: sameTime,
+                                        sameDay: sameDay
+                                    )
                                 }
                             }
                         }
@@ -143,13 +165,20 @@ private struct GetMessageItem: View {
 }
 
 private extension View {
-    func messageItemPadding(sameSender: Bool) -> some View {
-        Group {
-            if sameSender {
+    func messageItemPadding(sameSender: Bool, sameTime: Bool, sameDay: Bool) -> some View {
+        let smallPadding = sameSender && sameTime
+        let mediumPadding = sameSender && !sameTime && sameDay
+        let noPadding = !sameDay
+        
+        return Group {
+            if smallPadding {
+                self.padding(.top, 2)
+            } else if mediumPadding {
                 self.padding(.top, GedSpacing.small)
-            }
-            else {
-                self.padding(.top, GedSpacing.smallMedium)
+            } else if noPadding {
+                self.padding(.top, 0)
+            } else {
+                self.padding(.top, GedSpacing.medium)
             }
         }
     }
@@ -158,6 +187,19 @@ private extension View {
 private func sameDateTime(date1: Date, date2: Date) -> Bool {
     let calendar = Calendar.current
     return calendar.isDate(date1, equalTo: date2, toGranularity: .minute)
+}
+
+private func sameDay(date1: Date, date2: Date) -> Bool {
+    let calendar = Calendar.current
+    return calendar.isDate(date1, equalTo: date2, toGranularity: .day)
+}
+
+private func formatDate(date: Date) -> String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.locale = Locale.current
+    dateFormatter.dateStyle = .long
+    dateFormatter.timeStyle = .none
+    return dateFormatter.string(from: date)
 }
 
 #Preview {
