@@ -89,5 +89,6 @@ class ChatViewModel: ObservableObject {
         }
         
         textToSend = ""
+        messages[message.id] = message
     }
 }

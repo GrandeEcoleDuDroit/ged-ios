@@ -17,14 +17,20 @@ struct ChatView: View {
             GeometryReader { geometry in
                 ScrollViewReader { proxy in
                     ScrollView(.vertical, showsIndicators: false) {
-                        VStack(spacing: 0) {
+                        LazyVStack(spacing: 0) {
                             ForEach(messages, id: \.id) { message in
                                 if let index = messages.firstIndex(where: { $0.id == message.id }) {
-                                    let previousSenderId = (index > 0) ? messages[index - 1].senderId : ""
+                                    let isFirstMessage = index == 0
                                     
+                                    let isLastMessage = index == messages.count - 1
+                                    
+                                    let previousSenderId = !isFirstMessage ? messages[index - 1].senderId : ""
+                                    
+                                    let sameSender = message.senderId == previousSenderId
+
                                     let nextSenderId = (index < messages.count - 1) ? messages[index + 1].senderId : ""
                                     
-                                    let displayProfilePicture = message.senderId != nextSenderId && message.senderId == conversation.interlocutor.id
+                                    let displayProfilePicture = (index > 0 && !sameDateTime(date1: message.date, date2: messages[index - 1].date)) || message.senderId != nextSenderId && message.senderId == conversation.interlocutor.id
                                     
                                     GetMessageItem(
                                         message: message,
@@ -32,12 +38,9 @@ struct ChatView: View {
                                         interlocutorId: conversation.interlocutor.id,
                                         displayProfilePicture: displayProfilePicture,
                                         profilePictureUrl: conversation.interlocutor.profilePictureUrl,
-                                        isLastMessage: index == messages.count - 1
+                                        isLastMessage: isLastMessage
                                     )
-                                    .messageItemPadding(
-                                        previousSenderId: previousSenderId,
-                                        senderId: message.senderId
-                                    )
+                                    .messageItemPadding(sameSender: sameSender)
                                 }
                             }
                         }
@@ -117,14 +120,16 @@ private struct GetMessageItem: View {
                 text: message.content,
                 screenWidth: screenWidth,
                 displayProfilePicture: displayProfilePicture,
-                profilePictureUrl: profilePictureUrl
+                profilePictureUrl: profilePictureUrl,
+                date: message.date
             )
         } else {
             VStack(alignment: .trailing) {
                 SendMessageItem(
                     text: message.content,
                     screenWidth: screenWidth,
-                    state: message.state
+                    state: message.state,
+                    date: message.date
                 )
                 
                 if message.isRead && isLastMessage {
@@ -138,15 +143,21 @@ private struct GetMessageItem: View {
 }
 
 private extension View {
-    func messageItemPadding(previousSenderId: String, senderId: String) -> some View {
+    func messageItemPadding(sameSender: Bool) -> some View {
         Group {
-            if previousSenderId == senderId {
-                self.padding(.top, 2)
-            } else {
+            if sameSender {
+                self.padding(.top, GedSpacing.small)
+            }
+            else {
                 self.padding(.top, GedSpacing.smallMedium)
             }
         }
     }
+}
+
+private func sameDateTime(date1: Date, date2: Date) -> Bool {
+    let calendar = Calendar.current
+    return calendar.isDate(date1, equalTo: date2, toGranularity: .minute)
 }
 
 #Preview {
