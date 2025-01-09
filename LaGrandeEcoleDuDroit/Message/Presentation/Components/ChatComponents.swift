@@ -4,36 +4,47 @@ struct SendMessageItem: View {
     private var text: String
     private var screenWidth: CGFloat
     private var state: MessageState
+    private let date: Date
     
     init(
         text: String,
         screenWidth: CGFloat,
-        state: MessageState
+        state: MessageState,
+        date: Date
     ) {
         self.text = text
         self.screenWidth = screenWidth
         self.state = state
+        self.date = date
     }
     
     var body: some View {
         HStack(alignment: .bottom) {
-            Text(text)
-                .foregroundStyle(.white)
-                .padding(GedSpacing.smallMedium)
-                .background(.gedPrimary)
-                .clipShape(.rect(cornerRadius: 30))
-                .frame(maxWidth: screenWidth / 1.5, alignment: .trailing)
+            
+            HStack(alignment: .bottom) {
+                Text(text)
+                    .foregroundStyle(.white)
+                
+                Text(date, style: .time)
+                    .foregroundStyle(Color(UIColor.lightText))
+                    .font(.caption)
+            }
+            .padding(.vertical,GedSpacing.smallMedium)
+            .padding(.horizontal,GedSpacing.medium)
+            .background(.gedPrimary)
+            .clipShape(.rect(cornerRadius: 20))
+            .frame(maxWidth: screenWidth / 1.5, alignment: .trailing)
             
             switch state {
             case .loading:
                 Image(systemName: "paperplane")
                     .resizable()
                     .foregroundColor(.gray)
-                    .frame(width: 20, height: 20)
+                    .frame(width: 18, height: 18)
             case .error:
                 Image(systemName: "exclamationmark.circle")
                     .resizable()
-                    .frame(width: 20, height: 20)
+                    .frame(width: 18, height: 18)
                     .foregroundColor(.red)
             default:
                 EmptyView()
@@ -48,23 +59,23 @@ struct ReceiveMessageItem: View {
     private let screenWidth: CGFloat
     private let displayProfilePicture: Bool
     private let profilePictureUrl: String?
+    private let date: Date
     
     init(
         text: String,
         screenWidth: CGFloat,
         displayProfilePicture: Bool,
-        profilePictureUrl: String?
+        profilePictureUrl: String?,
+        date: Date
     ) {
         self.text = text
         self.screenWidth = screenWidth
         self.displayProfilePicture = displayProfilePicture
         self.profilePictureUrl = profilePictureUrl
+        self.date = date
     }
     
     var body: some View {
-        Grid(alignment: .bottom) {
-            
-        }
         HStack(alignment: .bottom) {
             if displayProfilePicture {
                 ProfilePicture(url: profilePictureUrl, scale: 0.3)
@@ -74,12 +85,18 @@ struct ReceiveMessageItem: View {
                     .frame(width: GedSpacing.veryLarge)
             }
             
-            Text(text)
-                .foregroundStyle(.black)
-                .padding(GedSpacing.smallMedium)
-                .background(.receiveMessageComponentBackground)
-                .clipShape(.rect(cornerRadius: 30))
-                .frame(maxWidth: screenWidth / 1.5, alignment: .leading)
+            HStack(alignment: .bottom) {
+                Text(text)
+                    .foregroundStyle(.black)
+                    
+                Text(date, style: .time)
+                    .foregroundStyle(.gray)
+                    .font(.caption)
+            }
+            .padding(GedSpacing.smallMedium)
+            .background(.receiveMessageComponentBackground)
+            .clipShape(.rect(cornerRadius: 30))
+            .frame(maxWidth: screenWidth / 1.5, alignment: .leading)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -160,41 +177,62 @@ struct ChatInputField: View {
         @State private var inputFocused: InputField? = nil
         
         var body: some View {
-            VStack {
-                ReceiveMessageItem(
-                    text: "Received",
-                    screenWidth: 375,
-                    displayProfilePicture: true,
-                    profilePictureUrl: nil
-                )
-                
-                SendMessageItem(
-                    text: "Sended",
-                    screenWidth: 375,
-                    state: .sent
-                )
-                
-                SendMessageItem(
-                    text: "Loading",
-                    screenWidth: 375,
-                    state: .loading
-                )
-                
-                SendMessageItem(
-                    text: "Error",
-                    screenWidth: 375,
-                    state: .error
-                )
-                 
-                Spacer()
-                
-                ChatInputField(
-                    text: $text,
-                    onSendClick: {},
-                    inputFocused: $inputFocused
-                )
+            ScrollView {
+                VStack {
+                    ReceiveMessageItem(
+                        text: "Received",
+                        screenWidth: 375,
+                        displayProfilePicture: false,
+                        profilePictureUrl: nil,
+                        date: Date.now
+                    )
+                    
+                    ReceiveMessageItem(
+                        text: announcementFixture.content,
+                        screenWidth: 375,
+                        displayProfilePicture: true,
+                        profilePictureUrl: nil,
+                        date: Date.now
+                    )
+                    
+                    SendMessageItem(
+                        text: "Sent",
+                        screenWidth: 375,
+                        state: .sent,
+                        date: Date.now
+                    )
+                    
+                    SendMessageItem(
+                        text: "Loading",
+                        screenWidth: 375,
+                        state: .loading,
+                        date: Date.now
+                    )
+                    
+                    SendMessageItem(
+                        text: "Error",
+                        screenWidth: 375,
+                        state: .error,
+                        date: Date.now
+                    )
+                    
+                    SendMessageItem(
+                        text: announcementFixture.content,
+                        screenWidth: 375,
+                        state: .sent,
+                        date: Date.now
+                    )
+                    
+                    Spacer()
+                    
+                    ChatInputField(
+                        text: $text,
+                        onSendClick: {},
+                        inputFocused: $inputFocused
+                    )
+                }
+                .padding()
             }
-            .padding()
         }
     }
     

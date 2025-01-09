@@ -53,19 +53,16 @@ class MessageDependencyInjectionContainer: DependencyInjectionContainer {
         .inObjectScope(.container)
         
         container.register(GetMessagesUseCase.self) { resolver in
-            GetMessagesUseCase(
-                messageRepository: resolver.resolve(MessageRepository.self)!
-            )
+            GetMessagesUseCase(messageRepository: resolver.resolve(MessageRepository.self)!)
         }
         container.register(GetLastMessagesUseCase.self) { resolver in
-            GetLastMessagesUseCase(
-                messageRepository: resolver.resolve(MessageRepository.self)!
-            )
+            GetLastMessagesUseCase(messageRepository: resolver.resolve(MessageRepository.self)!)
+        }
+        container.register(SendMessageUseCase.self) { resolver in
+            SendMessageUseCase(messageRepository: resolver.resolve(MessageRepository.self)!)
         }
         container.register(GetConversationsUserUseCase.self) { resolver in
-            GetConversationsUserUseCase(
-                userConversationRepository: resolver.resolve(UserConversationRepository.self)!
-            )
+            GetConversationsUserUseCase(userConversationRepository: resolver.resolve(UserConversationRepository.self)!)
         }
         container.register(GetConversationsUIUseCase.self) { resolver in
             GetConversationsUIUseCase(
@@ -74,15 +71,11 @@ class MessageDependencyInjectionContainer: DependencyInjectionContainer {
             )
         }
         container.register(CreateConversationUseCase.self) { resolver in
-            CreateConversationUseCase(
-                userConversationRepository: resolver.resolve(UserConversationRepository.self)!
-            )
+            CreateConversationUseCase(userConversationRepository: resolver.resolve(UserConversationRepository.self)!)
         }
         .inObjectScope(.graph)
         container.register(DeleteConversationUseCase.self) { resolver in
-            DeleteConversationUseCase(
-                userConversationRepository: resolver.resolve(UserConversationRepository.self)!
-            )
+            DeleteConversationUseCase(userConversationRepository: resolver.resolve(UserConversationRepository.self)!)
         }
         .inObjectScope(.graph)
         
@@ -100,12 +93,14 @@ class MessageDependencyInjectionContainer: DependencyInjectionContainer {
                 generateIdUseCase: CommonDependencyInjectionContainer.shared.resolve(GenerateIdUseCase.self)
             )
         }
-        container.register(ChatViewModel.self) { (resolver, conversation: ConversationUI) in
-            ChatViewModel(
+        container.register(ChatViewModel.self) { (resolver, conversation: Any) in
+            let conversation = conversation as! ConversationUI
+            return ChatViewModel(
                 getMessagesUseCase: resolver.resolve(GetMessagesUseCase.self)!,
                 getCurrentUserUseCase: CommonDependencyInjectionContainer.shared.resolve(GetCurrentUserUseCase.self),
                 generateIdUseCase: CommonDependencyInjectionContainer.shared.resolve(GenerateIdUseCase.self),
                 createConversationUseCase: resolver.resolve(CreateConversationUseCase.self)!,
+                sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!,
                 conversation: conversation
             )
         }
@@ -165,6 +160,9 @@ class MessageDependencyInjectionContainer: DependencyInjectionContainer {
                 getLastMessagesUseCase: resolver.resolve(GetLastMessagesUseCase.self)!
             )
         }
+        mockContainer.register(SendMessageUseCase.self) { resolver in
+            SendMessageUseCase(messageRepository: resolver.resolve(MessageRepository.self)!)
+        }
         mockContainer.register(CreateConversationUseCase.self) { resolver in
             CreateConversationUseCase(userConversationRepository: resolver.resolve(UserConversationRepository.self)!)
         }
@@ -192,6 +190,7 @@ class MessageDependencyInjectionContainer: DependencyInjectionContainer {
                 getCurrentUserUseCase: commonMockContainer.resolve(GetCurrentUserUseCase.self)!,
                 generateIdUseCase: commonMockContainer.resolve(GenerateIdUseCase.self)!,
                 createConversationUseCase: resolver.resolve(CreateConversationUseCase.self)!,
+                sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!,
                 conversation: conversation
             )
         }
