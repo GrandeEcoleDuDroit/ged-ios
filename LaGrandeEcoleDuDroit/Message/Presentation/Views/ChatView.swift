@@ -158,6 +158,7 @@ private struct GetMessageItem: View {
                     Text(getString(.seen))
                         .foregroundStyle(.gray)
                         .font(.bodyMedium)
+                        .padding(.trailing, GedSpacing.smallMedium)
                 }
             }
         }
@@ -174,7 +175,7 @@ private extension View {
             if smallPadding {
                 self.padding(.top, 2)
             } else if mediumPadding {
-                self.padding(.top, GedSpacing.small)
+                self.padding(.top, GedSpacing.smallMedium)
             } else if noPadding {
                 self.padding(.top, 0)
             } else {
