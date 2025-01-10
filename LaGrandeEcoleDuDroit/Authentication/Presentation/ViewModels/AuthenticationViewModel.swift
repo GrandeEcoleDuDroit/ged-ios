@@ -83,7 +83,6 @@ class AuthenticationViewModel: ObservableObject {
     
     private func listenAuthenticationState() {
         isAuthenticatedUseCase.execute()
-            .receive(on: RunLoop.main)
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .finished:

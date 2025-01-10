@@ -8,6 +8,6 @@ class IsAuthenticatedUseCase {
     }
     
     func execute() -> AnyPublisher<Bool, Never> {
-        authenticationRepository.isAuthenticated
+        authenticationRepository.isAuthenticated.eraseToAnyPublisher()
     }
 }
