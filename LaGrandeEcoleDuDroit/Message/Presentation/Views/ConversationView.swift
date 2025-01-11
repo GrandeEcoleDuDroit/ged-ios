@@ -12,10 +12,17 @@ struct ConversationView: View {
     var body: some View {
         ZStack {
             if conversationViewModel.conversationsMap.isEmpty {
-                Text(getString(.noConversation))
-                    .font(.bodyLarge)
-                    .foregroundColor(.secondary)
-                    .padding(.vertical)
+                VStack {
+                    Text(getString(.noConversation))
+                        .foregroundColor(.secondary)
+                    
+                    Button(getString(.newConversation)) {
+                        navigationCoordinator.push(MessageScreen.createConversation)
+                    }
+                    .fontWeight(.semibold)
+                    .foregroundColor(.gedPrimary)
+                }
+                .padding(.top, GedSpacing.large)
             } else {
                 ScrollView {
                     VStack(spacing: 0) {

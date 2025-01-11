@@ -22,7 +22,7 @@ struct ReadConversationItem: View {
     var body: some View {
         if let lastMessage = conversationUI.lastMessage {
             HStack(alignment: .center) {
-                ProfilePicture(url: conversationUI.interlocutor.profilePictureUrl, scale: 0.4)
+                ProfilePicture(url: conversationUI.interlocutor.profilePictureUrl, scale: 0.42)
                
                 VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                     HStack {

@@ -26,15 +26,20 @@ class ConversationViewModel: ObservableObject {
         Task {
             do {
                 try await deleteConversationUseCase.execute(conversationId: conversationId)
+                DispatchQueue.main.async { [weak self] in
+                    self?.conversationsMap.removeValue(forKey: conversationId)
+                }
             } catch {
-                conversationState = .error(message: getString(.errorDeletingConversation))
+                DispatchQueue.main.async { [weak self] in
+                    self?.conversationState = .error(message: getString(.errorDeletingConversation))
+                }
             }
         }
     }
     
     private func listenConversations() {
         getConversationsUIUseCase.execute()
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 switch completion {
                     case .finished: break
@@ -42,19 +47,17 @@ class ConversationViewModel: ObservableObject {
                         switch conversationError {
                             case.notFound:
                                 e(self?.tag ?? "ConversationViewModel", getString(.errorGettingConversations))
-                                self?.updateConversationState(state: .error(message: getString(.errorGettingConversations)))
+                                self?.conversationState = .error(message: getString(.errorGettingConversations))
                             case .createFailed:
                                 e(self?.tag ?? "ConversationViewModel", getString(.errorCreatingConversation))
-                                self?.updateConversationState(state: .error(message: getString(.errorCreatingConversation)))
+                                self?.conversationState = .error(message: getString(.errorCreatingConversation))
                             default: break
                         }
                     }
             } receiveValue: { [weak self] conversationUI in
-                guard let self else { return }
-                
-                self.conversationsMap[conversationUI.id] = conversationUI
-                self.defaultConversations = self.conversationsMap
-                self.updateConversationState(state: .idle)
+                self?.conversationsMap[conversationUI.id] = conversationUI
+                self?.defaultConversations = self?.conversationsMap ?? [:]
+                self?.conversationState = .idle
             }
             .store(in: &cancellables)
     }
@@ -78,12 +81,6 @@ class ConversationViewModel: ObservableObject {
             $0.value.interlocutor.fullName
                 .lowercased()
                 .contains(filter.lowercased())
-        }
-    }
-    
-    private func updateConversationState(state: ConversationState) {
-        DispatchQueue.main.async { [weak self] in
-            self?.conversationState = state
         }
     }
     
