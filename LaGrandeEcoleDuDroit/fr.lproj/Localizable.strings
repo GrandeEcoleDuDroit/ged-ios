@@ -94,8 +94,8 @@
 "no_user_found" = "Aucun utilisateur trouvé";
 "tap_to_chat" = "Appuyez pour discuter";
 "message_placeholder" = "Envoyer un message";
+"no_conversation" = "Commencez une nouvelle discussion avec vos amis.";
 "new_conversation" = "Nouvelle Conversation";
-"no_conversation" = "Aucune conversation";
 "delete_conversation_alert_message" = "Voulez-vous supprimer cette conversation ?";
 "seen" = "Vu";
 
