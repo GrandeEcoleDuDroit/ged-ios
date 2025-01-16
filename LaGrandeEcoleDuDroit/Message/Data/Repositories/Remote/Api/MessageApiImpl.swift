@@ -31,10 +31,15 @@ class MessageApiImpl: MessageApi {
                 }
                 
                 snapshot.documentChanges.forEach { documentChanges in
-                    if let remoteMessage = try? documentChanges.document.data(as: RemoteMessage.self) {
-                        subject.send(remoteMessage)
-                    } else {
-                        e(tag, "Error to convert remote message")
+                    switch documentChanges.type {
+                        case .added, .modified:
+                            if let remoteMessage = try? documentChanges.document.data(as: RemoteMessage.self) {
+                                subject.send(remoteMessage)
+                            } else {
+                                e(tag, "Error to convert remote message")
+                            }
+                        case .removed:
+                            break
                     }
                 }
             }
@@ -51,22 +56,27 @@ class MessageApiImpl: MessageApi {
             .collection(messageTableName)
             .order(by: MessageDataFields.timestamp, descending: true)
             .limit(to: 1)
-            .addSnapshotListener { querySnapshot, error in                
+            .addSnapshotListener { snapshot, error in
                 if let error = error {
                     e(tag, "MessageApiImpl: Query error : \(error)")
                     return
                 }
                 
-                guard let querySnapshot = querySnapshot else {
+                guard let snapshot = snapshot else {
                     e(tag, "MessageApiImpl: No snapshot for last message")
                     return
                 }
                 
-                querySnapshot.documentChanges.forEach { documentChanges in
-                    if let remoteMessage = try? documentChanges.document.data(as: RemoteMessage.self) {
-                        subject.send(remoteMessage)
-                    } else {
-                        e(tag, "Error to convert remote message")
+                snapshot.documentChanges.forEach { documentChanges in
+                    switch documentChanges.type {
+                        case .added, .modified:
+                            if let remoteMessage = try? documentChanges.document.data(as: RemoteMessage.self) {
+                                subject.send(remoteMessage)
+                            } else {
+                                e(tag, "Error to convert remote message")
+                            }
+                        case .removed:
+                            break
                     }
                 }
             }

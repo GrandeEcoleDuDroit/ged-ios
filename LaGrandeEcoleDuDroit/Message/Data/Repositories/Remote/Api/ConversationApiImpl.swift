@@ -15,23 +15,28 @@ class ConversationApiImpl: ConversationApi {
         
         let listener = conversationCollection
             .whereField(ConversationDataFields.participants, arrayContains: userId)
-            .addSnapshotListener { querySnapshot, error in
+            .addSnapshotListener { snapshot, error in
                 if let error = error {
                     e(tag, "Error to listen conversations: \(error.localizedDescription)")
                     subject.send(completion: .failure(error))
                     return
                 }
                 
-                guard let querySnapshot = querySnapshot else {
+                guard let snapshot = snapshot else {
                     e(tag, "Error to listen conversations: querySnapshot is nil")
                     return
                 }
                 
-                querySnapshot.documentChanges.forEach { documentChanges in
-                    if let remoteConversation = try? documentChanges.document.data(as: RemoteConversation.self) {
-                        subject.send(remoteConversation)
-                    } else {
-                        e(tag, "Error to convert remote conversation")
+                snapshot.documentChanges.forEach { documentChanges in
+                    switch documentChanges.type {
+                        case .added, .modified:
+                            if let remoteConversation = try? documentChanges.document.data(as: RemoteConversation.self) {
+                                subject.send(remoteConversation)
+                            } else {
+                                e(tag, "Error to convert remote conversation")
+                            }
+                        case .removed:
+                            break
                     }
                 }
             }
@@ -57,12 +62,12 @@ class ConversationApiImpl: ConversationApi {
                 .document(conversationId)
                 .delete()
             
-            let messagesQuerySnapshot = try await conversationCollection
+            let messagesSnapshot = try await conversationCollection
                 .document(conversationId)
                 .collection(messageTableName)
                 .getDocuments()
             
-            for document in messagesQuerySnapshot.documents {
+            for document in messagesSnapshot.documents {
                 try await document.reference.delete()
             }
         } catch {

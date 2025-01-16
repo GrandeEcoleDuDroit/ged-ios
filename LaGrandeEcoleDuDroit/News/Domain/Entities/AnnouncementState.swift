@@ -8,18 +8,12 @@ enum AnnouncementState: Hashable, CustomStringConvertible {
     
     var description: String {
         switch self {
-        case .idle:
-            "idle"
-        case .loading:
-            "loading"
-        case .created:
-            "created"
-        case .deleted:
-            "deleted"
-        case .updated:
-            "updated"
-        case .error(_):
-            "error"
+            case .idle: "idle"
+            case .loading: "loading"
+            case .created: "created"
+            case .deleted: "deleted"
+            case .updated: "updated"
+            case .error(_): "error"
         }
     }
     

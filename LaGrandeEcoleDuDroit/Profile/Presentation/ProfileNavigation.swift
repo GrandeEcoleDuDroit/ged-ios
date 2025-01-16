@@ -3,14 +3,14 @@ import SwiftUI
 struct ProfileNavigation: View {
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
     @StateObject private var profileNavigationCoordinator = NavigationCoordinator()
-
+    
     var body: some View {
         NavigationStack(path: $profileNavigationCoordinator.path) {
             ProfileView()
                 .navigationDestination(for: ProfileScreen.self) { screen in
                     switch screen {
-                    case .account:
-                        AccountView()
+                        case .account:
+                            AccountView()
                     }
                 }
         }
@@ -30,8 +30,8 @@ struct ProfileNavigation: View {
                 ProfileView()
                     .navigationDestination(for: ProfileScreen.self) { screen in
                         switch screen {
-                        case .account:
-                            AccountView()
+                            case .account:
+                                AccountView()
                         }
                     }
             }

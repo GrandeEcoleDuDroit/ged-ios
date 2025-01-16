@@ -33,10 +33,10 @@ class ProfileViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink(receiveCompletion: { completion in
                 switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    print("Error fetching user: \(error)")
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print("Error fetching user: \(error)")
                 }
             }, receiveValue: { [weak self] user in
                 self?.currentUser = user

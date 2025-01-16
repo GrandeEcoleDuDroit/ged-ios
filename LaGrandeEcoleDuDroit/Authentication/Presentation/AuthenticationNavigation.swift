@@ -8,20 +8,20 @@ struct AuthenticationNavigation: View {
             AuthenticationView()
                 .navigationDestination(for: AuthenticationScreen.self) { screen in
                     switch screen {
-                    case .forgottenPassword:
-                        ForgottenPasswordView()
-                        
-                    case .firstRegistration:
-                        FirstRegistrationView()
-                        
-                    case .secondRegistration:
-                        SecondRegistrationView()
-                        
-                    case .thirdRegistration:
-                        ThirdRegistrationView()
-                        
-                    case .emailVerification(let email):
-                        EmailVerificationView(email: email)
+                        case .forgottenPassword:
+                            ForgottenPasswordView()
+                            
+                        case .firstRegistration:
+                            FirstRegistrationView()
+                            
+                        case .secondRegistration:
+                            SecondRegistrationView()
+                            
+                        case .thirdRegistration:
+                            ThirdRegistrationView()
+                            
+                        case .emailVerification(let email):
+                            EmailVerificationView(email: email)
                     }
                 }
         }
@@ -38,20 +38,20 @@ struct AuthenticationNavigation: View {
                 AuthenticationNavigation()
                     .navigationDestination(for: AuthenticationScreen.self) { screen in
                         switch screen {
-                        case .forgottenPassword:
-                            ForgottenPasswordView()
-                            
-                        case .firstRegistration:
-                            FirstRegistrationView()
-                            
-                        case .secondRegistration:
-                            SecondRegistrationView()
-                            
-                        case .thirdRegistration:
-                            ThirdRegistrationView()
-                            
-                        case .emailVerification:
-                            EmailVerificationView(email: "example@email.com")
+                            case .forgottenPassword:
+                                ForgottenPasswordView()
+                                
+                            case .firstRegistration:
+                                FirstRegistrationView()
+                                
+                            case .secondRegistration:
+                                SecondRegistrationView()
+                                
+                            case .thirdRegistration:
+                                ThirdRegistrationView()
+                                
+                            case .emailVerification:
+                                EmailVerificationView(email: "example@email.com")
                         }
                     }
             }

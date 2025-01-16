@@ -22,16 +22,16 @@ class NewsViewModel: ObservableObject {
         self.currentUser = getCurrentUserUseCase.execute()
         initAnnouncements()
     }
-  
+    
     private func initAnnouncements() {
         getAnnouncementsUseCase.execute()
             .receive(on: RunLoop.main)
             .sink(receiveCompletion: { [weak self] completion in
                 switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    self?.updateAnnouncementState(to: .error(message: error.localizedDescription))
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        self?.updateAnnouncementState(to: .error(message: error.localizedDescription))
                 }
             }, receiveValue: { [weak self] announcements in
                 self?.announcements = announcements.sorted(by: { $0.date > $1.date })
