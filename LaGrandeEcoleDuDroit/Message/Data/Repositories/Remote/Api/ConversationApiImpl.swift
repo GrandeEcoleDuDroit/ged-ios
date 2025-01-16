@@ -56,6 +56,15 @@ class ConversationApiImpl: ConversationApi {
             try await conversationCollection
                 .document(conversationId)
                 .delete()
+            
+            let messagesQuerySnapshot = try await conversationCollection
+                .document(conversationId)
+                .collection(messageTableName)
+                .getDocuments()
+            
+            for document in messagesQuerySnapshot.documents {
+                try await document.reference.delete()
+            }
         } catch {
             e(tag, "Error to delete conversation: \(error.localizedDescription)")
             throw ConversationError.deleteFailed
