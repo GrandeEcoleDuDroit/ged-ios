@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ConversationView: View {
-    @EnvironmentObject private var conversationViewModel: ConversationViewModel
+    @StateObject private var conversationViewModel = MessageInjection.shared.resolve(ConversationViewModel.self)
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var selectedConversation: ConversationUI? = nil
@@ -23,6 +23,7 @@ struct ConversationView: View {
                     .foregroundColor(.gedPrimary)
                 }
                 .padding(.top, GedSpacing.large)
+                .padding(.horizontal, GedSpacing.verySmall)
             } else {
                 ScrollView {
                     VStack(spacing: 0) {
@@ -134,32 +135,9 @@ private struct GetConversationItem: View {
 }
 
 #Preview {
-    struct ConversationView_Preview: View {
-        @StateObject var navigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)
-        let mockConversationViewModel = MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(ConversationViewModel.self)!
-        let mockCreateConversationViewModel = MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(CreateConversationViewModel.self)!
-        let tabBarVisibility = CommonDependencyInjectionContainer.shared.resolve(TabBarVisibility.self)
-        
-        var body: some View {
-            NavigationStack(path: $navigationCoordinator.path) {
-                ConversationView()
-                    .environmentObject(mockConversationViewModel)
-                    .navigationDestination(for: MessageScreen.self) { screen in
-                        if case .chat(let conversation) = screen {
-                            ChatView(conversation: conversation)
-                                .environmentObject(
-                                    MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(ChatViewModel.self, argument: conversation)!
-                                )
-                        } else if case .createConversation = screen {
-                            CreateConversationView()
-                                .environmentObject(mockCreateConversationViewModel)
-                        }
-                    }
-            }
-            .environmentObject(navigationCoordinator)
-            .environmentObject(tabBarVisibility)
-        }
+    NavigationStack {
+        ConversationView()
+            .environmentObject(TabBarVisibility())
+            .environmentObject(NavigationCoordinator())
     }
-    
-    return ConversationView_Preview()
 }

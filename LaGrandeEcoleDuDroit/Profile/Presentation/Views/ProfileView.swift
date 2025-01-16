@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @EnvironmentObject private var profileViewModel: ProfileViewModel
+    @StateObject private var profileViewModel = ProfileInjection.shared.resolve(ProfileViewModel.self)
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var showLogoutAlert: Bool = false
     
@@ -56,8 +56,8 @@ struct ProfileView: View {
 }
 
 #Preview {
-    let navigationCoordinator = StateObject(wrappedValue: CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self))
-    let mockProfileViewModel = ProfileDependencyInjectionContainer.shared.resolveWithMock().resolve(ProfileViewModel.self)!
+    let navigationCoordinator = StateObject(wrappedValue: CommonInjection.shared.resolve(NavigationCoordinator.self))
+    let mockProfileViewModel = ProfileInjection.shared.resolveWithMock().resolve(ProfileViewModel.self)!
     
     NavigationStack(path: navigationCoordinator.projectedValue.path) {
         ProfileView()

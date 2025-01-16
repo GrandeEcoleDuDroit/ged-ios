@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct AnnouncementDetailView: View {
-    @EnvironmentObject private var newsViewModel: NewsViewModel
+    @StateObject private var announcementDetailViewModel: AnnouncementDetailViewModel = NewsInjection.shared.resolve(AnnouncementDetailViewModel.self)
     @EnvironmentObject private var coordinator: NavigationCoordinator
     @State private var showErrorAlert: Bool = false
     @State private var showDeleteAlert: Bool = false
     @State private var errorMessage: String = ""
     @State private var editMode: Bool = false
     private var announcement: Announcement
-    
+        
     init(announcement: Announcement) {
         self.announcement = announcement
     }
@@ -29,7 +29,7 @@ struct AnnouncementDetailView: View {
             HStack {
                 TopAnnouncementDetailItem(announcement: announcement)
                 
-                if let currentUser = newsViewModel.currentUser {
+                if let currentUser = announcementDetailViewModel.currentUser {
                     if currentUser.isMember && announcement.author.id == currentUser.id {
                         Menu {
                             Button(
@@ -79,7 +79,7 @@ struct AnnouncementDetailView: View {
         ) {
             Button(getString(.ok)) {
                 showErrorAlert = false
-                newsViewModel.resetAnnouncementState()
+                announcementDetailViewModel.resetAnnouncementState()
             }
         }
         .alert(
@@ -90,17 +90,17 @@ struct AnnouncementDetailView: View {
                 showDeleteAlert = false
             }
             Button(getString(.delete), role: .destructive) {
-                newsViewModel.deleteAnnouncement(announcement: announcement)
+                announcementDetailViewModel.deleteAnnouncement(announcement: announcement)
             }
         }
-        .onReceive(newsViewModel.$announcementState) { state in
+        .onReceive(announcementDetailViewModel.$announcementState) { state in
             if case .deleted = state {
-                newsViewModel.resetAnnouncementState()
+                announcementDetailViewModel.resetAnnouncementState()
                 coordinator.pop()
             } else if case .error(let message) = state {
                 errorMessage = message
                 showErrorAlert = true
-                newsViewModel.resetAnnouncementState()
+                announcementDetailViewModel.resetAnnouncementState()
             }
         }
     }
@@ -112,28 +112,24 @@ struct AnnouncementDetailView: View {
                 editMode = false
             },
             onSaveClick: { title, content in
-                newsViewModel.updateAnnouncement(
+                announcementDetailViewModel.updateAnnouncement(
                     announcement: announcement.with(title: title, content: content, date: .now)
                 )
             }
         )
-        .onReceive(newsViewModel.$announcementState) { state in
+        .onReceive(announcementDetailViewModel.$announcementState) { state in
             if case .updated = state {
                 editMode = false
             }
         }
-        .environmentObject(newsViewModel)
+        .environmentObject(announcementDetailViewModel)
     }
 }
 
 
 #Preview {
-    let navigationCoordinator = StateObject(wrappedValue: CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self))
-    let mockNewsViewModel = NewsDependencyInjectionContainer.shared.resolveWithMock().resolve(NewsViewModel.self)!
-
     NavigationStack {
         AnnouncementDetailView(announcement: announcementFixture)
-            .environmentObject(mockNewsViewModel)
-            .environmentObject(navigationCoordinator.wrappedValue)
+            .environmentObject(NavigationCoordinator())
     }
 }

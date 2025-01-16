@@ -1,24 +1,29 @@
 import SwiftUI
 
 struct EmailVerificationView: View {
+    @StateObject private var emailVerificationViewModel: EmailVerificationViewModel = AuthenticationInjection.shared.resolve(EmailVerificationViewModel.self)
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
-    @EnvironmentObject private var registrationViewModel: RegistrationViewModel
     @State private var isValid = false
     @State private var isAnimating = false
+    private let email: String
+    
+    init(email: String) {
+        self.email = email
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
             Text(getString(.emailVerificationExplanationBegining))
                 .font(.title3)
             
-             + Text(registrationViewModel.email)
+             + Text(email)
                 .fontWeight(.semibold)
                 .font(.title3)
                 
              + Text(getString(.emailVerificationExplanationEnd))
                 .font(.title3)
             
-            if case .error(let message) = registrationViewModel.registrationState {
+            if case .error(let message) = emailVerificationViewModel.authenticationState {
                 HStack {
                     Image(systemName: "exclamationmark.octagon")
                     Text(message)
@@ -39,7 +44,7 @@ struct EmailVerificationView: View {
                 .frame(maxHeight: .infinity, alignment: .center)
             
                 Button(getString(.finish)) {
-                    registrationViewModel.checkVerifiedEmail()
+                    emailVerificationViewModel.checkVerifiedEmail()
                 }
                 .font(.title2)
                 .fontWeight(.semibold)
@@ -48,7 +53,7 @@ struct EmailVerificationView: View {
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .onAppear {
-            registrationViewModel.sendVerificationEmail()
+            emailVerificationViewModel.sendVerificationEmail()
         }
         .navigationTitle(getString(.emailVerificationTitle))
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -57,19 +62,7 @@ struct EmailVerificationView: View {
 }
 
 #Preview {
-    struct EmailVerificationView_Preview: View {
-        @StateObject var navigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)!
-        let registrationViewModel = AuthenticationDependencyInjectionContainer.shared.resolveWithMock()
-            .resolve(RegistrationViewModel.self, argument: "example@email.com")!
-        
-        var body: some View {
-            NavigationStack(path: $navigationCoordinator.path) {
-                EmailVerificationView()
-                    .environmentObject(registrationViewModel)
-            }
-            .environmentObject(navigationCoordinator)
-        }
+    NavigationStack {
+        EmailVerificationView(email: "example@email.com")
     }
-    
-    return EmailVerificationView_Preview()
 }

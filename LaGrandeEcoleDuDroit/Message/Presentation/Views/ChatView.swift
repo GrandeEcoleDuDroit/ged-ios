@@ -1,15 +1,15 @@
 import SwiftUI
 
 struct ChatView: View {
-    @EnvironmentObject private var chatViewModel: ChatViewModel
+    @StateObject private var chatViewModel: ChatViewModel
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
-    @State private var conversation: ConversationUI
     @State private var inputFocused: InputField? = nil
     @State private var messages: [Message] = []
+    @State private var showErrorAlert = false
     
     init(conversation: ConversationUI) {
-        self.conversation = conversation
+        _chatViewModel = StateObject(wrappedValue: MessageInjection.shared.resolve(ChatViewModel.self, arguments: conversation)!)
     }
     
     var body: some View {
@@ -40,7 +40,7 @@ struct ChatView: View {
                                         date2: messages[index - 1].date
                                     ) : false
                                     
-                                    let displayProfilePicture = !sameTime || message.senderId != nextSenderId && message.senderId == conversation.interlocutor.id
+                                    let displayProfilePicture = !sameTime || message.senderId != nextSenderId && message.senderId == chatViewModel.conversation.interlocutor.id
                                     
                                     if isFirstMessage || !sameDay {
                                         Text(formatDate(date: message.date))
@@ -53,9 +53,9 @@ struct ChatView: View {
                                     GetMessageItem(
                                         message: message,
                                         screenWidth: geometry.size.width,
-                                        interlocutorId: conversation.interlocutor.id,
+                                        interlocutorId: chatViewModel.conversation.interlocutor.id,
                                         displayProfilePicture: displayProfilePicture,
-                                        profilePictureUrl: conversation.interlocutor.profilePictureUrl,
+                                        profilePictureUrl: chatViewModel.conversation.interlocutor.profilePictureUrl,
                                         isLastMessage: isLastMessage
                                     )
                                     .messageItemPadding(
@@ -98,9 +98,9 @@ struct ChatView: View {
                             .padding(.trailing)
                     }
                     
-                    ProfilePicture(url: conversation.interlocutor.profilePictureUrl, scale: 0.4)
+                    ProfilePicture(url: chatViewModel.conversation.interlocutor.profilePictureUrl, scale: 0.4)
                     
-                    Text(conversation.interlocutor.fullName)
+                    Text(chatViewModel.conversation.interlocutor.fullName)
                         .font(.bodyLarge)
                 }
             }
@@ -204,21 +204,9 @@ private func formatDate(date: Date) -> String {
 }
 
 #Preview {
-    struct ChatView_Preview: View {
-        @StateObject var navigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)
-        let tabBarVisibility = CommonDependencyInjectionContainer.shared.resolve(TabBarVisibility.self)
-        
-        var body: some View {
-            NavigationStack(path: $navigationCoordinator.path) {
-                ChatView(conversation: conversationUIFixture)
-                    .environmentObject(
-                        MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(ChatViewModel.self, argument: conversationUIFixture)!
-                    )
-                    .environmentObject(navigationCoordinator)
-                    .environmentObject(tabBarVisibility)
-            }
-        }
+    NavigationStack {
+        ChatView(conversation: conversationUIFixture)
+            .environmentObject(TabBarVisibility())
+            .environmentObject(NavigationCoordinator())
     }
-    
-    return ChatView_Preview()
 }

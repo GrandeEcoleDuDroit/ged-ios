@@ -102,8 +102,8 @@ struct EditAnnouncementView: View {
 }
 
 #Preview {
-    let navigationCoordinator = StateObject(wrappedValue: CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self))
-    let mockNewsViewModel = NewsDependencyInjectionContainer.shared.resolveWithMock().resolve(NewsViewModel.self)!
+    let navigationCoordinator = StateObject(wrappedValue: CommonInjection.shared.resolve(NavigationCoordinator.self))
+    let mockNewsViewModel = NewsInjection.shared.resolveWithMock().resolve(NewsViewModel.self)!
     
     NavigationStack(path: navigationCoordinator.projectedValue.path) {
         EditAnnouncementView(

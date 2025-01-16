@@ -1,7 +1,7 @@
 import Swinject
 
-class CommonDependencyInjectionContainer: DependencyInjectionContainer {
-    static var shared: DependencyInjectionContainer = CommonDependencyInjectionContainer()
+class CommonInjection: DependencyInjectionContainer {
+    static var shared: DependencyInjectionContainer = CommonInjection()
     private let container: Container
     
     private init() {
@@ -10,16 +10,15 @@ class CommonDependencyInjectionContainer: DependencyInjectionContainer {
     }
     
     private func registerDependencies() {        
-        container.register(TabBarVisibility.self) { _ in TabBarVisibility() }
-        container.register(NavigationCoordinator.self) { _ in NavigationCoordinator() }
-        container.register(GedConfiguration.self) { _ in GedConfiguration() }
-            .inObjectScope(.container)
         container.register(UserFirestoreApi.self) { _ in UserFirestoreApiImpl() }
             .inObjectScope(.container)
+        
         container.register(UserOracleApi.self) { _ in UserOracleApiImpl() }
             .inObjectScope(.container)
+        
         container.register(UserLocalDataSource.self) { _ in UserLocalDataSource() }
             .inObjectScope(.container)
+        
         container.register(UserRemoteDataSource.self) { resolver in
             UserRemoteDataSource(
                 userFirestoreApi: resolver.resolve(UserFirestoreApi.self)!,
@@ -27,8 +26,10 @@ class CommonDependencyInjectionContainer: DependencyInjectionContainer {
             )
         }
         .inObjectScope(.container)
+        
         container.register(GedDatabaseContainer.self) { _ in GedDatabaseContainer() }
             .inObjectScope(.container)
+        
         container.register(UserRepository.self) { resolver in
             UserRepositoryImpl(
                 userLocalDataSource: resolver.resolve(UserLocalDataSource.self)!,
@@ -38,30 +39,31 @@ class CommonDependencyInjectionContainer: DependencyInjectionContainer {
         .inObjectScope(.container)
         
         container.register(GenerateIdUseCase.self) { _ in GenerateIdUseCase() }
+        
         container.register(CreateUserUseCase.self) { resolver in
             CreateUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
         }
-        .inObjectScope(.graph)
+        
         container.register(GetCurrentUserUseCase.self) { resolver in
             GetCurrentUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
         }
-        .inObjectScope(.container)
+        
         container.register(SetCurrentUserUseCase.self) { resolver in
             SetCurrentUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
         }
-        .inObjectScope(.graph)
+        
         container.register(GetUserUseCase.self) { resolver in
             GetUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
         }
-        .inObjectScope(.graph)
+        
         container.register(GetUsersUseCase.self) { resolver in
             GetUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
         }
-        .inObjectScope(.graph)
+        
         container.register(GetFilteredUsersUseCase.self) { resolver in
             GetFilteredUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
         }
-        .inObjectScope(.graph)
+        
     }
     
     func resolve<T>(_ type: T.Type) -> T {
