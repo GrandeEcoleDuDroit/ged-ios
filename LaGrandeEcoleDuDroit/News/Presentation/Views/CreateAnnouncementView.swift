@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CreateAnnouncementView: View {
-    @EnvironmentObject private var newsViewModel: NewsViewModel
+    @StateObject private var createAnnouncementViewModel: CreateAnnouncementViewModel = NewsInjection.shared.resolve(CreateAnnouncementViewModel.self)
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @FocusState private var inputFieldFocused: InputField?
     @State private var showErrorAlert: Bool = false
@@ -37,7 +37,7 @@ struct CreateAnnouncementView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button(
                     action: {
-                        newsViewModel.createAnnouncement(title: title, content: content)
+                        createAnnouncementViewModel.createAnnouncement(title: title, content: content)
                     },
                     label: {
                         if content.isEmpty {
@@ -53,7 +53,7 @@ struct CreateAnnouncementView: View {
                 .disabled(content.isEmpty)
             }
         }
-        .onReceive(newsViewModel.$announcementState) { state in
+        .onReceive(createAnnouncementViewModel.$announcementState) { state in
             switch state {
             case .created:
                 navigationCoordinator.pop()
@@ -77,12 +77,8 @@ struct CreateAnnouncementView: View {
 }
 
 #Preview {
-    let mockNewsViewModel = NewsDependencyInjectionContainer.shared.resolveWithMock().resolve(NewsViewModel.self)!
-    let navigationCoordinator = StateObject(wrappedValue: CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self))
-    
-    NavigationStack(path: navigationCoordinator.projectedValue.path) {
+    NavigationStack {
         CreateAnnouncementView()
-            .environmentObject(mockNewsViewModel)
-            .environmentObject(navigationCoordinator.wrappedValue)
+            .environmentObject(NavigationCoordinator())
     }
 }

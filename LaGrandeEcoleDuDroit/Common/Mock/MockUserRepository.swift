@@ -2,26 +2,19 @@ import Foundation
 import Combine
 
 class MockUserRepository: UserRepository {
-    
-    private var _users: [User] = usersFixture
-    @Published private var _currentUser: User? = userFixture
-    var currentUserPublisher: AnyPublisher<User?, Never> {
-        $_currentUser.eraseToAnyPublisher()
-    }
-    var currentUser: User? {
-        _currentUser
-    }
+    var currentUserPublisher = CurrentValueSubject<User?, Never>(userFixture).eraseToAnyPublisher()
+    var currentUser: User? = userFixture
     
     func setCurrentUser(user: User) {
-        _currentUser = user
+        currentUserPublisher = Just(user).eraseToAnyPublisher()
     }
     
     func removeCurrentUser() {
-        _currentUser = nil
+        currentUserPublisher = Just(nil).eraseToAnyPublisher()
     }
     
     func createUser(user: User) async throws {
-        _users.append(user)
+        // No implementation needed
     }
     
     func getUser(userId: String) async -> User? {
@@ -33,12 +26,10 @@ class MockUserRepository: UserRepository {
     }
     
     func getUsers() async throws -> [User] {
-        var users = _users
-        users.append(contentsOf: _users)
-        return users
+        usersFixture
     }
     
     func getFilteredUsers(filter: String) async -> [User] {
-        _users.filter { $0.fullName.contains(filter) }
+        usersFixture.filter { $0.fullName.contains(filter) }
     }
 }

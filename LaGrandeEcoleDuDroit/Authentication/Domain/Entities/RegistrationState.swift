@@ -3,5 +3,4 @@ enum RegistrationState: Equatable {
     case loading
     case error(message: String)
     case registered
-    case emailVerified
 }

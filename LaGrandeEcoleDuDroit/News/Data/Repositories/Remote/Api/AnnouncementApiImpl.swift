@@ -10,6 +10,7 @@ class AnnouncementApiImpl: AnnouncementApi {
     
     func getAnnouncements() async throws -> [RemoteAnnouncementWithUser] {
         guard let url = baseUrl(endPoint: "") else {
+            logger.error("Invalid URL to get announcements")
             throw RequestError.invalidURL
         }
         

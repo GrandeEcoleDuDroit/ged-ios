@@ -1,8 +1,7 @@
 import SwiftUI
 
 struct AuthenticationView: View {
-    @EnvironmentObject private var authenticationViewModel: AuthenticationViewModel
-    @EnvironmentObject private var registrationViewModel: RegistrationViewModel
+    @StateObject private var authenticationViewModel: AuthenticationViewModel = AuthenticationInjection.shared.resolve(AuthenticationViewModel.self)
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var isInputsFocused: Bool = false
     @State private var isLoading: Bool = false
@@ -137,7 +136,8 @@ private struct CredentialsInputs: View {
                 isInputsFocused = true
             }))
             
-            Button(getString(.forgottenPassword)) { navigationCoordinator.push(AuthenticationScreen.forgottenPassword)
+            Button(getString(.forgottenPassword)) {
+                navigationCoordinator.push(AuthenticationScreen.forgottenPassword)
             }
             .disabled(isLoading)
             
@@ -192,36 +192,7 @@ private struct Buttons: View {
 }
 
 #Preview {
-    struct AuthenticationView_Preview: View {
-        @StateObject var navigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)
-        let mockAuthenticationViewModel = AuthenticationDependencyInjectionContainer.shared.resolveWithMock().resolve(AuthenticationViewModel.self)!
-        let mockRegistrationViewModel = AuthenticationDependencyInjectionContainer.shared.resolveWithMock().resolve(RegistrationViewModel.self)!
-        
-        var body: some View {
-            NavigationStack(path: $navigationCoordinator.path) {
-                AuthenticationView()
-                    .environmentObject(mockAuthenticationViewModel)
-                    .environmentObject(mockRegistrationViewModel)
-                    .navigationDestination(for: AuthenticationScreen.self) { screen in
-                       if case .emailVerification(let email) = screen {
-                           EmailVerificationView()
-                               .environmentObject(
-                                AuthenticationDependencyInjectionContainer.shared.resolveWithMock()
-                                    .resolve(RegistrationViewModel.self, argument: email)!
-                               )
-                       }
-                       else if case .firstRegistration = screen {
-                           FirstRegistrationView()
-                               .environmentObject(mockRegistrationViewModel)
-                       }
-                       else if case .forgottenPassword = screen {
-                           ForgottenPasswordView()
-                       }
-                    }
-            }
-            .environmentObject(navigationCoordinator)
-        }
+    NavigationStack {
+        AuthenticationView()
     }
-    
-    return AuthenticationView_Preview()
 }

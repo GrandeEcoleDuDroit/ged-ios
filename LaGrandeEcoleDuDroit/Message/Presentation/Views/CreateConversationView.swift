@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CreateConversationView: View {
-    @EnvironmentObject private var createConversationViewModel: CreateConversationViewModel
+    @StateObject private var createConversationViewModel = MessageInjection.shared.resolve(CreateConversationViewModel.self)
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var errorMessage: String = ""
@@ -57,28 +57,9 @@ struct CreateConversationView: View {
 }
 
 #Preview {
-    struct CreateConversationView_Preview: View {
-        @StateObject var navigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)
-        let mockCreateConversationViewModel = MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(CreateConversationViewModel.self)!
-        let tabBarVisibility = CommonDependencyInjectionContainer.shared.resolve(TabBarVisibility.self)
-        
-        var body: some View {
-            NavigationStack(path: $navigationCoordinator.path) {
-                CreateConversationView()
-                    .environmentObject(mockCreateConversationViewModel)
-                    .navigationDestination(for: MessageScreen.self) { screen in
-                        if case let .chat(conversation) = screen {
-                            ChatView(conversation: conversation)
-                                .environmentObject(
-                                    MessageDependencyInjectionContainer.shared.resolveWithMock().resolve(ChatViewModel.self, argument: conversation)!
-                                )
-                        }
-                    }
-            }
-            .environmentObject(navigationCoordinator)
-            .environmentObject(tabBarVisibility)
-        }
+    NavigationStack {
+        CreateConversationView()
+            .environmentObject(TabBarVisibility())
+            .environmentObject(NavigationCoordinator())
     }
-    
-    return CreateConversationView_Preview()
 }

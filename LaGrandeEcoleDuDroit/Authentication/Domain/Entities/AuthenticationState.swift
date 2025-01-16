@@ -5,4 +5,5 @@ enum AuthenticationState: Equatable {
     case authenticated
     case unauthenticated
     case emailNotVerified
+    case emailVerified
 }

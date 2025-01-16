@@ -3,7 +3,10 @@ import Combine
 
 class MockMessageRepository: MessageRepository {
     func getMessages(conversationId: String) -> AnyPublisher<Message, any Error> {
-        Just(messagesFixture.last!).setFailureType(to: (any Error).self).eraseToAnyPublisher()
+        let messagesFixture = messagesFixture.filter { $0.conversationId == conversationId }
+        return Just(messagesFixture.last!)
+            .setFailureType(to: (any Error).self)
+            .eraseToAnyPublisher()
     }
     
     func getLastMessage(conversationId: String) -> AnyPublisher<Message?, ConversationError> {

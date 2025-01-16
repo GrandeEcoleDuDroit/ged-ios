@@ -2,13 +2,11 @@ import SwiftUI
 
 struct ProfileNavigation: View {
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
-    @StateObject private var profileNavigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)
-    @StateObject private var profileViewModel = ProfileDependencyInjectionContainer.shared.resolve(ProfileViewModel.self)
+    @StateObject private var profileNavigationCoordinator = NavigationCoordinator()
 
     var body: some View {
         NavigationStack(path: $profileNavigationCoordinator.path) {
             ProfileView()
-                .environmentObject(profileViewModel)
                 .navigationDestination(for: ProfileScreen.self) { screen in
                     switch screen {
                     case .account:
@@ -23,9 +21,9 @@ struct ProfileNavigation: View {
 
 #Preview {
     struct ProfileNavigation_Preview: View {
-        @StateObject var navigationCoordinator = CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self)
-        let tabBarVisibility = CommonDependencyInjectionContainer.shared.resolve(TabBarVisibility.self)
-        let mockProfileViewModel = ProfileDependencyInjectionContainer.shared.resolveWithMock().resolve(ProfileViewModel.self)!
+        @StateObject var navigationCoordinator = CommonInjection.shared.resolve(NavigationCoordinator.self)
+        let tabBarVisibility = CommonInjection.shared.resolve(TabBarVisibility.self)
+        let mockProfileViewModel = ProfileInjection.shared.resolveWithMock().resolve(ProfileViewModel.self)!
         
         var body: some View {
             NavigationStack(path: $navigationCoordinator.path) {

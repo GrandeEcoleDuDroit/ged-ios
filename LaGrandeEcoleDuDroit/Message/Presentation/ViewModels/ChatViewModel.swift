@@ -10,8 +10,8 @@ class ChatViewModel: ObservableObject {
     private let createConversationUseCase: CreateConversationUseCase
     private let sendMessageUseCase: SendMessageUseCase
     private var cancellables: Set<AnyCancellable> = []
-    private var conversation: ConversationUI
     
+    @Published var conversation: ConversationUI
     @Published var messages: [String:Message] = [:]
     @Published var textToSend: String = ""
     
@@ -69,13 +69,13 @@ class ChatViewModel: ObservableObject {
             Task {
                 do {
                     try await createConversationUseCase.execute(conversationUI: conversation)
-                    conversation.state = .created
+                    updateConversationState(.created)
                     
-                    fetchMessages()
                     try await sendMessageUseCase.execute(message: message)
+                    fetchMessages()
                 } catch {
                     e(tag, "Error sending message: \(error)")
-                    conversation.state = .error(message: "Failed to sending message")
+                    updateConversationState(.error(message: "Failed to sending message"))
                 }
             }
         } else {
@@ -89,6 +89,11 @@ class ChatViewModel: ObservableObject {
         }
         
         textToSend = ""
-        messages[message.id] = message
+    }
+    
+    private func updateConversationState(_ state: ConversationState) {
+        DispatchQueue.main.sync { [weak self] in
+            self?.conversation.state = state
+        }
     }
 }

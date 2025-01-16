@@ -1,8 +1,7 @@
 import SwiftUI
 
 struct MainNavigationView: View {
-    @StateObject private var authenticationViewModel = AuthenticationDependencyInjectionContainer.shared.resolve(AuthenticationViewModel.self)
-    @StateObject private var registrationViewModel = AuthenticationDependencyInjectionContainer.shared.resolve(RegistrationViewModel.self)
+    private let isAuthenticatedUseCase: IsAuthenticatedUseCase = AuthenticationInjection.shared.resolve(IsAuthenticatedUseCase.self)
     @State private var authenticationState: AuthenticationState = .idle
     
     var body: some View {
@@ -13,31 +12,13 @@ struct MainNavigationView: View {
             case .authenticated:
                 Main()
             default:
-                Authentication()
-                    .environmentObject(authenticationViewModel)
-                    .environmentObject(registrationViewModel)
+                AuthenticationNavigation()
             }
         }
-        .onReceive(authenticationViewModel.$authenticationState) { state in
-            authenticationState = state
-        }
-        .onReceive(registrationViewModel.$registrationState) { state in
-            if state == .emailVerified {
-                authenticationState = .authenticated
-            }
+        .onReceive(isAuthenticatedUseCase.execute()) { value in
+            authenticationState = value ? .authenticated : .unauthenticated
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-    }
-}
-
-struct Authentication: View {
-    @EnvironmentObject private var authenticationViewModel: AuthenticationViewModel
-    @EnvironmentObject private var registrationViewModel: RegistrationViewModel
-    
-    var body: some View {
-        AuthenticationNavigation()
-            .environmentObject(authenticationViewModel)
-            .environmentObject(registrationViewModel)
     }
 }
 
@@ -46,7 +27,7 @@ private enum Tabs {
 }
  
 struct Main: View {
-    @StateObject private var tabBarVisibility = CommonDependencyInjectionContainer.shared.resolve(TabBarVisibility.self)
+    @StateObject private var tabBarVisibility = TabBarVisibility()
     @State private var selectedTab: Tabs = .news
 
     var body: some View {

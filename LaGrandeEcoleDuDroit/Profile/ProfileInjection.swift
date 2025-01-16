@@ -1,7 +1,7 @@
 import Swinject
 
-class ProfileDependencyInjectionContainer: DependencyInjectionContainer {
-    static var shared: DependencyInjectionContainer = ProfileDependencyInjectionContainer()
+class ProfileInjection: DependencyInjectionContainer {
+    static var shared: DependencyInjectionContainer = ProfileInjection()
     private let container: Container
     
     private init() {
@@ -12,10 +12,10 @@ class ProfileDependencyInjectionContainer: DependencyInjectionContainer {
     private func registerDependencies() {
         container.register(ProfileViewModel.self) { resolver in
             ProfileViewModel(
-                getCurrentUserUseCase: CommonDependencyInjectionContainer.shared.resolve(GetCurrentUserUseCase.self),
-                logoutUseCase: AuthenticationDependencyInjectionContainer.shared.resolve(LogoutUseCase.self)
+                getCurrentUserUseCase: CommonInjection.shared.resolve(GetCurrentUserUseCase.self),
+                logoutUseCase: AuthenticationInjection.shared.resolve(LogoutUseCase.self)
             )
-        }
+        }.inObjectScope(.weak)
     }
     
     func resolve<T>(_ type: T.Type) -> T {
@@ -52,8 +52,8 @@ class ProfileDependencyInjectionContainer: DependencyInjectionContainer {
     
     func resolveWithMock() -> Container {
         let mockContainer = Container()
-        let commonMockContainer = CommonDependencyInjectionContainer.shared.resolveWithMock()
-        let authenticationMockContainer = AuthenticationDependencyInjectionContainer.shared.resolveWithMock()
+        let commonMockContainer = CommonInjection.shared.resolveWithMock()
+        let authenticationMockContainer = AuthenticationInjection.shared.resolveWithMock()
         
         mockContainer.register(ProfileViewModel.self) { resolver in
             ProfileViewModel(

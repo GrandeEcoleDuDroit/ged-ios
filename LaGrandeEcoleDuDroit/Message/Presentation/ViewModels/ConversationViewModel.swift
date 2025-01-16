@@ -55,9 +55,10 @@ class ConversationViewModel: ObservableObject {
                         }
                     }
             } receiveValue: { [weak self] conversationUI in
-                self?.conversationsMap[conversationUI.id] = conversationUI
-                self?.defaultConversations = self?.conversationsMap ?? [:]
-                self?.conversationState = .idle
+                guard let self = self else { return }
+                self.conversationsMap[conversationUI.id] = conversationUI
+                self.defaultConversations = self.conversationsMap
+                self.conversationState = .idle
             }
             .store(in: &cancellables)
     }

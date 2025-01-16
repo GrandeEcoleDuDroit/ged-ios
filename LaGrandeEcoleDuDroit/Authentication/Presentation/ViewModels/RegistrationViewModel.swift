@@ -12,22 +12,15 @@ class RegistrationViewModel: ObservableObject {
     let maxStep = 3
     
     private let registerUseCase: RegisterUseCase
-    private let sendVerificationEmailUseCase: SendVerificationEmailUseCase
-    private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase
     private let createUserUseCase: CreateUserUseCase
-    private var registrationTasks: [Task<Void, Never>] = []
     
     init(
         email: String = "",
         registerUseCase: RegisterUseCase,
-        sendVerificationEmailUseCase: SendVerificationEmailUseCase,
-        isEmailVerifiedUseCase: IsEmailVerifiedUseCase,
         createUserUseCase: CreateUserUseCase
     ) {
         self.email = email
         self.registerUseCase = registerUseCase
-        self.sendVerificationEmailUseCase = sendVerificationEmailUseCase
-        self.isEmailVerifiedUseCase = isEmailVerifiedUseCase
         self.createUserUseCase = createUserUseCase
         
         schoolLevel = schoolLevels[0]
@@ -97,46 +90,7 @@ class RegistrationViewModel: ObservableObject {
             catch {
                 updateRegistrationState(to: .error(message: getString(.registrationError)))
             }
-        }
-        
-        registrationTasks.append(task)
-    }
-    
-    func sendVerificationEmail() {
-        updateRegistrationState(to: .loading)
-        
-        let task = Task {
-            do {
-                try await sendVerificationEmailUseCase.execute()
-                updateRegistrationState(to: .idle)
-            }
-            catch NetworkError.tooManyRequests {
-                updateRegistrationState(to: .error(message: getString(.tooManyRequestError)))
-            }
-            catch {
-                updateRegistrationState(to: .error(message: getString(.registrationError)))
-            }
-        }
-        
-        registrationTasks.append(task)
-    }
-    
-    func checkVerifiedEmail() {
-        updateRegistrationState(to: .loading)
-
-        let task = Task {
-            if let emailVerified = try? await isEmailVerifiedUseCase.execute() {
-                if emailVerified {
-                    updateRegistrationState(to: .emailVerified )
-                } else {
-                    updateRegistrationState(to: .error(message: getString(.emailNotVerifiedError)))
-                }
-            } else {
-                updateRegistrationState(to: .error(message: getString(.emailNotVerifiedError)))
-            }
-        }
-        
-        registrationTasks.append(task)
+        }        
     }
     
     func resetState() {
@@ -147,9 +101,5 @@ class RegistrationViewModel: ObservableObject {
         DispatchQueue.main.async { [weak self] in
             self?.registrationState = state
         }
-    }
-    
-    deinit {
-        registrationTasks.forEach { $0.cancel() }
     }
 }

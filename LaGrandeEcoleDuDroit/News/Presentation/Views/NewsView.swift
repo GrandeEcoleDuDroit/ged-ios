@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct NewsView: View {
-    @EnvironmentObject private var newsViewModel: NewsViewModel
+    @StateObject private var newsViewModel = NewsInjection.shared.resolve(NewsViewModel.self)
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var isActive: Bool = false
@@ -60,7 +60,6 @@ struct NewsView: View {
         }
         .onAppear {
             tabBarVisibility.show = true
-            newsViewModel.resetAnnouncementState()
         }
     }
 }
@@ -150,23 +149,9 @@ struct GetAnnouncementItem: View {
 
 
 #Preview {
-    let navigationCoordinator = StateObject(wrappedValue: CommonDependencyInjectionContainer.shared.resolve(NavigationCoordinator.self))
-    let mockNewsViewModel = NewsDependencyInjectionContainer.shared.resolveWithMock().resolve(NewsViewModel.self)!
-    let tabBarVisibility = CommonDependencyInjectionContainer.shared.resolve(TabBarVisibility.self)
-    
-    NavigationStack(path: navigationCoordinator.projectedValue.path) {
-        NewsView()
-            .environmentObject(mockNewsViewModel)
-            .environmentObject(tabBarVisibility)
-            .navigationDestination(for: NewsScreen.self) { screen in
-                if case .createAnnouncement = screen {
-                    CreateAnnouncementView()
-                        .environmentObject(mockNewsViewModel)
-                } else if case .announcementDetail(let announcement) = screen {
-                    AnnouncementDetailView(announcement: announcement)
-                        .environmentObject(mockNewsViewModel)
-                }
-            }
-    }
-    .environmentObject(navigationCoordinator.wrappedValue)
+   NavigationStack {
+       NewsView()
+           .environmentObject(TabBarVisibility())
+           .environmentObject(NavigationCoordinator())
+   }
 }
