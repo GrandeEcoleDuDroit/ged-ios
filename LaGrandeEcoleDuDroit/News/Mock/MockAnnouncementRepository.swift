@@ -17,7 +17,7 @@ class MockAnnouncementRepository: AnnouncementRepository {
     }
     
     func deleteAnnouncement(announcement: Announcement) async throws {
-        _announcements.removeAll(where: { $0 == announcement })
+        _announcements.removeAll(where: { $0.id == announcement.id })
     }
     
     

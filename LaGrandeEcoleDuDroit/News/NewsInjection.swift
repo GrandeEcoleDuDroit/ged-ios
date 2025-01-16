@@ -107,16 +107,16 @@ class NewsInjection: DependencyInjectionContainer {
         mockContainer.register(AnnouncementRepository.self) { _ in MockAnnouncementRepository() }
         
         mockContainer.register(GetAnnouncementsUseCase.self) { resolver in
-            GetAnnouncementsUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
+            GetAnnouncementsUseCase(announcementRepository: resolver.resolve(MockAnnouncementRepository.self)!)
         }
         mockContainer.register(CreateAnnouncementUseCase.self) { resolver in
-            CreateAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
+            CreateAnnouncementUseCase(announcementRepository: resolver.resolve(MockAnnouncementRepository.self)!)
         }
         mockContainer.register(UpdateAnnouncementUseCase.self) { resolver in
-            UpdateAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
+            UpdateAnnouncementUseCase(announcementRepository: resolver.resolve(MockAnnouncementRepository.self)!)
         }
         mockContainer.register(DeleteAnnouncementUseCase.self) { resolver in
-            DeleteAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
+            DeleteAnnouncementUseCase(announcementRepository: resolver.resolve(MockAnnouncementRepository.self)!)
         }
         
         mockContainer.register(NewsViewModel.self) { resolver in
