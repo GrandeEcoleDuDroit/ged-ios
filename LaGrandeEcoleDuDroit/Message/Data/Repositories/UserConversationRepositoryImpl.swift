@@ -72,11 +72,11 @@ class UserConversationRepositoryImpl: UserConversationRepository {
             }
             .sink { completion in
                 switch completion {
-                case .finished:
-                    d(tag, "UserConversationRepositoryImpl: listenRemoteConversations finished")
-                    
-                case .failure(let error):
-                    e(tag, "UserConversationRepositoryImpl: listenRemoteConversations error: \(error)")
+                    case .finished:
+                        d(tag, "UserConversationRepositoryImpl: listenRemoteConversations finished")
+                        
+                    case .failure(let error):
+                        e(tag, "UserConversationRepositoryImpl: listenRemoteConversations error: \(error)")
                 }
             } receiveValue: { (conversation, interlocutor) in
                 do {

@@ -20,23 +20,23 @@ class AuthenticationInjection: DependencyInjectionContainer {
         container.register(SendVerificationEmailUseCase.self) { resolver in
             SendVerificationEmailUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
         }
-
+        
         container.register(IsEmailVerifiedUseCase.self) { resolver in
             IsEmailVerifiedUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
         }
-
+        
         container.register(IsAuthenticatedUseCase.self) { resolver in
             IsAuthenticatedUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
         }
-
+        
         container.register(LoginUseCase.self) { resolver in
             LoginUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
         }
-
+        
         container.register(LogoutUseCase.self) { resolver in
             LogoutUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
         }
-
+        
         container.register(RegisterUseCase.self) { resolver in
             RegisterUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
         }
@@ -50,7 +50,7 @@ class AuthenticationInjection: DependencyInjectionContainer {
                 setCurrentUserUseCase: CommonInjection.shared.resolve(SetCurrentUserUseCase.self)
             )
         }.inObjectScope(.weak)
-
+        
         container.register(RegistrationViewModel.self) { resolver in
             RegistrationViewModel(
                 registerUseCase: resolver.resolve(RegisterUseCase.self)!,
@@ -75,26 +75,26 @@ class AuthenticationInjection: DependencyInjectionContainer {
     
     func resolve<T>(_ type: T.Type, arguments: Any...) -> T? {
         switch arguments.count {
-        case 1:
-            return container.resolve(T.self, argument: arguments[0])
-        case 2:
-            return container.resolve(T.self, arguments: arguments[0], arguments[1])
-        case 3:
-            return container.resolve(T.self, arguments: arguments[0], arguments[1], arguments[2])
-        case 4:
-            return container.resolve(T.self, arguments: arguments[0], arguments[1], arguments[2], arguments[3])
-        case 5:
-            return container.resolve(T.self, arguments: arguments[0], arguments[1], arguments[2], arguments[3], arguments[4])
-        case 6:
-            return container.resolve(T.self, arguments: arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5])
-        case 7:
-            return container.resolve(T.self, arguments: arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6])
-        case 8:
-            return container.resolve(T.self, arguments: arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7])
-        case 9:
-            return container.resolve(T.self, arguments: arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8])
-        default:
-            return nil
+            case 1:
+                return container.resolve(T.self, argument: arguments[0])
+            case 2:
+                return container.resolve(T.self, arguments: arguments[0], arguments[1])
+            case 3:
+                return container.resolve(T.self, arguments: arguments[0], arguments[1], arguments[2])
+            case 4:
+                return container.resolve(T.self, arguments: arguments[0], arguments[1], arguments[2], arguments[3])
+            case 5:
+                return container.resolve(T.self, arguments: arguments[0], arguments[1], arguments[2], arguments[3], arguments[4])
+            case 6:
+                return container.resolve(T.self, arguments: arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5])
+            case 7:
+                return container.resolve(T.self, arguments: arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6])
+            case 8:
+                return container.resolve(T.self, arguments: arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7])
+            case 9:
+                return container.resolve(T.self, arguments: arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8])
+            default:
+                return nil
         }
     }
     

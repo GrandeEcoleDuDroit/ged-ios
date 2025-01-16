@@ -34,7 +34,7 @@ class AuthenticationViewModel: ObservableObject {
             authenticationState = .error(message: getString(.emptyInputsError))
             return false
         }
-
+        
         guard VerifyEmailFormatUseCase.execute(email) else {
             authenticationState = .error(message: getString(.invalidEmailError))
             return false
@@ -44,7 +44,7 @@ class AuthenticationViewModel: ObservableObject {
             authenticationState = .error(message: getString(.passwordLengthError))
             return false
         }
-
+        
         return true
     }
     
@@ -85,10 +85,10 @@ class AuthenticationViewModel: ObservableObject {
         isAuthenticatedUseCase.execute()
             .sink(receiveCompletion: { completion in
                 switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    print("Error retrieving authentication state: \(error)")
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print("Error retrieving authentication state: \(error)")
                 }
             }, receiveValue: { [weak self] isAuthenticated in
                 self?.authenticationState = isAuthenticated ? .authenticated : .unauthenticated

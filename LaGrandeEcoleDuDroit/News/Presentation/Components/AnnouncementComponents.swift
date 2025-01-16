@@ -102,7 +102,7 @@ struct LoadingAnnouncementItemWithContent: View {
     var body: some View {
         HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
             ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
-
+            
             VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                 HStack {
                     Text(announcement.author.fullName)
@@ -153,7 +153,7 @@ struct ErrorAnnouncementItemWithContent: View {
     var body: some View {
         HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
             ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
-
+            
             VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                 HStack {
                     Text(announcement.author.fullName)
@@ -175,7 +175,7 @@ struct ErrorAnnouncementItemWithContent: View {
             
             Image(systemName: "exclamationmark.circle")
                 .foregroundStyle(.red)
-                
+            
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)
@@ -191,18 +191,18 @@ struct ErrorAnnouncementItemWithContent: View {
 
 private func getElapsedTimeText(elapsedTime: ElapsedTime, announcementDate: Date) -> String {
     switch elapsedTime {
-    case .now(_):
-        getString(.now)
-    case.minute(let minutes):
-        getString(.minutesAgoLong, minutes)
-    case .hour(let hours):
-        getString(.hoursAgoLong, hours)
-    case .day(let days):
-        getString(.daysAgoLong, days)
-    case .week(let weeks):
-        getString(.weeksAgoLong, weeks)
-    default:
-        announcementDate.formatted(.dateTime.year().month().day())
+        case .now(_):
+            getString(.now)
+        case.minute(let minutes):
+            getString(.minutesAgoLong, minutes)
+        case .hour(let hours):
+            getString(.hoursAgoLong, hours)
+        case .day(let days):
+            getString(.daysAgoLong, days)
+        case .week(let weeks):
+            getString(.weeksAgoLong, weeks)
+        default:
+            announcementDate.formatted(.dateTime.year().month().day())
     }
 }
 

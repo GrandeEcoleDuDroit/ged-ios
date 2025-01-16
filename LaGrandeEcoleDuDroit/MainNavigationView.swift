@@ -7,12 +7,12 @@ struct MainNavigationView: View {
     var body: some View {
         ZStack {
             switch authenticationState {
-            case.idle:
-                SplashScreen()
-            case .authenticated:
-                Main()
-            default:
-                AuthenticationNavigation()
+                case.idle:
+                    SplashScreen()
+                case .authenticated:
+                    Main()
+                default:
+                    AuthenticationNavigation()
             }
         }
         .onReceive(isAuthenticatedUseCase.execute()) { value in
@@ -25,11 +25,11 @@ struct MainNavigationView: View {
 private enum Tabs {
     case news, conversation, profile
 }
- 
+
 struct Main: View {
     @StateObject private var tabBarVisibility = TabBarVisibility()
     @State private var selectedTab: Tabs = .news
-
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             NewsNavigation()

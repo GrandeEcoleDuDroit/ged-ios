@@ -36,18 +36,18 @@ struct SendMessageItem: View {
             .frame(maxWidth: screenWidth / 1.5, alignment: .trailing)
             
             switch state {
-            case .loading:
-                Image(systemName: "paperplane")
-                    .resizable()
-                    .foregroundColor(.gray)
-                    .frame(width: 18, height: 18)
-            case .error:
-                Image(systemName: "exclamationmark.circle")
-                    .resizable()
-                    .frame(width: 18, height: 18)
-                    .foregroundColor(.red)
-            default:
-                EmptyView()
+                case .loading:
+                    Image(systemName: "paperplane")
+                        .resizable()
+                        .foregroundColor(.gray)
+                        .frame(width: 18, height: 18)
+                case .error:
+                    Image(systemName: "exclamationmark.circle")
+                        .resizable()
+                        .frame(width: 18, height: 18)
+                        .foregroundColor(.red)
+                default:
+                    EmptyView()
             }
         }
         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -88,7 +88,7 @@ struct ReceiveMessageItem: View {
             HStack(alignment: .bottom) {
                 Text(text)
                     .foregroundStyle(.black)
-                    
+                
                 Text(date, style: .time)
                     .foregroundStyle(.gray)
                     .font(.caption)
@@ -180,50 +180,50 @@ struct ChatInputField: View {
         var body: some View {
             VStack {
                 ScrollView {
-                        ReceiveMessageItem(
-                            text: "Received",
-                            screenWidth: 375,
-                            displayProfilePicture: false,
-                            profilePictureUrl: nil,
-                            date: Date.now
-                        )
-                        
-                        ReceiveMessageItem(
-                            text: announcementFixture.content,
-                            screenWidth: 375,
-                            displayProfilePicture: true,
-                            profilePictureUrl: nil,
-                            date: Date.now
-                        )
-                        
-                        SendMessageItem(
-                            text: "Sent",
-                            screenWidth: 375,
-                            state: .sent,
-                            date: Date.now
-                        )
-                        
-                        SendMessageItem(
-                            text: "Loading",
-                            screenWidth: 375,
-                            state: .loading,
-                            date: Date.now
-                        )
-                        
-                        SendMessageItem(
-                            text: "Error",
-                            screenWidth: 375,
-                            state: .error,
-                            date: Date.now
-                        )
-                        
-                        SendMessageItem(
-                            text: announcementFixture.content,
-                            screenWidth: 375,
-                            state: .sent,
-                            date: Date.now
-                        )
-                    }
+                    ReceiveMessageItem(
+                        text: "Received",
+                        screenWidth: 375,
+                        displayProfilePicture: false,
+                        profilePictureUrl: nil,
+                        date: Date.now
+                    )
+                    
+                    ReceiveMessageItem(
+                        text: announcementFixture.content,
+                        screenWidth: 375,
+                        displayProfilePicture: true,
+                        profilePictureUrl: nil,
+                        date: Date.now
+                    )
+                    
+                    SendMessageItem(
+                        text: "Sent",
+                        screenWidth: 375,
+                        state: .sent,
+                        date: Date.now
+                    )
+                    
+                    SendMessageItem(
+                        text: "Loading",
+                        screenWidth: 375,
+                        state: .loading,
+                        date: Date.now
+                    )
+                    
+                    SendMessageItem(
+                        text: "Error",
+                        screenWidth: 375,
+                        state: .error,
+                        date: Date.now
+                    )
+                    
+                    SendMessageItem(
+                        text: announcementFixture.content,
+                        screenWidth: 375,
+                        state: .sent,
+                        date: Date.now
+                    )
+                }
                 
                 
                 ChatInputField(

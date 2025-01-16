@@ -55,13 +55,13 @@ struct CreateAnnouncementView: View {
         }
         .onReceive(createAnnouncementViewModel.$announcementState) { state in
             switch state {
-            case .created:
-                navigationCoordinator.pop()
-            case .error(let message):
-                errorMessage = message
-                showErrorAlert = true
-            default:
-                errorMessage = ""
+                case .created:
+                    navigationCoordinator.pop()
+                case .error(let message):
+                    errorMessage = message
+                    showErrorAlert = true
+                default:
+                    errorMessage = ""
             }
         }
         .onAppear {

@@ -39,8 +39,10 @@ class ChatViewModel: ObservableObject {
                 .receive(on: DispatchQueue.main)
                 .sink { completion in
                     switch completion {
-                        case .finished: break
-                        case .failure(let error): e(tag, "Error: \(error)")
+                        case .finished:
+                            break
+                        case .failure(let error):
+                            e(tag, "Error: \(error)")
                     }
                 } receiveValue: { [weak self] message in
                     self?.messages[message.id] = message

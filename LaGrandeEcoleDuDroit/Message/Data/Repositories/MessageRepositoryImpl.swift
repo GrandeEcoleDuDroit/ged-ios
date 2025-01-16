@@ -6,7 +6,7 @@ class MessageRepositoryImpl: MessageRepository {
     private let messageLocalDataSource: MessageLocalDataSource
     private let messageRemoteDataSource: MessageRemoteDataSource
     private var cancellables = Set<AnyCancellable>()
-
+    
     init(
         messageLocalDataSource: MessageLocalDataSource,
         messageRemoteDataSource: MessageRemoteDataSource
@@ -45,9 +45,10 @@ class MessageRepositoryImpl: MessageRepository {
         messageRemoteDataSource.listenMessages(conversationId: conversationId)
             .sink { completion in
                 switch completion {
-                case .finished: break
-                case .failure(let error):
-                    e(tag, "Error listening remote messages: \(error)")
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        e(tag, "Error listening remote messages: \(error)")
                 }
             } receiveValue: { [weak self] message in
                 do {

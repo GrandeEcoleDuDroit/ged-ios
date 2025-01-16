@@ -23,7 +23,7 @@ struct ReadConversationItem: View {
         if let lastMessage = conversationUI.lastMessage {
             HStack(alignment: .center) {
                 ProfilePicture(url: conversationUI.interlocutor.profilePictureUrl, scale: 0.42)
-               
+                
                 VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                     HStack {
                         Text(conversationUI.interlocutor.fullName)
@@ -155,7 +155,7 @@ struct EmptyConversationItem: View {
     var body: some View {
         HStack(alignment: .center) {
             ProfilePicture(url: conversationUI.interlocutor.profilePictureUrl, scale: 0.4)
-
+            
             VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
                 HStack {
                     Text(conversationUI.interlocutor.fullName)
@@ -183,24 +183,24 @@ struct EmptyConversationItem: View {
 }
 
 private func updateElapsedTimeText(for date: Date) -> String {
-      let elapsedTime = GetElapsedTimeUseCase.execute(date: date)
-      return getElapsedTimeText(elapsedTime: elapsedTime, date: date)
-  }
+    let elapsedTime = GetElapsedTimeUseCase.execute(date: date)
+    return getElapsedTimeText(elapsedTime: elapsedTime, date: date)
+}
 
 private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String {
     switch elapsedTime {
-    case .now(_):
-        getString(.now)
-    case.minute(let minutes):
-        getString(.minutesAgoShort, minutes)
-    case .hour(let hours):
-        getString(.hoursAgoShort, hours)
-    case .day(let days):
-        getString(.daysAgoShort, days)
-    case .week(let weeks):
-        getString(.weeksAgoShort, weeks)
-    default:
-        date.formatted(.dateTime.year().month().day())
+        case .now(_):
+            getString(.now)
+        case.minute(let minutes):
+            getString(.minutesAgoShort, minutes)
+        case .hour(let hours):
+            getString(.hoursAgoShort, hours)
+        case .day(let days):
+            getString(.daysAgoShort, days)
+        case .week(let weeks):
+            getString(.weeksAgoShort, weeks)
+        default:
+            date.formatted(.dateTime.year().month().day())
     }
 }
 

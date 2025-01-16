@@ -39,14 +39,14 @@ struct CreateConversationView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .onReceive(createConversationViewModel.$conversationState) { state in
             switch state {
-            case .loading:
-                isLoading = true
-            case .error(let message):
-                errorMessage = message
-                isLoading = false
-            default:
-                errorMessage = ""
-                isLoading = false
+                case .loading:
+                    isLoading = true
+                case .error(let message):
+                    errorMessage = message
+                    isLoading = false
+                default:
+                    errorMessage = ""
+                    isLoading = false
             }
         }
         .searchable(

@@ -18,10 +18,10 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
         } catch let error as NSError {
             if let authErrorCode = AuthErrorCode(rawValue: error.code) {
                 switch authErrorCode {
-                case .emailAlreadyInUse:
-                    throw AuthenticationError.accountAlreadyExist
-                default:
-                    throw AuthenticationError.unknown
+                    case .emailAlreadyInUse:
+                        throw AuthenticationError.accountAlreadyExist
+                    default:
+                        throw AuthenticationError.unknown
                 }
             } else {
                 throw AuthenticationError.unknown
@@ -45,12 +45,12 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
         } catch let error as NSError {
             if let authErrorCode = AuthErrorCode(rawValue: error.code) {
                 switch authErrorCode {
-                case .wrongPassword, .userNotFound, .invalidCredential:
-                    throw AuthenticationError.invalidCredentials
-                case .userDisabled:
-                    throw AuthenticationError.userDisabled
-                default:
-                    throw AuthenticationError.unknown
+                    case .wrongPassword, .userNotFound, .invalidCredential:
+                        throw AuthenticationError.invalidCredentials
+                    case .userDisabled:
+                        throw AuthenticationError.userDisabled
+                    default:
+                        throw AuthenticationError.unknown
                 }
             }
             else {

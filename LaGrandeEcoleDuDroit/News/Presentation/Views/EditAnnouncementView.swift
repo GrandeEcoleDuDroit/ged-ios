@@ -12,7 +12,7 @@ struct EditAnnouncementView: View {
     private let announcement: Announcement
     private let onCancelClick: () -> Void
     private let onSaveClick: (String, String) -> Void
-
+    
     init(
         announcement: Announcement,
         onCancelClick: @escaping () -> Void,
@@ -41,14 +41,14 @@ struct EditAnnouncementView: View {
         .padding()
         .onReceive(newsViewModel.$announcementState) { state in
             switch state {
-            case .created:
-                errorMessage = ""
-                isActive = true
-            case .error(let message):
-                errorMessage = message
-                showErrorAlert = true
-            default:
-                errorMessage = ""
+                case .created:
+                    errorMessage = ""
+                    isActive = true
+                case .error(let message):
+                    errorMessage = message
+                    showErrorAlert = true
+                default:
+                    errorMessage = ""
             }
         }
         .alert(

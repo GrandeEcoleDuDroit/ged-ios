@@ -42,7 +42,8 @@ class ConversationViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 switch completion {
-                    case .finished: break
+                    case .finished:
+                        break
                     case .failure(let conversationError):
                         switch conversationError {
                             case.notFound:
@@ -53,7 +54,7 @@ class ConversationViewModel: ObservableObject {
                                 self?.conversationState = .error(message: getString(.errorCreatingConversation))
                             default: break
                         }
-                    }
+                }
             } receiveValue: { [weak self] conversationUI in
                 guard let self = self else { return }
                 self.conversationsMap[conversationUI.id] = conversationUI

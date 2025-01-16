@@ -13,22 +13,22 @@ struct ProfilePicture: View {
         if let url = url {
             AsyncImage(url: URL(string: url)) { phase in
                 switch phase {
-                case .empty:
-                    ZStack {
-                        ProgressView()
-                            .frame(
-                                width: GedNumber.defaultImageSize * scale,
-                                height: GedNumber.defaultImageSize * scale
-                            )
-                            .clipShape(Circle())
-                    }.overlay {
-                        Circle()
-                            .stroke(Color(.lightGrey), lineWidth: 1)
-                    }
-                    
-                case .success(let image):
-                    image.fitCircle(scale: scale)
-                default: DefaultProfilePicture()
+                    case .empty:
+                        ZStack {
+                            ProgressView()
+                                .frame(
+                                    width: GedNumber.defaultImageSize * scale,
+                                    height: GedNumber.defaultImageSize * scale
+                                )
+                                .clipShape(Circle())
+                        }.overlay {
+                            Circle()
+                                .stroke(Color(.lightGrey), lineWidth: 1)
+                        }
+                        
+                    case .success(let image):
+                        image.fitCircle(scale: scale)
+                    default: DefaultProfilePicture()
                 }
             }
         } else {
@@ -53,30 +53,30 @@ struct ClickableProfilePicture: View {
         if let url = url {
             AsyncImage(url: URL(string: url)) { phase in
                 switch phase {
-                case .empty:
-                    ZStack {
-                        ProgressView()
-                    }
-                    .frame(
-                        width: GedNumber.defaultImageSize * scale,
-                        height: GedNumber.defaultImageSize * scale
-                    )
-                    .background(Color(UIColor.systemBackground))
-                    .onClick(isClicked: $isClicked, action: onClick)
-                    .overlay {
-                        Circle()
-                            .stroke(Color(.lightGrey), lineWidth: 1)
-                    }
-                    .clipShape(Circle())
-                    
-                case .success(let image):
-                    image
-                        .fitCircleClickable(
-                            isClicked: $isClicked,
-                            onClick: onClick,
-                            scale: scale
+                    case .empty:
+                        ZStack {
+                            ProgressView()
+                        }
+                        .frame(
+                            width: GedNumber.defaultImageSize * scale,
+                            height: GedNumber.defaultImageSize * scale
                         )
-                default: ClickableDefaultProfilePicture(onClick: onClick)
+                        .background(Color(UIColor.systemBackground))
+                        .onClick(isClicked: $isClicked, action: onClick)
+                        .overlay {
+                            Circle()
+                                .stroke(Color(.lightGrey), lineWidth: 1)
+                        }
+                        .clipShape(Circle())
+                        
+                    case .success(let image):
+                        image
+                            .fitCircleClickable(
+                                isClicked: $isClicked,
+                                onClick: onClick,
+                                scale: scale
+                            )
+                    default: ClickableDefaultProfilePicture(onClick: onClick)
                 }
             }
         }
