@@ -2,26 +2,32 @@ import Foundation
 import Combine
 
 class MockMessageRepository: MessageRepository {
-    func getMessages(conversationId: String) -> AnyPublisher<Message, any Error> {
-        let messagesFixture = messagesFixture.filter { $0.conversationId == conversationId }
-        return Just(messagesFixture.last!)
-            .setFailureType(to: (any Error).self)
-            .eraseToAnyPublisher()
-    }
+    private let _messages = CurrentValueSubject<[Message], any Error>(messagesFixture)
     
-    func getLastMessage(conversationId: String) -> AnyPublisher<Message?, ConversationError> {
-        let lastMessageFixture = lastMessagesFixture.first(where: { $0.conversationId == conversationId })
-        return Just(lastMessageFixture)
-            .setFailureType(to: ConversationError.self)
+    func getMessages(conversationId: String) -> AnyPublisher<Message, any Error> {
+        _messages
+            .flatMap { messages in
+                let filteredMessages = messages.filter { $0.conversationId == conversationId }
+                return Publishers.Sequence(sequence: filteredMessages)
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            }
             .eraseToAnyPublisher()
-    }
+        }
+        
+        func getLastMessage(conversationId: String) -> AnyPublisher<Message?, ConversationError> {
+            Publishers.Sequence(sequence: lastMessagesFixture.filter({ $0.conversationId == conversationId }))
+                .eraseToAnyPublisher()
+        }
     
     func createMessage(message: Message) async throws {
-        // No implementation needed
+        _messages.value.append(message)
     }
     
     func updateMessageState(messageId: String, messageState: MessageState) async throws {
-        // No implementation needed
+        var message = _messages.value.first { $0.id == messageId }!
+        message.state = messageState
+        _messages.value = _messages.value.map { $0.id == messageId ? message : $0 }
     }
 
     func stopGettingMessages() {
