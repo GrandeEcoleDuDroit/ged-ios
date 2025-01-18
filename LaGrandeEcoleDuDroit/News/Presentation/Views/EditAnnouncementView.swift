@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct EditAnnouncementView: View {
-    @EnvironmentObject private var newsViewModel: NewsViewModel
+    @EnvironmentObject private var announcementDetailViewModel: AnnouncementDetailViewModel
     @FocusState private var inputFieldFocused: InputField?
     @State private var isActive: Bool = false
     @State private var showErrorAlert: Bool = false
@@ -39,7 +39,7 @@ struct EditAnnouncementView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
-        .onReceive(newsViewModel.$announcementState) { state in
+        .onReceive(announcementDetailViewModel.$announcementState) { state in
             switch state {
                 case .created:
                     errorMessage = ""
@@ -102,15 +102,6 @@ struct EditAnnouncementView: View {
 }
 
 #Preview {
-    let navigationCoordinator = StateObject(wrappedValue: CommonInjection.shared.resolve(NavigationCoordinator.self))
-    let mockNewsViewModel = NewsInjection.shared.resolveWithMock().resolve(NewsViewModel.self)!
-    
-    NavigationStack(path: navigationCoordinator.projectedValue.path) {
-        EditAnnouncementView(
-            announcement: announcementFixture,
-            onCancelClick: {},
-            onSaveClick: { _, _ in }
-        )
-        .environmentObject(mockNewsViewModel)
-    }
+    EditAnnouncementView(announcement: announcementFixture, onCancelClick: {}, onSaveClick: { _, _ in })
+        .environmentObject(NewsInjection.shared.resolve(AnnouncementDetailViewModel.self))
 }

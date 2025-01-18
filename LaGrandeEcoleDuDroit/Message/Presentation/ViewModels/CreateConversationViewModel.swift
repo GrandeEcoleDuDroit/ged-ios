@@ -82,14 +82,22 @@ class CreateConversationViewModel: ObservableObject {
         
     
     private func updateConversationState(_ state: ConversationState) {
-        DispatchQueue.main.async {
-            self.conversationState = state
+        if Thread.isMainThread {
+            conversationState = state
+        } else {
+            DispatchQueue.main.sync {
+                self.conversationState = state
+            }
         }
     }
     
     private func updateUsers(_ users: [User]) {
-        DispatchQueue.main.async {
+        if Thread.isMainThread {
             self.users = users
+        } else {
+            DispatchQueue.main.sync { [weak self] in
+                self?.users = users
+            }
         }
     }
 }

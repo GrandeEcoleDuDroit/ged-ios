@@ -94,8 +94,12 @@ class ChatViewModel: ObservableObject {
     }
     
     private func updateConversationState(_ state: ConversationState) {
-        DispatchQueue.main.sync { [weak self] in
-            self?.conversation.state = state
+        if Thread.isMainThread {
+            conversation.state = state
+        } else {
+            DispatchQueue.main.sync { [weak self] in
+                self?.conversation.state = state
+            }
         }
     }
 }

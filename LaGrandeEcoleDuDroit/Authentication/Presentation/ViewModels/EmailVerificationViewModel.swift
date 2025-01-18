@@ -53,8 +53,12 @@ class EmailVerificationViewModel: ObservableObject {
     }
     
     private func updateAuthenticationState(to state: AuthenticationState) {
-        DispatchQueue.main.sync { [weak self] in
-            self?.authenticationState = state
+        if Thread.isMainThread {
+            authenticationState = state
+        } else {
+            DispatchQueue.main.sync { [weak self] in
+                self?.authenticationState = state
+            }
         }
     }
     

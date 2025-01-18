@@ -2,6 +2,9 @@ import SwiftUI
 import Combine
 
 class RegistrationViewModel: ObservableObject {
+    private let registerUseCase: RegisterUseCase
+    private let createUserUseCase: CreateUserUseCase
+    
     @Published var firstName: String = ""
     @Published var lastName: String = ""
     @Published var email: String
@@ -10,9 +13,6 @@ class RegistrationViewModel: ObservableObject {
     @Published var registrationState: RegistrationState = .idle
     let schoolLevels = ["GED 1", "GED 2", "GED 3", "GED 4"]
     let maxStep = 3
-    
-    private let registerUseCase: RegisterUseCase
-    private let createUserUseCase: CreateUserUseCase
     
     init(
         email: String = "",
@@ -56,7 +56,7 @@ class RegistrationViewModel: ObservableObject {
         let formattedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
         let formattedPassword = password.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        let task = Task {
+        Task {
             do {
                 let userId = try await registerUseCase.execute(email: formattedEmail, password: formattedPassword)
                 let user = User(
@@ -98,8 +98,12 @@ class RegistrationViewModel: ObservableObject {
     }
     
     private func updateRegistrationState(to state: RegistrationState) {
-        DispatchQueue.main.async { [weak self] in
-            self?.registrationState = state
+        if Thread.isMainThread {
+            registrationState = state
+        } else {
+            DispatchQueue.main.sync { [weak self] in
+                self?.registrationState = state
+            }
         }
     }
 }
