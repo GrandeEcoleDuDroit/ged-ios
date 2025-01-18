@@ -494,7 +494,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LaGrandeEcoleDuDroit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LaGrandeEcoleDuDroit";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/La Grande Ecole Du Droit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/La Grande Ecole Du Droit";
 			};
 			name = Debug;
 		};
@@ -512,7 +512,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LaGrandeEcoleDuDroit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LaGrandeEcoleDuDroit";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/La Grande Ecole Du Droit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/La Grande Ecole Du Droit";
 			};
 			name = Release;
 		};

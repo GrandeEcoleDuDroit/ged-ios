@@ -75,12 +75,6 @@ class AuthenticationViewModel: ObservableObject {
         }
     }
     
-    func updateAuthenticationState(to state: AuthenticationState) {
-        DispatchQueue.main.async { [weak self] in
-            self?.authenticationState = state
-        }
-    }
-    
     private func listenAuthenticationState() {
         isAuthenticatedUseCase.execute()
             .sink(receiveCompletion: { completion in
@@ -99,5 +93,15 @@ class AuthenticationViewModel: ObservableObject {
     private func resetInputs() {
         email = ""
         password = ""
+    }
+    
+    private func updateAuthenticationState(to state: AuthenticationState) {
+        if Thread.isMainThread {
+            authenticationState = state
+        } else {
+            DispatchQueue.main.sync { [weak self] in
+                self?.authenticationState = state
+            }
+        }
     }
 }

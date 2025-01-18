@@ -26,7 +26,7 @@ class AnnouncementDetailViewModel: ObservableObject {
     func updateAnnouncement(announcement: Announcement) {
         updateAnnouncementState(to: .loading)
         
-        let task = Task {
+        Task {
             do {
                 try await updateAnnouncementUseCase.execute(announcement: announcement)
                 updateAnnouncementState(to: .updated)
@@ -40,7 +40,7 @@ class AnnouncementDetailViewModel: ObservableObject {
     func deleteAnnouncement(announcement: Announcement) {
         updateAnnouncementState(to: .loading)
         
-        let task = Task {
+        Task {
             do {
                 try await deleteAnnouncementUseCase.execute(announcement: announcement)
                 updateAnnouncementState(to: .deleted)
@@ -56,8 +56,12 @@ class AnnouncementDetailViewModel: ObservableObject {
     }
     
     private func updateAnnouncementState(to state: AnnouncementState) {
-        DispatchQueue.main.sync { [weak self] in
-            self?.announcementState = state
+        if Thread.isMainThread {
+            announcementState = state
+        } else {
+            DispatchQueue.main.sync { [weak self] in
+                self?.announcementState = state
+            }
         }
     }
 }

@@ -39,7 +39,7 @@ class CreateAnnouncementViewModel: ObservableObject {
       
         updateAnnouncementState(to: .loading)
         
-        let task = Task {
+        Task {
             do {
                 try await createAnnouncementUseCase.execute(announcement: announcement)
                 updateAnnouncementState(to: .created)
@@ -50,8 +50,12 @@ class CreateAnnouncementViewModel: ObservableObject {
     }
     
     private func updateAnnouncementState(to state: AnnouncementState) {
-        DispatchQueue.main.sync { [weak self] in
-            self?.announcementState = state
+        if Thread.isMainThread {
+            announcementState = state
+        } else {
+            DispatchQueue.main.sync { [weak self] in
+                self?.announcementState = state
+            }
         }
     }
 }

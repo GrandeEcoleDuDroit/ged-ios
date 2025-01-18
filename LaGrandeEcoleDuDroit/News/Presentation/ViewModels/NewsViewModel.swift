@@ -40,8 +40,12 @@ class NewsViewModel: ObservableObject {
     }
     
     private func updateAnnouncementState(to state: AnnouncementState) {
-        DispatchQueue.main.sync { [weak self] in
-            self?.announcementState = state
+        if Thread.isMainThread {
+            announcementState = state
+        } else {
+            DispatchQueue.main.sync { [weak self] in
+                self?.announcementState = state
+            }
         }
     }
 }
