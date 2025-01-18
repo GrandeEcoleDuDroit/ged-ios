@@ -2,28 +2,28 @@ import Foundation
 import Combine
 
 class MockUserConversationRepository: UserConversationRepository {
-    private var conversations: [ConversationUser] = conversationsUserFixture
+    private let conversationsUser = CurrentValueSubject<[ConversationUser], Never>(conversationsUserFixture)
     
     func getUserConversations() -> AnyPublisher<ConversationUser, ConversationError> {
-        Publishers.MergeMany(
-            conversations.map {
-                Just($0)
+        conversationsUser
+            .flatMap { conversations in
+                Publishers.Sequence(sequence: conversations)
                     .setFailureType(to: ConversationError.self)
                     .eraseToAnyPublisher()
-            }
-        ).eraseToAnyPublisher()
+            }.eraseToAnyPublisher()
     }
     
     func createConversation(conversationUser: ConversationUser) async throws {
-        conversationsUserFixture.append(conversationUser)
+        conversationsUser.value.append(conversationUser)
     }
     
     func updateConversation(conversationUser: ConversationUser) async throws {
-        // Cannot be implementated
+        let index = conversationsUser.value.firstIndex { $0.id == conversationUser.id }!
+        conversationsUser.value[index] = conversationUser
     }
     
     func deleteConversation(conversationId: String) async throws {
-        // Cannot be implementated
+        conversationsUser.value.removeAll { $0.id == conversationId }
     }
     
     func stopGettingUserConversations() {

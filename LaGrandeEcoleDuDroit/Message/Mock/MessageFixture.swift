@@ -102,7 +102,7 @@ let lastMessagesFixture = [
     Message(
         id: "1",
         conversationId: "1",
-        content: "Hi, how are you ?",
+        content: "Last message conversation 1",
         date: calendar.date(byAdding: .minute, value: -10, to: currentDate) ?? currentDate,
         isRead: true,
         senderId: userFixture.id,
@@ -112,7 +112,7 @@ let lastMessagesFixture = [
     Message(
         id: "1",
         conversationId: "2",
-        content: "Fine, and you ?",
+        content: "Last message conversation 2",
         date: calendar.date(byAdding: .minute, value: -5, to: currentDate) ?? currentDate,
         isRead: true,
         senderId: userFixture.id,
@@ -122,7 +122,7 @@ let lastMessagesFixture = [
     Message(
         id: "1",
         conversationId: "3",
-        content: "Fine, thanks !",
+        content: "Last message conversation 3",
         date: calendar.date(byAdding: .minute, value: -2, to: currentDate) ?? currentDate,
         isRead: true,
         senderId: userFixture.id,
@@ -132,7 +132,7 @@ let lastMessagesFixture = [
     Message(
         id: "1",
         conversationId: "4",
-        content: "Great !",
+        content: "Last message conversation 4",
         date: calendar.date(byAdding: .minute, value: -1, to: currentDate) ?? currentDate,
         isRead: true,
         senderId: userFixture.id,
@@ -142,7 +142,7 @@ let lastMessagesFixture = [
     Message(
         id: "1",
         conversationId: "5",
-        content: "Ok, see you later !",
+        content: "Last message conversation 5",
         date: currentDate,
         isRead: false,
         senderId: userFixture.id,

@@ -21,6 +21,22 @@ final class AnnouncementTests: XCTestCase {
         deleteAnnouncementUseCase = DeleteAnnouncementUseCase(announcementRepository: announcementRepository)
     }
     
+    func testGetAnnouncements() async throws {
+        // Given
+        let expectation = XCTestExpectation(description: #function)
+        var result: [Announcement] = []
+        
+        // When
+        getAnnouncementUseCase.execute().sink { value in
+            result = value
+            expectation.fulfill()
+        }.store(in: &cancellables)
+        
+        // Then
+        await fulfillment(of: [expectation], timeout: 5)
+        XCTAssertTrue(result == announcementsFixture)
+    }
+    
     func testCreateAnnouncement() async throws {
         // Given
         let expectation = XCTestExpectation(description: #function)
