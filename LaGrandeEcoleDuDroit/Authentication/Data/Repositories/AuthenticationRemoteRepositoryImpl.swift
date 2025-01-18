@@ -4,7 +4,7 @@ import FirebaseAuth
 
 class AuthenticationRepositoryImpl: AuthenticationRepository {
     private let firebaseAuthApi: FirebaseAuthApi
-    var isAuthenticated: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
+    private(set) var isAuthenticated: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
     
     init(firebaseAuthApi: FirebaseAuthApi) {
         self.firebaseAuthApi = firebaseAuthApi
