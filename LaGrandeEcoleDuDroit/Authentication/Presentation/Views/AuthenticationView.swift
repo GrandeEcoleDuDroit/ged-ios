@@ -23,10 +23,8 @@ struct AuthenticationView: View {
                 
                 Buttons(
                     onLoadingButtonClick: {
-                        Task {
-                            if authenticationViewModel.validateInputs() {
-                                await authenticationViewModel.login()
-                            }
+                        if authenticationViewModel.validateInputs() {
+                            authenticationViewModel.login()
                         }
                     },
                     isLoading: isLoading
@@ -194,5 +192,6 @@ private struct Buttons: View {
 #Preview {
     NavigationStack {
         AuthenticationView()
+            .environmentObject(NavigationCoordinator())
     }
 }

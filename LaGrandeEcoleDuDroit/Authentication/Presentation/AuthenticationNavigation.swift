@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AuthenticationNavigation: View {
     @StateObject private var navigationCoordinator = NavigationCoordinator()
+    @StateObject private var registrationViewModel = AuthenticationInjection.shared.resolve(RegistrationViewModel.self)
     
     var body: some View {
         NavigationStack(path: $navigationCoordinator.path) {
@@ -26,6 +27,7 @@ struct AuthenticationNavigation: View {
                 }
         }
         .environmentObject(navigationCoordinator)
+        .environmentObject(registrationViewModel)
     }
 }
 

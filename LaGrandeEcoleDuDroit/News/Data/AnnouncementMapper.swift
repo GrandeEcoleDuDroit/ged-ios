@@ -15,7 +15,7 @@ class AnnouncementMapper {
         
         return Announcement(
             id: remoteAnnouncementWithUser.announcementId,
-            title: remoteAnnouncementWithUser.announcementTitle,
+            title: remoteAnnouncementWithUser.announcementTitle ?? "",
             content: remoteAnnouncementWithUser.announcementContent,
             date: Date(timeIntervalSince1970: TimeInterval(remoteAnnouncementWithUser.announcementDate)),
             author: user
@@ -35,7 +35,7 @@ class AnnouncementMapper {
         
         return Announcement(
             id: localAnnouncement.announcementId ?? "",
-            title: localAnnouncement.announcementTitle,
+            title: localAnnouncement.announcementTitle ?? "",
             content: localAnnouncement.announcementContent ?? "",
             date: Date(timeIntervalSince1970: TimeInterval(localAnnouncement.announcementDate)),
             author: user,

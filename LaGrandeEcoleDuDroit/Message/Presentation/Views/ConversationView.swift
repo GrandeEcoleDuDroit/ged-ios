@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ConversationView: View {
-    @StateObject private var conversationViewModel = MessageInjection.shared.resolve(ConversationViewModel.self)
+    @StateObject private var conversationViewModel = MessageInjection.shared.resolveWithMock().resolve(ConversationViewModel.self)!
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var selectedConversation: ConversationUI? = nil

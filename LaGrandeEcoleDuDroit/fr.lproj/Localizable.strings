@@ -69,7 +69,7 @@
 
 // News
 "news" = "Actualités";
-"recent_announcements" = "Récentes annonces";
+"recent_announcements" = "Annonces récentes";
 "new_announcement" = "Nouvelle Annonce";
 "edit_announcement" = "Editer Annonce";
 "title" = "Titre";

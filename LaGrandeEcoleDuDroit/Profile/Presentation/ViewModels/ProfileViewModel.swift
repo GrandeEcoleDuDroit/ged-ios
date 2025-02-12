@@ -29,7 +29,7 @@ class ProfileViewModel: ObservableObject {
     }
     
     private func initCurrentUser() {
-        getCurrentUserUseCase.executeWithPublisher()
+        getCurrentUserUseCase.execute()
             .receive(on: RunLoop.main)
             .sink(receiveCompletion: { completion in
                 switch completion {

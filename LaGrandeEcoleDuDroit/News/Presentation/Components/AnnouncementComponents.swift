@@ -58,8 +58,8 @@ struct AnnouncementItemWithContent: View {
                         .foregroundStyle(.textPreview)
                 }
                 
-                if let title = announcement.title, !title.isEmpty {
-                    Text(title)
+                if !announcement.title.isEmpty {
+                    Text(announcement.title)
                         .foregroundStyle(.textPreview)
                         .font(.bodyMedium)
                         .lineLimit(1)
@@ -113,7 +113,7 @@ struct LoadingAnnouncementItemWithContent: View {
                         .foregroundStyle(.textPreview)
                 }
                 
-                Text(announcement.title ?? announcement.content)
+                Text(announcement.title.isBlank ? announcement.title : announcement.content)
                     .foregroundStyle(.textPreview)
                     .font(.bodyMedium)
                     .lineLimit(1)
@@ -164,7 +164,7 @@ struct ErrorAnnouncementItemWithContent: View {
                         .foregroundStyle(.textPreview)
                 }
                 
-                Text(announcement.title ?? announcement.content)
+                Text(announcement.title.isBlank ? announcement.title : announcement.content)
                     .foregroundStyle(.textPreview)
                     .font(.bodyMedium)
                     .lineLimit(1)

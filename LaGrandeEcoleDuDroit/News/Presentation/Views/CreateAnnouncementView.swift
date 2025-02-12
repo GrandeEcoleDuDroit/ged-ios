@@ -15,6 +15,9 @@ struct CreateAnnouncementView: View {
                 .font(.title2)
                 .fontWeight(.semibold)
                 .focused($inputFieldFocused, equals: InputField.title)
+                .onChange(of: title) {
+                    title = String($0.prefix(150))
+                }
             
             TextField(getString(.content), text: $content, axis: .vertical)
                 .font(.bodyLarge)

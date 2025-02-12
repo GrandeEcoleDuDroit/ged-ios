@@ -56,17 +56,7 @@ struct ProfileView: View {
 }
 
 #Preview {
-    let navigationCoordinator = StateObject(wrappedValue: CommonInjection.shared.resolve(NavigationCoordinator.self))
-    let mockProfileViewModel = ProfileInjection.shared.resolveWithMock().resolve(ProfileViewModel.self)!
-    
-    NavigationStack(path: navigationCoordinator.projectedValue.path) {
+    NavigationStack {
         ProfileView()
-            .navigationDestination(for: ProfileScreen.self) { screen in
-                if case .account = screen {
-                    AccountView()
-                }
-            }
     }
-    .environmentObject(navigationCoordinator.wrappedValue)
-    .environmentObject(mockProfileViewModel)
 }

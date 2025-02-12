@@ -6,21 +6,13 @@ class UserRepositoryImpl: UserRepository {
     private let userRemoteDataSource: UserRemoteDataSource
     private var cancellables = Set<AnyCancellable>()
     
-    @Published private var _currentUser: User?
-    
-    var currentUserPublisher: AnyPublisher<User?, Never> {
-        $_currentUser.eraseToAnyPublisher()
-    }
-    
-    var currentUser: User? {
-        _currentUser
-    }
+    private(set) var currentUser = CurrentValueSubject<User?, Never>(nil)
     
     init(userLocalDataSource: UserLocalDataSource, userRemoteDataSource: UserRemoteDataSource) {
         self.userLocalDataSource = userLocalDataSource
         self.userRemoteDataSource = userRemoteDataSource
         userLocalDataSource.currentUser.sink { [weak self] user in
-            self?._currentUser = user
+            self?.currentUser.send(user)
         }.store(in: &cancellables)
     }
     

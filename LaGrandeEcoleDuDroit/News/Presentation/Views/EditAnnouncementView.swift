@@ -6,10 +6,8 @@ struct EditAnnouncementView: View {
     @State private var isActive: Bool = false
     @State private var showErrorAlert: Bool = false
     @State private var errorMessage: String = ""
-    @State private var title: String
-    @State private var content: String
+    @State private var announcement: Announcement
     
-    private let announcement: Announcement
     private let onCancelClick: () -> Void
     private let onSaveClick: (String, String) -> Void
     
@@ -18,39 +16,25 @@ struct EditAnnouncementView: View {
         onCancelClick: @escaping () -> Void,
         onSaveClick: @escaping (String, String) -> Void
     ) {
-        self.announcement = announcement
+        self._announcement = State(initialValue: announcement)
         self.onCancelClick = onCancelClick
         self.onSaveClick = onSaveClick
-        self.title =  announcement.title ?? ""
-        self.content = announcement.content
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            TextField(getString(.title), text: $title, axis: .vertical)
+            TextField(getString(.title), text: $announcement.title, axis: .vertical)
                 .font(.title2)
                 .fontWeight(.semibold)
                 .focused($inputFieldFocused, equals: InputField.title)
             
-            TextField(getString(.content), text: $content, axis: .vertical)
+            TextField(getString(.content), text: $announcement.content, axis: .vertical)
                 .font(.bodyLarge)
                 .lineSpacing(5)
                 .focused($inputFieldFocused, equals: InputField.content)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
-        .onReceive(announcementDetailViewModel.$announcementState) { state in
-            switch state {
-                case .created:
-                    errorMessage = ""
-                    isActive = true
-                case .error(let message):
-                    errorMessage = message
-                    showErrorAlert = true
-                default:
-                    errorMessage = ""
-            }
-        }
         .alert(
             "",
             isPresented: $showErrorAlert,
@@ -74,9 +58,11 @@ struct EditAnnouncementView: View {
             
             ToolbarItem(placement: .topBarTrailing) {
                 Button(
-                    action: { onSaveClick(title, content) },
+                    action: { onSaveClick(announcement.title, announcement.content) },
                     label: {
-                        if content.isEmpty || title == announcement.title && content == announcement.content {
+                        if announcement.content.isEmpty ||
+                            announcement.title == announcementDetailViewModel.announcement.title &&
+                            announcement.content == announcementDetailViewModel.announcement.content {
                             Text(getString(.save))
                                 .fontWeight(.semibold)
                         } else {
@@ -86,7 +72,13 @@ struct EditAnnouncementView: View {
                         }
                     }
                 )
-                .disabled(content.isEmpty || (title == announcement.title && content == announcement.content))
+                .disabled(
+                    announcement.content.isEmpty ||
+                    (
+                        announcement.title == announcementDetailViewModel.announcement.title &&
+                        announcement.content == announcementDetailViewModel.announcement.content
+                    )
+                )
             }
         }
         .onAppear {
@@ -102,6 +94,9 @@ struct EditAnnouncementView: View {
 }
 
 #Preview {
-    EditAnnouncementView(announcement: announcementFixture, onCancelClick: {}, onSaveClick: { _, _ in })
-        .environmentObject(NewsInjection.shared.resolve(AnnouncementDetailViewModel.self))
+    EditAnnouncementView(
+        announcement: announcementFixture,
+        onCancelClick: {},
+        onSaveClick: { _, _ in }
+    ).environmentObject(NewsInjection.shared.resolve(AnnouncementDetailViewModel.self))
 }

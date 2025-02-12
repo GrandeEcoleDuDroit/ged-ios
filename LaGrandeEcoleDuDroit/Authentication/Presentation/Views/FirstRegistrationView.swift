@@ -12,16 +12,16 @@ struct FirstRegistrationView: View {
                 .font(.title3)
             
             FocusableOutlinedTextField(
-                title: getString(.firstName),
-                text: $registrationViewModel.firstName,
-                inputField: InputField.firstName,
+                title: getString(.lastName),
+                text: $registrationViewModel.lastName,
+                inputField: InputField.lastName,
                 inputFieldFocused: $inputFieldFocused
             )
             
             FocusableOutlinedTextField(
-                title: getString(.lastName),
-                text: $registrationViewModel.lastName,
-                inputField: InputField.lastName,
+                title: getString(.firstName),
+                text: $registrationViewModel.firstName,
+                inputField: InputField.firstName,
                 inputFieldFocused: $inputFieldFocused
             )
          
@@ -60,6 +60,6 @@ struct FirstRegistrationView: View {
     NavigationStack {
         FirstRegistrationView()
             .environmentObject(mockRegistrationViewModel)
-            .environmentObject(CommonInjection.shared.resolve(NavigationCoordinator.self))
+            .environmentObject(NavigationCoordinator())
     }
 }

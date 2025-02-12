@@ -48,30 +48,32 @@ class AuthenticationViewModel: ObservableObject {
         return true
     }
     
-    func login() async {
+    func login() {
         updateAuthenticationState(to: .loading)
         
-        do {
-            let userId = try await loginUseCase.execute(email: email, password: password)
-            
-            if try await isEmailVerifiedUseCase.execute() {
-                let user = await getUserUseCase.execute(userId: userId)
-                if user != nil {
-                    setCurrentUserUseCase.execute(user: user!)
-                    resetInputs()
-                    updateAuthenticationState(to: .authenticated)
+        Task {
+            do {
+                let userId = try await loginUseCase.execute(email: email, password: password)
+                
+                if try await isEmailVerifiedUseCase.execute() {
+                    let user = await getUserUseCase.execute(userId: userId)
+                    if user != nil {
+                        setCurrentUserUseCase.execute(user: user!)
+                        resetInputs()
+                        updateAuthenticationState(to: .authenticated)
+                    } else {
+                        updateAuthenticationState(to: .error(message: getString(.userNotExist)))
+                    }
                 } else {
-                    updateAuthenticationState(to: .error(message: getString(.userNotExist)))
+                    updateAuthenticationState(to: .emailNotVerified)
                 }
-            } else {
-                updateAuthenticationState(to: .emailNotVerified)
+            } catch AuthenticationError.invalidCredentials {
+                updateAuthenticationState(to: .error(message: getString(.invalidCredentials)))
+            } catch AuthenticationError.userDisabled {
+                updateAuthenticationState(to: .error(message: getString(.userDisabled)))
+            } catch {
+                updateAuthenticationState(to: .error(message: getString(.unknownError)))
             }
-        } catch AuthenticationError.invalidCredentials {
-            updateAuthenticationState(to: .error(message: getString(.invalidCredentials)))
-        } catch AuthenticationError.userDisabled {
-            updateAuthenticationState(to: .error(message: getString(.userDisabled)))
-        } catch {
-            updateAuthenticationState(to: .error(message: getString(.unknownError)))
         }
     }
     
