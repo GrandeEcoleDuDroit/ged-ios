@@ -1,6 +1,6 @@
 enum GedString: String {
     // Common
-    case appName = "app_name"
+    case appName = "app_namee"
     case next = "next"
     case back = "back"
     case cancel = "cancel"
