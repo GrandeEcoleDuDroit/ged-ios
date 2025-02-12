@@ -10,4 +10,6 @@ protocol MessageRepository {
     func updateMessageState(messageId: String, messageState: MessageState) async throws
     
     func stopGettingLastMessages()
+    
+    func stopGettingMessages()
 }
