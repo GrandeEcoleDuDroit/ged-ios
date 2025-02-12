@@ -30,10 +30,6 @@ class MockMessageRepository: MessageRepository {
         _messages.value = _messages.value.map { $0.id == messageId ? message : $0 }
     }
 
-    func stopGettingMessages() {
-        // No implementation needed
-    }
-    
     func stopGettingLastMessages() {
         // No implementation needed
     }

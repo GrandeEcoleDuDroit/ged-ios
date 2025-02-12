@@ -6,11 +6,11 @@ extension View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
             ToolbarItem(placement: .principal) {
-                Text(getString(.registration))
+                Text(getString(gedString: GedString.registration))
             }
             
             ToolbarItem(placement: .topBarTrailing) {
-                Text(getString(.registrationStep, step, maxStep))
+                Text(getString(gedString: GedString.registration_step, step, maxStep))
                     .foregroundStyle(.gray)
             }
         }
