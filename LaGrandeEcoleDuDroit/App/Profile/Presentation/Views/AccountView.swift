@@ -101,6 +101,7 @@ struct AccountView: View {
                 case .success:
                     snackBarType = .success(getString(.profilePictureUpdated))
                     isLoading = false
+                    editMode = false
                     withAnimation {
                         showSnackBar = true
                     }
@@ -128,7 +129,7 @@ struct AccountView: View {
                     Button(
                         action: {
                             if let image = profilePictureImage {
-                                accountViewModel.updateProfilePicture(imageData: image.jpegData(compressionQuality: 1))
+                                accountViewModel.updateProfilePicture(imageData: image.jpegData(compressionQuality: 0.8))
                             }
                         },
                         label: {
