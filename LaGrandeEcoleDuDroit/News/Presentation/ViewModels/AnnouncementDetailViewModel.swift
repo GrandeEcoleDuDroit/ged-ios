@@ -10,52 +10,66 @@ class AnnouncementDetailViewModel: ObservableObject {
     let currentUser: User?
     
     @Published private(set) var announcementState: AnnouncementState = .idle
+    @Published var announcement: Announcement
     
     init(
         updateAnnouncementUseCase: UpdateAnnouncementUseCase,
         deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
-        getCurrentUserUseCase: GetCurrentUserUseCase
+        getCurrentUserUseCase: GetCurrentUserUseCase,
+        announcement: Announcement
     ) {
         self.updateAnnouncementUseCase = updateAnnouncementUseCase
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
         self.getCurrentUserUseCase = getCurrentUserUseCase
+        self.announcement = announcement
         
-        self.currentUser = getCurrentUserUseCase.execute()
+        self.currentUser = getCurrentUserUseCase.execute().value
     }
     
     func updateAnnouncement(announcement: Announcement) {
-        updateAnnouncementState(to: .loading)
+        updateAnnouncementState(.loading)
         
         Task {
             do {
                 try await updateAnnouncementUseCase.execute(announcement: announcement)
-                updateAnnouncementState(to: .updated)
+                updateAnnouncement(announcement)
+                updateAnnouncementState(.updated)
             } catch {
-                updateAnnouncementState(to: .error(message: error.localizedDescription))
+                updateAnnouncementState(.error(message: error.localizedDescription))
                 e(tag, error.localizedDescription)
             }
         }
     }
     
-    func deleteAnnouncement(announcement: Announcement) {
-        updateAnnouncementState(to: .loading)
+    func deleteAnnouncement() {
+        updateAnnouncementState(.loading)
         
         Task {
             do {
                 try await deleteAnnouncementUseCase.execute(announcement: announcement)
-                updateAnnouncementState(to: .deleted)
+                updateAnnouncementState(.deleted)
             } catch {
                 e(tag, error.localizedDescription)
-                updateAnnouncementState(to: .error(message: error.localizedDescription))
+                updateAnnouncementState(.error(message: error.localizedDescription))
             }
         }
     }
     
     func resetAnnouncementState() {
-        updateAnnouncementState(to: .idle)
+        updateAnnouncementState(.idle)
     }
     
-    private func updateAnnouncementState(to state: AnnouncementState) {
+    private func updateAnnouncement(_ announcement: Announcement) {
+        if Thread.isMainThread {
+            self.announcement = announcement
+        } else {
+            DispatchQueue.main.sync { [weak self] in
+                self?.announcement = announcement
+            }
+        }
+    }
+    
+    private func updateAnnouncementState(_ state: AnnouncementState) {
         if Thread.isMainThread {
             announcementState = state
         } else {

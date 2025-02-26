@@ -20,10 +20,10 @@ class CreateAnnouncementViewModel: ObservableObject {
         self.generateIdUseCase = generateIdUseCase
         self.getCurrentUserUseCase = getCurrentUserUseCase
         
-        currentUser = getCurrentUserUseCase.execute()
+        currentUser = getCurrentUserUseCase.execute().value
     }
     
-    func createAnnouncement(title: String?, content: String) {
+    func createAnnouncement(title: String = "", content: String) {
         guard let currentUser = currentUser else {
             updateAnnouncementState(to: .error(message: getString(.authUserNotFound)))
             return

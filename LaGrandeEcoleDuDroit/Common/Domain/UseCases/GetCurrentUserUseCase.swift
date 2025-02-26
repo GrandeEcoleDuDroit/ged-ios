@@ -7,11 +7,7 @@ class GetCurrentUserUseCase {
         self.userRepository = userRepository
     }
     
-    func execute() -> User? {
-        return userRepository.currentUser
-    }
-    
-    func executeWithPublisher() -> AnyPublisher<User?, Never> {
-        return userRepository.currentUserPublisher
+    func execute() -> CurrentValueSubject<User?, Never> {
+        userRepository.currentUser
     }
 }

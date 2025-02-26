@@ -21,7 +21,7 @@ struct SendMessageItem: View {
     var body: some View {
         HStack(alignment: .bottom) {
             
-            HStack(alignment: .bottom) {
+            VStack(alignment: .trailing) {
                 Text(text)
                     .foregroundStyle(.white)
                 
@@ -81,8 +81,8 @@ struct ReceiveMessageItem: View {
                 ProfilePicture(url: profilePictureUrl, scale: 0.3)
             }
             else {
-                Spacer()
-                    .frame(width: GedSpacing.veryLarge)
+                ProfilePicture(url: nil, scale: 0.3)
+                    .hidden()
             }
             
             HStack(alignment: .bottom) {

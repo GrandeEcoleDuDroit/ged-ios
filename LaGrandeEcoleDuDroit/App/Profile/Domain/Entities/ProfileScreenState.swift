@@ -1,6 +1,6 @@
 import Foundation
 
-enum ProfileState {
+enum ProfileScreenState {
     case idle
     case error(message: String)
 }

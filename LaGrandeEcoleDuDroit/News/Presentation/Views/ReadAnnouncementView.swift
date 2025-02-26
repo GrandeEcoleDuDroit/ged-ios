@@ -1,16 +1,15 @@
 import SwiftUI
 
 struct AnnouncementDetailView: View {
-    @StateObject private var announcementDetailViewModel: AnnouncementDetailViewModel = NewsInjection.shared.resolve(AnnouncementDetailViewModel.self)
+    @StateObject private var announcementDetailViewModel: AnnouncementDetailViewModel
     @EnvironmentObject private var coordinator: NavigationCoordinator
     @State private var showErrorAlert: Bool = false
     @State private var showDeleteAlert: Bool = false
     @State private var errorMessage: String = ""
     @State private var editMode: Bool = false
-    private var announcement: Announcement
         
     init(announcement: Announcement) {
-        self.announcement = announcement
+        _announcementDetailViewModel = StateObject(wrappedValue: NewsInjection.shared.resolve(AnnouncementDetailViewModel.self, arguments: announcement)!)
     }
     
     var body: some View {
@@ -27,10 +26,10 @@ struct AnnouncementDetailView: View {
     var readAnnouncement: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
             HStack {
-                TopAnnouncementDetailItem(announcement: announcement)
+                TopAnnouncementDetailItem(announcement: announcementDetailViewModel.announcement)
                 
                 if let currentUser = announcementDetailViewModel.currentUser {
-                    if currentUser.isMember && announcement.author.id == currentUser.id {
+                    if currentUser.isMember && announcementDetailViewModel.announcement.author.id == currentUser.id {
                         Menu {
                             Button(
                                 action: { editMode = true },
@@ -57,14 +56,12 @@ struct AnnouncementDetailView: View {
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: GedSpacing.medium) {
-                    if let title = announcement.title, !title.isEmpty {
-                        Text(title)
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
+                    Text(announcementDetailViewModel.announcement.title)
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    Text(announcement.content)
+                    Text(announcementDetailViewModel.announcement.content)
                         .font(.bodyLarge)
                         .lineSpacing(5)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -90,7 +87,7 @@ struct AnnouncementDetailView: View {
                 showDeleteAlert = false
             }
             Button(getString(.delete), role: .destructive) {
-                announcementDetailViewModel.deleteAnnouncement(announcement: announcement)
+                announcementDetailViewModel.deleteAnnouncement()
             }
         }
         .onReceive(announcementDetailViewModel.$announcementState) { state in
@@ -107,13 +104,13 @@ struct AnnouncementDetailView: View {
     
     var editAnnouncement: some View {
         EditAnnouncementView(
-            announcement: announcement,
+            announcement: announcementDetailViewModel.announcement,
             onCancelClick: {
                 editMode = false
             },
             onSaveClick: { title, content in
                 announcementDetailViewModel.updateAnnouncement(
-                    announcement: announcement.with(title: title, content: content, date: .now)
+                    announcement: announcementDetailViewModel.announcement.with(title: title, content: content, date: .now)
                 )
             }
         )

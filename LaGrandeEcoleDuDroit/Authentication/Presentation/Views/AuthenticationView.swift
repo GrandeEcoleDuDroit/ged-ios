@@ -186,5 +186,6 @@ private struct Buttons: View {
 #Preview {
     NavigationStack {
         AuthenticationView()
+            .environmentObject(NavigationCoordinator())
     }
 }

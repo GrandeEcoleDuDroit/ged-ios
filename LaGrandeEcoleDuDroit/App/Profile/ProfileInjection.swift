@@ -16,6 +16,13 @@ class ProfileInjection: DependencyInjectionContainer {
                 logoutUseCase: AuthenticationInjection.shared.resolve(LogoutUseCase.self)
             )
         }.inObjectScope(.weak)
+        
+        container.register(AccountViewModel.self) { resolver in
+            AccountViewModel(
+                getCurrentUserUseCase: CommonInjection.shared.resolve(GetCurrentUserUseCase.self),
+                updateProfilePictureUseCase: CommonInjection.shared.resolve(UpdateProfilePictureUseCase.self)
+            )
+        }.inObjectScope(.weak)
     }
     
     func resolve<T>(_ type: T.Type) -> T {
@@ -59,6 +66,13 @@ class ProfileInjection: DependencyInjectionContainer {
             ProfileViewModel(
                 getCurrentUserUseCase: commonMockContainer.resolve(GetCurrentUserUseCase.self)!,
                 logoutUseCase: authenticationMockContainer.resolve(LogoutUseCase.self)!
+            )
+        }
+        
+        mockContainer.register(AccountViewModel.self) { resolver in
+            AccountViewModel(
+                getCurrentUserUseCase: commonMockContainer.resolve(GetCurrentUserUseCase.self)!,
+                updateProfilePictureUseCase: commonMockContainer.resolve(UpdateProfilePictureUseCase.self)!
             )
         }
         

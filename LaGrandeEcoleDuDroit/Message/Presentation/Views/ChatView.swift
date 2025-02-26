@@ -9,7 +9,7 @@ struct ChatView: View {
     @State private var showErrorAlert = false
     
     init(conversation: ConversationUI) {
-        _chatViewModel = StateObject(wrappedValue: MessageInjection.shared.resolve(ChatViewModel.self, arguments: conversation)!)
+        _chatViewModel = StateObject(wrappedValue: MessageInjection.shared.resolveWithMock().resolve(ChatViewModel.self, argument: conversation)!)
     }
     
     var body: some View {

@@ -3,7 +3,7 @@ import Combine
 
 class ProfileViewModel: ObservableObject {
     @Published private(set) var currentUser: User? = nil
-    @Published private var profileState: ProfileState = .idle
+    @Published private var screenState: ProfileScreenState = .idle
     
     private let getCurrentUserUseCase: GetCurrentUserUseCase
     private var cancellables: Set<AnyCancellable> = []
@@ -24,7 +24,7 @@ class ProfileViewModel: ObservableObject {
     }
     
     private func initCurrentUser() {
-        getCurrentUserUseCase.executeWithPublisher()
+        getCurrentUserUseCase.execute()
             .receive(on: RunLoop.main)
             .sink { [weak self] user in
                 self?.currentUser = user

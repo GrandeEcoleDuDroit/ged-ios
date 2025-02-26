@@ -51,11 +51,13 @@ class NewsInjection: DependencyInjectionContainer {
             )
         }.inObjectScope(.weak)
         
-        container.register(AnnouncementDetailViewModel.self) { resolver in
-            AnnouncementDetailViewModel(
+        container.register(AnnouncementDetailViewModel.self) { (resolver, announcement: Any) in
+            let announcement = announcement as! Announcement
+            return AnnouncementDetailViewModel(
                 updateAnnouncementUseCase: resolver.resolve(UpdateAnnouncementUseCase.self)!,
                 deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
-                getCurrentUserUseCase: CommonInjection.shared.resolve(GetCurrentUserUseCase.self)
+                getCurrentUserUseCase: CommonInjection.shared.resolve(GetCurrentUserUseCase.self),
+                announcement: announcement
             )
         }.inObjectScope(.weak)
         
@@ -134,11 +136,13 @@ class NewsInjection: DependencyInjectionContainer {
             )
         }
         
-        mockContainer.register(AnnouncementDetailViewModel.self) { resolver in
-            AnnouncementDetailViewModel(
+        mockContainer.register(AnnouncementDetailViewModel.self) { (resolver, announcement: Any) in
+            let announcement = announcement as! Announcement
+            return AnnouncementDetailViewModel(
                 updateAnnouncementUseCase: resolver.resolve(UpdateAnnouncementUseCase.self)!,
                 deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
-                getCurrentUserUseCase: commonMockContainer.resolve(GetCurrentUserUseCase.self)!
+                getCurrentUserUseCase: commonMockContainer.resolve(GetCurrentUserUseCase.self)!,
+                announcement: announcement
             )
         }
         

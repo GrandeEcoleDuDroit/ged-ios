@@ -2,23 +2,23 @@ import Foundation
 import Combine
 
 class MockUserRepository: UserRepository {
-    var currentUserPublisher = CurrentValueSubject<User?, Never>(userFixture).eraseToAnyPublisher()
-    var currentUser: User? = userFixture
+    private var users = usersFixture
+    var currentUser = CurrentValueSubject<User?, Never>(userFixture)
     
     func setCurrentUser(user: User) {
-        currentUserPublisher = Just(user).eraseToAnyPublisher()
+        currentUser.send(user)
     }
     
     func removeCurrentUser() {
-        currentUserPublisher = Just(nil).eraseToAnyPublisher()
+        currentUser.send(nil)
     }
     
     func createUser(user: User) async throws {
-        // No implementation needed
+        users.append(user)
     }
     
     func getUser(userId: String) async -> User? {
-        userFixture
+        users.first { $0.id == userId }
     }
     
     func getUserWithEmail(email: String) async -> User? {
@@ -26,14 +26,18 @@ class MockUserRepository: UserRepository {
     }
     
     func getUserPublisher(userId: String) -> AnyPublisher<User, Never> {
-        Just(userFixture).eraseToAnyPublisher()
+        Just(users.first { $0.id == userId }!).eraseToAnyPublisher()
     }
     
     func getUsers() async throws -> [User] {
-        usersFixture
+        users
     }
     
     func getFilteredUsers(filter: String) async -> [User] {
         usersFixture.filter { $0.fullName.contains(filter) }
+    }
+    
+    func updateProfilePictureUrl(userId: String, profilePictureFileName: String) async throws {
+        currentUser.value?.profilePictureUrl = profilePictureFileName
     }
 }

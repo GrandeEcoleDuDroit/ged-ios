@@ -7,7 +7,7 @@ class NewsViewModel: ObservableObject {
     private let getAnnouncementsUseCase: GetAnnouncementsUseCase
     private let getCurrentUserUseCase: GetCurrentUserUseCase
     private var cancellables: Set<AnyCancellable> = []
-    let currentUser: User?
+    var currentUser: User? = nil
     
     @Published private(set) var announcements: [Announcement] = []
     @Published private(set) var announcementState: AnnouncementState = .idle
@@ -19,8 +19,14 @@ class NewsViewModel: ObservableObject {
         self.getCurrentUserUseCase = getCurrentUserUseCase
         self.getAnnouncementsUseCase = getAnnouncementsUseCase
         
-        self.currentUser = getCurrentUserUseCase.execute()
+        initCurrentUser()
         initAnnouncements()
+    }
+    
+    private func initCurrentUser() {
+        getCurrentUserUseCase.execute().sink { [weak self] user in
+            self?.currentUser = user
+        }.store(in: &cancellables)
     }
     
     private func initAnnouncements() {

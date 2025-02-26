@@ -15,10 +15,10 @@ class MockMessageRepository: MessageRepository {
             .eraseToAnyPublisher()
         }
         
-        func getLastMessage(conversationId: String) -> AnyPublisher<Message?, ConversationError> {
-            Publishers.Sequence(sequence: lastMessagesFixture.filter({ $0.conversationId == conversationId }))
-                .eraseToAnyPublisher()
-        }
+    func getLastMessage(conversationId: String) -> AnyPublisher<Message?, ConversationError> {
+        Publishers.Sequence(sequence: lastMessagesFixture.filter({ $0.conversationId == conversationId }))
+            .eraseToAnyPublisher()
+    }
     
     func createMessage(message: Message) async throws {
         _messages.value.append(message)

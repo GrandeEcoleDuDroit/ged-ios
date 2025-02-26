@@ -1,3 +1,3 @@
 enum ProfileScreen: Screen {
-    case account
+    case accountInfos
 }

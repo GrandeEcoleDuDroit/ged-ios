@@ -1,9 +1,7 @@
 import Combine
 
 protocol UserRepository {
-    var currentUserPublisher: AnyPublisher<User?, Never> { get }
-    
-    var currentUser: User? { get }
+    var currentUser: CurrentValueSubject<User?, Never> { get }
     
     func createUser(user: User) async throws
     
@@ -19,5 +17,7 @@ protocol UserRepository {
     
     func setCurrentUser(user: User)
     
-    func removeCurrentUser()    
+    func removeCurrentUser()
+    
+    func updateProfilePictureUrl(userId: String, profilePictureFileName: String) async throws
 }

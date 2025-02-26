@@ -16,6 +16,8 @@ class CommonInjection: DependencyInjectionContainer {
         container.register(UserOracleApi.self) { _ in UserOracleApiImpl() }
             .inObjectScope(.container)
         
+        container.register(ImageApi.self) { _ in ImageApiImpl() }
+        
         container.register(UserLocalDataSource.self) { _ in UserLocalDataSource() }
             .inObjectScope(.container)
         
@@ -27,6 +29,10 @@ class CommonInjection: DependencyInjectionContainer {
         }
         .inObjectScope(.container)
         
+        container.register(ImageRemoteDataSource.self) { resolver in
+            ImageRemoteDataSource(imageApi: resolver.resolve(ImageApi.self)!)
+        }
+        
         container.register(GedDatabaseContainer.self) { _ in GedDatabaseContainer() }
             .inObjectScope(.container)
         
@@ -37,6 +43,10 @@ class CommonInjection: DependencyInjectionContainer {
             )
         }
         .inObjectScope(.container)
+        
+        container.register(ImageRepository.self) { resolver in
+            ImageRepositoryImpl(imageRemoteDataSource: resolver.resolve(ImageRemoteDataSource.self)!)
+        }
         
         container.register(GenerateIdUseCase.self) { _ in GenerateIdUseCase() }
         
@@ -62,6 +72,13 @@ class CommonInjection: DependencyInjectionContainer {
         
         container.register(GetFilteredUsersUseCase.self) { resolver in
             GetFilteredUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
+        }
+        
+        container.register(UpdateProfilePictureUseCase.self) { resolver in
+            UpdateProfilePictureUseCase(
+                userRepository: resolver.resolve(UserRepository.self)!,
+                imageRepository: resolver.resolve(ImageRepository.self)!
+            )
         }
         
     }
@@ -103,6 +120,8 @@ class CommonInjection: DependencyInjectionContainer {
         
         mockContainer.register(UserRepository.self) { _ in MockUserRepository() }
         
+        mockContainer.register(ImageRepository.self) { _ in MockImageRepository() }
+        
         mockContainer.register(GenerateIdUseCase.self) { _ in GenerateIdUseCase() }
         mockContainer.register(CreateUserUseCase.self) { resolver in
             CreateUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
@@ -121,6 +140,13 @@ class CommonInjection: DependencyInjectionContainer {
         }
         mockContainer.register(GetFilteredUsersUseCase.self) { resolver in
             GetFilteredUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
+        }
+        
+        mockContainer.register(UpdateProfilePictureUseCase.self) { resolver in
+            UpdateProfilePictureUseCase(
+                userRepository: resolver.resolve(UserRepository.self)!,
+                imageRepository: resolver.resolve(ImageRepository.self)!
+            )
         }
         
         return mockContainer

@@ -5,7 +5,7 @@ struct OracleUser: Codable {
     let userEmail: String
     let schoolLevel: String
     let userIsMember: Int
-    let userProfilePictureUrl: String?
+    let profilePictureFileName: String?
     
     enum CodingKeys: String, CodingKey {
         case userId = "USER_ID"
@@ -14,6 +14,6 @@ struct OracleUser: Codable {
         case userEmail = "USER_EMAIL"
         case schoolLevel = "USER_SCHOOL_LEVEL"
         case userIsMember = "USER_IS_MEMBER"
-        case userProfilePictureUrl = "USER_PROFILE_PICTURE_URL"
+        case profilePictureFileName = "USER_PROFILE_PICTURE_FILE_NAME"
     }
 }
