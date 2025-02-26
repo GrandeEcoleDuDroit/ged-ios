@@ -1,8 +1,7 @@
 import SwiftUI
 
 struct FirstRegistrationView: View {
-    @EnvironmentObject private var registrationViewModel: RegistrationViewModel
-    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
+    @StateObject private var registrationViewModel: RegistrationViewModel = AuthenticationInjection.shared.resolve(RegistrationViewModel.self)
     @State private var inputFieldFocused: InputField?
     @State private var isValidNameInputs = false
     
@@ -27,9 +26,10 @@ struct FirstRegistrationView: View {
          
             Spacer()
             
-            Button(action: {
-                navigationCoordinator.push(AuthenticationScreen.secondRegistration)
-            }) {
+            NavigationLink(
+                destination: SecondRegistrationView()
+                    .environmentObject(registrationViewModel)
+            ) {
                 if registrationViewModel.nameInputsNotEmpty() {
                     Text(getString(.next))
                         .font(.title2)

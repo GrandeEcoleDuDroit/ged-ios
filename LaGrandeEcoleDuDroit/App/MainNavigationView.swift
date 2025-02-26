@@ -1,22 +1,18 @@
 import SwiftUI
 
 struct MainNavigationView: View {
-    private let isAuthenticatedUseCase: IsAuthenticatedUseCase = AuthenticationInjection.shared.resolve(IsAuthenticatedUseCase.self)
-    @State private var authenticationState: AuthenticationState = .idle
+    @StateObject private var mainViewModel: MainViewModel = MainInjection.shared.resolve(MainViewModel.self)
     
     var body: some View {
         ZStack {
-            switch authenticationState {
-                case.idle:
+            switch mainViewModel.authenticationState {
+                case .waiting:
                     SplashScreen()
                 case .authenticated:
                     Main()
                 default:
-                    AuthenticationNavigation()
+                    AuthenticationView()
             }
-        }
-        .onReceive(isAuthenticatedUseCase.execute()) { value in
-            authenticationState = value ? .authenticated : .unauthenticated
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }

@@ -98,6 +98,7 @@ struct FocusableOutlinedPasswordTextField: View {
                     .simultaneousGesture(TapGesture().onEnded({
                         inputFieldFocused = self.inputField
                     }))
+                
                 Image(systemName: "eye.slash")
                     .onTapGesture {
                         padding = 16
@@ -116,6 +117,7 @@ struct FocusableOutlinedPasswordTextField: View {
                     .simultaneousGesture(TapGesture().onEnded({
                         inputFieldFocused = self.inputField
                     }))
+                
                 Image(systemName: "eye")
                     .onTapGesture {
                         padding = 16.5

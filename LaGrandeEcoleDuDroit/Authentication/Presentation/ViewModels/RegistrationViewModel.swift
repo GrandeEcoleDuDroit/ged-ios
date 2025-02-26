@@ -58,9 +58,8 @@ class RegistrationViewModel: ObservableObject {
         
         Task {
             do {
-                let userId = try await registerUseCase.execute(email: formattedEmail, password: formattedPassword)
                 let user = User(
-                    id: userId,
+                    id: GenerateIdUseCase().execute(),
                     firstName: formattedFirstName,
                     lastName: formattedLastName,
                     email: formattedEmail,
@@ -70,6 +69,7 @@ class RegistrationViewModel: ObservableObject {
                 )
                 
                 try await createUserUseCase.execute(user: user)
+                try await registerUseCase.execute(email: formattedEmail, password: formattedPassword)
                 updateRegistrationState(to: .registered)
             }
             catch AuthenticationError.accountAlreadyExist {

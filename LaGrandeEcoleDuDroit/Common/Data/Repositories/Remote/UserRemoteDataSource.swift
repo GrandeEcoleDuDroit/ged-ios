@@ -30,6 +30,15 @@ class UserRemoteDataSource {
         }
     }
     
+    func getUserWithEmail(email: String) async -> User? {
+        let firestoreUser = await userFirestoreApi.getUserWithEmail(email: email)
+        return if let firestoreUser = firestoreUser {
+            UserMapper.toDomain(firestoreUser: firestoreUser)
+        } else {
+            nil
+        }
+    }
+    
     func listenUser(userId: String) -> AnyPublisher<User, Never> {
         userFirestoreApi.listenCurrentUser(userId: userId)
             .compactMap { firestoreUser in

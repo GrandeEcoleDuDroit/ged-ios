@@ -1,11 +1,15 @@
 class GetUserUseCase {
     private let userRepository: UserRepository
     
-   init(userRepository: UserRepository) {
+    init(userRepository: UserRepository) {
         self.userRepository = userRepository
     }
     
-    func execute(userId: String) async -> User? {
+    func executeWithId(userId: String) async -> User? {
         await userRepository.getUser(userId: userId)
+    }
+    
+    func executeWithEmail(email: String) async -> User? {
+        await userRepository.getUserWithEmail(email: email)
     }
 }

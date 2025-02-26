@@ -2,7 +2,6 @@ import SwiftUI
 
 struct SecondRegistrationView: View {
     @EnvironmentObject private var registrationViewModel: RegistrationViewModel
-    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
@@ -32,15 +31,17 @@ struct SecondRegistrationView: View {
             
             Spacer()
             
-            
-            Button(getString(.next)) {
-                navigationCoordinator.push(AuthenticationScreen.thirdRegistration)
+            NavigationLink(
+                destination: ThirdRegistrationView()
+                    .environmentObject(registrationViewModel)
+            ) {
+                Text(getString(.next))
+                    .font(.title2)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.gedPrimary)
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
-            .font(.title2)
-            .fontWeight(.medium)
-            .foregroundStyle(.gedPrimary)
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()

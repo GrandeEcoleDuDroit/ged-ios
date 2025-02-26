@@ -20,27 +20,15 @@ class ProfileViewModel: ObservableObject {
     }
     
     func logout() {
-        do {
-            try logoutUseCase.execute()
-        } catch {
-            screenState = .error(message: getString(.errorLogout))
-            print("Error logging out: \(error)")
-        }
+        Task { await logoutUseCase.execute() }
     }
     
     private func initCurrentUser() {
         getCurrentUserUseCase.execute()
             .receive(on: RunLoop.main)
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                    case .finished:
-                        break
-                    case .failure(let error):
-                        print("Error fetching user: \(error)")
-                }
-            }, receiveValue: { [weak self] user in
+            .sink { [weak self] user in
                 self?.currentUser = user
-            })
+            }
             .store(in: &cancellables)
     }
 }
