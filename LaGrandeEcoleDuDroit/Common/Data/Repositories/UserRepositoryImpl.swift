@@ -33,6 +33,10 @@ class UserRepositoryImpl: UserRepository {
         await userRemoteDataSource.getUser(userId: userId)
     }
     
+    func getUserWithEmail(email: String) async -> User? {
+        await userRemoteDataSource.getUserWithEmail(email: email)
+    }
+    
     func getUserPublisher(userId: String) -> AnyPublisher<User, Never> {
         userRemoteDataSource.listenUser(userId: userId)
     }

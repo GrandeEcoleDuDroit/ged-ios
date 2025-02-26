@@ -5,6 +5,8 @@ protocol UserFirestoreApi {
     
     func getUser(userId: String) async -> FirestoreUser?
     
+    func getUserWithEmail(email: String) async -> FirestoreUser?
+    
     func listenCurrentUser(userId: String) -> AnyPublisher<FirestoreUser?, Never>
     
     func getUsers() async throws -> [FirestoreUser]

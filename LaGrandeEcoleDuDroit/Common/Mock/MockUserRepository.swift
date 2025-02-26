@@ -21,6 +21,10 @@ class MockUserRepository: UserRepository {
         userFixture
     }
     
+    func getUserWithEmail(email: String) async -> User? {
+        usersFixture.first { $0.email == email }
+    }
+    
     func getUserPublisher(userId: String) -> AnyPublisher<User, Never> {
         Just(userFixture).eraseToAnyPublisher()
     }

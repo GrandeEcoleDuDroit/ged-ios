@@ -9,6 +9,8 @@ protocol UserRepository {
     
     func getUser(userId: String) async -> User?
     
+    func getUserWithEmail(email: String) async -> User?
+    
     func getUserPublisher(userId: String) -> AnyPublisher<User, Never>
     
     func getUsers() async throws -> [User]
@@ -17,5 +19,5 @@ protocol UserRepository {
     
     func setCurrentUser(user: User)
     
-    func removeCurrentUser()
+    func removeCurrentUser()    
 }

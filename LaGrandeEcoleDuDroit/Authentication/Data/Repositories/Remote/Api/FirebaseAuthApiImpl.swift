@@ -4,11 +4,11 @@ import os
 private let tag = String(describing: FirebaseAuthApiImpl.self)
 
 class FirebaseAuthApiImpl: FirebaseAuthApi {
-    func createUserWithEmail(email: String, password: String) async throws -> AuthDataResult {
+    func createUserWithEmail(email: String, password: String) async throws {
         return try await withCheckedThrowingContinuation { continuation in
             Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
                 if let authResult = authResult {
-                    continuation.resume(returning: authResult)
+                    continuation.resume()
                 } else if let error = error {
                     e(tag, "FirebaseAuth create user error: \(error.localizedDescription)")
                     continuation.resume(throwing: error)
@@ -58,11 +58,11 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
         }
     }
     
-    func signIn(email: String, password: String) async throws -> AuthDataResult {
+    func signIn(email: String, password: String) async throws {
         return try await withCheckedThrowingContinuation { continuation in
             Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
-                if let authResult = authResult {
-                    continuation.resume(returning: authResult)
+                if authResult != nil {
+                    continuation.resume()
                 } else if let error = error {
                     e(tag, "FirebaseAuth sign in user error: \(error.localizedDescription)")
                     continuation.resume(throwing: error)
@@ -74,11 +74,7 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
         }
     }
     
-    func signOut() throws {
+    func signOut() async throws {
         try Auth.auth().signOut()
-    }
- 
-    func isAuthenticated() -> Bool {
-        Auth.auth().currentUser != nil
     }
 }

@@ -1,13 +1,11 @@
-import Combine
-
-class IsAuthenticatedUseCase {
+class SetUserAuthenticatedUseCase {
     private let authenticationRepository: AuthenticationRepository
-    
+
     init(authenticationRepository: AuthenticationRepository) {
         self.authenticationRepository = authenticationRepository
     }
     
-    func execute() -> AnyPublisher<Bool, Never> {
-        authenticationRepository.isAuthenticated.eraseToAnyPublisher()
+    func execute(_ isAuthenticated: Bool) async {
+        await authenticationRepository.setAuthenticated(isAuthenticated)
     }
 }

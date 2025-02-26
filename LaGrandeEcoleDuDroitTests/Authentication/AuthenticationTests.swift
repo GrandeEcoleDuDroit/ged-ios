@@ -6,7 +6,7 @@ final class AuthenticationTests: XCTestCase {
     private var cancellables: Set<AnyCancellable>!
     private var authenticationRepository: AuthenticationRepository!
     
-    private var isAuthenticatedUseCase: IsAuthenticatedUseCase!
+    private var isAuthenticatedUseCase: IsUserAuthenticatedUseCase!
     private var isEmailVerifiedUseCase: IsEmailVerifiedUseCase!
     private var loginUseCase: LoginUseCase!
     private var logoutUseCase: LogoutUseCase!
@@ -16,7 +16,7 @@ final class AuthenticationTests: XCTestCase {
         cancellables = []
         authenticationRepository = AuthenticationInjection.shared.resolveWithMock().resolve(AuthenticationRepository.self)
         
-        isAuthenticatedUseCase = IsAuthenticatedUseCase(authenticationRepository: authenticationRepository)
+        isAuthenticatedUseCase = IsUserAuthenticatedUseCase(authenticationRepository: authenticationRepository)
         isEmailVerifiedUseCase = IsEmailVerifiedUseCase(authenticationRepository: authenticationRepository)
         loginUseCase = LoginUseCase(authenticationRepository: authenticationRepository)
         logoutUseCase = LogoutUseCase(authenticationRepository: authenticationRepository)
