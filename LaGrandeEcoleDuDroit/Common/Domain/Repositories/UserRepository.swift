@@ -1,13 +1,13 @@
 import Combine
 
 protocol UserRepository {
-    var currentUserPublisher: AnyPublisher<User?, Never> { get }
-    
-    var currentUser: User? { get }
+    var currentUser: CurrentValueSubject<User?, Never> { get }
     
     func createUser(user: User) async throws
     
     func getUser(userId: String) async -> User?
+    
+    func getUserWithEmail(email: String) async -> User?
     
     func getUserPublisher(userId: String) -> AnyPublisher<User, Never>
     
@@ -18,4 +18,6 @@ protocol UserRepository {
     func setCurrentUser(user: User)
     
     func removeCurrentUser()
+    
+    func updateProfilePictureUrl(userId: String, profilePictureFileName: String) async throws
 }

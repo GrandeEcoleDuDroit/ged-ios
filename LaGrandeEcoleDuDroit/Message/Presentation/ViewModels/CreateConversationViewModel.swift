@@ -37,7 +37,7 @@ class CreateConversationViewModel: ObservableObject {
     }
     
     private func fetchAllUsers() {
-        guard let currentUser = getCurrentUserUseCase.execute() else {
+        guard let currentUser = getCurrentUserUseCase.execute().value else {
             return
         }
         
@@ -66,7 +66,7 @@ class CreateConversationViewModel: ObservableObject {
     }
     
     private func fetchFilteredUsers(filter: String) {
-        guard !filter.isEmpty, let currentUser = getCurrentUserUseCase.execute() else {
+        guard !filter.isEmpty, let currentUser = getCurrentUserUseCase.execute().value else {
             users = defaultUsers
             return
         }

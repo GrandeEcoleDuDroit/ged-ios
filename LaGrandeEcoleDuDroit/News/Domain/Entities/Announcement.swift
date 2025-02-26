@@ -2,7 +2,7 @@ import Foundation
 
 struct Announcement: Identifiable, Hashable {
     var id: String
-    var title: String? = nil
+    var title: String = ""
     var content: String
     var date: Date
     var author: User

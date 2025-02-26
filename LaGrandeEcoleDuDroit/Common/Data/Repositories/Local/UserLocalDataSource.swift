@@ -3,10 +3,7 @@ import Foundation
 
 class UserLocalDataSource {
     private let userKey = "USER_KEY"
-    @Published private var _currentUser: User?
-    var currentUser: AnyPublisher<User?, Never> {
-        $_currentUser.eraseToAnyPublisher()
-    }
+    private(set) var currentUser = CurrentValueSubject<User?, Never>(nil)
     
     init() {
         loadCurrentUser()
@@ -16,25 +13,34 @@ class UserLocalDataSource {
         let localUser = UserMapper.toLocalUser(user: user)
         if let localUserJson = try? JSONEncoder().encode(localUser) {
             UserDefaults.standard.set(localUserJson, forKey: userKey)
-            _currentUser = user
+            currentUser.send(user)
         }
     }
  
     func removeCurrentUser() {
         UserDefaults.standard.removeObject(forKey: userKey)
-        _currentUser = nil
+        currentUser.send(nil)
     }
     
     private func loadCurrentUser() {
         guard let localUserData = UserDefaults.standard.data(forKey: userKey) else {
-            _currentUser = nil
+            currentUser.send(nil)
             return
         }
         
         if let localUser = try? JSONDecoder().decode(LocalUser.self, from: localUserData) {
-            _currentUser = UserMapper.toDomain(localUser: localUser)
+            currentUser.send(UserMapper.toDomain(localUser: localUser))
         } else {
-            _currentUser = nil
+            currentUser.send(nil)
         }
+    }
+    
+    func updateProfilePictureUrl(fileName: String) {
+        guard let currentUser = currentUser.value else {
+            return
+        }
+        
+        let updatedUser = currentUser.with(profilePictureUrl: UserMapper.formatProfilePictureUrl(fileName: fileName))
+        setCurrentUser(user: updatedUser)
     }
 }

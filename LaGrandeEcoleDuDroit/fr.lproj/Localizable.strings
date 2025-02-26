@@ -32,7 +32,7 @@
 "authentication_page_subtitle" = "L'application qui réunit toute les actualités de la GED, faite par les gédois pour les gédois.";
 "last_name" = "Nom";
 "first_name" = "Prénom";
-"email" = "Adresse email";
+"email" = "Adresse e-mail";
 "password" = "Mot de passe";
 "login" = "Se connecter";
 "logout" = "Se déconnecter";
@@ -44,24 +44,24 @@
 "registration_step" = "Étape %d sur %d";
 "select_school_level" = "Sélectionnez votre niveau universitaire";
 "level" = "Niveau";
-"enter_email_password" = "Entrez votre adresse mail et votre mot de passe";
-"email_verification_title" = "Vérification de l'email";
+"enter_email_password" = "Entrez votre adresse e-mail et votre mot de passe";
+"email_verification_title" = "Vérification de l'e-mail";
 "email_verification_explanation_begining" = "Un lien a été à l'adresse suivante : ";
 "email_verification_explanation_end" = ". Veuillez cliquer dessus pour finaliser l'inscription.";
 "send_email_verification_caption" = "Un lien de vérification vous sera envoyé.";
-"email_not_verified" = "Email non vérifié";
-"email_not_verified_dialog_message" = "Veuillez vérifier votre adresse mail avant de continuer.";
-"verify_email" = "Vérifier l'email";
+"email_not_verified" = "Adresse e-mail non vérifié";
+"email_not_verified_dialog_message" = "Veuillez vérifier votre adresse e-mail avant de continuer.";
+"verify_email" = "Vérifier l'e-mail";
 "logout_alert_message" = "Voulez-vous vous déconnecter ?";
 
 // Authtentication errors
-"invalid_email_error" = "Veuillez entrer une adresse mail valide.";
+"invalid_email_error" = "Veuillez entrer une adresse e-mail valide.";
 "password_length_error" = "Le mot de passe doit faire au moins 8 caractères.";
-"invalid_credentials" = "Adresse email ou mot de passe incorrect.";
+"invalid_credentials" = "Adresse e-mail ou mot de passe incorrect.";
 "user_disabled" = "Ce compte est désactivé. Veuillez contacter le support: application.ged@gmail.com pour le réactiver";
 "auth_user_not_found" = "L'utilisateur n'a pas été trouvé. Veuillez vous re-authentifier puis réessayer.";
 "user_not_exist" = "L'utilisateur n'existe pas.";
-"email_not_verified_error" = "Veuillez validez votre adresse mail avant de continuer.";
+"email_not_verified_error" = "Veuillez validez votre adresse e-mail avant de continuer.";
 "registration_error" = "Une erreur est survenue lors de l'inscription.";
 "account_already_in_use_error" = "Le compte est déjà utilisé. Veuillez vous connecter ou réinitialiser votre mot de passe.";
 "unknown_error" = "Une erreur inconnue est survenue. Veuillez réessayer";
@@ -69,7 +69,7 @@
 
 // News
 "news" = "Actualités";
-"recent_announcements" = "Récentes annonces";
+"recent_announcements" = "Annonces récentes";
 "new_announcement" = "Nouvelle Annonce";
 "edit_announcement" = "Editer Annonce";
 "title" = "Titre";
@@ -85,6 +85,11 @@
 // Profile
 "profile" = "Profil";
 "account" = "Compte";
+"account_infos" = "Informations compte";
+"school_level" = "Niveau d'étude";
+"edit_profile" = "Editer profil";
+"new_profile_picture" = "Nouvelle photo de profil";
+"profile_picture_updated" = "Photo de profil mise à jour";
 
 // Profile errors
 "error_logout" = "Une erreur est survenue lors de la déconnexion.";

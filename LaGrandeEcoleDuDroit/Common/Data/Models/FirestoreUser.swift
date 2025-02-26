@@ -5,7 +5,7 @@ struct FirestoreUser: Codable, Hashable {
     let email: String
     let schoolLevel: String
     let isMember: Bool
-    let profilePictureUrl: String?
+    let profilePictureFileName: String?
     let isOnline: Bool
     
     func hash(into hasher: inout Hasher) {
@@ -19,7 +19,7 @@ struct FirestoreUser: Codable, Hashable {
         case email = "email"
         case schoolLevel = "school_level"
         case isMember = "is_member"
-        case profilePictureUrl = "profile_picture_url"
+        case profilePictureFileName = "profile_picture_file_name"
         case isOnline = "is_online"
     }
 }

@@ -52,7 +52,7 @@ class ChatViewModel: ObservableObject {
     }
     
     func sendMessage() {
-        guard !textToSend.isEmpty, let currentUser = getCurrentUserUseCase.execute() else {
+        guard !textToSend.isEmpty, let currentUser = getCurrentUserUseCase.execute().value else {
             return
         }
         

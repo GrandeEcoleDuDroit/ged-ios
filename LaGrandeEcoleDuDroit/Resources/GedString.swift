@@ -85,7 +85,11 @@ enum GedString: String {
     
     // Profile
     case profile = "profile"
-    case account = "account"
+    case accountInfos = "account_infos"
+    case schoolLevel = "school_level"
+    case editProfile = "edit_profile"
+    case newProfilePicture = "new_profile_picture"
+    case profilePictureUpdated = "profile_picture_updated"
     
     // Profile errors
     case errorLogout = "error_logout"

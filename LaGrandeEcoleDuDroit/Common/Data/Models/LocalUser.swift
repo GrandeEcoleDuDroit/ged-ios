@@ -5,7 +5,7 @@ struct LocalUser: Codable {
     let userEmail: String
     let userSchoolLevel: String
     let userIsMember: Bool
-    let userProfilePictureUrl: String?
+    let profilePictureUrl: String?
     
     enum CodingKeys: String, CodingKey {
         case userId = "user_id"
@@ -14,6 +14,6 @@ struct LocalUser: Codable {
         case userEmail = "user_email"
         case userSchoolLevel = "user_school_level"
         case userIsMember = "user_is_member"
-        case userProfilePictureUrl = "user_profile_picture_url"
+        case profilePictureUrl = "user_profile_picture_url"
     }
 }

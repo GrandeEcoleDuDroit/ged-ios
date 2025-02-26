@@ -24,6 +24,18 @@ class UserFirestoreApiImpl: UserFirestoreApi {
         return try? snapshot.data(as: FirestoreUser.self)
     }
     
+    func getUserWithEmail(email: String) async -> FirestoreUser? {
+        let snapshot = try? await usersCollection
+            .whereField(FirestoreUserDataFields.email, isEqualTo: email)
+            .getDocuments()
+        
+        guard let snapshot = snapshot else {
+            return nil
+        }
+        
+        return try? snapshot.documents.first?.data(as: FirestoreUser.self)
+    }
+    
     func listenCurrentUser(userId: String) -> AnyPublisher<FirestoreUser?, Never> {
         let subject = CurrentValueSubject<FirestoreUser?, Never>(nil)
         
@@ -81,5 +93,10 @@ class UserFirestoreApiImpl: UserFirestoreApi {
     
     func stopListeningUsers() {
         listeners.removeAll()
+    }
+    
+    func updateProfilePictureFileName(userId: String, fileName: String) async throws {
+        let userRef = usersCollection.document(userId)
+        try await userRef.updateData([FirestoreUserDataFields.profilePictureFileName: fileName])
     }
 }

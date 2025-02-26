@@ -25,7 +25,7 @@ struct RemoteAnnouncementWithUser: Codable {
     var userEmail: String
     var userSchoolLevel: String
     var userIsMember: Int
-    var userProfilePictureUrl: String?
+    var userProfilePictureFileName: String?
     
     enum CodingKeys: String, CodingKey {
         case announcementId = "ANNOUNCEMENT_ID"
@@ -38,6 +38,6 @@ struct RemoteAnnouncementWithUser: Codable {
         case userEmail = "USER_EMAIL"
         case userSchoolLevel = "USER_SCHOOL_LEVEL"
         case userIsMember = "USER_IS_MEMBER"
-        case userProfilePictureUrl = "USER_PROFILE_PICTURE_URL"
+        case userProfilePictureFileName = "USER_PROFILE_PICTURE_FILE_NAME"
     }
 }

@@ -3,68 +3,41 @@ import os
 import FirebaseAuth
 
 class AuthenticationRepositoryImpl: AuthenticationRepository {
-    private let firebaseAuthApi: FirebaseAuthApi
-    private(set) var isAuthenticated: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
+    private let firebaseAuthenticationRepository: FirebaseAuthenticationRepository
+    private let authenticationLocalDataSource: AuthenticationLocalDataSource
+    private(set) var isAuthenticated: CurrentValueSubject<Bool, Never>
     
-    init(firebaseAuthApi: FirebaseAuthApi) {
-        self.firebaseAuthApi = firebaseAuthApi
-        isAuthenticated.send(firebaseAuthApi.isAuthenticated())
+    init(
+        firebaseAuthenticationRepository: FirebaseAuthenticationRepository,
+        authenticationLocalDataSource: AuthenticationLocalDataSource
+    ) {
+        self.firebaseAuthenticationRepository = firebaseAuthenticationRepository
+        self.authenticationLocalDataSource = authenticationLocalDataSource
+        isAuthenticated = authenticationLocalDataSource.isAuthenticated
     }
     
-    func register(email: String, password: String) async throws -> String {
-        do {
-            let authResult = try await firebaseAuthApi.createUserWithEmail(email: email, password: password)
-            return authResult.user.uid
-        } catch let error as NSError {
-            if let authErrorCode = AuthErrorCode(rawValue: error.code) {
-                switch authErrorCode {
-                    case .emailAlreadyInUse:
-                        throw AuthenticationError.accountAlreadyExist
-                    default:
-                        throw AuthenticationError.unknown
-                }
-            } else {
-                throw AuthenticationError.unknown
-            }
-        }
+    func loginWithEmailAndPassword(email: String, password: String) async throws {
+        try await firebaseAuthenticationRepository.loginWithEmailAndPassword(email: email, password: password)
+    }
+    
+    func registerWithEmailAndPassword(email: String, password: String) async throws {
+        try await firebaseAuthenticationRepository.registerWithEmailAndPassword(email: email, password: password)
+    }
+    
+    func logout() async {
+        Task { try? await firebaseAuthenticationRepository.logout() }
+        await setAuthenticated(false)
     }
     
     func sendEmailVerification() async throws {
-        try await firebaseAuthApi.sendEmailVerification()
+        try await firebaseAuthenticationRepository.sendEmailVerification()
     }
     
     func isEmailVerified() async throws -> Bool {
-        try await firebaseAuthApi.isEmailVerified()
+        try await firebaseAuthenticationRepository.isEmailVerified()
     }
     
-    func login(email: String, password: String) async throws -> String {
-        do {
-            let authDataResult = try await firebaseAuthApi.signIn(email: email, password: password)
-            isAuthenticated.send(true)
-            return authDataResult.user.uid
-        } catch let error as NSError {
-            if let authErrorCode = AuthErrorCode(rawValue: error.code) {
-                switch authErrorCode {
-                    case .wrongPassword, .userNotFound, .invalidCredential:
-                        throw AuthenticationError.invalidCredentials
-                    case .userDisabled:
-                        throw AuthenticationError.userDisabled
-                    default:
-                        throw AuthenticationError.unknown
-                }
-            }
-            else {
-                throw AuthenticationError.unknown
-            }
-        }
-    }
-    
-    func logout() throws {
-        do {
-            try firebaseAuthApi.signOut()
-            isAuthenticated.send(false)
-        } catch {
-            throw AuthenticationError.unknown
-        }
+    func setAuthenticated(_ isAuthenticated: Bool) async {
+        await authenticationLocalDataSource.setAuthenticated(isAuthenticated)
     }
 }

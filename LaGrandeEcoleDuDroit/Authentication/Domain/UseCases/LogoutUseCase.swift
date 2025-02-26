@@ -8,7 +8,7 @@ class LogoutUseCase {
         self.authenticationRepository = authenticationRepository
     }
     
-    func execute() throws {
-        try authenticationRepository.logout()
+    func execute() async {
+        await authenticationRepository.logout()
     }
 }

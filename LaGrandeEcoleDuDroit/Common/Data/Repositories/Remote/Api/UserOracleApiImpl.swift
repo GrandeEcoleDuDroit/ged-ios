@@ -30,4 +30,33 @@ class UserOracleApiImpl: UserOracleApi {
             throw RequestError.invalidResponse(serverResponse.error)
         }
     }
+    
+    func updateProfilePictureFileName(userId: String, fileName: String) async throws {
+        guard let url = baseUrl(endPoint: "profile-picture-file-name") else {
+            throw RequestError.invalidURL
+        }
+        
+        let dataToSend: [String: String] = [
+            OracleUserDataFields.userId: userId,
+            OracleUserDataFields.userProfilePictureFileName: fileName
+        ]
+        
+        let request = try RequestUtils.formatPutRequest(dataToSend: dataToSend, url: url)
+        let session = RequestUtils.getUrlSession()
+        
+        let (dataReceived, response) = try await session.data(for: request)
+        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
+                e(tag, serverResponse.message)
+            } else {
+                e(tag, serverResponse.error ?? "Error to update user profile picture file name")
+                throw RequestError.invalidResponse(serverResponse.error)
+            }
+        } else {
+            e(tag, serverResponse.error ?? "Error to update user profile picture file name")
+            throw RequestError.invalidResponse(serverResponse.error)
+        }
+    }
 }

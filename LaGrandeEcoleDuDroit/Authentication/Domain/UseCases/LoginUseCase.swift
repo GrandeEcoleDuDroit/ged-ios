@@ -5,7 +5,7 @@ class LoginUseCase {
         self.authenticationRepository = authenticationRepository
     }
     
-    func execute(email: String, password: String) async throws -> String {
-        try await authenticationRepository.login(email: email, password: password)
+    func execute(email: String, password: String) async throws {
+        try await authenticationRepository.loginWithEmailAndPassword(email: email, password: password)
     }
 }

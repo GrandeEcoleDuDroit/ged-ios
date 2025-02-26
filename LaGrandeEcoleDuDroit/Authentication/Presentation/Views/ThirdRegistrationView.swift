@@ -2,9 +2,9 @@ import SwiftUI
 
 struct ThirdRegistrationView: View {
     @EnvironmentObject private var registrationViewModel: RegistrationViewModel
-    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var inputFieldFocused: InputField?
     @State private var isLoading: Bool = false
+    @State private var navigateToEmailVerification: Bool = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
@@ -73,7 +73,7 @@ struct ThirdRegistrationView: View {
         }
         .onReceive(registrationViewModel.$registrationState) { state in
             if state == .registered {
-                navigationCoordinator.push(AuthenticationScreen.emailVerification(email: registrationViewModel.email))
+                navigateToEmailVerification = true
             } else if case .loading = state {
                 isLoading = true
             }
@@ -85,6 +85,9 @@ struct ThirdRegistrationView: View {
         .onTapGesture { inputFieldFocused = nil }
         .onAppear { registrationViewModel.resetState() }
         .registrationToolbar(step: 3, maxStep: 3)
+        .navigationDestination(isPresented: $navigateToEmailVerification) {
+            EmailVerificationView(email: registrationViewModel.email)
+        }
     }
 }
 

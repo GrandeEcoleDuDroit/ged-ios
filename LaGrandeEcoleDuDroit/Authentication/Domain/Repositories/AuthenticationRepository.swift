@@ -3,13 +3,15 @@ import Combine
 protocol AuthenticationRepository {
     var isAuthenticated: CurrentValueSubject<Bool, Never> { get }
     
-    func register(email: String, password: String) async throws -> String
+    func loginWithEmailAndPassword(email: String, password: String) async throws
+    
+    func registerWithEmailAndPassword(email: String, password: String) async throws
+    
+    func logout() async
     
     func sendEmailVerification() async throws
     
     func isEmailVerified() async throws -> Bool
-    
-    func login(email: String, password: String) async throws -> String
-    
-    func logout() throws
+            
+    func setAuthenticated(_ isAuthenticated: Bool) async
 }

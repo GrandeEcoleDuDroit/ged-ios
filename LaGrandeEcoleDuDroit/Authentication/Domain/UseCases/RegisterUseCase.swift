@@ -5,7 +5,7 @@ class RegisterUseCase {
         self.authenticationRepository = authenticationRepository
     }
     
-    func execute(email: String, password: String) async throws -> String {
-        try await authenticationRepository.register(email: email, password: password)
+    func execute(email: String, password: String) async throws {
+        try await authenticationRepository.registerWithEmailAndPassword(email: email, password: password)
     }
 }

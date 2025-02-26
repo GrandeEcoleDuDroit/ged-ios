@@ -2,13 +2,12 @@ import SwiftUI
 
 struct AuthenticationView: View {
     @StateObject private var authenticationViewModel: AuthenticationViewModel = AuthenticationInjection.shared.resolve(AuthenticationViewModel.self)
-    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var isInputsFocused: Bool = false
     @State private var isLoading: Bool = false
     @State private var showEmailNotVerifiedAlert: Bool = false
     
     var body: some View {
-        NavigationStack(path: $navigationCoordinator.path) {
+        NavigationStack {
             VStack(spacing: GedSpacing.veryLarge) {
                 Header()
                 
@@ -19,20 +18,16 @@ struct AuthenticationView: View {
                     isLoading: isLoading,
                     authenticationState: authenticationViewModel.authenticationState
                 )
-                .environmentObject(navigationCoordinator)
                 
                 Buttons(
                     onLoadingButtonClick: {
-                        Task {
-                            if authenticationViewModel.validateInputs() {
-                                await authenticationViewModel.login()
-                            }
+                        if authenticationViewModel.validateInputs() {
+                            authenticationViewModel.login()
                         }
                     },
                     isLoading: isLoading
                 )
                 .environmentObject(authenticationViewModel)
-                .environmentObject(navigationCoordinator)
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -41,18 +36,16 @@ struct AuthenticationView: View {
                 isLoading = state == .loading
             }
             .contentShape(Rectangle())
-            .onTapGesture {
-                isInputsFocused = false
-            }
+            .onTapGesture { isInputsFocused = false }
             .alert(
                 getString(.emailNotVerified),
                 isPresented: $showEmailNotVerifiedAlert,
                 presenting: ""
             ) { _ in
-                Button(getString(.verifyEmail)) {
-                    navigationCoordinator.push(AuthenticationScreen.emailVerification(email: authenticationViewModel.email))
-                }
-                
+                NavigationLink(
+                    getString(.verifyEmail),
+                    destination: EmailVerificationView(email: authenticationViewModel.email)
+                )
                 Button(getString(.cancel), role: .cancel) {}
             } message: { _ in
                 Text(getString(.emailNotVerifiedDialogMessage))
@@ -88,7 +81,6 @@ private struct Header: View {
 }
 
 private struct CredentialsInputs: View {
-    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @Binding private var email: String
     @Binding private var password: String
     @Binding var isInputsFocused: Bool
@@ -137,7 +129,7 @@ private struct CredentialsInputs: View {
             }))
             
             Button(getString(.forgottenPassword)) {
-                navigationCoordinator.push(AuthenticationScreen.forgottenPassword)
+                forgottenPasswordClicked = true
             }
             .disabled(isLoading)
             
@@ -151,11 +143,13 @@ private struct CredentialsInputs: View {
                 inputFieldFocused = nil
             }
         }
+        .navigationDestination(isPresented: $forgottenPasswordClicked) {
+            ForgottenPasswordView()
+        }
     }
 }
 
 private struct Buttons: View {
-    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var isActive: Bool = false
     private var onLoadingButtonClick: () -> Void
     private var isLoading: Bool
@@ -180,12 +174,10 @@ private struct Buttons: View {
                 Text(getString(.notRegisterYet))
                     .foregroundStyle(Color.primary)
                 
-                Button(getString(.register)) {
-                    navigationCoordinator.push(AuthenticationScreen.firstRegistration)
-                }
-                .foregroundColor(.gedPrimary)
-                .fontWeight(.semibold)
-                .underline()
+                NavigationLink(getString(.register), destination: FirstRegistrationView())
+                    .foregroundColor(.gedPrimary)
+                    .fontWeight(.semibold)
+                    .underline()
             }
         }
     }
@@ -194,5 +186,6 @@ private struct Buttons: View {
 #Preview {
     NavigationStack {
         AuthenticationView()
+            .environmentObject(NavigationCoordinator())
     }
 }

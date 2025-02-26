@@ -7,7 +7,7 @@ class UserMapper {
             email: user.email,
             schoolLevel: user.schoolLevel,
             isMember: user.isMember,
-            profilePictureUrl: user.profilePictureUrl,
+            profilePictureFileName: getFileNameFromUrl(url: user.profilePictureUrl),
             isOnline: false
         )
     }
@@ -20,7 +20,7 @@ class UserMapper {
             userEmail: user.email,
             schoolLevel: user.schoolLevel,
             userIsMember: user.isMember ? 1 : 0,
-            userProfilePictureUrl: user.profilePictureUrl
+            profilePictureFileName: getFileNameFromUrl(url: user.profilePictureUrl)
         )
     }
     
@@ -32,7 +32,7 @@ class UserMapper {
             userEmail: user.email,
             userSchoolLevel: user.schoolLevel,
             userIsMember: user.isMember,
-            userProfilePictureUrl: user.profilePictureUrl
+            profilePictureUrl: user.profilePictureUrl
         )
     }
     
@@ -44,7 +44,7 @@ class UserMapper {
             email: localUser.userEmail,
             schoolLevel: localUser.userSchoolLevel,
             isMember: localUser.userIsMember,
-            profilePictureUrl: localUser.userProfilePictureUrl
+            profilePictureUrl: localUser.profilePictureUrl
         )
     }
     
@@ -56,7 +56,16 @@ class UserMapper {
             email: firestoreUser.email,
             schoolLevel: firestoreUser.schoolLevel,
             isMember: firestoreUser.isMember,
-            profilePictureUrl: firestoreUser.profilePictureUrl
+            profilePictureUrl: formatProfilePictureUrl(fileName: firestoreUser.profilePictureFileName)
         )
+    }
+    
+    static func formatProfilePictureUrl(fileName: String?) -> String? {
+        guard let fileName = fileName else { return nil }
+        return "https://objectstorage.eu-paris-1.oraclecloud.com/n/ax5bfuffglob/b/bucket-gedoise/o/\(fileName)"
+    }
+    
+    static func getFileNameFromUrl(url: String?) -> String? {
+        url?.components(separatedBy: "/").last
     }
 }

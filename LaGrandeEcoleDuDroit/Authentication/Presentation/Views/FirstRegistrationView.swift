@@ -1,8 +1,7 @@
 import SwiftUI
 
 struct FirstRegistrationView: View {
-    @EnvironmentObject private var registrationViewModel: RegistrationViewModel
-    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
+    @StateObject private var registrationViewModel: RegistrationViewModel = AuthenticationInjection.shared.resolve(RegistrationViewModel.self)
     @State private var inputFieldFocused: InputField?
     @State private var isValidNameInputs = false
     
@@ -12,24 +11,25 @@ struct FirstRegistrationView: View {
                 .font(.title3)
             
             FocusableOutlinedTextField(
-                title: getString(.firstName),
-                text: $registrationViewModel.firstName,
-                inputField: InputField.firstName,
-                inputFieldFocused: $inputFieldFocused
-            )
-            
-            FocusableOutlinedTextField(
                 title: getString(.lastName),
                 text: $registrationViewModel.lastName,
                 inputField: InputField.lastName,
                 inputFieldFocused: $inputFieldFocused
             )
+            
+            FocusableOutlinedTextField(
+                title: getString(.firstName),
+                text: $registrationViewModel.firstName,
+                inputField: InputField.firstName,
+                inputFieldFocused: $inputFieldFocused
+            )
          
             Spacer()
             
-            Button(action: {
-                navigationCoordinator.push(AuthenticationScreen.secondRegistration)
-            }) {
+            NavigationLink(
+                destination: SecondRegistrationView()
+                    .environmentObject(registrationViewModel)
+            ) {
                 if registrationViewModel.nameInputsNotEmpty() {
                     Text(getString(.next))
                         .font(.title2)
@@ -60,6 +60,6 @@ struct FirstRegistrationView: View {
     NavigationStack {
         FirstRegistrationView()
             .environmentObject(mockRegistrationViewModel)
-            .environmentObject(CommonInjection.shared.resolve(NavigationCoordinator.self))
+            .environmentObject(NavigationCoordinator())
     }
 }

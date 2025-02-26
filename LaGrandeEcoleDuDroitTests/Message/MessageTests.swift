@@ -48,15 +48,13 @@ final class MessageTests: XCTestCase {
         // Given
         let expectation = XCTestExpectation(description: #function)
         var result: Message?
-        let expectedMessage = messageFixture.with(id: "0000", conversationId: conversationUIFixture.id, content: "Test message")
+        let expectedMessage = lastMessagesFixture.first!
         
         // When
         try await sendMessageUseCase.execute(message: expectedMessage)
         getLastMessagesUseCase.execute(conversationId: conversationUserFixture.id)
             .sink(
-                receiveCompletion: {_ in
-                    XCTFail("Expected to receive value")
-                },
+                receiveCompletion: {_ in },
                 receiveValue: {
                     result = $0
                     expectation.fulfill()

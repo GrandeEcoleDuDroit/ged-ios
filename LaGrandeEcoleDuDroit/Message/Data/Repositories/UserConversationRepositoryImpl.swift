@@ -26,7 +26,7 @@ class UserConversationRepositoryImpl: UserConversationRepository {
     func createConversation(conversationUser: ConversationUser) async throws {
         let conversation = ConversationMapper.toConversation(conversationUser: conversationUser)
         
-        guard let currentUser = userRepository.currentUser else {
+        guard let currentUser = userRepository.currentUser.value else {
             throw UserError.currentUserNotFound
         }
         
@@ -55,7 +55,7 @@ class UserConversationRepositoryImpl: UserConversationRepository {
     }
     
     private func listenRemoteConversations() {
-        guard let userId = userRepository.currentUser?.id else {
+        guard let userId = userRepository.currentUser.value?.id else {
             return
         }
         

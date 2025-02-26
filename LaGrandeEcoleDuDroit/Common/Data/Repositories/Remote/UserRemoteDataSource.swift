@@ -1,4 +1,5 @@
 import Combine
+import Foundation
 
 class UserRemoteDataSource {
     private let userFirestoreApi: UserFirestoreApi
@@ -22,6 +23,15 @@ class UserRemoteDataSource {
     
     func getUser(userId: String) async -> User? {
         let firestoreUser = await userFirestoreApi.getUser(userId: userId)
+        return if let firestoreUser = firestoreUser {
+            UserMapper.toDomain(firestoreUser: firestoreUser)
+        } else {
+            nil
+        }
+    }
+    
+    func getUserWithEmail(email: String) async -> User? {
+        let firestoreUser = await userFirestoreApi.getUserWithEmail(email: email)
         return if let firestoreUser = firestoreUser {
             UserMapper.toDomain(firestoreUser: firestoreUser)
         } else {
@@ -53,5 +63,12 @@ class UserRemoteDataSource {
             return []
         }
     }
+    
+    func updateProfilePictureFileName(userId: String, fileName: String) async throws {
+        async let firestoreResult: Void = userFirestoreApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
+        async let oracleResult: Void = userOracleApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
         
+        try await firestoreResult
+        try await oracleResult
+    }
 }

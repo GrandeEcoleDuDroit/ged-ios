@@ -85,7 +85,11 @@
 // Profile
 "profile" = "Profile";
 "account" = "Account";
-"id" = "Account";
+"account_infos" = "Account informations";
+"school_level" = "School level";
+"edit_profile" = "Edit profile";
+"new_profile_picture" = "New profile picture";
+"profile_picture_updated" = "Profile picture updated";
 
 // Profile errors
 "error_logout" = "An error occured while logging out.";
