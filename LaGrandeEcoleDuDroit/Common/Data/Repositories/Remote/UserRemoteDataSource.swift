@@ -11,14 +11,11 @@ class UserRemoteDataSource {
     }
     
     func createUser(user: User) async throws {
-        let firestoreUser = UserMapper.toFirestoreUser(user: user)
         let oracleUser = UserMapper.toOracleUser(user: user)
+        try await userOracleApi.createUser(user: oracleUser)
         
-        async let firestoreResult: Void = userFirestoreApi.createUser(firestoreUser: firestoreUser)
-        async let oracleResult: Void = userOracleApi.createUser(user: oracleUser)
-        
-        try await firestoreResult
-        try await oracleResult
+        let firestoreUser = UserMapper.toFirestoreUser(user: user)
+        try await userFirestoreApi.createUser(firestoreUser: firestoreUser)
     }
     
     func getUser(userId: String) async -> User? {

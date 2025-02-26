@@ -3,16 +3,19 @@ import Foundation
 
 class EmailVerificationViewModel: ObservableObject {
     @Published var authenticationState: AuthenticationState = .idle
-    private let sendVerificationEmailUseCase: SendVerificationEmailUseCase
+    private let sendVerificationEmailUseCase: SendEmailVerificationUseCase
+    private let setUserAuthenticatedUseCase: SetUserAuthenticatedUseCase
     private let isEmailVerifiedUseCase: IsEmailVerifiedUseCase
     private var emailVerificationTask: [Task<Void, Never>] = []
     
     init(
-        sendVerificationEmailUseCase: SendVerificationEmailUseCase,
-        isEmailVerifiedUseCase: IsEmailVerifiedUseCase
+        sendVerificationEmailUseCase: SendEmailVerificationUseCase,
+        isEmailVerifiedUseCase: IsEmailVerifiedUseCase,
+        setUserAuthenticatedUseCase: SetUserAuthenticatedUseCase
     ) {
         self.sendVerificationEmailUseCase = sendVerificationEmailUseCase
         self.isEmailVerifiedUseCase = isEmailVerifiedUseCase
+        self.setUserAuthenticatedUseCase = setUserAuthenticatedUseCase
     }
     
     func sendVerificationEmail() {
@@ -41,6 +44,7 @@ class EmailVerificationViewModel: ObservableObject {
             if let emailVerified = try? await isEmailVerifiedUseCase.execute() {
                 if emailVerified {
                     updateAuthenticationState(to: .emailVerified)
+                    await setUserAuthenticatedUseCase.execute(true)
                 } else {
                     updateAuthenticationState(to: .error(message: getString(.emailNotVerifiedError)))
                 }

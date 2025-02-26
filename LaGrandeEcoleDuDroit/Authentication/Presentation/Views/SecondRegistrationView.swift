@@ -45,7 +45,11 @@ struct SecondRegistrationView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
-        .onAppear { registrationViewModel.resetState() }
+        .onAppear {
+            registrationViewModel.resetEmail()
+            registrationViewModel.resetPassword()
+            registrationViewModel.resetState()
+        }
         .registrationToolbar(step: 2, maxStep: 3)
     }
 }

@@ -1,4 +1,4 @@
-class SendVerificationEmailUseCase {
+class SendEmailVerificationUseCase {
     private let authenticationRepository: AuthenticationRepository
     
     init(authenticationRepository: AuthenticationRepository) {

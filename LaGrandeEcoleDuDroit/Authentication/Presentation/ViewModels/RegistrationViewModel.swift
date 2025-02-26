@@ -93,6 +93,18 @@ class RegistrationViewModel: ObservableObject {
         }        
     }
     
+    func resetEmail() {
+        email = ""
+    }
+    
+    func resetPassword() {
+        password = ""
+    }
+    
+    func resetSchoolLevel() {
+        schoolLevel = schoolLevels[0]
+    }
+    
     func resetState() {
         registrationState = .idle
     }
