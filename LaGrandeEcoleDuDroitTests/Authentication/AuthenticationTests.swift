@@ -5,53 +5,38 @@ import Combine
 final class AuthenticationTests: XCTestCase {
     private var cancellables: Set<AnyCancellable>!
     private var authenticationRepository: AuthenticationRepository!
-    
-    private var isAuthenticatedUseCase: IsUserAuthenticatedUseCase!
+
     private var isEmailVerifiedUseCase: IsEmailVerifiedUseCase!
     private var loginUseCase: LoginUseCase!
     private var logoutUseCase: LogoutUseCase!
     private var registerUseCase: RegisterUseCase!
+    private var isAuthenticatedUseCase: IsUserAuthenticatedUseCase!
+    private var setUserAuthenticatedUseCase: SetUserAuthenticatedUseCase!
     
     override func setUp() {
         cancellables = []
         authenticationRepository = AuthenticationInjection.shared.resolveWithMock().resolve(AuthenticationRepository.self)
         
-        isAuthenticatedUseCase = IsUserAuthenticatedUseCase(authenticationRepository: authenticationRepository)
         isEmailVerifiedUseCase = IsEmailVerifiedUseCase(authenticationRepository: authenticationRepository)
         loginUseCase = LoginUseCase(authenticationRepository: authenticationRepository)
         logoutUseCase = LogoutUseCase(authenticationRepository: authenticationRepository)
         registerUseCase = RegisterUseCase(authenticationRepository: authenticationRepository)
+        isAuthenticatedUseCase = IsUserAuthenticatedUseCase(authenticationRepository: authenticationRepository)
+        setUserAuthenticatedUseCase = SetUserAuthenticatedUseCase(authenticationRepository: authenticationRepository)
     }
     
-    func testIsAuthenticated() {
+    func testIsEmailVerifiedUseCase() async throws {
         // Given
         var result: Bool = false
         
         // When
-        authenticationRepository.isAuthenticated.value = true
-        isAuthenticatedUseCase.execute()
-            .sink { value in
-                result = value
-            }
-            .store(in: &cancellables)
-        
-        // Then
-        XCTAssertTrue(result)
-    }
-    
-    func isEmailVerified() async throws {
-        // Given
-        var result: Bool = false
-        
-        // When
-        authenticationRepository.isAuthenticated.value = true
         result = try await isEmailVerifiedUseCase.execute()
         
         // Then
         XCTAssertTrue(result)
     }
     
-    func testLogin() async throws {
+    func testLoginUseCase() async throws {
         // Given
         let email: String = "email@example.com"
         let password: String = "password"
@@ -68,12 +53,12 @@ final class AuthenticationTests: XCTestCase {
             .store(in: &cancellables)
     }
     
-    func testLogout() throws {
+    func testLogoutUseCase() async {
         // Given
         authenticationRepository.isAuthenticated.value = true
         
         // When
-        try logoutUseCase.execute()
+        await logoutUseCase.execute()
         
         // Then
         authenticationRepository.isAuthenticated
@@ -83,7 +68,7 @@ final class AuthenticationTests: XCTestCase {
             .store(in: &cancellables)
     }
     
-    func testRegister() async throws {
+    func testRegisterUseCase() async throws {
         // Given
         let email: String = "email@example.com"
         let password: String = "password"
@@ -98,5 +83,32 @@ final class AuthenticationTests: XCTestCase {
                 XCTAssertTrue(value)
             }
             .store(in: &cancellables)
+    }
+    
+    func testIsAuthenticatedUseCase() {
+        // Given
+        var result: Bool = false
+        
+        // When
+        authenticationRepository.isAuthenticated.value = true
+        isAuthenticatedUseCase.execute()
+            .sink { value in
+                result = value
+            }
+            .store(in: &cancellables)
+        
+        // Then
+        XCTAssertTrue(result)
+    }
+    
+    func testSetUserAuthenticatedUseCase() async {
+        // Given
+        let isAuthenticated: Bool = true
+        
+        // When
+        await setUserAuthenticatedUseCase.execute(isAuthenticated)
+        
+        // Then
+        XCTAssertTrue(authenticationRepository.isAuthenticated.value)
     }
 }

@@ -76,6 +76,8 @@ struct ThirdRegistrationView: View {
                 navigateToEmailVerification = true
             } else if case .loading = state {
                 isLoading = true
+            } else {
+                isLoading = false
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

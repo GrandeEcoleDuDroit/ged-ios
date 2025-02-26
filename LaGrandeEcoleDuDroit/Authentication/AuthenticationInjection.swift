@@ -28,8 +28,8 @@ class AuthenticationInjection: DependencyInjectionContainer {
             )
         }.inObjectScope(.container)
         
-        container.register(SendVerificationEmailUseCase.self) { resolver in
-            SendVerificationEmailUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
+        container.register(SendEmailVerificationUseCase.self) { resolver in
+            SendEmailVerificationUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
         }
         
         container.register(IsEmailVerifiedUseCase.self) { resolver in
@@ -76,8 +76,9 @@ class AuthenticationInjection: DependencyInjectionContainer {
         
         container.register(EmailVerificationViewModel.self) { resolver in
             EmailVerificationViewModel(
-                sendVerificationEmailUseCase: resolver.resolve(SendVerificationEmailUseCase.self)!,
-                isEmailVerifiedUseCase: resolver.resolve(IsEmailVerifiedUseCase.self)!
+                sendVerificationEmailUseCase: resolver.resolve(SendEmailVerificationUseCase.self)!,
+                isEmailVerifiedUseCase: resolver.resolve(IsEmailVerifiedUseCase.self)!,
+                setUserAuthenticatedUseCase: resolver.resolve(SetUserAuthenticatedUseCase.self)!
             )
         }.inObjectScope(.weak)
     }
@@ -120,8 +121,8 @@ class AuthenticationInjection: DependencyInjectionContainer {
         
         mockContainer.register(AuthenticationRepository.self) { _ in MockAuthenticationRepository() }
         
-        mockContainer.register(SendVerificationEmailUseCase.self) { resolver in
-            SendVerificationEmailUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
+        mockContainer.register(SendEmailVerificationUseCase.self) { resolver in
+            SendEmailVerificationUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
         }
         mockContainer.register(IsEmailVerifiedUseCase.self) { resolver in
             IsEmailVerifiedUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
@@ -163,8 +164,9 @@ class AuthenticationInjection: DependencyInjectionContainer {
         
         mockContainer.register(EmailVerificationViewModel.self) { resolver in
             EmailVerificationViewModel(
-                sendVerificationEmailUseCase: resolver.resolve(SendVerificationEmailUseCase.self)!,
-                isEmailVerifiedUseCase: resolver.resolve(IsEmailVerifiedUseCase.self)!
+                sendVerificationEmailUseCase: resolver.resolve(SendEmailVerificationUseCase.self)!,
+                isEmailVerifiedUseCase: resolver.resolve(IsEmailVerifiedUseCase.self)!,
+                setUserAuthenticatedUseCase: resolver.resolve(SetUserAuthenticatedUseCase.self)!
             )
         }
         

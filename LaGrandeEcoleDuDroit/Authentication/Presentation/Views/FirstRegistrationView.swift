@@ -47,7 +47,10 @@ struct FirstRegistrationView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
-        .onAppear { registrationViewModel.resetState() }
+        .onAppear {
+            registrationViewModel.resetSchoolLevel()
+            registrationViewModel.resetState()
+        }
         .contentShape(Rectangle())
         .onTapGesture { inputFieldFocused = nil }
         .registrationToolbar(step: 1, maxStep: 3)

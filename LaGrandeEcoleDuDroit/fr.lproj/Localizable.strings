@@ -46,7 +46,7 @@
 "level" = "Niveau";
 "enter_email_password" = "Entrez votre adresse mail et votre mot de passe";
 "email_verification_title" = "Vérification de l'email";
-"email_verification_explanation_begining" = "Un lien a été à l'adresse suivante : ";
+"email_verification_explanation_begining" = "Un lien a été envoyé à l'adresse suivante : ";
 "email_verification_explanation_end" = ". Veuillez cliquer dessus pour finaliser l'inscription.";
 "send_email_verification_caption" = "Un lien de vérification vous sera envoyé.";
 "email_not_verified" = "Email non vérifié";
