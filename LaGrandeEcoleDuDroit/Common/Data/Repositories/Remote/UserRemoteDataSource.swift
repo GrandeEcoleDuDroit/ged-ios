@@ -1,4 +1,5 @@
 import Combine
+import Foundation
 
 class UserRemoteDataSource {
     private let userFirestoreApi: UserFirestoreApi
@@ -53,5 +54,12 @@ class UserRemoteDataSource {
             return []
         }
     }
+    
+    func updateProfilePictureFileName(userId: String, fileName: String) async throws {
+        async let firestoreResult: Void = userFirestoreApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
+        async let oracleResult: Void = userOracleApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
         
+        try await firestoreResult
+        try await oracleResult
+    }
 }

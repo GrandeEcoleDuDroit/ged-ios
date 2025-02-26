@@ -4,12 +4,16 @@ extension Image {
     func fitCircle(scale: CGFloat = 1) -> some View {
         self
             .resizable()
-            .scaledToFit()
+            .scaledToFill()
             .frame(width: GedNumber.defaultImageSize * scale, height: GedNumber.defaultImageSize * scale)
             .clipShape(Circle())
     }
     
-    func fitCircleClickable(isClicked: Binding<Bool>, onClick: @escaping () -> Void, scale: CGFloat = 1) -> some View {
+    func fitCircleClickable(
+        isClicked: Binding<Bool>,
+        onClick: @escaping () -> Void,
+        scale: CGFloat = 1
+    ) -> some View {
         self
             .resizable()
             .overlay(
@@ -24,7 +28,7 @@ extension Image {
                     isClicked.wrappedValue = false
                 }
             }
-            .scaledToFit()
+            .scaledToFill()
             .frame(width: GedNumber.defaultImageSize * scale, height: GedNumber.defaultImageSize * scale)
             .clipShape(Circle())
     }

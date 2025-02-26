@@ -16,4 +16,6 @@ protocol UserRepository {
     func setCurrentUser(user: User)
     
     func removeCurrentUser()
+    
+    func updateProfilePictureUrl(userId: String, profilePictureFileName: String) async throws
 }

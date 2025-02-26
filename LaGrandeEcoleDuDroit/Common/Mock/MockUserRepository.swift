@@ -32,4 +32,8 @@ class MockUserRepository: UserRepository {
     func getFilteredUsers(filter: String) async -> [User] {
         usersFixture.filter { $0.fullName.contains(filter) }
     }
+    
+    func updateProfilePictureUrl(userId: String, profilePictureFileName: String) async throws {
+        currentUser.value?.profilePictureUrl = profilePictureFileName
+    }
 }

@@ -45,4 +45,9 @@ class UserRepositoryImpl: UserRepository {
     func removeCurrentUser() {
         userLocalDataSource.removeCurrentUser()
     }
+    
+    func updateProfilePictureUrl(userId: String, profilePictureFileName: String) async throws {
+        try await userRemoteDataSource.updateProfilePictureFileName(userId: userId, fileName: profilePictureFileName)
+        userLocalDataSource.updateProfilePictureUrl(fileName: profilePictureFileName)
+    }
 }

@@ -10,7 +10,9 @@ class AnnouncementMapper {
             email: remoteAnnouncementWithUser.userEmail,
             schoolLevel: remoteAnnouncementWithUser.userSchoolLevel,
             isMember: remoteAnnouncementWithUser.userIsMember == 1,
-            profilePictureUrl: remoteAnnouncementWithUser.userProfilePictureUrl
+            profilePictureUrl: UserMapper.formatProfilePictureUrl(
+                fileName: remoteAnnouncementWithUser.userProfilePictureFileName
+            )
         )
         
         return Announcement(
@@ -71,7 +73,7 @@ class AnnouncementMapper {
             userEmail: announcement.author.email,
             userSchoolLevel: announcement.author.schoolLevel,
             userIsMember: announcement.author.isMember ? 1 : 0,
-            userProfilePictureUrl: announcement.author.profilePictureUrl
+            userProfilePictureFileName: UserMapper.getFileNameFromUrl(url: announcement.author.profilePictureUrl)
         )
     }
     

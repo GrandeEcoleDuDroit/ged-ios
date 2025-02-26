@@ -3,7 +3,7 @@ import Combine
 
 class ProfileViewModel: ObservableObject {
     @Published private(set) var currentUser: User? = nil
-    @Published private var profileState: ProfileState = .idle
+    @Published private var screenState: ProfileScreenState = .idle
     
     private let getCurrentUserUseCase: GetCurrentUserUseCase
     private var cancellables: Set<AnyCancellable> = []
@@ -23,7 +23,7 @@ class ProfileViewModel: ObservableObject {
         do {
             try logoutUseCase.execute()
         } catch {
-            profileState = .error(message: getString(.errorLogout))
+            screenState = .error(message: getString(.errorLogout))
             print("Error logging out: \(error)")
         }
     }

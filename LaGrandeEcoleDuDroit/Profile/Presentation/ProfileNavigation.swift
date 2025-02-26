@@ -9,7 +9,7 @@ struct ProfileNavigation: View {
             ProfileView()
                 .navigationDestination(for: ProfileScreen.self) { screen in
                     switch screen {
-                        case .account:
+                        case .accountInfos:
                             AccountView()
                     }
                 }
@@ -21,8 +21,8 @@ struct ProfileNavigation: View {
 
 #Preview {
     struct ProfileNavigation_Preview: View {
-        @StateObject var navigationCoordinator = CommonInjection.shared.resolve(NavigationCoordinator.self)
-        let tabBarVisibility = CommonInjection.shared.resolve(TabBarVisibility.self)
+        @StateObject var navigationCoordinator = NavigationCoordinator()
+        let tabBarVisibility = TabBarVisibility()
         let mockProfileViewModel = ProfileInjection.shared.resolveWithMock().resolve(ProfileViewModel.self)!
         
         var body: some View {
@@ -30,7 +30,7 @@ struct ProfileNavigation: View {
                 ProfileView()
                     .navigationDestination(for: ProfileScreen.self) { screen in
                         switch screen {
-                            case .account:
+                            case .accountInfos:
                                 AccountView()
                         }
                     }

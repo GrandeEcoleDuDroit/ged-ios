@@ -9,7 +9,7 @@ struct ProfileView: View {
         List {
             Section {
                 Button(
-                    action: { navigationCoordinator.push(ProfileScreen.account) }
+                    action: { navigationCoordinator.push(ProfileScreen.accountInfos) }
                 ) {
                     HStack {
                         ProfilePicture(url: profileViewModel.currentUser?.profilePictureUrl, scale: 0.5)

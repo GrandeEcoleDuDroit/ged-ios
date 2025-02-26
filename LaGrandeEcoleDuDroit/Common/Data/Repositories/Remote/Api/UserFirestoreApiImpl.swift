@@ -82,4 +82,9 @@ class UserFirestoreApiImpl: UserFirestoreApi {
     func stopListeningUsers() {
         listeners.removeAll()
     }
+    
+    func updateProfilePictureFileName(userId: String, fileName: String) async throws {
+        let userRef = usersCollection.document(userId)
+        try await userRef.updateData([FirestoreUserDataFields.profilePictureFileName: fileName])
+    }
 }

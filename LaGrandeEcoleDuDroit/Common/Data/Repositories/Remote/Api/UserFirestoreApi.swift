@@ -12,4 +12,6 @@ protocol UserFirestoreApi {
     func getFilteredUsers(filter: String) async throws -> [FirestoreUser]
     
     func stopListeningUsers()
+    
+    func updateProfilePictureFileName(userId: String, fileName: String) async throws
 }

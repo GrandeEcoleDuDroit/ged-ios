@@ -46,7 +46,7 @@ struct EditAnnouncementView: View {
         } message: { data in
             Text(errorMessage)
         }
-        .navigationTitle(getString(.edit))
+        .navigationTitle(getString(.editAnnouncement))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
