@@ -7,7 +7,7 @@ class GetAnnouncementsUseCase {
         self.announcementRepository = announcementRepository
     }
     
-    func execute() -> AnyPublisher<[Announcement], Never> {
+    func execute() -> CurrentValueSubject<[Announcement], Never> {
         announcementRepository.announcements
     }
 }

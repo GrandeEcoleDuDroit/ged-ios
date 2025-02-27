@@ -10,6 +10,7 @@ enum GedString: String {
     case save = "save"
     case now = "now"
     case finish = "finish"
+    case resend = "resend"
     case minutesAgoShort = "minutes_ago_short"
     case hoursAgoShort = "hours_ago_short"
     case daysAgoShort = "days_ago_short"
@@ -52,7 +53,7 @@ enum GedString: String {
     case emailNotVerified = "email_not_verified"
     case emailNotVerifiedDialogMessage = "email_not_verified_dialog_message"
     case verifyEmail = "verify_email"
-    case logoutAlertMessage = "logout_alert_message"
+    case logoutAlertTitle = "logout_alert_title"
     
     // Authentication errors
     case invalidEmailError = "invalid_email_error"
@@ -77,7 +78,7 @@ enum GedString: String {
     case post = "post"
     case announcementCreated = "announcement_created"
     case noAnnouncement = "no_announcement"
-    case deleteAnnouncementAlertMessage = "delete_announcemment_alert_message"
+    case deleteAnnouncementAlertTitle = "delete_announcement_alert_title"
     
     // News errors
     case errorCreatingAnnouncement = "error_creating_announcement"

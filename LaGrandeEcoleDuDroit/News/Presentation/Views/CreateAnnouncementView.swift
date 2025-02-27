@@ -40,7 +40,16 @@ struct CreateAnnouncementView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button(
                     action: {
-                        createAnnouncementViewModel.createAnnouncement(title: title, content: content)
+                        do {
+                            try createAnnouncementViewModel.createAnnouncement(title: title, content: content)
+                            navigationCoordinator.pop()
+                        } catch UserError.currentUserNotFound {
+                            errorMessage = getString(.noUserFound)
+                            showErrorAlert = true
+                        } catch {
+                            errorMessage = getString(.unknownError)
+                            showErrorAlert = true
+                        }
                     },
                     label: {
                         if content.isEmpty {
@@ -54,17 +63,6 @@ struct CreateAnnouncementView: View {
                     }
                 )
                 .disabled(content.isEmpty)
-            }
-        }
-        .onReceive(createAnnouncementViewModel.$announcementState) { state in
-            switch state {
-                case .created:
-                    navigationCoordinator.pop()
-                case .error(let message):
-                    errorMessage = message
-                    showErrorAlert = true
-                default:
-                    errorMessage = ""
             }
         }
         .onAppear {

@@ -7,16 +7,196 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "0162B684-69A6-4B39-B1C3-0BBB833E5224"
-            shouldBeEnabled = "No"
+            uuid = "78F6C5E2-3C87-4E38-BB84-ECB6EBBECC4E"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/News/Presentation/ViewModels/NewsViewModel.swift"
+            filePath = "LaGrandeEcoleDuDroit/News/Domain/UseCases/DeleteAnnouncementUseCase.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "28"
-            endingLineNumber = "28"
-            landmarkName = "initCurrentUser()"
+            startingLineNumber = "13"
+            endingLineNumber = "13"
+            landmarkName = "execute(announcementId:state:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "78F6C5E2-3C87-4E38-BB84-ECB6EBBECC4E - f31a3442de8f4831"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for La_Grande_Ecole_Du_Droit.DeleteAnnouncementUseCase.execute(announcementId: Swift.String, state: La_Grande_Ecole_Du_Droit.AnnouncementState) async throws -&gt; ()"
+                  moduleName = "La Grande Ecole Du Droit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Domain/UseCases/DeleteAnnouncementUseCase.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "13"
+                  endingLineNumber = "13">
+               </Location>
+               <Location
+                  uuid = "78F6C5E2-3C87-4E38-BB84-ECB6EBBECC4E - 56d2818fcca259dc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) await resume partial function for La_Grande_Ecole_Du_Droit.DeleteAnnouncementUseCase.execute(announcementId: Swift.String, state: La_Grande_Ecole_Du_Droit.AnnouncementState) async throws -&gt; ()"
+                  moduleName = "La Grande Ecole Du Droit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Domain/UseCases/DeleteAnnouncementUseCase.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "13"
+                  endingLineNumber = "13">
+               </Location>
+               <Location
+                  uuid = "78F6C5E2-3C87-4E38-BB84-ECB6EBBECC4E - 6dea2e569638d335"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for La_Grande_Ecole_Du_Droit.DeleteAnnouncementUseCase.execute(announcementId: Swift.String, state: La_Grande_Ecole_Du_Droit.AnnouncementState) async throws -&gt; ()"
+                  moduleName = "La Grande Ecole Du Droit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Domain/UseCases/DeleteAnnouncementUseCase.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "13"
+                  endingLineNumber = "13">
+               </Location>
+               <Location
+                  uuid = "78F6C5E2-3C87-4E38-BB84-ECB6EBBECC4E - 40ae23d59825b0f6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) suspend resume partial function for La_Grande_Ecole_Du_Droit.DeleteAnnouncementUseCase.execute(announcementId: Swift.String, state: La_Grande_Ecole_Du_Droit.AnnouncementState) async throws -&gt; ()"
+                  moduleName = "La Grande Ecole Du Droit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Domain/UseCases/DeleteAnnouncementUseCase.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "13"
+                  endingLineNumber = "13">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BB4C647D-20DE-4E87-BE1D-E5FACE8EC379"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Presentation/ViewModels/ReadAnnouncementViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "39"
+            endingLineNumber = "39"
+            landmarkName = "deleteAnnouncement()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "BB4C647D-20DE-4E87-BE1D-E5FACE8EC379 - 70aa659e628efbfc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for closure #1 () async -&gt; () in La_Grande_Ecole_Du_Droit.ReadAnnouncementViewModel.deleteAnnouncement() -&gt; ()"
+                  moduleName = "La Grande Ecole Du Droit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Presentation/ViewModels/ReadAnnouncementViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "39"
+                  endingLineNumber = "39">
+               </Location>
+               <Location
+                  uuid = "BB4C647D-20DE-4E87-BE1D-E5FACE8EC379 - 2d1871dbb203008d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for closure #1 () async -&gt; () in La_Grande_Ecole_Du_Droit.ReadAnnouncementViewModel.deleteAnnouncement() -&gt; ()"
+                  moduleName = "La Grande Ecole Du Droit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Presentation/ViewModels/ReadAnnouncementViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "39"
+                  endingLineNumber = "39">
+               </Location>
+               <Location
+                  uuid = "BB4C647D-20DE-4E87-BE1D-E5FACE8EC379 - 17f4cad8b8dc27fe"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 () async -&gt; () in La_Grande_Ecole_Du_Droit.ReadAnnouncementViewModel.deleteAnnouncement() -&gt; ()"
+                  moduleName = "La Grande Ecole Du Droit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Presentation/ViewModels/ReadAnnouncementViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "39"
+                  endingLineNumber = "39">
+               </Location>
+               <Location
+                  uuid = "BB4C647D-20DE-4E87-BE1D-E5FACE8EC379 - 1a6bfc7bd3f481f9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for closure #1 () async -&gt; () in La_Grande_Ecole_Du_Droit.ReadAnnouncementViewModel.deleteAnnouncement() -&gt; ()"
+                  moduleName = "La Grande Ecole Du Droit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Presentation/ViewModels/ReadAnnouncementViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "39"
+                  endingLineNumber = "39">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "15B0AD1C-B5E9-4FB1-AEC1-6FFD522CB88D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Presentation/ViewModels/ReadAnnouncementViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "40"
+            endingLineNumber = "40"
+            landmarkName = "deleteAnnouncement()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D725DE69-74BA-44EC-A2BA-6B782104D904"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Presentation/ViewModels/ReadAnnouncementViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
+            landmarkName = "deleteAnnouncement()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4A16BF90-5366-4456-804D-DC753F2BFAD8"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Presentation/ViewModels/ReadAnnouncementViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "35"
+            endingLineNumber = "35"
+            landmarkName = "deleteAnnouncement()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
