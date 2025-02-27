@@ -41,7 +41,7 @@ struct ProfileView: View {
         }
         .navigationTitle(getString(.profile))
         .alert(
-            getString(.logoutAlertMessage),
+            getString(.logoutAlertTitle),
             isPresented: $showLogoutAlert
         ) {
             Button(getString(.cancel), role: .cancel) {

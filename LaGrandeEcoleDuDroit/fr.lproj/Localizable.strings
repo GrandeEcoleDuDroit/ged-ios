@@ -10,6 +10,7 @@
 "home" = "Accueil";
 "now" = "Maintenant";
 "finish" = "Terminer";
+"resend" = "Renvoyer";
 "minutes_ago_short" = "%d min";
 "hours_ago_short" = "%d h";
 "days_ago_short" = "%d j";
@@ -52,7 +53,7 @@
 "email_not_verified" = "Adresse e-mail non vérifié";
 "email_not_verified_dialog_message" = "Veuillez vérifier votre adresse e-mail avant de continuer.";
 "verify_email" = "Vérifier l'e-mail";
-"logout_alert_message" = "Voulez-vous vous déconnecter ?";
+"logout_alert_title" = "Voulez-vous vous déconnecter ?";
 
 // Authtentication errors
 "invalid_email_error" = "Veuillez entrer une adresse e-mail valide.";
@@ -76,7 +77,7 @@
 "content" = "Contenu";
 "post" = "Poster";
 "no_announcement" = "Aucune annonce";
-"delete_announcemment_alert_message" = "Êtes-vous sûr de vouloir supprimer cette annonce ?";
+"delete_announcement_alert_title" = "Êtes-vous sûr de vouloir supprimer cette annonce ?";
 
 // News errors
 "error_creating_announcement" = "Une erreur est survenue lors de la création de l'annonce.";

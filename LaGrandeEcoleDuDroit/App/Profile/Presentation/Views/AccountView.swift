@@ -73,7 +73,6 @@ struct AccountView: View {
                 icon: Image(systemName: "photo.fill"),
                 text: Text(getString(.newProfilePicture))
             )
-            .font(.title3)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
             .presentationDetents([.fraction(0.10)])
@@ -92,7 +91,7 @@ struct AccountView: View {
                     withAnimation {
                         showSnackBar = true
                     }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                         withAnimation {
                             showSnackBar = false
                         }
@@ -105,7 +104,7 @@ struct AccountView: View {
                     withAnimation {
                         showSnackBar = true
                     }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                         withAnimation {
                             showSnackBar = false
                         }

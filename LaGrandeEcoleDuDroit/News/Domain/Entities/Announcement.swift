@@ -6,7 +6,7 @@ struct Announcement: Identifiable, Hashable {
     var content: String
     var date: Date
     var author: User
-    var state: AnnouncementState = .idle
+    var state: AnnouncementState
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)

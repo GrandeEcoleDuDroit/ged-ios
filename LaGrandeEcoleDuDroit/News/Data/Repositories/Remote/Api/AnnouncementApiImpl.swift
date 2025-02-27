@@ -31,9 +31,7 @@ class AnnouncementApiImpl: AnnouncementApi {
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
         
         if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
-                logger.error("Error to create announcement: \(serverResponse.error ?? "Unknown error")")
-            } else {
+            if httpResponse.statusCode >= 400 {
                 logger.error("Error to create announcement: \(serverResponse.error ?? "Unknown error")")
                 throw RequestError.invalidResponse(serverResponse.error)
             }
@@ -55,9 +53,7 @@ class AnnouncementApiImpl: AnnouncementApi {
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
         
         if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
-                logger.error("Error to delete announcement: \(serverResponse.error ?? "Unknown error")")
-            } else {
+            if httpResponse.statusCode >= 400 {
                 logger.error("Error to delete announcement: \(serverResponse.error ?? "Unknown error")")
                 throw RequestError.invalidResponse(serverResponse.error)
             }
@@ -79,9 +75,7 @@ class AnnouncementApiImpl: AnnouncementApi {
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
         
         if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
-                print(serverResponse.message)
-            } else {
+            if httpResponse.statusCode >= 400 {
                 throw RequestError.invalidResponse(serverResponse.error)
             }
         } else {

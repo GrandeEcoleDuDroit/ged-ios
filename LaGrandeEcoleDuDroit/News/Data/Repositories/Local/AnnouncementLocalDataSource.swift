@@ -75,14 +75,14 @@ class AnnouncementLocalDataSource {
         }
     }
     
-    func deleteAnnouncement(announcement: Announcement) async throws {
+    func deleteAnnouncement(announcementId: String) async throws {
         let localAnnouncement = try context.fetch(request).first {
-            $0.announcementId == announcement.id
+            $0.announcementId == announcementId
         }
         if localAnnouncement != nil {
             context.delete(localAnnouncement!)
             try context.save()
         }
-        announcements.value.removeAll { $0.id == announcement.id }
+        announcements.value.removeAll { $0.id == announcementId }
     }
 }

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct TopAnnouncementDetailItem: View {
+struct AnnouncementHeader: View {
     private var announcement: Announcement
     @State private var elapsedTime: ElapsedTime = .now(seconds: 0)
     @State private var elapsedTimeText: String = ""
@@ -29,7 +29,7 @@ struct TopAnnouncementDetailItem: View {
     }
 }
 
-struct AnnouncementItemWithContent: View {
+struct AnnouncementItem: View {
     private var announcement: Announcement
     private let onClick: () -> Void
     @State private var isClicked: Bool = false
@@ -84,7 +84,7 @@ struct AnnouncementItemWithContent: View {
     }
 }
 
-struct LoadingAnnouncementItemWithContent: View {
+struct SendingAnnouncementItem: View {
     private var announcement: Announcement
     private var onClick: () -> Void
     @State private var isClicked: Bool = false
@@ -100,42 +100,12 @@ struct LoadingAnnouncementItemWithContent: View {
     }
     
     var body: some View {
-        HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
-            ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
-            
-            VStack(alignment: .leading, spacing: GedSpacing.verySmall) {
-                HStack {
-                    Text(announcement.author.fullName)
-                        .font(.titleSmall)
-                    
-                    Text(elapsedTimeText)
-                        .font(.bodyMedium)
-                        .foregroundStyle(.textPreview)
-                }
-                
-                Text(announcement.title.isBlank ? announcement.title : announcement.content)
-                    .foregroundStyle(.textPreview)
-                    .font(.bodyMedium)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-            }
-            
-            Spacer()
-            
-            ProgressView()
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal)
-        .padding(.vertical, 5)
-        .onClick(isClicked: $isClicked, action: onClick)
-        .onAppear {
-            elapsedTime = GetElapsedTimeUseCase.execute(date: announcement.date)
-            elapsedTimeText = getElapsedTimeText(elapsedTime: elapsedTime, announcementDate: announcement.date)
-        }
+        AnnouncementItem(announcement: announcement, onClick: onClick)
+            .opacity(0.5)
     }
 }
 
-struct ErrorAnnouncementItemWithContent: View {
+struct ErrorAnnouncementItem: View {
     private var announcement: Announcement
     private var onClick: () -> Void
     @State private var isClicked: Bool = false
@@ -164,11 +134,19 @@ struct ErrorAnnouncementItemWithContent: View {
                         .foregroundStyle(.textPreview)
                 }
                 
-                Text(announcement.title.isBlank ? announcement.title : announcement.content)
-                    .foregroundStyle(.textPreview)
-                    .font(.bodyMedium)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
+                if !announcement.title.isEmpty {
+                    Text(announcement.title)
+                        .foregroundStyle(.textPreview)
+                        .font(.bodyMedium)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                } else {
+                    Text(announcement.content)
+                        .foregroundStyle(.textPreview)
+                        .font(.bodyMedium)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
             }
             
             Spacer()
@@ -208,13 +186,13 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, announcementDate: Date
 
 #Preview {
     VStack(spacing: 10) {
-        TopAnnouncementDetailItem(announcement: announcementFixture)
+        AnnouncementHeader(announcement: announcementFixture)
             .padding(.horizontal)
         
-        AnnouncementItemWithContent(announcement: announcementFixture, onClick: {})
+        AnnouncementItem(announcement: announcementFixture, onClick: {})
         
-        LoadingAnnouncementItemWithContent(announcement: announcementFixture, onClick: {})
+        SendingAnnouncementItem(announcement: announcementFixture, onClick: {})
         
-        ErrorAnnouncementItemWithContent(announcement: announcementFixture, onClick: {})
+        ErrorAnnouncementItem(announcement: announcementFixture, onClick: {})
     }
 }

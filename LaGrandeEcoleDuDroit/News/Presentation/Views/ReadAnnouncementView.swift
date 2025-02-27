@@ -1,38 +1,29 @@
 import SwiftUI
 
-struct AnnouncementDetailView: View {
-    @StateObject private var announcementDetailViewModel: AnnouncementDetailViewModel
-    @EnvironmentObject private var coordinator: NavigationCoordinator
+struct ReadAnnouncementView: View {
+    @StateObject private var readAnnouncementViewModel: ReadAnnouncementViewModel
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var showErrorAlert: Bool = false
     @State private var showDeleteAlert: Bool = false
     @State private var errorMessage: String = ""
     @State private var editMode: Bool = false
         
     init(announcement: Announcement) {
-        _announcementDetailViewModel = StateObject(wrappedValue: NewsInjection.shared.resolve(AnnouncementDetailViewModel.self, arguments: announcement)!)
+        _readAnnouncementViewModel = StateObject(
+            wrappedValue: NewsInjection.shared.resolve(ReadAnnouncementViewModel.self, arguments: announcement)!
+        )
     }
     
     var body: some View {
-        HStack {
-            if editMode {
-                editAnnouncement
-            } else {
-                readAnnouncement
-            }
-        }
-        .navigationBarBackButtonHidden(editMode)
-    }
-    
-    var readAnnouncement: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
             HStack {
-                TopAnnouncementDetailItem(announcement: announcementDetailViewModel.announcement)
+                AnnouncementHeader(announcement: readAnnouncementViewModel.announcement)
                 
-                if let currentUser = announcementDetailViewModel.currentUser {
-                    if currentUser.isMember && announcementDetailViewModel.announcement.author.id == currentUser.id {
+                if let currentUser = readAnnouncementViewModel.currentUser {
+                    if currentUser.isMember && readAnnouncementViewModel.announcement.author.id == currentUser.id {
                         Menu {
                             Button(
-                                action: { editMode = true },
+                                action: { navigationCoordinator.push(NewsScreen.editAnnouncement(readAnnouncementViewModel.announcement)) },
                                 label: {
                                     Label(getString(.edit), systemImage: "square.and.pencil")
                                 }
@@ -56,12 +47,14 @@ struct AnnouncementDetailView: View {
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: GedSpacing.medium) {
-                    Text(announcementDetailViewModel.announcement.title)
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    if !readAnnouncementViewModel.announcement.title.isBlank {
+                        Text(readAnnouncementViewModel.announcement.title)
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                     
-                    Text(announcementDetailViewModel.announcement.content)
+                    Text(readAnnouncementViewModel.announcement.content)
                         .font(.bodyLarge)
                         .lineSpacing(5)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -76,57 +69,36 @@ struct AnnouncementDetailView: View {
         ) {
             Button(getString(.ok)) {
                 showErrorAlert = false
-                announcementDetailViewModel.resetAnnouncementState()
+                readAnnouncementViewModel.resetAnnouncementState()
             }
         }
         .alert(
-            getString(.deleteAnnouncementAlertMessage),
+            getString(.deleteAnnouncementAlertTitle),
             isPresented: $showDeleteAlert
         ) {
             Button(getString(.cancel), role: .cancel) {
                 showDeleteAlert = false
             }
             Button(getString(.delete), role: .destructive) {
-                announcementDetailViewModel.deleteAnnouncement()
+                readAnnouncementViewModel.deleteAnnouncement()
             }
         }
-        .onReceive(announcementDetailViewModel.$announcementState) { state in
-            if case .deleted = state {
-                announcementDetailViewModel.resetAnnouncementState()
-                coordinator.pop()
+        .onReceive(readAnnouncementViewModel.$screenState) { state in
+            if case .success = state {
+                navigationCoordinator.pop()
             } else if case .error(let message) = state {
                 errorMessage = message
                 showErrorAlert = true
-                announcementDetailViewModel.resetAnnouncementState()
+                readAnnouncementViewModel.resetAnnouncementState()
             }
         }
-    }
-    
-    var editAnnouncement: some View {
-        EditAnnouncementView(
-            announcement: announcementDetailViewModel.announcement,
-            onCancelClick: {
-                editMode = false
-            },
-            onSaveClick: { title, content in
-                announcementDetailViewModel.updateAnnouncement(
-                    announcement: announcementDetailViewModel.announcement.with(title: title, content: content, date: .now)
-                )
-            }
-        )
-        .onReceive(announcementDetailViewModel.$announcementState) { state in
-            if case .updated = state {
-                editMode = false
-            }
-        }
-        .environmentObject(announcementDetailViewModel)
     }
 }
 
 
 #Preview {
     NavigationStack {
-        AnnouncementDetailView(announcement: announcementFixture)
+        ReadAnnouncementView(announcement: announcementFixture)
             .environmentObject(NavigationCoordinator())
     }
 }
