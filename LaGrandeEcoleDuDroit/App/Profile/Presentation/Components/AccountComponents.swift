@@ -9,7 +9,7 @@ struct AccountInfoItem: View {
             Text(title)
                 .font(.callout)
                 .bold()
-                .foregroundColor(.previewText)
+                .foregroundColor(.textPreview)
             
             Text(value)
                 .font(.body)

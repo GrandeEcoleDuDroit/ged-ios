@@ -1,13 +1,11 @@
-import Combine
-
-class GetAnnouncementsUseCase {
+class RefreshAnnouncementsUseCase {
     private let announcementRepository: AnnouncementRepository
     
     init(announcementRepository: AnnouncementRepository) {
         self.announcementRepository = announcementRepository
     }
     
-    func execute() -> CurrentValueSubject<[Announcement], Never> {
-        announcementRepository.announcements
+    func execute() async throws {
+        try await announcementRepository.refreshAnnouncements()
     }
 }

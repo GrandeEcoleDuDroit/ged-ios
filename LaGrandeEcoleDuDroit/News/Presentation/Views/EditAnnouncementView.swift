@@ -1,68 +1,62 @@
 import SwiftUI
 
 struct EditAnnouncementView: View {
-    @EnvironmentObject private var announcementDetailViewModel: AnnouncementDetailViewModel
+    @StateObject private var editAnnouncementViewModel: EditAnnouncementViewModel
+    @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @FocusState private var inputFieldFocused: InputField?
     @State private var isActive: Bool = false
-    @State private var showErrorAlert: Bool = false
-    @State private var errorMessage: String = ""
+    @State private var toastMessage: String = ""
     @State private var announcement: Announcement
+    @State private var showLoadingToast: Bool = false
+    @State private var showErrorToast: Bool = false
     
-    private let onCancelClick: () -> Void
-    private let onSaveClick: (String, String) -> Void
-    
-    init(
-        announcement: Announcement,
-        onCancelClick: @escaping () -> Void,
-        onSaveClick: @escaping (String, String) -> Void
-    ) {
-        self._announcement = State(initialValue: announcement)
-        self.onCancelClick = onCancelClick
-        self.onSaveClick = onSaveClick
+    init(announcement: Announcement) {
+        self.announcement = announcement
+        _editAnnouncementViewModel = StateObject(
+            wrappedValue: NewsInjection.shared.resolve(EditAnnouncementViewModel.self, arguments: announcement)!
+        )
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            TextField(getString(.title), text: $announcement.title, axis: .vertical)
-                .font(.title2)
-                .fontWeight(.semibold)
-                .focused($inputFieldFocused, equals: InputField.title)
-            
-            TextField(getString(.content), text: $announcement.content, axis: .vertical)
-                .font(.bodyLarge)
-                .lineSpacing(5)
-                .focused($inputFieldFocused, equals: InputField.content)
+            TextField(
+                getString(.title),
+                text: $editAnnouncementViewModel.announcement.title,
+                axis: .vertical
+            )
+            .font(.title2)
+            .fontWeight(.semibold)
+            .focused($inputFieldFocused, equals: InputField.title)
+        
+            TextField(
+                getString(.content),
+                text: $editAnnouncementViewModel.announcement.content,
+                axis: .vertical
+            )
+            .font(.bodyLarge)
+            .lineSpacing(5)
+            .focused($inputFieldFocused, equals: InputField.content)
         }
+        .disabled(showLoadingToast)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
-        .alert(
-            "",
-            isPresented: $showErrorAlert,
-            presenting: ""
-        ) { data in
-            Button(getString(.ok)) {
-                showErrorAlert = false
-            }
-        } message: { data in
-            Text(errorMessage)
-        }
         .navigationTitle(getString(.editAnnouncement))
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button(
-                    action: onCancelClick,
-                    label: { Text(getString(.cancel)) }
-                )
+                Button(getString(.cancel)) {
+                    navigationCoordinator.pop()
+                }
             }
             
             ToolbarItem(placement: .topBarTrailing) {
                 Button(
-                    action: { onSaveClick(announcement.title, announcement.content) },
+                    action: { editAnnouncementViewModel.updateAnnouncement() },
                     label: {
                         if announcement.content.isEmpty ||
-                            announcement.title == announcementDetailViewModel.announcement.title &&
-                            announcement.content == announcementDetailViewModel.announcement.content {
+                            editAnnouncementViewModel.announcement.title == announcement.title &&
+                            editAnnouncementViewModel.announcement.content == announcement.content {
                             Text(getString(.save))
                                 .fontWeight(.semibold)
                         } else {
@@ -73,14 +67,15 @@ struct EditAnnouncementView: View {
                     }
                 )
                 .disabled(
-                    announcement.content.isEmpty ||
+                    editAnnouncementViewModel.announcement.content.isEmpty ||
                     (
-                        announcement.title == announcementDetailViewModel.announcement.title &&
-                        announcement.content == announcementDetailViewModel.announcement.content
+                        editAnnouncementViewModel.announcement.title == announcement.title &&
+                        editAnnouncementViewModel.announcement.content == announcement.content
                     )
                 )
             }
         }
+        .disabled(showLoadingToast)
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 inputFieldFocused = InputField.title
@@ -90,13 +85,31 @@ struct EditAnnouncementView: View {
         .onTapGesture {
             inputFieldFocused = nil
         }
+        .onReceive(editAnnouncementViewModel.$screenState) { state in
+            switch state {
+                case .error(let message):
+                    withAnimation {
+                        showLoadingToast = false
+                    }
+                    toastMessage = message
+                    showErrorToast = true
+                    editAnnouncementViewModel.updateScreenState(.initial)
+                case .loading:
+                    showLoadingToast = true
+                case .updated:
+                    showLoadingToast = false
+                    navigationCoordinator.pop()
+                default: break
+            }
+        }
+        .toast(isPresented: $showLoadingToast, message: getString(.loading), position: .center, type: .loading)
+        .toast(isPresented: $showErrorToast, message: toastMessage)
     }
 }
 
 #Preview {
-    EditAnnouncementView(
-        announcement: announcementFixture,
-        onCancelClick: {},
-        onSaveClick: { _, _ in }
-    ).environmentObject(NewsInjection.shared.resolve(AnnouncementDetailViewModel.self))
+    NavigationStack {
+        EditAnnouncementView(announcement: announcementFixture)
+            .environmentObject(NavigationCoordinator())
+    }
 }

@@ -5,7 +5,11 @@ class DeleteAnnouncementUseCase {
         self.announcementRepository = announcementRepository
     }
     
-    func execute(announcement: Announcement) async throws {
-        try await announcementRepository.deleteAnnouncement(announcement: announcement)
+    func execute(announcementId: String, state: AnnouncementState) async throws {
+        if case state = .error {
+            await announcementRepository.deleteLocalAnnouncement(announcementId: announcementId)
+        } else {
+            try await announcementRepository.deleteAnnouncement(announcementId: announcementId)
+        }
     }
 }

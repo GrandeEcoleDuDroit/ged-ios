@@ -1,8 +1,6 @@
 import Foundation
 import os
 
-private let logger = Logger(subsystem: "com.upsaclay.gedoise", category: "AnnouncementApi")
-
 class AnnouncementApiImpl: AnnouncementApi {
     private func baseUrl(endPoint: String) -> URL? {
         URL.oracleUrl(endpoint: "/announcements" + endPoint)
@@ -10,7 +8,6 @@ class AnnouncementApiImpl: AnnouncementApi {
     
     func getAnnouncements() async throws -> [RemoteAnnouncementWithUser] {
         guard let url = baseUrl(endPoint: "") else {
-            logger.error("Invalid URL to get announcements")
             throw RequestError.invalidURL
         }
         
@@ -31,15 +28,9 @@ class AnnouncementApiImpl: AnnouncementApi {
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
         
         if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
-                logger.error("Error to create announcement: \(serverResponse.error ?? "Unknown error")")
-            } else {
-                logger.error("Error to create announcement: \(serverResponse.error ?? "Unknown error")")
+            if httpResponse.statusCode >= 400 {
                 throw RequestError.invalidResponse(serverResponse.error)
             }
-        } else {
-            logger.error("Error to create announcement: \(serverResponse.error ?? "Unknown error")")
-            throw RequestError.invalidResponse(serverResponse.error)
         }
     }
     
@@ -55,15 +46,9 @@ class AnnouncementApiImpl: AnnouncementApi {
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
         
         if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
-                logger.error("Error to delete announcement: \(serverResponse.error ?? "Unknown error")")
-            } else {
-                logger.error("Error to delete announcement: \(serverResponse.error ?? "Unknown error")")
+            if httpResponse.statusCode >= 400 {
                 throw RequestError.invalidResponse(serverResponse.error)
             }
-        } else {
-            logger.error("Error to delete announcement: \(serverResponse.error ?? "Unknown error")")
-            throw RequestError.invalidResponse(serverResponse.error)
         }
     }
     
@@ -79,13 +64,9 @@ class AnnouncementApiImpl: AnnouncementApi {
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
         
         if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
-                print(serverResponse.message)
-            } else {
+            if httpResponse.statusCode >= 400 {
                 throw RequestError.invalidResponse(serverResponse.error)
             }
-        } else {
-            throw RequestError.invalidResponse(serverResponse.error)
         }
     }
 }

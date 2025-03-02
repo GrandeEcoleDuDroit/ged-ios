@@ -9,7 +9,7 @@ class CreateAnnouncementViewModel: ObservableObject {
 
     @Published var title: String?
     @Published var content: String = ""
-    @Published private(set) var announcementState: AnnouncementState = .loading
+    @Published private(set) var announcementState: AnnouncementState = .sending
     
     init(
         createAnnouncementUseCase: CreateAnnouncementUseCase,
@@ -23,10 +23,9 @@ class CreateAnnouncementViewModel: ObservableObject {
         currentUser = getCurrentUserUseCase.execute().value
     }
     
-    func createAnnouncement(title: String = "", content: String) {
+    func createAnnouncement(title: String, content: String) throws {
         guard let currentUser = currentUser else {
-            updateAnnouncementState(to: .error(message: getString(.authUserNotFound)))
-            return
+            throw UserError.currentUserNotFound
         }
         
         let announcement = Announcement(
@@ -34,28 +33,12 @@ class CreateAnnouncementViewModel: ObservableObject {
             title: title,
             content: content,
             date: Date.now,
-            author: currentUser
+            author: currentUser,
+            state: .sending
         )
-      
-        updateAnnouncementState(to: .loading)
         
         Task {
-            do {
-                try await createAnnouncementUseCase.execute(announcement: announcement)
-                updateAnnouncementState(to: .created)
-            } catch {
-                updateAnnouncementState(to: .error(message: getString(.errorCreatingAnnouncement)))
-            }
-        }
-    }
-    
-    private func updateAnnouncementState(to state: AnnouncementState) {
-        if Thread.isMainThread {
-            announcementState = state
-        } else {
-            DispatchQueue.main.sync { [weak self] in
-                self?.announcementState = state
-            }
+            await createAnnouncementUseCase.execute(announcement: announcement)
         }
     }
 }

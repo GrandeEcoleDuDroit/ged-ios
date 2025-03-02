@@ -9,8 +9,10 @@ struct NewsNavigation: View {
             NewsView()
                 .navigationDestination(for: NewsScreen.self) { screen in
                     switch screen {
-                        case .announcementDetail(let announcement):
-                            AnnouncementDetailView(announcement: announcement)
+                        case .readAnnouncement(let announcement):
+                            ReadAnnouncementView(announcement: announcement)
+                        case .editAnnouncement(let announcement):
+                            EditAnnouncementView(announcement: announcement)
                         case .createAnnouncement:
                             CreateAnnouncementView()
                     }
@@ -31,8 +33,10 @@ struct NewsNavigation: View {
                 NewsView()
                     .navigationDestination(for: NewsScreen.self) { screen in
                         switch screen {
-                            case .announcementDetail(let announcement):
-                                AnnouncementDetailView(announcement: announcement)
+                            case .readAnnouncement(let announcement):
+                                ReadAnnouncementView(announcement: announcement)
+                            case .editAnnouncement(let announcement):
+                                EditAnnouncementView(announcement: announcement)
                             case .createAnnouncement:
                                 CreateAnnouncementView()
                         }
