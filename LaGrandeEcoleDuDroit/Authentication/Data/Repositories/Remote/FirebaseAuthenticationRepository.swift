@@ -8,4 +8,6 @@ protocol FirebaseAuthenticationRepository {
     func sendEmailVerification() async throws
     
     func isEmailVerified() async throws -> Bool
+    
+    func resetPassword(email: String) async throws
 }

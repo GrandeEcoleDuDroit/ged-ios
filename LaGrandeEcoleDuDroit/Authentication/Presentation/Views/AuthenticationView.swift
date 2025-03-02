@@ -27,7 +27,6 @@ struct AuthenticationView: View {
                     },
                     isLoading: isLoading
                 )
-                .environmentObject(authenticationViewModel)
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -75,7 +74,6 @@ private struct Header: View {
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, alignment: .center)
-                .foregroundStyle(.gedPrimary)
         }
     }
 }
@@ -105,19 +103,18 @@ private struct CredentialsInputs: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            FocusableOutlinedTextField(
+            EmailTextField(
                 title: getString(.email),
                 text: $email,
                 inputField: InputField.email,
                 inputFieldFocused: $inputFieldFocused,
                 isDisable: isLoading
             )
-            .textInputAutocapitalization(.never)
             .simultaneousGesture(TapGesture().onEnded({
                 isInputsFocused = true
             }))
             
-            FocusableOutlinedPasswordTextField(
+            PasswordTextField(
                 title: getString(.password),
                 text: $password,
                 inputField: InputField.password,

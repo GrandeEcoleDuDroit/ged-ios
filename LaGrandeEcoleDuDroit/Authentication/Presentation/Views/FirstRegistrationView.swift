@@ -10,14 +10,14 @@ struct FirstRegistrationView: View {
             Text(getString(.enterFirstNameAndLastName))
                 .font(.title3)
             
-            FocusableOutlinedTextField(
+            EmailTextField(
                 title: getString(.lastName),
                 text: $registrationViewModel.lastName,
                 inputField: InputField.lastName,
                 inputFieldFocused: $inputFieldFocused
             )
             
-            FocusableOutlinedTextField(
+            EmailTextField(
                 title: getString(.firstName),
                 text: $registrationViewModel.firstName,
                 inputField: InputField.firstName,

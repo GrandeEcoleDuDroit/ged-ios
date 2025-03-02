@@ -77,4 +77,17 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
     func signOut() async throws {
         try Auth.auth().signOut()
     }
+    
+    func resetPassword(email: String) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            Auth.auth().sendPasswordReset(withEmail: email) { error in
+                if error != nil {
+                    e(tag, "FirebaseAuth reset password error: \(error!.localizedDescription)")
+                    continuation.resume(throwing: error!)
+                } else {
+                    continuation.resume()
+                }
+            }
+        }
+    }
 }

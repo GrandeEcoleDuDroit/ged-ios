@@ -11,7 +11,7 @@ struct ThirdRegistrationView: View {
             Text(getString(.enterEmailPassword))
                 .font(.title3)
             
-            FocusableOutlinedTextField(
+            EmailTextField(
                 title: getString(.email),
                 text: $registrationViewModel.email,
                 inputField: InputField.email,
@@ -20,7 +20,7 @@ struct ThirdRegistrationView: View {
             )
             .textInputAutocapitalization(.never)
             
-            FocusableOutlinedPasswordTextField(
+            PasswordTextField(
                 title: getString(.password),
                 text: $registrationViewModel.password,
                 inputField: InputField.password,

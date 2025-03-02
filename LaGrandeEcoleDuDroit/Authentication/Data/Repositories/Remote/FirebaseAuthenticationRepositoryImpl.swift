@@ -60,4 +60,8 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
     func isEmailVerified() async throws -> Bool {
         try await firebaseAuthApi.isEmailVerified()
     }
+    
+    func resetPassword(email: String) async throws {
+        try await firebaseAuthApi.resetPassword(email: email)
+    }
 }

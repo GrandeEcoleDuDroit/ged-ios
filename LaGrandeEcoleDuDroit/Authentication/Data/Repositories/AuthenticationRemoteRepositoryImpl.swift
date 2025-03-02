@@ -40,4 +40,8 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     func setAuthenticated(_ isAuthenticated: Bool) async {
         await authenticationLocalDataSource.setAuthenticated(isAuthenticated)
     }
+    
+    func resetPassword(email: String) async throws {
+        try await firebaseAuthenticationRepository.resetPassword(email: email)
+    }
 }
