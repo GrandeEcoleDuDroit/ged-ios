@@ -1,8 +1,6 @@
 import Foundation
 import Combine
 
-private let tag = String(describing: ReadAnnouncementViewModel.self)
-
 class ReadAnnouncementViewModel: ObservableObject {
     private let updateAnnouncementUseCase: UpdateAnnouncementUseCase
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
@@ -11,7 +9,7 @@ class ReadAnnouncementViewModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
     let currentUser: User?
     
-    @Published private(set) var screenState: AnnouncementScreenState = .idle
+    @Published private(set) var screenState: AnnouncementScreenState = .initial
     @Published var announcement: Announcement
     
     init(
@@ -37,16 +35,30 @@ class ReadAnnouncementViewModel: ObservableObject {
         Task {
             do {
                 try await deleteAnnouncementUseCase.execute(announcementId: announcement.id, state: announcement.state)
-                updateScreenState(.success)
+                updateScreenState(.deleted)
+            } catch RequestError.invalidResponse {
+                updateScreenState(.error(message: getString(.internalServerError)))
+            } catch let error as URLError {
+                switch error.code {
+                    case .notConnectedToInternet:
+                        updateScreenState(.error(message: getString(.notConnectedToInternetError)))
+                    case .timedOut:
+                        updateScreenState(.error(message: getString(.timedOutError)))
+                    case .networkConnectionLost:
+                        updateScreenState(.error(message: getString(.networkConnectionLostError)))
+                    case .cannotFindHost:
+                        updateScreenState(.error(message: getString(.cannotFindHostError)))
+                    default:
+                        updateScreenState(.error(message: getString(.unknownNetworkError)))
+                }
             } catch {
-                e(tag, error.localizedDescription)
-                updateScreenState(.error(message: error.localizedDescription))
+                updateScreenState(.error(message: getString(.unknownError)))
             }
         }
     }
     
     func resetAnnouncementState() {
-        updateScreenState(.idle)
+        updateScreenState(.initial)
     }
     
     private func listenAnnouncement() {

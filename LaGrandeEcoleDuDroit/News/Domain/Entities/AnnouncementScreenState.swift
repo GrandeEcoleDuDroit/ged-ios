@@ -1,6 +1,8 @@
 enum AnnouncementScreenState {
-    case idle
+    case initial
     case loading
     case success
+    case updated
+    case deleted
     case error(message: String)
 }

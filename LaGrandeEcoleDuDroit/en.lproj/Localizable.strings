@@ -11,6 +11,7 @@
 "now" = "Now";
 "finish" = "Finish";
 "resend" = "Resend";
+"loading" = "Loading";
 "minutes_ago_short" = "%d min";
 "hours_ago_short" = "%d h";
 "days_ago_short" = "%d d";
@@ -26,7 +27,13 @@
 // Common error
 "empty_inputs_error" = "Please fill out all fields.";
 "timed_out_error" = "The service took too long to respond. Please try again.";
-"not_connected_to_internet_error" = "A network error occurred. Please check your internet connection.";
+"not_connected_to_internet_error" = "No internet connection detected. Check your connection and try again.";
+"internal_server_error" = "A server error occurred. Please try again.";
+"network_connection_lost_error" = "The network connection was lost. Please check your connection and try again.";
+"cannot_find_host_error" = "Cannot find the host. Please check your connection and try again.";
+"unknown_network_error" = "A network error occurred. Please try again.";
+"unknown_error" = "An unknown error has occured. Please try again.";
+"user_not_found_error" = "Utilisateur non trouvé. Veuillez vous reconnecter puis réessayer.";
 
 // Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";
@@ -63,7 +70,6 @@
 "email_not_verified_error" = "Please validate your email address before to continue.";
 "registration_error" = "An error occured while registration";
 "account_already_in_use_error" = "The account is already in use. Please log in or reset your password.";
-"unknown_error" = "An unknown error has occured. Please try again.";
 "too_many_request_error" = "You have made too many requests. Please try again in a few minutes.";
 "verify_email" = "Verify email";
 "logout_alert_message" = "Do you want to log out ?";
@@ -82,6 +88,7 @@
 // News errors
 "error_creating_announcement " = "An error occured while creating the announcement.";
 "error_deleting_announcement" = "An error occured while deleting the announcement.";
+"error_refresh_page" = "Couldn't to refresh the page.";
 
 // Profile
 "profile" = "Profile";

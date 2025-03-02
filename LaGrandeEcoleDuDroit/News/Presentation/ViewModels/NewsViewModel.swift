@@ -8,25 +8,38 @@ class NewsViewModel: ObservableObject {
     private let getCurrentUserUseCase: GetCurrentUserUseCase
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
     private let resendErrorAnnouncementUseCase: ResendErrorAnnouncementUseCase
+    private let refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
     private var cancellables: Set<AnyCancellable> = []
-    var currentUser: User? = nil
+    private(set) var currentUser: User? = nil
     
     @Published private(set) var announcements: [Announcement] = []
-    @Published private(set) var screenState: AnnouncementScreenState = .idle
+    @Published private(set) var screenState: AnnouncementScreenState = .initial
     
     init(
         getCurrentUserUseCase: GetCurrentUserUseCase,
         getAnnouncementsUseCase: GetAnnouncementsUseCase,
         deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
-        resendErrorAnnouncementUseCase: ResendErrorAnnouncementUseCase
+        resendErrorAnnouncementUseCase: ResendErrorAnnouncementUseCase,
+        refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
     ) {
         self.getCurrentUserUseCase = getCurrentUserUseCase
         self.getAnnouncementsUseCase = getAnnouncementsUseCase
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
         self.resendErrorAnnouncementUseCase = resendErrorAnnouncementUseCase
+        self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
         
         initCurrentUser()
         initAnnouncements()
+    }
+    
+    func refreshAnnouncements() async {
+        do {
+            try await refreshAnnouncementsUseCase.execute()
+        } catch is URLError {
+            updateScreenState(.error(message: getString(.errorRefreshPage)))
+        } catch {
+            e(tag, "Error refreshing announcements", error)
+        }
     }
     
     func deleteAnnouncement(announcement: Announcement) {
@@ -39,8 +52,21 @@ class NewsViewModel: ObservableObject {
         Task {
             do {
                 try await resendErrorAnnouncementUseCase.execute(announcement: announcement)
+            } catch let error as URLError {
+                switch error.code {
+                    case .notConnectedToInternet:
+                        updateScreenState(.error(message: getString(.notConnectedToInternetError)))
+                    case .timedOut:
+                        updateScreenState(.error(message: getString(.timedOutError)))
+                    case .networkConnectionLost:
+                        updateScreenState(.error(message: getString(.networkConnectionLostError)))
+                    case .cannotFindHost:
+                        updateScreenState(.error(message: getString(.cannotFindHostError)))
+                    default:
+                        updateScreenState(.error(message: getString(.unknownNetworkError)))
+                }
             } catch {
-                updateScreenState(.error(message: error.localizedDescription))
+                updateScreenState(.error(message: getString(.unknownError)))
             }
         }
     }
@@ -52,6 +78,10 @@ class NewsViewModel: ObservableObject {
     }
     
     private func initAnnouncements() {
+        Task {
+            await refreshAnnouncements()
+        }
+        
         getAnnouncementsUseCase.execute()
             .receive(on: RunLoop.main)
             .sink { [weak self] announcements in

@@ -4,8 +4,8 @@ struct CreateAnnouncementView: View {
     @StateObject private var createAnnouncementViewModel: CreateAnnouncementViewModel = NewsInjection.shared.resolve(CreateAnnouncementViewModel.self)
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @FocusState private var inputFieldFocused: InputField?
-    @State private var showErrorAlert: Bool = false
-    @State private var errorMessage: String = ""
+    @State private var showToast: Bool = false
+    @State private var toastMessage: String = ""
     @State private var title: String = ""
     @State private var content: String = ""
     
@@ -28,14 +28,7 @@ struct CreateAnnouncementView: View {
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
-        .alert(
-            errorMessage,
-            isPresented: $showErrorAlert
-        ) {
-            Button(getString(.ok)) {
-                showErrorAlert = false
-            }
-        }
+        .toast(isPresented: $showToast, message: toastMessage)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button(
@@ -44,11 +37,11 @@ struct CreateAnnouncementView: View {
                             try createAnnouncementViewModel.createAnnouncement(title: title, content: content)
                             navigationCoordinator.pop()
                         } catch UserError.currentUserNotFound {
-                            errorMessage = getString(.noUserFound)
-                            showErrorAlert = true
+                            toastMessage = getString(.userNotFoundError)
+                            showToast = true
                         } catch {
-                            errorMessage = getString(.unknownError)
-                            showErrorAlert = true
+                            toastMessage = error.localizedDescription
+                            showToast = true
                         }
                     },
                     label: {

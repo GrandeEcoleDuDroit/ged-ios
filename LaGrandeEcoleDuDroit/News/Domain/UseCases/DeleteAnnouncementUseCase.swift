@@ -6,11 +6,10 @@ class DeleteAnnouncementUseCase {
     }
     
     func execute(announcementId: String, state: AnnouncementState) async throws {
-        switch state {
-            case .error, .sending:
-                await announcementRepository.deleteLocalAnnouncement(announcementId: announcementId)
-            default:
-                try await announcementRepository.deleteAnnouncement(announcementId: announcementId)
+        if case state = .error {
+            await announcementRepository.deleteLocalAnnouncement(announcementId: announcementId)
+        } else {
+            try await announcementRepository.deleteAnnouncement(announcementId: announcementId)
         }
     }
 }

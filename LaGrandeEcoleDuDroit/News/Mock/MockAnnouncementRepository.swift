@@ -27,4 +27,8 @@ class MockAnnouncementRepository: AnnouncementRepository {
     func deleteLocalAnnouncement(announcementId: String) async {
         announcements.value.removeAll(where: { $0.id == announcementId })
     }
+    
+    func refreshAnnouncements() async throws {
+        announcements.value = announcementsFixture
+    }
 }

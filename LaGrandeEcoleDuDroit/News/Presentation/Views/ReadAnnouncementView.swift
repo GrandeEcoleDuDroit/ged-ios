@@ -23,7 +23,8 @@ struct ReadAnnouncementView: View {
                     if currentUser.isMember && readAnnouncementViewModel.announcement.author.id == currentUser.id {
                         Menu {
                             Button(
-                                action: { navigationCoordinator.push(NewsScreen.editAnnouncement(readAnnouncementViewModel.announcement)) },
+                                action: { navigationCoordinator.push(NewsScreen.editAnnouncement(readAnnouncementViewModel.announcement))
+                                },
                                 label: {
                                     Label(getString(.edit), systemImage: "square.and.pencil")
                                 }
@@ -84,7 +85,7 @@ struct ReadAnnouncementView: View {
             }
         }
         .onReceive(readAnnouncementViewModel.$screenState) { state in
-            if case .success = state {
+            if case .deleted = state {
                 navigationCoordinator.pop()
             } else if case .error(let message) = state {
                 errorMessage = message

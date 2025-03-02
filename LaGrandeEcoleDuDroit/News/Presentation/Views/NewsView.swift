@@ -4,10 +4,10 @@ struct NewsView: View {
     @StateObject private var newsViewModel = NewsInjection.shared.resolve(NewsViewModel.self)
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
-    @State private var isActive: Bool = false
     @State private var isRefreshing: Bool = false
-    @State private var showSnackBar: Bool = false
-    @State private var snackBarType: SnackBarType = .info()
+    @State private var showCenterToast: Bool = false
+    @State private var showBottomToast: Bool = false
+    @State private var toastMessage: String = ""
     
     var body: some View {
         GeometryReader { geometry in
@@ -16,8 +16,11 @@ struct NewsView: View {
                     announcements: newsViewModel.announcements,
                     maxHeight: geometry.size.height / 2.5,
                     onRefresh: {
-                        try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
-                        isRefreshing.toggle()
+                        Task {
+                            isRefreshing = true
+                            await newsViewModel.refreshAnnouncements()
+                            isRefreshing = false
+                        }
                     }
                 )
                 .id(isRefreshing)
@@ -28,20 +31,6 @@ struct NewsView: View {
                 )
                 .environmentObject(newsViewModel)
                 .environmentObject(navigationCoordinator)
-            }
-            
-            if showSnackBar {
-                switch snackBarType {
-                    case .success(let message):
-                        SuccesSnackbar(message)
-                            .frame(maxHeight: .infinity, alignment: .bottom)
-                            .padding(.horizontal)
-                    case .error(let message):
-                        ErrorSnackbar(message)
-                            .frame(maxHeight: .infinity, alignment: .bottom)
-                            .padding(.horizontal)
-                    default : EmptyView()
-                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -75,19 +64,13 @@ struct NewsView: View {
         .onAppear {
             tabBarVisibility.show = true
         }
+        .toast(isPresented: $showCenterToast, message: toastMessage, position: .center)
+        .toast(isPresented: $showBottomToast, message: toastMessage)
         .onReceive(newsViewModel.$screenState) { state in
             if case .error(let message) = state {
-                withAnimation {
-                    snackBarType = .error(message)
-                    showSnackBar = true
-                    newsViewModel.updateScreenState(.idle)
-                }
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    withAnimation {
-                        showSnackBar = false
-                    }
-                }
+                toastMessage = message
+                showCenterToast = true
+                newsViewModel.updateScreenState(.initial)
             }
         }
     }
@@ -97,6 +80,7 @@ struct RecentAnnouncementSection: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var showSheet: Bool = false
+    @State private var showDeleteSheet: Bool = false
     @State private var showDeleteAnnouncementAlert: Bool = false
     @State private var selectedAnnouncement: Announcement?
     private var announcements: [Announcement]
@@ -119,19 +103,23 @@ struct RecentAnnouncementSection: View {
                 .font(.titleMedium)
                 .padding(.horizontal)
             
-            if announcements.isEmpty {
-                Text(getString(.noAnnouncement))
-                    .font(.bodyLarge)
-                    .foregroundColor(Color(UIColor.lightGray))
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .top)
-            } else {
-                ScrollView {
+            ScrollView {
+                if announcements.isEmpty {
+                    Text(getString(.noAnnouncement))
+                        .font(.bodyLarge)
+                        .foregroundColor(Color(UIColor.lightGray))
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .top)
+                } else {
                     ForEach(announcements) { announcement in
                         if case .sending = announcement.state {
                             SendingAnnouncementItem(announcement: announcement) {
                                 selectedAnnouncement = announcement
-                                showSheet = true
+                                if announcement.date.timeIntervalSinceNow < -120 {
+                                    showSheet = true
+                                } else {
+                                    showDeleteSheet = true
+                                }
                             }
                         }
                         else if case .error = announcement.state {
@@ -147,9 +135,8 @@ struct RecentAnnouncementSection: View {
                     }
                     .frame(maxHeight: maxHeight)
                     .fixedSize(horizontal: false, vertical: true)
-                    .refreshable { await onRefresh() }
                 }
-            }
+            }.refreshable { await onRefresh() }
         }
         .sheet(isPresented: $showSheet) {
             VStack {
@@ -163,6 +150,19 @@ struct RecentAnnouncementSection: View {
                     }
                 }
                 
+                ClickableItemWithIcon(
+                    icon: Image(systemName: "trash"),
+                    text: Text(getString(.delete))
+                ) {
+                    showSheet = false
+                    showDeleteAnnouncementAlert = true
+                }
+                .foregroundColor(.error)
+            }
+            .presentationDetents([.fraction(0.2)])
+        }
+        .sheet(isPresented: $showDeleteSheet) {
+            VStack {
                 ClickableItemWithIcon(
                     icon: Image(systemName: "trash"),
                     text: Text(getString(.delete))

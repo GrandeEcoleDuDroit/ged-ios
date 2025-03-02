@@ -11,6 +11,7 @@
 "now" = "Maintenant";
 "finish" = "Terminer";
 "resend" = "Renvoyer";
+"loading" = "Chargement";
 "minutes_ago_short" = "%d min";
 "hours_ago_short" = "%d h";
 "days_ago_short" = "%d j";
@@ -26,7 +27,13 @@
 // Common error
 "empty_inputs_error" = "Veuillez remplir tous les champs.";
 "timed_out_error" = "Le service a mis trop de temps à répondre. Veuillez réessayer.";
-"not_connected_to_internet_error" = "Une erreur réseau est survenue. Veuillez vérifier votre connexion à internet.";
+"not_connected_to_internet_error" = "Aucune connexion Internet détectée. Vérifiez votre connexion et réessayez.";
+"internal_server_error" = "Une erreur serveur est survenue. Veuillez réessayer.";
+"network_connection_lost_error" = "La connexion réseau a été perdue. Veuillez vérifier votre connexion et réessayer.";
+"cannot_find_host_error" = "Impossible de trouver le serveur. Veuillez vérifier votre connexion et réessayer.";
+"unknown_error" = "Une erreur inconnue est survenue. Veuillez réessayer";
+"unknown_network_error" = "Une erreur réseau est survenue. Veuillez réessayer.";
+"user_not_found_error" = "Utilisateur non trouvé. Veuillez vous reconnecter puis réessayer.";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";
@@ -65,7 +72,6 @@
 "email_not_verified_error" = "Veuillez validez votre adresse e-mail avant de continuer.";
 "registration_error" = "Une erreur est survenue lors de l'inscription.";
 "account_already_in_use_error" = "Le compte est déjà utilisé. Veuillez vous connecter ou réinitialiser votre mot de passe.";
-"unknown_error" = "Une erreur inconnue est survenue. Veuillez réessayer";
 "too_many_request_error" = "Vous avez effectué trop de requêtes. Veuillez réessayer dans quelques minutes.";
 
 // News
@@ -82,6 +88,7 @@
 // News errors
 "error_creating_announcement" = "Une erreur est survenue lors de la création de l'annonce.";
 "error_deleting_announcement" = "Une erreur est survenue lors de la suppression de l'annonce.";
+"error_refresh_page" = "Impossible d'actualiser la page.";
 
 // Profile
 "profile" = "Profil";
@@ -97,7 +104,6 @@
 
 // Message
 "messages" = "Messages";
-"no_user_found" = "Aucun utilisateur trouvé";
 "tap_to_chat" = "Appuyez pour discuter";
 "message_placeholder" = "Envoyer un message";
 "no_conversation" = "Démarrer une conversation avec vos amis.";

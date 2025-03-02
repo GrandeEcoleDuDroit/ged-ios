@@ -11,6 +11,7 @@ enum GedString: String {
     case now = "now"
     case finish = "finish"
     case resend = "resend"
+    case loading = "loading"
     case minutesAgoShort = "minutes_ago_short"
     case hoursAgoShort = "hours_ago_short"
     case daysAgoShort = "days_ago_short"
@@ -27,6 +28,12 @@ enum GedString: String {
     case emptyInputsError = "empty_inputs_error"
     case timedOutError = "timed_out_error"
     case notConnectedToInternetError = "not_connected_to_internet_error"
+    case internalServerError = "internal_server_error"
+    case networkConnectionLostError = "network_connection_lost_error"
+    case cannotFindHostError = "cannot_find_host_error"
+    case unknownError = "unknown_error"
+    case unknownNetworkError = "unknown_network_error"
+    case userNotFoundError = "user_not_found_error"
     
     // Authentication
     case authenticationPageTitle = "authentication_page_title"
@@ -65,7 +72,6 @@ enum GedString: String {
     case emailNotVerifiedError = "email_not_verified_error"
     case registrationError = "registration_error"
     case accountAlreadyInUseError = "account_already_in_use_error"
-    case unknownError = "unknown_error"
     case tooManyRequestError = "too_many_request_error"
     
     // News
@@ -83,6 +89,7 @@ enum GedString: String {
     // News errors
     case errorCreatingAnnouncement = "error_creating_announcement"
     case errorDeletingAnnouncement = "error_deleting_announcement"
+    case errorRefreshPage = "error_refresh_page"
     
     // Profile
     case profile = "profile"
@@ -97,7 +104,6 @@ enum GedString: String {
     
     // Message
     case messages = "messages"
-    case noUserFound = "no_user_found"
     case tapToChat = "tap_to_chat"
     case messagePlaceholder = "message_placeholder"
     case newConversation = "new_conversation"

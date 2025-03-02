@@ -23,7 +23,7 @@ class CreateAnnouncementViewModel: ObservableObject {
         currentUser = getCurrentUserUseCase.execute().value
     }
     
-    func createAnnouncement(title: String = "", content: String) throws {
+    func createAnnouncement(title: String, content: String) throws {
         guard let currentUser = currentUser else {
             throw UserError.currentUserNotFound
         }

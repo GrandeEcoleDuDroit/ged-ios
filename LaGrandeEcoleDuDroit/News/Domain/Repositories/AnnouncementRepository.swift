@@ -14,4 +14,6 @@ protocol AnnouncementRepository {
     func deleteAnnouncement(announcementId: String) async throws
     
     func deleteLocalAnnouncement(announcementId: String) async
+    
+    func refreshAnnouncements() async throws
 }

@@ -186,8 +186,7 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, announcementDate: Date
 
 #Preview {
     VStack(spacing: 10) {
-        AnnouncementHeader(announcement: announcementFixture)
-            .padding(.horizontal)
+        AnnouncementHeader(announcement: announcementFixture).padding(.horizontal)
         
         AnnouncementItem(announcement: announcementFixture, onClick: {})
         

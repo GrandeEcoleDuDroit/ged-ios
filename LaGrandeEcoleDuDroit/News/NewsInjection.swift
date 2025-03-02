@@ -52,12 +52,17 @@ class NewsInjection: DependencyInjectionContainer {
             ResendErrorAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
         }
         
+        container.register(RefreshAnnouncementsUseCase.self) { resolver in
+            RefreshAnnouncementsUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
+        }
+        
         container.register(NewsViewModel.self) { resolver in
             NewsViewModel(
                 getCurrentUserUseCase: CommonInjection.shared.resolve(GetCurrentUserUseCase.self),
                 getAnnouncementsUseCase: resolver.resolve(GetAnnouncementsUseCase.self)!,
                 deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
-                resendErrorAnnouncementUseCase: resolver.resolve(ResendErrorAnnouncementUseCase.self)!
+                resendErrorAnnouncementUseCase: resolver.resolve(ResendErrorAnnouncementUseCase.self)!,
+                refreshAnnouncementsUseCase: resolver.resolve(RefreshAnnouncementsUseCase.self)!
             )
         }.inObjectScope(.weak)
         
@@ -152,12 +157,17 @@ class NewsInjection: DependencyInjectionContainer {
             ResendErrorAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
         }
         
+        mockContainer.register(RefreshAnnouncementsUseCase.self) { resolver in
+            RefreshAnnouncementsUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
+        }
+        
         mockContainer.register(NewsViewModel.self) { resolver in
             NewsViewModel(
                 getCurrentUserUseCase: commonMockContainer.resolve(GetCurrentUserUseCase.self)!,
                 getAnnouncementsUseCase: resolver.resolve(GetAnnouncementsUseCase.self)!,
                 deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
-                resendErrorAnnouncementUseCase: resolver.resolve(ResendErrorAnnouncementUseCase.self)!
+                resendErrorAnnouncementUseCase: resolver.resolve(ResendErrorAnnouncementUseCase.self)!,
+                refreshAnnouncementsUseCase: resolver.resolve(RefreshAnnouncementsUseCase.self)!
             )
         }
         

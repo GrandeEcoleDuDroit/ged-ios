@@ -39,6 +39,14 @@ class AnnouncementLocalDataSource {
         }
     }
     
+    func upsertAnnouncement(announcement: Announcement) async throws {
+        if let localAnnouncement = try context.fetch(request).first(where: { $0.announcementId == announcement.id }) {
+            try await insertAnnouncement(announcement: announcement)
+        } else {
+            try await updateAnnouncement(announcement: announcement)
+        }
+    }
+    
     func updateAnnouncement(announcement: Announcement) async throws {
         do {
             let localAnnouncement = try context.fetch(request).first(where: { $0.announcementId == announcement.id })

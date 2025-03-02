@@ -17,7 +17,7 @@ struct CreateConversationView: View {
             }
             else {
                 if createConversationViewModel.users.isEmpty {
-                    Text(getString(.noUserFound))
+                    Text(getString(.userNotFoundError))
                         .font(.bodyLarge)
                         .foregroundColor(.secondary)
                         .frame(maxWidth: .infinity)
