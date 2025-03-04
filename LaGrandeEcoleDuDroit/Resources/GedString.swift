@@ -12,6 +12,7 @@ enum GedString: String {
     case finish = "finish"
     case resend = "resend"
     case loading = "loading"
+    case send = "send"
     case minutesAgoShort = "minutes_ago_short"
     case hoursAgoShort = "hours_ago_short"
     case daysAgoShort = "days_ago_short"
@@ -26,6 +27,7 @@ enum GedString: String {
 
     // Common errors
     case emptyInputsError = "empty_inputs_error"
+    case emptyInputError = "empty_input_error"
     case timedOutError = "timed_out_error"
     case notConnectedToInternetError = "not_connected_to_internet_error"
     case internalServerError = "internal_server_error"
@@ -47,11 +49,12 @@ enum GedString: String {
     case register = "register"
     case registration = "registration"
     case notRegisterYet = "not_register_yet"
-    case forgottenPassword = "forgotten_password"
+    case forgotPassword = "forgot_password"
+    case forgotPasswordDescription = "forgot_password_description"
     case registrationStep = "registration_step"
     case selectSchoolLevel = "select_school_level"
     case level = "level"
-    case enterFirstNameAndLastName = "enter_first_name_and_last_name"
+    case enterNames = "enter_names"
     case enterEmailPassword = "enter_email_password"
     case emailVerificationTitle = "email_verification_title"
     case emailVerificationExplanationBegining = "email_verification_explanation_begining"
@@ -61,6 +64,7 @@ enum GedString: String {
     case emailNotVerifiedDialogMessage = "email_not_verified_dialog_message"
     case verifyEmail = "verify_email"
     case logoutAlertTitle = "logout_alert_title"
+    case forgotPasswordSuccess = "forgot_password_success"
     
     // Authentication errors
     case invalidEmailError = "invalid_email_error"
@@ -70,9 +74,9 @@ enum GedString: String {
     case authUserNotFound = "auth_user_not_found"
     case userNotExist = "user_not_exist"
     case emailNotVerifiedError = "email_not_verified_error"
-    case registrationError = "registration_error"
     case accountAlreadyInUseError = "account_already_in_use_error"
-    case tooManyRequestError = "too_many_request_error"
+    case tooManyRequestsError = "too_many_requests_error"
+    case userNotConnected = "user_not_connected"
     
     // News
     case news = "news"

@@ -5,6 +5,6 @@ enum AuthenticationError: Error {
     case userNotConnected
     case userDisabled
     case network
-    case tooManyRequest
+    case tooManyRequests
     case unknown
 }

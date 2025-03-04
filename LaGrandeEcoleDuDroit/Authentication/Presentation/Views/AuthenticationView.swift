@@ -16,7 +16,7 @@ struct AuthenticationView: View {
                     email: $authenticationViewModel.email,
                     password: $authenticationViewModel.password,
                     isLoading: isLoading,
-                    authenticationState: authenticationViewModel.authenticationState
+                    screenState: authenticationViewModel.screenState
                 )
                 
                 Buttons(
@@ -30,7 +30,7 @@ struct AuthenticationView: View {
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .onReceive(authenticationViewModel.$authenticationState) { state in
+            .onReceive(authenticationViewModel.$screenState) { state in
                 showEmailNotVerifiedAlert = state == .emailNotVerified
                 isLoading = state == .loading
             }
@@ -38,15 +38,17 @@ struct AuthenticationView: View {
             .onTapGesture { isInputsFocused = false }
             .alert(
                 getString(.emailNotVerified),
-                isPresented: $showEmailNotVerifiedAlert,
-                presenting: ""
-            ) { _ in
+                isPresented: $showEmailNotVerifiedAlert
+            ) {
                 NavigationLink(
                     getString(.verifyEmail),
                     destination: EmailVerificationView(email: authenticationViewModel.email)
                 )
-                Button(getString(.cancel), role: .cancel) {}
-            } message: { _ in
+                
+                Button(getString(.cancel), role: .cancel) {
+                    showEmailNotVerifiedAlert = false
+                }
+            } message: {
                 Text(getString(.emailNotVerifiedDialogMessage))
             }
         }
@@ -83,38 +85,39 @@ private struct CredentialsInputs: View {
     @Binding private var password: String
     @Binding var isInputsFocused: Bool
     @State private var inputFieldFocused: InputField?
-    @State private var forgottenPasswordClicked: Bool = false
+    @State private var forgotPasswordClicked: Bool = false
     private var isLoading: Bool
-    private var authenticationState: AuthenticationState
+    private var screenState: AuthenticationScreenState
     
     init(
         isInputsFocused: Binding<Bool>,
         email: Binding<String>,
         password: Binding<String>,
         isLoading: Bool,
-        authenticationState: AuthenticationState
+        screenState: AuthenticationScreenState
     ) {
         self._isInputsFocused = isInputsFocused
         self._email = email
         self._password = password
         self.isLoading = isLoading
-        self.authenticationState = authenticationState
+        self.screenState = screenState
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            EmailTextField(
+            FillTextField(
                 title: getString(.email),
                 text: $email,
                 inputField: InputField.email,
                 inputFieldFocused: $inputFieldFocused,
                 isDisable: isLoading
             )
+            .textInputAutocapitalization(.never)
             .simultaneousGesture(TapGesture().onEnded({
                 isInputsFocused = true
             }))
             
-            PasswordTextField(
+            FillPasswordTextField(
                 title: getString(.password),
                 text: $password,
                 inputField: InputField.password,
@@ -125,12 +128,12 @@ private struct CredentialsInputs: View {
                 isInputsFocused = true
             }))
             
-            Button(getString(.forgottenPassword)) {
-                forgottenPasswordClicked = true
+            Button(getString(.forgotPassword)) {
+                forgotPasswordClicked = true
             }
             .disabled(isLoading)
             
-            if case .error(let message) = authenticationState {
+            if case .error(let message) = screenState {
                 Text(message)
                     .foregroundColor(.red)
             }
@@ -140,8 +143,8 @@ private struct CredentialsInputs: View {
                 inputFieldFocused = nil
             }
         }
-        .navigationDestination(isPresented: $forgottenPasswordClicked) {
-            ForgottenPasswordView()
+        .navigationDestination(isPresented: $forgotPasswordClicked) {
+            ForgotPasswordView()
         }
     }
 }

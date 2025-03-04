@@ -24,10 +24,8 @@ struct SecondRegistrationView: View {
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 10)
-            .background(
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(Color.black, lineWidth: 0.5)
-            )
+            .background(.inputBackground)
+            .cornerRadius(GedSpacing.small)
             
             Spacer()
             
@@ -46,8 +44,8 @@ struct SecondRegistrationView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
         .onAppear {
-            registrationViewModel.resetEmail()
-            registrationViewModel.resetPassword()
+            registrationViewModel.clearEmail()
+            registrationViewModel.clearPassword()
             registrationViewModel.resetState()
         }
         .registrationToolbar(step: 2, maxStep: 3)
@@ -55,11 +53,10 @@ struct SecondRegistrationView: View {
 }
 
 #Preview {
-    let mockRegistrationViewModel = AuthenticationInjection.shared.resolveWithMock().resolve(RegistrationViewModel.self)!
-
     NavigationStack {
         SecondRegistrationView()
-            .environmentObject(mockRegistrationViewModel)
-            .environmentObject(CommonInjection.shared.resolve(NavigationCoordinator.self))
+            .environmentObject(
+                AuthenticationInjection.shared.resolveWithMock().resolve(RegistrationViewModel.self)!
+            )
     }
 }

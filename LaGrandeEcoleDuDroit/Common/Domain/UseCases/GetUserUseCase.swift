@@ -9,7 +9,7 @@ class GetUserUseCase {
         await userRepository.getUser(userId: userId)
     }
     
-    func executeWithEmail(email: String) async -> User? {
-        await userRepository.getUserWithEmail(email: email)
+    func executeWithEmail(email: String) async throws -> User? {
+        try await userRepository.getUserWithEmail(email: email)
     }
 }

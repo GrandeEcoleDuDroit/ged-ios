@@ -8,7 +8,7 @@ class AnnouncementApiImpl: AnnouncementApi {
     
     func getAnnouncements() async throws -> [RemoteAnnouncementWithUser] {
         guard let url = baseUrl(endPoint: "") else {
-            throw RequestError.invalidURL
+            throw RequestError.invalidURL("Invalid URL")
         }
         
         let request = URLRequest(url: url)
@@ -18,7 +18,7 @@ class AnnouncementApiImpl: AnnouncementApi {
     
     func createAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws {
         guard let url = baseUrl(endPoint: "/create") else {
-            throw RequestError.invalidURL
+            throw RequestError.invalidURL("Invalid URL")
         }
         
         let session = RequestUtils.getUrlSession()
@@ -36,7 +36,7 @@ class AnnouncementApiImpl: AnnouncementApi {
     
     func deleteAnnouncement(remoteAnnouncementId: String) async throws {
         guard let url = baseUrl(endPoint: "/\(remoteAnnouncementId)") else {
-            throw RequestError.invalidURL
+            throw RequestError.invalidURL("Invalid URL")
         }
         
         let session = RequestUtils.getUrlSession()
@@ -54,7 +54,7 @@ class AnnouncementApiImpl: AnnouncementApi {
     
     func updateAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws {
         guard let url = baseUrl(endPoint: "/update") else {
-            throw RequestError.invalidURL
+            throw RequestError.invalidURL("Invalid URL")
         }
         
         let session = RequestUtils.getUrlSession()

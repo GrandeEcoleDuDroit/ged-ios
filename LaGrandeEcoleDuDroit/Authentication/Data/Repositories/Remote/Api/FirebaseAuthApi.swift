@@ -12,4 +12,6 @@ protocol FirebaseAuthApi {
     func signOut() async throws
     
     func resetPassword(email: String) async throws
+    
+    func isAuthenticated() -> Bool
 }

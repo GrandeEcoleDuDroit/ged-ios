@@ -1,20 +1,11 @@
 import SwiftUI
 
-struct EmailTextField: View {
+struct FillTextField: View {
     let title: String
     @Binding var text: String
     @Binding var inputFieldFocused: InputField?
     let inputField: InputField
     let isDisabled: Bool
-    
-    private var borderColor: Color {
-        if isDisabled == false {
-            Color.black
-        } else {
-            Color.gray
-        }
-    }
-    
     @FocusState private var focusedField: InputField?
     
     init(
@@ -35,9 +26,8 @@ struct EmailTextField: View {
         TextField(
             "",
             text: $text,
-            prompt: Text(title).foregroundColor(.inputHint)
+            prompt: Text(title).foregroundColor(.secondary)
         )
-        .textInputAutocapitalization(.never)
         .focused($focusedField, equals: inputField)
         .padding()
         .background(.inputBackground)
@@ -52,24 +42,13 @@ struct EmailTextField: View {
     }
 }
 
-struct PasswordTextField: View {
+struct FillPasswordTextField: View {
     let title: String
     @Binding var text: String
     @Binding var inputFieldFocused: InputField?
     let inputField: InputField
     let isDisabled: Bool
-    
-    private var borderColor: Color {
-        if isDisabled == false {
-            Color.black
-        } else {
-            Color.gray
-        }
-    }
-    private var borderWidth: CGFloat = 0.5
-    private var cornerRadius: CGFloat = 5
     @State private var showPassword = false
-    @State private var padding: CGFloat = 16
     @FocusState private var focusedField: InputField?
     
     init(
@@ -89,27 +68,27 @@ struct PasswordTextField: View {
     var body: some View {
         HStack {
             if(!showPassword) {
-                SecureField("", text: $text, prompt: Text(title).foregroundColor(.inputHint))
-                    .textInputAutocapitalization(.never)
-                    .focused($focusedField, equals: inputField)
-                    .onChange(of: inputFieldFocused) { newValue in
-                        focusedField = newValue
-                    }
-                    .simultaneousGesture(TapGesture().onEnded({
-                        inputFieldFocused = self.inputField
-                    }))
+                SecureField(
+                    "",
+                    text: $text,
+                    prompt: Text(title).foregroundColor(.secondary)
+                )
+                .textInputAutocapitalization(.never)
+                .focused($focusedField, equals: inputField)
+                .onChange(of: inputFieldFocused) { newValue in
+                    focusedField = newValue
+                }
+                .simultaneousGesture(TapGesture().onEnded({
+                    inputFieldFocused = self.inputField
+                }))
                 
                 Image(systemName: "eye.slash")
                     .foregroundColor(.iconInput)
                     .onTapGesture {
-                        padding = 16
                         showPassword = true
-                        DispatchQueue.main.async {
-                            focusedField = inputField
-                        }
                     }
             } else {
-                TextField(title, text: $text, prompt: Text(title).foregroundColor(.inputHint))
+                TextField(title, text: $text, prompt: Text(title).foregroundColor(.secondary))
                     .textInputAutocapitalization(.never)
                     .focused($focusedField, equals: inputField)
                     .onChange(of: inputFieldFocused) { newValue in
@@ -122,15 +101,11 @@ struct PasswordTextField: View {
                 Image(systemName: "eye")
                     .foregroundColor(.iconInput)
                     .onTapGesture {
-                        padding = 16.5
                         showPassword = false
-                        DispatchQueue.main.async {
-                            focusedField = inputField
-                        }
                     }
             }
         }
-        .padding(padding)
+        .padding(16)
         .background(.inputBackground)
         .cornerRadius(10)
         .disabled(isDisabled)
@@ -139,7 +114,7 @@ struct PasswordTextField: View {
 
 #Preview {
     VStack(spacing: GedSpacing.large) {
-        EmailTextField(
+        FillTextField(
             title: "Email",
             text: .constant(""),
             inputField: InputField.email,
@@ -147,7 +122,7 @@ struct PasswordTextField: View {
             isDisable: false
         )
         
-        PasswordTextField(
+        FillPasswordTextField(
             title: "Password",
             text: .constant(""),
             inputField: InputField.password,

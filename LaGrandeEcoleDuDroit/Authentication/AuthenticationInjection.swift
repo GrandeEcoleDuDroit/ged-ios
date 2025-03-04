@@ -74,7 +74,8 @@ class AuthenticationInjection: DependencyInjectionContainer {
         container.register(RegistrationViewModel.self) { resolver in
             RegistrationViewModel(
                 registerUseCase: resolver.resolve(RegisterUseCase.self)!,
-                createUserUseCase: CommonInjection.shared.resolve(CreateUserUseCase.self)
+                createUserUseCase: CommonInjection.shared.resolve(CreateUserUseCase.self),
+                isUserExistUseCase: CommonInjection.shared.resolve(IsUserExistUseCase.self)
             )
         }.inObjectScope(.weak)
         
@@ -86,8 +87,8 @@ class AuthenticationInjection: DependencyInjectionContainer {
             )
         }.inObjectScope(.weak)
         
-        container.register(ForgottenPasswordViewModel.self) { resolver in
-            ForgottenPasswordViewModel(resetPasswordUseCase: resolver.resolve(ResetPasswordUseCase.self)!)
+        container.register(ForgotPasswordViewModel.self) { resolver in
+            ForgotPasswordViewModel(resetPasswordUseCase: resolver.resolve(ResetPasswordUseCase.self)!)
         }
     }
     
@@ -170,7 +171,8 @@ class AuthenticationInjection: DependencyInjectionContainer {
         mockContainer.register(RegistrationViewModel.self) { resolver in
             RegistrationViewModel(
                 registerUseCase: resolver.resolve(RegisterUseCase.self)!,
-                createUserUseCase: commonMockContainer.resolve(CreateUserUseCase.self)!
+                createUserUseCase: commonMockContainer.resolve(CreateUserUseCase.self)!,
+                isUserExistUseCase: commonMockContainer.resolve(IsUserExistUseCase.self)!
             )
         }
         
@@ -182,8 +184,8 @@ class AuthenticationInjection: DependencyInjectionContainer {
             )
         }
         
-        mockContainer.register(ForgottenPasswordViewModel.self) { resolver in
-            ForgottenPasswordViewModel(resetPasswordUseCase: resolver.resolve(ResetPasswordUseCase.self)!)
+        mockContainer.register(ForgotPasswordViewModel.self) { resolver in
+            ForgotPasswordViewModel(resetPasswordUseCase: resolver.resolve(ResetPasswordUseCase.self)!)
         }
         
         return mockContainer

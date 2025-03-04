@@ -1,5 +1,32 @@
 import SwiftUI
 
+struct PrimaryButton: View {
+    private let label: String
+    private let onClick: () -> Void
+    private let width: CGFloat
+    
+    init(
+        label: String,
+        onClick: @escaping () -> Void,
+        width: CGFloat = .infinity
+    ) {
+        self.label = label
+        self.onClick = onClick
+        self.width = width
+    }
+    
+    var body: some View {
+        Button(action: onClick) {
+            Text(label)
+                .frame(maxWidth: width)
+                .padding(10)
+                .foregroundColor(.white)
+                .background(.gedPrimary)
+                .clipShape(.rect(cornerRadius: 30))
+        }
+    }
+}
+
 struct LoadingButton: View {
     private let label: String
     private let onClick: () -> Void
@@ -16,8 +43,8 @@ struct LoadingButton: View {
     }
     
     var body: some View {
-        Button(action: onClick) {
-            if isLoading {
+        if isLoading {
+            Button(action: onClick) {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     .frame(maxWidth: .infinity)
@@ -25,17 +52,10 @@ struct LoadingButton: View {
                     .foregroundColor(.white)
                     .background(.gedPrimary)
                     .clipShape(.rect(cornerRadius: 30))
-
-            } else {
-                Text(label)
-                    .frame(maxWidth: .infinity)
-                    .padding(10)
-                    .foregroundColor(.white)
-                    .background(.gedPrimary)
-                    .clipShape(.rect(cornerRadius: 30))
             }
+        } else {
+            PrimaryButton(label: label, onClick: onClick, width: .infinity)
         }
-        .disabled(isLoading)
     }
 }
 
@@ -45,6 +65,6 @@ struct LoadingButton: View {
             label: "Loading button",
             onClick: {},
             isLoading : false
-        )        
+        )
     }.padding()
 }

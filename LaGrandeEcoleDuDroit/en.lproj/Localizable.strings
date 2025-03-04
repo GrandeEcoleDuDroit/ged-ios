@@ -12,6 +12,7 @@
 "finish" = "Finish";
 "resend" = "Resend";
 "loading" = "Loading";
+"send" = "Send";
 "minutes_ago_short" = "%d min";
 "hours_ago_short" = "%d h";
 "days_ago_short" = "%d d";
@@ -26,14 +27,15 @@
 
 // Common error
 "empty_inputs_error" = "Please fill out all fields.";
+"empty_input_error" = "Please fill out the field.";
 "timed_out_error" = "The service took too long to respond. Please try again.";
 "not_connected_to_internet_error" = "No internet connection detected. Check your connection and try again.";
-"internal_server_error" = "A server error occurred. Please try again.";
-"network_connection_lost_error" = "The network connection was lost. Please check your connection and try again.";
-"cannot_find_host_error" = "Cannot find the host. Please check your connection and try again.";
-"unknown_network_error" = "A network error occurred. Please try again.";
-"unknown_error" = "An unknown error has occured. Please try again.";
-"user_not_found_error" = "Utilisateur non trouvé. Veuillez vous reconnecter puis réessayer.";
+"internal_server_error" = "An internal server error occurred.";
+"network_connection_lost_error" = "The network connection was lost.";
+"cannot_find_host_error" = "Cannot find the host. Check your connection and try again.";
+"unknown_network_error" = "A network error occurred.";
+"unknown_error" = "An unknown error has occured.";
+"user_not_found_error" = "User not found. Please re-authenticate.";
 
 // Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";
@@ -47,11 +49,10 @@
 "register" = "Register";
 "registration" = "Registration";
 "not_register_yet" = "Not register yet ?";
-"forgotten_password" = "Forgotten Password ?";
-"enter_first_name_and_last_name" = "Enter your first name and last name";
 "registration_step" = "Step %d of %d";
 "select_school_level" = "Select your school level";
 "level" = "Level";
+"enter_names" = "Enter your first name and last name";
 "enter_email_password" = "Enter your email and password";
 "email_verification_title" = "Email verification";
 "email_verification_explanation_begining" = "A link has been sent to the following address : ";
@@ -59,6 +60,11 @@
 "send_email_verification_caption" = "A verification link will be sent.";
 "email_not_verified" = "Email not verified";
 "email_not_verified_dialog_message" = "Please confirm your email before to continue.";
+"verify_email" = "Verify email";
+"logout_alert_title" = "Do you want to log out ?";
+"forgot_password" = "Forgot Password ?";
+"forgot_password_description" = "Enter your email address";
+"forgot_password_success" = "If an account with this email exists, a password reset email will be sent.";
 
 // Authentification errors
 "invalid_email_error" = "Please enter a valid email address.";
@@ -68,11 +74,8 @@
 "auth_user_not_found" = "User not found. Please re-authenticate and try again.";
 "user_not_exist" = "User doesn't exist.";
 "email_not_verified_error" = "Please validate your email address before to continue.";
-"registration_error" = "An error occured while registration";
 "account_already_in_use_error" = "The account is already in use. Please log in or reset your password.";
-"too_many_request_error" = "You have made too many requests. Please try again in a few minutes.";
-"verify_email" = "Verify email";
-"logout_alert_message" = "Do you want to log out ?";
+"too_many_requests_error" = "You have made too many requests. Please try again in a few minutes.";
 
 // News
 "news" = "News";

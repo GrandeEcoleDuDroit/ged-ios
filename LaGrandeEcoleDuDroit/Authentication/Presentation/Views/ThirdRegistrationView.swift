@@ -11,7 +11,7 @@ struct ThirdRegistrationView: View {
             Text(getString(.enterEmailPassword))
                 .font(.title3)
             
-            EmailTextField(
+            FillTextField(
                 title: getString(.email),
                 text: $registrationViewModel.email,
                 inputField: InputField.email,
@@ -20,7 +20,7 @@ struct ThirdRegistrationView: View {
             )
             .textInputAutocapitalization(.never)
             
-            PasswordTextField(
+            FillPasswordTextField(
                 title: getString(.password),
                 text: $registrationViewModel.password,
                 inputField: InputField.password,
@@ -37,7 +37,7 @@ struct ThirdRegistrationView: View {
                     .foregroundStyle(Color(UIColor.lightGray))
             }
             
-            if case .error(let message) = registrationViewModel.registrationState {
+            if case .error(let message) = registrationViewModel.screenState {
                 Text(message)
                     .foregroundStyle(.red)
             }
@@ -71,14 +71,9 @@ struct ThirdRegistrationView: View {
             .padding()
             .frame(maxWidth: .infinity, alignment: .trailing)
         }
-        .onReceive(registrationViewModel.$registrationState) { state in
-            if state == .registered {
-                navigateToEmailVerification = true
-            } else if case .loading = state {
-                isLoading = true
-            } else {
-                isLoading = false
-            }
+        .onReceive(registrationViewModel.$screenState) { state in
+            navigateToEmailVerification = state == .registered
+            isLoading = state == .loading
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
@@ -94,11 +89,10 @@ struct ThirdRegistrationView: View {
 }
 
 #Preview {
-    let mockRegistrationViewModel = AuthenticationInjection.shared.resolveWithMock().resolve(RegistrationViewModel.self)!
-
-    NavigationStack {
+   NavigationStack {
         ThirdRegistrationView()
-            .environmentObject(mockRegistrationViewModel)
-            .environmentObject(CommonInjection.shared.resolve(NavigationCoordinator.self))
+            .environmentObject(
+                AuthenticationInjection.shared.resolveWithMock().resolve(RegistrationViewModel.self)!
+            )
     }
 }

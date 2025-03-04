@@ -9,7 +9,7 @@ class UserOracleApiImpl: UserOracleApi {
     
     func createUser(user: OracleUser) async throws {
         guard let url = baseUrl(endPoint: "create") else {
-            throw RequestError.invalidURL
+            throw RequestError.invalidURL("Invalid URL")
         }
         
         let request = try RequestUtils.formatPostRequest(dataToSend: user, url: url)
@@ -19,21 +19,15 @@ class UserOracleApiImpl: UserOracleApi {
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
         
         if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
-                e(tag, serverResponse.message)
-            } else {
-                e(tag, serverResponse.error ?? "Error to create user")
+            if httpResponse.statusCode >= 400 {
                 throw RequestError.invalidResponse(serverResponse.error)
             }
-        } else {
-            e(tag, serverResponse.error ?? "Error to create user")
-            throw RequestError.invalidResponse(serverResponse.error)
         }
     }
     
     func updateProfilePictureFileName(userId: String, fileName: String) async throws {
         guard let url = baseUrl(endPoint: "profile-picture-file-name") else {
-            throw RequestError.invalidURL
+            throw RequestError.invalidURL("Invalid URL")
         }
         
         let dataToSend: [String: String] = [

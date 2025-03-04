@@ -1,6 +1,8 @@
 import Foundation
 import Combine
 
+private let tag = String(describing: UserRepositoryImpl.self)
+
 class UserRepositoryImpl: UserRepository {
     private let userLocalDataSource: UserLocalDataSource
     private let userRemoteDataSource: UserRemoteDataSource
@@ -17,16 +19,21 @@ class UserRepositoryImpl: UserRepository {
     }
     
     func createUser(user: User) async throws {
-        try await userRemoteDataSource.createUser(user: user)
-        userLocalDataSource.setCurrentUser(user: user)
+        do {
+            try await userRemoteDataSource.createUser(user: user)
+            userLocalDataSource.setCurrentUser(user: user)
+        } catch {
+            e(tag, error.localizedDescription, error)
+            throw error
+        }
     }
     
     func getUser(userId: String) async -> User? {
         await userRemoteDataSource.getUser(userId: userId)
     }
     
-    func getUserWithEmail(email: String) async -> User? {
-        await userRemoteDataSource.getUserWithEmail(email: email)
+    func getUserWithEmail(email: String) async throws -> User? {
+        try await userRemoteDataSource.getUserWithEmail(email: email)
     }
     
     func getUserPublisher(userId: String) -> AnyPublisher<User, Never> {
