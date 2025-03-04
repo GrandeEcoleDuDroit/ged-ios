@@ -64,35 +64,35 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
         try? await announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
     }
     
-    func refreshAnnouncements() async throws {
-        guard refreshTaskCount < 1 else { return }
-        
-        refreshTaskCount += 1
-        let remoteAnnouncements = try await announcementRemoteDataSource.getAnnouncements()
-        
-        let announcementToDelete = announcements.value
-            .filter { $0.state == .published }
-            .filter { announcement in
-                !remoteAnnouncements.contains { $0 == announcement }
-            }
-        await withTaskGroup(of: Void.self) { group in
-            announcementToDelete.forEach { announcement in
-                group.addTask {
-                    try? await self.announcementLocalDataSource.deleteAnnouncement(announcementId: announcement.id)
+    func refreshAnnouncements() async {
+        do {
+            let remoteAnnouncements = try await announcementRemoteDataSource.getAnnouncements()
+            
+            let announcementToDelete = announcements.value
+                .filter { $0.state == .published }
+                .filter { announcement in
+                    !remoteAnnouncements.contains { $0 == announcement }
+                }
+            await withTaskGroup(of: Void.self) { group in
+                announcementToDelete.forEach { announcement in
+                    group.addTask {
+                        try? await self.announcementLocalDataSource.deleteAnnouncement(announcementId: announcement.id)
+                    }
                 }
             }
-        }
-        let announcementToUpsert = remoteAnnouncements.filter { announcement in
-            !announcements.value.contains { $0 == announcement }
-        }
-        await withTaskGroup(of: Void.self) { group in
-            announcementToUpsert.forEach { announcement in
-                group.addTask {
-                    try? await self.announcementLocalDataSource.upsertAnnouncement(announcement: announcement)
+            
+            let announcementToUpsert = remoteAnnouncements.filter { announcement in
+                !announcements.value.contains { $0 == announcement }
+            }
+            await withTaskGroup(of: Void.self) { group in
+                announcementToUpsert.forEach { announcement in
+                    group.addTask {
+                        try? await self.announcementLocalDataSource.upsertAnnouncement(announcement: announcement)
+                    }
                 }
             }
+        } catch {
+            w(tag, error.localizedDescription)
         }
-        
-        refreshTaskCount -= 1
     }
 }

@@ -4,11 +4,9 @@ struct EditAnnouncementView: View {
     @StateObject private var editAnnouncementViewModel: EditAnnouncementViewModel
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @FocusState private var inputFieldFocused: InputField?
-    @State private var isActive: Bool = false
-    @State private var toastMessage: String = ""
+    @State private var errorMessage: String = ""
     @State private var announcement: Announcement
-    @State private var showLoadingToast: Bool = false
-    @State private var showErrorToast: Bool = false
+    @State private var showErrorAlert: Bool = false
     
     init(announcement: Announcement) {
         self.announcement = announcement
@@ -37,9 +35,9 @@ struct EditAnnouncementView: View {
             .lineSpacing(5)
             .focused($inputFieldFocused, equals: InputField.content)
         }
-        .disabled(showLoadingToast)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
+        .loading(editAnnouncementViewModel.screenState == .loading)
         .navigationTitle(getString(.editAnnouncement))
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
@@ -75,10 +73,18 @@ struct EditAnnouncementView: View {
                 )
             }
         }
-        .disabled(showLoadingToast)
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 inputFieldFocused = InputField.title
+            }
+        }
+        .alert(
+            errorMessage,
+            isPresented: $showErrorAlert
+        ) {
+            Button(getString(.ok)) {
+                showErrorAlert = false
+                editAnnouncementViewModel.updateScreenState(.initial)
             }
         }
         .contentShape(Rectangle())
@@ -86,24 +92,14 @@ struct EditAnnouncementView: View {
             inputFieldFocused = nil
         }
         .onReceive(editAnnouncementViewModel.$screenState) { state in
-            switch state {
-                case .error(let message):
-                    withAnimation {
-                        showLoadingToast = false
-                    }
-                    toastMessage = message
-                    showErrorToast = true
-                    editAnnouncementViewModel.updateScreenState(.initial)
-                case .loading:
-                    showLoadingToast = true
-                case .updated:
-                    showLoadingToast = false
-                    navigationCoordinator.pop()
-                default: break
+            if case .error(let message) = state {
+                errorMessage = message
+                showErrorAlert = true
+                editAnnouncementViewModel.updateScreenState(.initial)
+            } else if case .updated = state {
+                navigationCoordinator.pop()
             }
         }
-        .toast(isPresented: $showLoadingToast, message: getString(.loading), position: .center, type: .loading)
-        .toast(isPresented: $showErrorToast, message: toastMessage)
     }
 }
 

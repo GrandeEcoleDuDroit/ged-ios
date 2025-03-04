@@ -33,13 +33,7 @@ class NewsViewModel: ObservableObject {
     }
     
     func refreshAnnouncements() async {
-        do {
-            try await refreshAnnouncementsUseCase.execute()
-        } catch is URLError {
-            updateScreenState(.error(message: getString(.errorRefreshPage)))
-        } catch {
-            e(tag, "Error refreshing announcements", error)
-        }
+        await refreshAnnouncementsUseCase.execute()
     }
     
     func deleteAnnouncement(announcement: Announcement) {

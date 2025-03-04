@@ -5,9 +5,6 @@ struct NewsView: View {
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
     @State private var isRefreshing: Bool = false
-    @State private var showCenterToast: Bool = false
-    @State private var showBottomToast: Bool = false
-    @State private var toastMessage: String = ""
     
     var body: some View {
         GeometryReader { geometry in
@@ -63,15 +60,6 @@ struct NewsView: View {
         }
         .onAppear {
             tabBarVisibility.show = true
-        }
-        .toast(isPresented: $showCenterToast, message: toastMessage, position: .center)
-        .toast(isPresented: $showBottomToast, message: toastMessage)
-        .onReceive(newsViewModel.$screenState) { state in
-            if case .error(let message) = state {
-                toastMessage = message
-                showCenterToast = true
-                newsViewModel.updateScreenState(.initial)
-            }
         }
     }
 }
@@ -159,7 +147,7 @@ struct RecentAnnouncementSection: View {
                 }
                 .foregroundColor(.error)
             }
-            .presentationDetents([.fraction(0.2)])
+            .presentationDetents([.fraction(0.18)])
         }
         .sheet(isPresented: $showDeleteSheet) {
             VStack {

@@ -93,7 +93,6 @@ enum GedString: String {
     // News errors
     case errorCreatingAnnouncement = "error_creating_announcement"
     case errorDeletingAnnouncement = "error_deleting_announcement"
-    case errorRefreshPage = "error_refresh_page"
     
     // Profile
     case profile = "profile"

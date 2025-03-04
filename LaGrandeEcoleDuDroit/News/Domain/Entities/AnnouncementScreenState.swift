@@ -1,4 +1,4 @@
-enum AnnouncementScreenState {
+enum AnnouncementScreenState: Equatable {
     case initial
     case loading
     case success
