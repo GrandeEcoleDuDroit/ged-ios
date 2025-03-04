@@ -13,13 +13,11 @@ class AnnouncementRemoteDataSource {
     }
     
     func createAnnouncement(announcement: Announcement) async throws {
-        let remoteAnnouncement = AnnouncementMapper.toRemote(announcement: announcement)
-        try await announcementApi.createAnnouncement(remoteAnnouncement: remoteAnnouncement)
+        try await announcementApi.createAnnouncement(remoteAnnouncement: AnnouncementMapper.toRemote(announcement: announcement))
     }
     
     func updateAnnouncement(announcement: Announcement) async throws {
-        let remoteAnnouncement = AnnouncementMapper.toRemote(announcement: announcement)
-        try await announcementApi.updateAnnouncement(remoteAnnouncement: remoteAnnouncement)
+        try await announcementApi.updateAnnouncement(remoteAnnouncement: AnnouncementMapper.toRemote(announcement: announcement))
     }
     
     func deleteAnnouncement(announcementId: String) async throws {

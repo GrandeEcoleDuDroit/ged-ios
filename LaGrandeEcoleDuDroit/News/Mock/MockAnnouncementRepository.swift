@@ -28,7 +28,7 @@ class MockAnnouncementRepository: AnnouncementRepository {
         announcements.value.removeAll(where: { $0.id == announcementId })
     }
     
-    func refreshAnnouncements() async throws {
+    func refreshAnnouncements() async {
         announcements.value = announcementsFixture
     }
 }

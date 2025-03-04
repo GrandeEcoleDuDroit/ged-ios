@@ -53,6 +53,23 @@ extension View {
             )
     }
     
+    func loading(_ isLoading: Bool) -> some View {
+        self
+            .disabled(isLoading)
+            .opacity(isLoading ? 0.5 : 1)
+            .overlay {
+                if isLoading {
+                    ProgressView(getString(.loading))
+                        .padding()
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(GedSpacing.small)
+                        .shadow(radius: 1)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                        .ignoresSafeArea()
+                }
+            }
+    }
+    
     func toast(
         isPresented: Binding<Bool>,
         message: String,

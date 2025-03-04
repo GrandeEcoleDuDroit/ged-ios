@@ -6,7 +6,6 @@ struct ReadAnnouncementView: View {
     @State private var showErrorAlert: Bool = false
     @State private var showDeleteAlert: Bool = false
     @State private var errorMessage: String = ""
-    @State private var editMode: Bool = false
         
     init(announcement: Announcement) {
         _readAnnouncementViewModel = StateObject(
@@ -23,19 +22,14 @@ struct ReadAnnouncementView: View {
                     if currentUser.isMember && readAnnouncementViewModel.announcement.author.id == currentUser.id {
                         Menu {
                             Button(
-                                action: { navigationCoordinator.push(NewsScreen.editAnnouncement(readAnnouncementViewModel.announcement))
-                                },
-                                label: {
-                                    Label(getString(.edit), systemImage: "square.and.pencil")
-                                }
+                                action: { navigationCoordinator.push(NewsScreen.editAnnouncement(readAnnouncementViewModel.announcement)) },
+                                label: { Label(getString(.edit), systemImage: "square.and.pencil") }
                             )
                             
                             Button(
                                 role: .destructive,
                                 action: { showDeleteAlert = true },
-                                label: {
-                                    Label(getString(.delete), systemImage: "trash")
-                                }
+                                label: { Label(getString(.delete), systemImage: "trash") }
                             )
                         } label: {
                             Image(systemName: "ellipsis")
@@ -64,6 +58,7 @@ struct ReadAnnouncementView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding(.horizontal)
+        .loading(readAnnouncementViewModel.screenState == .loading)
         .alert(
             errorMessage,
             isPresented: $showErrorAlert

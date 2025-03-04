@@ -91,7 +91,6 @@
 // News errors
 "error_creating_announcement " = "An error occured while creating the announcement.";
 "error_deleting_announcement" = "An error occured while deleting the announcement.";
-"error_refresh_page" = "Couldn't to refresh the page.";
 
 // Profile
 "profile" = "Profile";
