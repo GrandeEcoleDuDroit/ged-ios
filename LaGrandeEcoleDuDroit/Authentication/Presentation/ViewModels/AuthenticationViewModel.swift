@@ -4,7 +4,7 @@ import Combine
 class AuthenticationViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
-    @Published var authenticationState: AuthenticationState = .idle
+    @Published var screenState: AuthenticationScreenState = .initial
     private var cancellables: Set<AnyCancellable> = []
     
     private let loginUseCase: LoginUseCase
@@ -32,17 +32,17 @@ class AuthenticationViewModel: ObservableObject {
     
     func validateInputs() -> Bool {
         guard !email.isEmpty, !password.isEmpty else {
-            authenticationState = .error(message: getString(.emptyInputsError))
+            screenState = .error(message: getString(.emptyInputsError))
             return false
         }
         
         guard VerifyEmailFormatUseCase.execute(email) else {
-            authenticationState = .error(message: getString(.invalidEmailError))
+            screenState = .error(message: getString(.invalidEmailError))
             return false
         }
         
         guard password.count >= 8 else {
-            authenticationState = .error(message: getString(.passwordLengthError))
+            screenState = .error(message: getString(.passwordLengthError))
             return false
         }
         
@@ -50,38 +50,56 @@ class AuthenticationViewModel: ObservableObject {
     }
     
     func login() {
-        updateAuthenticationState(to: .loading)
+        updateScreenState(.loading)
         
         Task {
             do {
                 try await loginUseCase.execute(email: email, password: password)
                 
-                if let user = await getUserUseCase.executeWithEmail(email: email) {
+                if let user = try await getUserUseCase.executeWithEmail(email: email) {
                     setCurrentUserUseCase.execute(user: user)
                     if try await isEmailVerifiedUseCase.execute() {
                         await setUserAuthenticatedUseCase.execute(true)
-                        updateAuthenticationState(to: .authenticated)
+                        updateScreenState(.authenticated)
                     } else {
-                        updateAuthenticationState(to: .emailNotVerified)
+                        updateScreenState(.emailNotVerified)
                     }
                 } else {
-                    updateAuthenticationState(to: .error(message: getString(.userNotExist)))
-                    resetPassword()
+                    updateScreenState(.error(message: getString(.userNotExist)))
                 }
-            } catch AuthenticationError.invalidCredentials {
-                updateAuthenticationState(to: .error(message: getString(.invalidCredentials)))
-                resetPassword()
-            } catch AuthenticationError.userDisabled {
-                updateAuthenticationState(to: .error(message: getString(.userDisabled)))
-                resetPassword()
-            } catch {
-                updateAuthenticationState(to: .error(message: getString(.unknownError)))
-                resetPassword()
             }
+            catch AuthenticationError.invalidCredentials {
+                updateScreenState(.error(message: getString(.invalidCredentials)))
+            }
+            catch AuthenticationError.userDisabled {
+                updateScreenState(.error(message: getString(.userDisabled)))
+            }
+            catch AuthenticationError.network, AuthenticationError.unknown {
+                updateScreenState(.error(message: getString(.unknownNetworkError)))
+            }
+            catch let error as URLError {
+                switch error.code {
+                    case .notConnectedToInternet:
+                        updateScreenState(.error(message: getString(.notConnectedToInternetError)))
+                    case .timedOut:
+                        updateScreenState(.error(message: getString(.timedOutError)))
+                    case .networkConnectionLost:
+                        updateScreenState(.error(message: getString(.networkConnectionLostError)))
+                    case .cannotFindHost:
+                        updateScreenState(.error(message: getString(.cannotFindHostError)))
+                    default:
+                        updateScreenState(.error(message: getString(.unknownNetworkError)))
+                }
+            }
+            catch {
+                updateScreenState(.error(message: getString(.unknownError)))
+            }
+            
+            clearPassword()
         }
     }
     
-    private func resetPassword() {
+    private func clearPassword() {
         if Thread.isMainThread {
             password = ""
         } else {
@@ -91,12 +109,12 @@ class AuthenticationViewModel: ObservableObject {
         }
     }
     
-    private func updateAuthenticationState(to state: AuthenticationState) {
+    private func updateScreenState(_ state: AuthenticationScreenState) {
         if Thread.isMainThread {
-            authenticationState = state
+            screenState = state
         } else {
             DispatchQueue.main.sync { [weak self] in
-                self?.authenticationState = state
+                self?.screenState = state
             }
         }
     }

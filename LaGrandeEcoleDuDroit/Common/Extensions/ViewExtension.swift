@@ -52,4 +52,107 @@ extension View {
                     .animation(.easeInOut(duration: 0.1), value: isClicked.wrappedValue)
             )
     }
+    
+    func toast(
+        isPresented: Binding<Bool>,
+        message: String,
+        position: UnitPoint = .bottom,
+        type: ToastType = .initial
+    ) -> some View {
+        self.modifier(
+            ToastModifier(
+                isPresented: isPresented,
+                message: message,
+                position: position,
+                type: type
+            )
+        )
+        .animation(Animation.spring(), value: isPresented.wrappedValue)
+    }
+}
+
+private struct ToastModifier: ViewModifier {
+    @Binding var isPresented: Bool
+    let message: String
+    let position: UnitPoint
+    let type: ToastType
+    
+    func body(content: Content) -> some View {
+        ZStack {
+            content
+            if isPresented {
+                switch position {
+                    case .center:
+                        CenterToast
+                    default:
+                        BottomToast
+                }
+            }
+        }
+    }
+    
+    var ToastTypeView: some View {
+        return switch type {
+            case .initial:
+                AnyView(
+                    Text(message)
+                        .font(.body)
+                        .padding()
+                        .background(.toast)
+                        .foregroundColor(.white)
+                        .cornerRadius(GedSpacing.small)
+                        .padding(.horizontal)
+                        .zIndex(100)
+                        .task {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                withAnimation {
+                                    isPresented = false
+                                }
+                            }
+                        }
+                )
+            case .loading:
+                AnyView(
+                    ZStack {
+                        ProgressView(message)
+                            .progressViewStyle(ToastProgressViewStyle())
+                    }
+                    .padding()
+                    .background(.toast)
+                    .foregroundColor(.white)
+                    .cornerRadius(GedSpacing.small)
+                    .padding(.horizontal)
+                    .zIndex(100)
+                )
+            }
+    }
+
+    
+    var CenterToast: some View {
+        VStack {
+            ToastTypeView
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+    }
+    
+    var BottomToast: some View {
+        VStack {
+            Spacer()
+            ToastTypeView
+        }
+        .padding(.bottom, 50)
+    }
+
+}
+
+enum ToastType {
+    case initial
+    case loading
+}
+
+private struct ToastProgressViewStyle: ProgressViewStyle {
+    func makeBody(configuration: Configuration) -> some View {
+     ProgressView(configuration)
+            .tint(.white)
+    }
 }

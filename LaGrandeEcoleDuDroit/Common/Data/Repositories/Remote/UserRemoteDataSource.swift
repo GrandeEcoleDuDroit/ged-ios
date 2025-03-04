@@ -11,11 +11,8 @@ class UserRemoteDataSource {
     }
     
     func createUser(user: User) async throws {
-        let oracleUser = UserMapper.toOracleUser(user: user)
-        try await userOracleApi.createUser(user: oracleUser)
-        
-        let firestoreUser = UserMapper.toFirestoreUser(user: user)
-        try await userFirestoreApi.createUser(firestoreUser: firestoreUser)
+        try await userOracleApi.createUser(user: UserMapper.toOracleUser(user: user))
+        try await userFirestoreApi.createUser(firestoreUser: UserMapper.toFirestoreUser(user: user))
     }
     
     func getUser(userId: String) async -> User? {
@@ -27,8 +24,8 @@ class UserRemoteDataSource {
         }
     }
     
-    func getUserWithEmail(email: String) async -> User? {
-        let firestoreUser = await userFirestoreApi.getUserWithEmail(email: email)
+    func getUserWithEmail(email: String) async throws -> User? {
+        let firestoreUser = try await userFirestoreApi.getUserWithEmail(email: email)
         return if let firestoreUser = firestoreUser {
             UserMapper.toDomain(firestoreUser: firestoreUser)
         } else {

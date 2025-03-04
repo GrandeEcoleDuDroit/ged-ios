@@ -81,6 +81,9 @@ class CommonInjection: DependencyInjectionContainer {
             )
         }
         
+        container.register(IsUserExistUseCase.self) { resolver in
+            IsUserExistUseCase(userRepository: resolver.resolve(UserRepository.self)!)
+        }
     }
     
     func resolve<T>(_ type: T.Type) -> T {
@@ -147,6 +150,10 @@ class CommonInjection: DependencyInjectionContainer {
                 userRepository: resolver.resolve(UserRepository.self)!,
                 imageRepository: resolver.resolve(ImageRepository.self)!
             )
+        }
+        
+        mockContainer.register(IsUserExistUseCase.self) { resolver in
+            IsUserExistUseCase(userRepository: resolver.resolve(UserRepository.self)!)
         }
         
         return mockContainer

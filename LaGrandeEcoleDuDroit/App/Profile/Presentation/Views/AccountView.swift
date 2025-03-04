@@ -11,8 +11,7 @@ struct AccountView: View {
     @State private var showPhotosPicker: Bool = false
     @State private var isBottomSheetItemClicked: Bool = false
     @State private var isLoading: Bool = false
-    @State private var snackBarType: SnackBarType = .info()
-    @State private var showSnackBar: Bool = false
+    @State private var showToast: Bool = false
     
     var body: some View {
         ZStack {
@@ -41,20 +40,6 @@ struct AccountView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color.lightGrey.opacity(0.4))
             }
-            
-            if showSnackBar {
-                switch snackBarType {
-                    case .success(let message):
-                        SuccesSnackbar(message)
-                            .frame(maxHeight: .infinity, alignment: .bottom)
-                            .padding(.horizontal)
-                    case .error(let message):
-                        ErrorSnackbar(message)
-                            .frame(maxHeight: .infinity, alignment: .bottom)
-                            .padding(.horizontal)
-                    default : EmptyView()
-                }
-            }
         }
         .task(id: selectedPhoto) {
             if let data = try? await selectedPhoto?.loadTransferable(type: Data.self) {
@@ -73,7 +58,6 @@ struct AccountView: View {
                 icon: Image(systemName: "photo.fill"),
                 text: Text(getString(.newProfilePicture))
             )
-            .font(.title3)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
             .presentationDetents([.fraction(0.10)])
@@ -87,27 +71,25 @@ struct AccountView: View {
                 case .loading:
                     isLoading = true
                 case .error(let message):
-                    snackBarType = .error(message)
                     isLoading = false
                     withAnimation {
-                        showSnackBar = true
+                        showToast = true
                     }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                         withAnimation {
-                            showSnackBar = false
+                            showToast = false
                         }
                     }
                     accountViewModel.updateScreenState(.initial)
                 case .success:
-                    snackBarType = .success(getString(.profilePictureUpdated))
                     isLoading = false
                     editMode = false
                     withAnimation {
-                        showSnackBar = true
+                        showToast = true
                     }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                         withAnimation {
-                            showSnackBar = false
+                            showToast = false
                         }
                     }
                     accountViewModel.updateScreenState(.initial)

@@ -5,10 +5,9 @@ class AuthenticationLocalDataSource {
     private let authenticationKey = "authenticationKey"
     private(set) var isAuthenticated = CurrentValueSubject<Bool, Never>(false)
     
-    
     init() {
         Task {
-            isAuthenticated.send(await getAuthenticated())
+            isAuthenticated.send(await getAuthenticatedState())
         }
     }
     
@@ -17,7 +16,7 @@ class AuthenticationLocalDataSource {
         isAuthenticated.send(value)
     }
     
-    private func getAuthenticated() async -> Bool {
+    private func getAuthenticatedState() async -> Bool {
         UserDefaults.standard.bool(forKey: authenticationKey)
     }
 }

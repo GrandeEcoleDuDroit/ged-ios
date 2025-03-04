@@ -7,7 +7,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
     ) -> Bool {
         FirebaseApp.configure()
-//        GedConfiguration.configureDebugFirebase()
+        GedConfiguration.configureDebugFirebase()
         return true
     }
 }

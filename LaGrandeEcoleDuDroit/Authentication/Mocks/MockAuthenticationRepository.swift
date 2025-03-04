@@ -23,4 +23,6 @@ class MockAuthenticationRepository: AuthenticationRepository {
     func sendEmailVerification() async throws {}
     
     func isEmailVerified() async throws -> Bool { true }
+    
+    func resetPassword(email: String) async throws {}
 }

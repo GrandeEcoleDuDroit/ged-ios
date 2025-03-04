@@ -14,4 +14,6 @@ protocol AuthenticationRepository {
     func isEmailVerified() async throws -> Bool
             
     func setAuthenticated(_ isAuthenticated: Bool) async
+    
+    func resetPassword(email: String) async throws
 }

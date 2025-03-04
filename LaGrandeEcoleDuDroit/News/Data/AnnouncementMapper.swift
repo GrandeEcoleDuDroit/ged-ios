@@ -20,7 +20,8 @@ class AnnouncementMapper {
             title: remoteAnnouncementWithUser.announcementTitle ?? "",
             content: remoteAnnouncementWithUser.announcementContent,
             date: Date(timeIntervalSince1970: TimeInterval(remoteAnnouncementWithUser.announcementDate)),
-            author: user
+            author: user,
+            state: .published
         )
     }
     

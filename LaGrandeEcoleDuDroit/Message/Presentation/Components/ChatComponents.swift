@@ -95,7 +95,7 @@ struct ReceiveMessageItem: View {
             }
             .padding(.vertical, GedSpacing.smallMedium)
             .padding(.horizontal, GedSpacing.medium)
-            .background(.receiveMessageComponentBackground)
+            .background(.receiveMessageComponent)
             .clipShape(.rect(cornerRadius: 30))
             .frame(maxWidth: screenWidth / 1.5, alignment: .leading)
         }
@@ -153,7 +153,7 @@ struct ChatInputField: View {
         .padding(.leading, GedSpacing.medium)
         .padding(.trailing, GedSpacing.small)
         .padding(.vertical, GedSpacing.verySmall)
-        .background(.receiveMessageComponentBackground)
+        .background(.receiveMessageComponent)
         .clipShape(.rect(cornerRadius: 30))
         .padding(.bottom, GedSpacing.small)
         .onChange(of: inputFocused) { newValue in

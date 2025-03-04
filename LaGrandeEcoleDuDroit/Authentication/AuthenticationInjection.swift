@@ -56,6 +56,10 @@ class AuthenticationInjection: DependencyInjectionContainer {
             SetUserAuthenticatedUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
         }
         
+        container.register(ResetPasswordUseCase.self) { resolver in
+            ResetPasswordUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
+        }
+        
         container.register(AuthenticationViewModel.self) { resolver in
             AuthenticationViewModel(
                 loginUseCase: resolver.resolve(LoginUseCase.self)!,
@@ -70,7 +74,8 @@ class AuthenticationInjection: DependencyInjectionContainer {
         container.register(RegistrationViewModel.self) { resolver in
             RegistrationViewModel(
                 registerUseCase: resolver.resolve(RegisterUseCase.self)!,
-                createUserUseCase: CommonInjection.shared.resolve(CreateUserUseCase.self)
+                createUserUseCase: CommonInjection.shared.resolve(CreateUserUseCase.self),
+                isUserExistUseCase: CommonInjection.shared.resolve(IsUserExistUseCase.self)
             )
         }.inObjectScope(.weak)
         
@@ -81,6 +86,10 @@ class AuthenticationInjection: DependencyInjectionContainer {
                 setUserAuthenticatedUseCase: resolver.resolve(SetUserAuthenticatedUseCase.self)!
             )
         }.inObjectScope(.weak)
+        
+        container.register(ForgotPasswordViewModel.self) { resolver in
+            ForgotPasswordViewModel(resetPasswordUseCase: resolver.resolve(ResetPasswordUseCase.self)!)
+        }
     }
     
     func resolve<T>(_ type: T.Type) -> T {
@@ -144,6 +153,10 @@ class AuthenticationInjection: DependencyInjectionContainer {
             SetUserAuthenticatedUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
         }
         
+        mockContainer.register(ResetPasswordUseCase.self) { resolver in
+            ResetPasswordUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
+        }
+        
         mockContainer.register(AuthenticationViewModel.self) { resolver in
             AuthenticationViewModel(
                 loginUseCase: resolver.resolve(LoginUseCase.self)!,
@@ -158,7 +171,8 @@ class AuthenticationInjection: DependencyInjectionContainer {
         mockContainer.register(RegistrationViewModel.self) { resolver in
             RegistrationViewModel(
                 registerUseCase: resolver.resolve(RegisterUseCase.self)!,
-                createUserUseCase: commonMockContainer.resolve(CreateUserUseCase.self)!
+                createUserUseCase: commonMockContainer.resolve(CreateUserUseCase.self)!,
+                isUserExistUseCase: commonMockContainer.resolve(IsUserExistUseCase.self)!
             )
         }
         
@@ -168,6 +182,10 @@ class AuthenticationInjection: DependencyInjectionContainer {
                 isEmailVerifiedUseCase: resolver.resolve(IsEmailVerifiedUseCase.self)!,
                 setUserAuthenticatedUseCase: resolver.resolve(SetUserAuthenticatedUseCase.self)!
             )
+        }
+        
+        mockContainer.register(ForgotPasswordViewModel.self) { resolver in
+            ForgotPasswordViewModel(resetPasswordUseCase: resolver.resolve(ResetPasswordUseCase.self)!)
         }
         
         return mockContainer

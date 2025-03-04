@@ -7,20 +7,20 @@ struct FirstRegistrationView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            Text(getString(.enterFirstNameAndLastName))
+            Text(getString(.enterNames))
                 .font(.title3)
             
-            FocusableOutlinedTextField(
-                title: getString(.lastName),
-                text: $registrationViewModel.lastName,
-                inputField: InputField.lastName,
-                inputFieldFocused: $inputFieldFocused
-            )
-            
-            FocusableOutlinedTextField(
+            FillTextField(
                 title: getString(.firstName),
                 text: $registrationViewModel.firstName,
                 inputField: InputField.firstName,
+                inputFieldFocused: $inputFieldFocused
+            )
+            
+            FillTextField(
+                title: getString(.lastName),
+                text: $registrationViewModel.lastName,
+                inputField: InputField.lastName,
                 inputFieldFocused: $inputFieldFocused
             )
          
@@ -58,11 +58,7 @@ struct FirstRegistrationView: View {
 }
 
 #Preview {
-    let mockRegistrationViewModel = AuthenticationInjection.shared.resolveWithMock().resolve(RegistrationViewModel.self)!
-    
     NavigationStack {
         FirstRegistrationView()
-            .environmentObject(mockRegistrationViewModel)
-            .environmentObject(NavigationCoordinator())
     }
 }

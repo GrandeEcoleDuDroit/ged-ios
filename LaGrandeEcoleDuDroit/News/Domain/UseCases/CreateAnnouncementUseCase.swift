@@ -7,14 +7,12 @@ class CreateAnnouncementUseCase {
         self.announcementRepository = announcementRepository
     }
     
-    func execute(announcement: Announcement) async throws {
+    func execute(announcement: Announcement) async {
         do {
-            try await announcementRepository.createAnnouncement(announcement: announcement.with(state: .loading))
-            try await announcementRepository.updateAnnouncementState(announcementId: announcement.id, state: .created)
+            try await announcementRepository.createAnnouncement(announcement: announcement.with(state: .sending))
+            await announcementRepository.updateAnnouncementState(announcementId: announcement.id, state: .published)
         } catch {
-            try await announcementRepository.updateAnnouncementState(announcementId: announcement.id, state: .error(message: error.localizedDescription.description))
-            print(error.localizedDescription)
-            throw error
+            await announcementRepository.updateAnnouncementState(announcementId: announcement.id, state: .error)
         }
     }
 }

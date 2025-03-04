@@ -14,6 +14,7 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
         self.firebaseAuthenticationRepository = firebaseAuthenticationRepository
         self.authenticationLocalDataSource = authenticationLocalDataSource
         isAuthenticated = authenticationLocalDataSource.isAuthenticated
+        checkUserAuthenticated()
     }
     
     func loginWithEmailAndPassword(email: String, password: String) async throws {
@@ -39,5 +40,17 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     
     func setAuthenticated(_ isAuthenticated: Bool) async {
         await authenticationLocalDataSource.setAuthenticated(isAuthenticated)
+    }
+    
+    func resetPassword(email: String) async throws {
+        try await firebaseAuthenticationRepository.resetPassword(email: email)
+    }
+    
+    private func checkUserAuthenticated() {
+        if !firebaseAuthenticationRepository.isAuthenticated() {
+            Task {
+                await setAuthenticated(false)
+            }
+        }
     }
 }

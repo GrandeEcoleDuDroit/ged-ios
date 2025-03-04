@@ -4,8 +4,10 @@ struct NewsView: View {
     @StateObject private var newsViewModel = NewsInjection.shared.resolve(NewsViewModel.self)
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
-    @State private var isActive: Bool = false
     @State private var isRefreshing: Bool = false
+    @State private var showCenterToast: Bool = false
+    @State private var showBottomToast: Bool = false
+    @State private var toastMessage: String = ""
     
     var body: some View {
         GeometryReader { geometry in
@@ -14,8 +16,11 @@ struct NewsView: View {
                     announcements: newsViewModel.announcements,
                     maxHeight: geometry.size.height / 2.5,
                     onRefresh: {
-                        try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
-                        isRefreshing.toggle()
+                        Task {
+                            isRefreshing = true
+                            await newsViewModel.refreshAnnouncements()
+                            isRefreshing = false
+                        }
                     }
                 )
                 .id(isRefreshing)
@@ -26,8 +31,6 @@ struct NewsView: View {
                 )
                 .environmentObject(newsViewModel)
                 .environmentObject(navigationCoordinator)
-                
-                newsSection
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -61,21 +64,25 @@ struct NewsView: View {
         .onAppear {
             tabBarVisibility.show = true
         }
-    }
-}
-
-var newsSection: some View {
-    VStack(alignment: .leading) {
-        Text(getString(.news))
-            .font(.titleMedium)
-            .padding(.horizontal)
+        .toast(isPresented: $showCenterToast, message: toastMessage, position: .center)
+        .toast(isPresented: $showBottomToast, message: toastMessage)
+        .onReceive(newsViewModel.$screenState) { state in
+            if case .error(let message) = state {
+                toastMessage = message
+                showCenterToast = true
+                newsViewModel.updateScreenState(.initial)
+            }
+        }
     }
 }
 
 struct RecentAnnouncementSection: View {
     @EnvironmentObject private var newsViewModel: NewsViewModel
     @EnvironmentObject private var navigationCoordinator: NavigationCoordinator
-    @State private var isClicked: Bool = false
+    @State private var showSheet: Bool = false
+    @State private var showDeleteSheet: Bool = false
+    @State private var showDeleteAnnouncementAlert: Bool = false
+    @State private var selectedAnnouncement: Announcement?
     private var announcements: [Announcement]
     private var onRefresh: () async -> Void
     private let maxHeight: CGFloat
@@ -96,53 +103,91 @@ struct RecentAnnouncementSection: View {
                 .font(.titleMedium)
                 .padding(.horizontal)
             
-            if announcements.isEmpty {
-                Text(getString(.noAnnouncement))
-                    .font(.bodyLarge)
-                    .foregroundColor(Color(UIColor.lightGray))
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .top)
-            } else {
-                ScrollView {
+            ScrollView {
+                if announcements.isEmpty {
+                    Text(getString(.noAnnouncement))
+                        .font(.bodyLarge)
+                        .foregroundColor(Color(UIColor.lightGray))
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .top)
+                } else {
                     ForEach(announcements) { announcement in
-                        GetAnnouncementItem(
-                            announcement: announcement,
-                            onClick: {
-                                navigationCoordinator.push(NewsScreen.announcementDetail(announcement))
+                        if case .sending = announcement.state {
+                            SendingAnnouncementItem(announcement: announcement) {
+                                selectedAnnouncement = announcement
+                                if announcement.date.timeIntervalSinceNow < -120 {
+                                    showSheet = true
+                                } else {
+                                    showDeleteSheet = true
+                                }
                             }
-                        )
+                        }
+                        else if case .error = announcement.state {
+                            ErrorAnnouncementItem(announcement: announcement) {
+                                selectedAnnouncement = announcement
+                                showSheet = true
+                            }
+                        } else {
+                            AnnouncementItem(announcement: announcement) {
+                                navigationCoordinator.push(NewsScreen.readAnnouncement(announcement))
+                            }
+                        }
+                    }
+                    .frame(maxHeight: maxHeight)
+                    .fixedSize(horizontal: false, vertical: true)
+                }
+            }.refreshable { await onRefresh() }
+        }
+        .sheet(isPresented: $showSheet) {
+            VStack {
+                ClickableItemWithIcon(
+                    icon: Image(systemName: "paperplane"),
+                    text: Text(getString(.resend))
+                ) {
+                    showSheet = false
+                    if let announcement = selectedAnnouncement {
+                        newsViewModel.resendAnnouncement(announcement: announcement)
                     }
                 }
-                .frame(maxHeight: maxHeight)
-                .fixedSize(horizontal: false, vertical: true)
-                .refreshable {
-                    await onRefresh()
+                
+                ClickableItemWithIcon(
+                    icon: Image(systemName: "trash"),
+                    text: Text(getString(.delete))
+                ) {
+                    showSheet = false
+                    showDeleteAnnouncementAlert = true
                 }
+                .foregroundColor(.error)
             }
+            .presentationDetents([.fraction(0.2)])
         }
-    }
-}
-
-struct GetAnnouncementItem: View {
-    private var announcement: Announcement
-    private let onClick: () -> Void
-    
-    init(
-        announcement: Announcement,
-        onClick: @escaping () -> Void
-    ) {
-        self.announcement = announcement
-        self.onClick = onClick
-    }
-    
-    var body: some View {
-        if case .loading = announcement.state {
-            LoadingAnnouncementItemWithContent(announcement: announcement, onClick: onClick)
+        .sheet(isPresented: $showDeleteSheet) {
+            VStack {
+                ClickableItemWithIcon(
+                    icon: Image(systemName: "trash"),
+                    text: Text(getString(.delete))
+                ) {
+                    showSheet = false
+                    showDeleteAnnouncementAlert = true
+                }
+                .foregroundColor(.error)
+            }
+            .presentationDetents([.fraction(0.2)])
         }
-        else if case .error = announcement.state {
-            ErrorAnnouncementItemWithContent(announcement: announcement, onClick: onClick)
-        } else {
-            AnnouncementItemWithContent(announcement: announcement, onClick: onClick)
+        .alert(
+            getString(.deleteAnnouncementAlertTitle),
+            isPresented: $showDeleteAnnouncementAlert
+        ) {
+            Button(getString(.cancel), role: .cancel) {
+                showDeleteAnnouncementAlert = false
+            }
+            
+            Button(getString(.delete), role: .destructive) {
+                if let announcement = selectedAnnouncement {
+                    newsViewModel.deleteAnnouncement(announcement: announcement)
+                }
+                showDeleteAnnouncementAlert = false
+            }
         }
     }
 }

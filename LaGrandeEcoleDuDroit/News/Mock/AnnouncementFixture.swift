@@ -19,7 +19,8 @@ let announcementFixture = Announcement(
     "vous avez des questions ou si vous avez besoin de plus amples informations " +
     "avant la date prévue",
     date: calendar.date(from : DateComponents(year: 2024, month: 10, day: 9)) ?? currentDate,
-    author: userFixture
+    author: userFixture,
+    state: .published
 )
 
 let announcementsFixture = [
@@ -27,38 +28,44 @@ let announcementsFixture = [
         id: "1",
         title: "First announcement",
         content: "Hi this is my first announcement",
-        date: currentDate, author: userFixture
+        date: currentDate, author: userFixture,
+        state: .published
     ),
     Announcement(
         id: "2",
         title: "Second announcement",
         content: "Hi this is my second announcement",
         date: calendar.date(byAdding: .day, value: -1, to: currentDate) ?? currentDate,
-        author:userFixture
+        author:userFixture,
+        state: .published
     ),
     Announcement(
         id: "3",
         title: "Third announcement",
         content: "Hi this is my third announcement",
         date: calendar.date(byAdding: .day, value: -3, to: currentDate) ?? currentDate,
-        author: userFixture
+        author: userFixture,
+        state: .published
     ),
     Announcement(
         id: "4",
         content: "Hi this is my fourth announcement",
         date: calendar.date(byAdding: .weekOfMonth, value: -1, to: currentDate) ?? currentDate,
-        author:userFixture
+        author:userFixture,
+        state: .published
     ),
     Announcement(
         id: "5",
         content: "Hi this is my fifth announcement",
         date: calendar.date(byAdding: .month, value: -1, to: currentDate) ?? currentDate,
-        author: userFixture
+        author: userFixture,
+        state: .published
     ),
     Announcement(
         id: "6",
         content: "Hi this is my sixth announcement",
         date: calendar.date(byAdding: .year, value: -1, to: currentDate) ?? currentDate,
-        author: userFixture
+        author: userFixture,
+        state: .published
     ),
 ]

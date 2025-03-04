@@ -9,7 +9,7 @@ class ImageApiImpl: ImageApi {
     
     func uploadImage(imageData: Data, fileName: String) async throws {
         guard let url = baseUrl(endPoint: "upload") else {
-            throw RequestError.invalidURL
+            throw RequestError.invalidURL("Invalid URL")
         }
         let fileExtension = (fileName as NSString).pathExtension
         

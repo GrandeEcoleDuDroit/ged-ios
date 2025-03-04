@@ -1,4 +1,5 @@
 enum NewsScreen: Screen {
-    case announcementDetail(_ announcement: Announcement)
+    case readAnnouncement(_ announcement: Announcement)
+    case editAnnouncement(_ announcement: Announcement)
     case createAnnouncement
 }

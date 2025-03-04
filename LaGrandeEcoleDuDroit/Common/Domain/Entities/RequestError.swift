@@ -1,4 +1,4 @@
 enum RequestError: Error {
-    case invalidURL
+    case invalidURL(String)
     case invalidResponse(String?)
 }
