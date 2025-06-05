@@ -15,4 +15,8 @@ extension String {
         
         return firstLetter + remainingText
     }
+    
+    var capitalizeWords: String {
+        self.lowercased().capitalized
+    }
 }

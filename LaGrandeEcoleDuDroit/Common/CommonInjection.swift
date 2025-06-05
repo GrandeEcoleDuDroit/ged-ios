@@ -29,6 +29,9 @@ class CommonInjection: DependencyInjectionContainer {
         }
         .inObjectScope(.container)
         
+        container.register(NetworkMonitor.self) { _ in NetworkMonitorImpl() }
+            .inObjectScope(.container)
+        
         container.register(ImageRemoteDataSource.self) { resolver in
             ImageRemoteDataSource(imageApi: resolver.resolve(ImageApi.self)!)
         }
@@ -50,39 +53,11 @@ class CommonInjection: DependencyInjectionContainer {
         
         container.register(GenerateIdUseCase.self) { _ in GenerateIdUseCase() }
         
-        container.register(CreateUserUseCase.self) { resolver in
-            CreateUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        
-        container.register(GetCurrentUserUseCase.self) { resolver in
-            GetCurrentUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        
-        container.register(SetCurrentUserUseCase.self) { resolver in
-            SetCurrentUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        
-        container.register(GetUserUseCase.self) { resolver in
-            GetUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        
-        container.register(GetUsersUseCase.self) { resolver in
-            GetUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        
-        container.register(GetFilteredUsersUseCase.self) { resolver in
-            GetFilteredUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        
         container.register(UpdateProfilePictureUseCase.self) { resolver in
             UpdateProfilePictureUseCase(
                 userRepository: resolver.resolve(UserRepository.self)!,
                 imageRepository: resolver.resolve(ImageRepository.self)!
             )
-        }
-        
-        container.register(IsUserExistUseCase.self) { resolver in
-            IsUserExistUseCase(userRepository: resolver.resolve(UserRepository.self)!)
         }
     }
     
@@ -126,34 +101,12 @@ class CommonInjection: DependencyInjectionContainer {
         mockContainer.register(ImageRepository.self) { _ in MockImageRepository() }
         
         mockContainer.register(GenerateIdUseCase.self) { _ in GenerateIdUseCase() }
-        mockContainer.register(CreateUserUseCase.self) { resolver in
-            CreateUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        mockContainer.register(GetCurrentUserUseCase.self) { resolver in
-            GetCurrentUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        mockContainer.register(SetCurrentUserUseCase.self) { resolver in
-            SetCurrentUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        mockContainer.register(GetUserUseCase.self) { resolver in
-            GetUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        mockContainer.register(GetUsersUseCase.self) { resolver in
-            GetUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        mockContainer.register(GetFilteredUsersUseCase.self) { resolver in
-            GetFilteredUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
         
         mockContainer.register(UpdateProfilePictureUseCase.self) { resolver in
             UpdateProfilePictureUseCase(
                 userRepository: resolver.resolve(UserRepository.self)!,
                 imageRepository: resolver.resolve(ImageRepository.self)!
             )
-        }
-        
-        mockContainer.register(IsUserExistUseCase.self) { resolver in
-            IsUserExistUseCase(userRepository: resolver.resolve(UserRepository.self)!)
         }
         
         return mockContainer

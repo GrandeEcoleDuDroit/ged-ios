@@ -1,4 +1,5 @@
 import Combine
+import FirebaseCore
 
 class MessageRemoteDataSource {
     private let messageApi: MessageApi
@@ -7,30 +8,23 @@ class MessageRemoteDataSource {
         self.messageApi = messageApi
     }
     
-    func listenMessages(conversationId: String) -> AnyPublisher<Message, Error> {
-        messageApi.listenMessages(conversationId: conversationId)
-            .compactMap { MessageMapper.toDomain(remoteMessage: $0) }
+    func listenMessages(conversationId: String, offsetTime: Date?) -> AnyPublisher<Message, Error> {
+        let offsetTime: Timestamp? = offsetTime.map { Timestamp(date: $0) }
+        
+        return messageApi.listenMessages(conversationId: conversationId, offsetTime: offsetTime)
+            .map { $0.toMessage() }
             .eraseToAnyPublisher()
     }
     
-    func listenLastMessage(conversationId: String) -> AnyPublisher<Message?, ConversationError> {
-        messageApi.listenLastMessage(conversationId: conversationId)
-            .map { remoteMessage in
-                guard let remoteMessage else { return nil }
-                return MessageMapper.toDomain(remoteMessage: remoteMessage)
-            }.eraseToAnyPublisher()
+    func createMessage(message: Message) async throws {
+        try await messageApi.createMessage(remoteMessage: message.toRemote())
     }
     
-    func createMessage(message: Message) async throws {
-        let remoteMessage = MessageMapper.toRemote(message: message)
-        try await messageApi.createMessage(remoteMessage: remoteMessage)
+    func updateSeenMessage(message: Message) async throws {
+        try await messageApi.updateSeenMessage(remoteMessage: message.toRemote())
     }
     
     func stopListeningMessages() {
         messageApi.stopListeningMessages()
-    }
-    
-    func stopListeningLastMessages() {
-        messageApi.stopListeningLastMessages()
     }
 }

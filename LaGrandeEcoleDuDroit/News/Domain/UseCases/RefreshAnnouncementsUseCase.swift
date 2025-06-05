@@ -1,15 +1,34 @@
+import Foundation
+import Combine
+
 class RefreshAnnouncementsUseCase {
     private let announcementRepository: AnnouncementRepository
-    private var taskCount = 0
+    private let networkMonitor: NetworkMonitor
+    private var lastRequestTime: Date?
     
-    init(announcementRepository: AnnouncementRepository) {
+    init(
+        announcementRepository: AnnouncementRepository,
+        networkMonitor: NetworkMonitor
+    ) {
         self.announcementRepository = announcementRepository
+        self.networkMonitor = networkMonitor
     }
     
-    func execute() async {
-        guard taskCount == 0 else { return }
-        taskCount += 1
-        await announcementRepository.refreshAnnouncements()
-        taskCount -= 1
+    func execute() async throws {
+        guard networkMonitor.isConnected else {
+            throw NetworkError.noInternetConnection
+        }
+        
+        let currentTime = Date()
+        if let lastRequestTime = lastRequestTime {
+            let duration = currentTime.timeIntervalSince(lastRequestTime)
+            if duration > 10 {
+                self.lastRequestTime = currentTime
+                try await announcementRepository.refreshAnnouncements()
+            }
+        } else {
+            lastRequestTime = currentTime
+            try await announcementRepository.refreshAnnouncements()
+        }
     }
 }

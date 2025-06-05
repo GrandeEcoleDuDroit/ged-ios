@@ -6,59 +6,71 @@ private let tag = String(describing: UserRepositoryImpl.self)
 class UserRepositoryImpl: UserRepository {
     private let userLocalDataSource: UserLocalDataSource
     private let userRemoteDataSource: UserRemoteDataSource
-    private var cancellables = Set<AnyCancellable>()
     
-    private(set) var currentUser = CurrentValueSubject<User?, Never>(nil)
+    private var userSubject = CurrentValueSubject<User?, Never>(nil)
+    var user: AnyPublisher<User, Never> {
+        userSubject.compactMap{ $0 }.eraseToAnyPublisher()
+    }
+    var currentUser: User? {
+        userSubject.value
+    }
     
     init(userLocalDataSource: UserLocalDataSource, userRemoteDataSource: UserRemoteDataSource) {
         self.userLocalDataSource = userLocalDataSource
         self.userRemoteDataSource = userRemoteDataSource
-        userLocalDataSource.currentUser.sink { [weak self] user in
-            self?.currentUser.send(user)
-        }.store(in: &cancellables)
+        initUser()
     }
     
     func createUser(user: User) async throws {
         do {
             try await userRemoteDataSource.createUser(user: user)
-            userLocalDataSource.setCurrentUser(user: user)
+            try? userLocalDataSource.storeUser(user: user)
+            userSubject.send(user)
         } catch {
             e(tag, error.localizedDescription, error)
             throw error
         }
     }
     
-    func getUser(userId: String) async -> User? {
-        await userRemoteDataSource.getUser(userId: userId)
+    func getUser(userId: String) async throws -> User? {
+        try await userRemoteDataSource.getUser(userId: userId)
     }
     
     func getUserWithEmail(email: String) async throws -> User? {
         try await userRemoteDataSource.getUserWithEmail(email: email)
     }
     
-    func getUserPublisher(userId: String) -> AnyPublisher<User, Never> {
+    func getUserPublisher(userId: String) -> AnyPublisher<User, Error> {
         userRemoteDataSource.listenUser(userId: userId)
     }
     
-    func getUsers() async throws -> [User] {
-        try await userRemoteDataSource.getUsers()
+    func getUsers() async -> [User] {
+        await userRemoteDataSource.getUsers()
     }
     
-    func getFilteredUsers(filter: String) async -> [User] {
-        await userRemoteDataSource.getFilteredUsers(filter: filter)
-    }
-        
-    
-    func setCurrentUser(user: User) {
-        userLocalDataSource.setCurrentUser(user: user)
+    func storeUser(_ user: User) {
+        try? userLocalDataSource.storeUser(user: user)
+        userSubject.send(user)
     }
     
-    func removeCurrentUser() {
-        userLocalDataSource.removeCurrentUser()
+    func deleteCurrentUser() {
+        userLocalDataSource.removeUser()
+        userSubject.send(nil)
     }
     
-    func updateProfilePictureUrl(userId: String, profilePictureFileName: String) async throws {
+    func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {
         try await userRemoteDataSource.updateProfilePictureFileName(userId: userId, fileName: profilePictureFileName)
-        userLocalDataSource.updateProfilePictureUrl(fileName: profilePictureFileName)
+        try? userLocalDataSource.updateProfilePictureFileName(fileName: profilePictureFileName)
+        userSubject.value = userSubject.value?.with(profilePictureFileName: profilePictureFileName)
+    }
+    
+    func deleteProfilePictureFileName(userId: String) async throws {
+        try await userRemoteDataSource.deleteProfilePictureFileName(userId: userId)
+        try userLocalDataSource.updateProfilePictureFileName(fileName: nil)
+        userSubject.value = userSubject.value?.with(profilePictureFileName: nil)
+    }
+    
+    private func initUser() {
+        userSubject.send(userLocalDataSource.getUser())
     }
 }

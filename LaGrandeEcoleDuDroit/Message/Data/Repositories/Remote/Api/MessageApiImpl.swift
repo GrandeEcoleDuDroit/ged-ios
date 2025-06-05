@@ -7,102 +7,62 @@ let messageTableName = "messages"
 private let tag = String(describing: MessageApiImpl.self)
 
 class MessageApiImpl: MessageApi {
-    private var lastMessageListeners: [ListenerRegistration] = []
     private var messageListeners: [ListenerRegistration] = []
     private let conversationCollection: CollectionReference = Firestore.firestore().collection(conversationTableName)
     
-    func listenMessages(conversationId: String) -> AnyPublisher<RemoteMessage, any Error> {
+    func listenMessages(conversationId: String, offsetTime: Timestamp?) -> AnyPublisher<RemoteMessage, Error> {
         let subject = PassthroughSubject<RemoteMessage, Error>()
         
         let listener = conversationCollection
-            .document(conversationId)
+            .document(conversationId.description)
             .collection(messageTableName)
-            .order(by: MessageDataFields.timestamp, descending: true)
-            .limit(to: 10)
+            .withOffsetTime(offsetTime)
             .addSnapshotListener { snapshot, error in
                 if let error = error {
-                    e(tag, "MessageApiImpl: Query error : \(error)")
+                    subject.send(completion: .failure(error))
                     return
                 }
                 
-                guard let snapshot = snapshot else {
-                    e(tag, "MessageApiImpl: No snapshot for messages")
-                    return
-                }
-                
-                snapshot.documentChanges.forEach { documentChanges in
-                    switch documentChanges.type {
-                        case .added, .modified:
-                            if let remoteMessage = try? documentChanges.document.data(as: RemoteMessage.self) {
-                                subject.send(remoteMessage)
-                            } else {
-                                e(tag, "Error to convert remote message")
-                            }
-                        case .removed:
-                            break
+                snapshot?.documents
+                    .filter({ !$0.metadata.isFromCache })
+                    .compactMap({ try? $0.data(as: RemoteMessage.self) })
+                    .forEach {
+                        subject.send($0)
                     }
-                }
             }
         
         messageListeners.append(listener)
         return subject.eraseToAnyPublisher()
     }
     
-    func listenLastMessage(conversationId: String) -> AnyPublisher<RemoteMessage?, ConversationError> {
-        let subject = CurrentValueSubject<RemoteMessage?, ConversationError>(nil)
-        
-        let listener = conversationCollection
-            .document(conversationId)
+    func createMessage(remoteMessage: RemoteMessage) async throws {
+        try await conversationCollection
+            .document(remoteMessage.conversationId)
             .collection(messageTableName)
-            .order(by: MessageDataFields.timestamp, descending: true)
-            .limit(to: 1)
-            .addSnapshotListener { snapshot, error in
-                if let error = error {
-                    e(tag, "MessageApiImpl: Query error : \(error)")
-                    return
-                }
-                
-                guard let snapshot = snapshot else {
-                    e(tag, "MessageApiImpl: No snapshot for last message")
-                    return
-                }
-                
-                snapshot.documentChanges.forEach { documentChanges in
-                    switch documentChanges.type {
-                        case .added, .modified:
-                            if let remoteMessage = try? documentChanges.document.data(as: RemoteMessage.self) {
-                                subject.send(remoteMessage)
-                            } else {
-                                e(tag, "Error to convert remote message")
-                            }
-                        case .removed:
-                            break
-                    }
-                }
-            }
-        
-        lastMessageListeners.append(listener)
-        return subject.eraseToAnyPublisher()
+            .document(remoteMessage.messageId.toString())
+            .updateData([MessageField.seen: remoteMessage.seen])
     }
     
-    func createMessage(remoteMessage: RemoteMessage) async throws {
-        do {
-            try conversationCollection
-                .document(remoteMessage.conversationId)
-                .collection(messageTableName)
-                .document(remoteMessage.messageId)
-                .setData(from: remoteMessage)
-        } catch {
-            e(tag, "MessageApiImpl: Error creating message: \(error)")
-            throw MessageError.createMessageError
-        }
+    func updateSeenMessage(remoteMessage: RemoteMessage) async throws {
+        try await conversationCollection
+            .document(remoteMessage.conversationId)
+            .collection(messageTableName)
+            .document(remoteMessage.messageId.toString())
+            .updateData([MessageDataFields.seen: remoteMessage.seen])
     }
     
     func stopListeningMessages() {
         messageListeners.forEach { $0.remove() }
     }
-    
-    func stopListeningLastMessages() {
-        lastMessageListeners.forEach { $0.remove() }
+}
+
+extension CollectionReference {
+    func withOffsetTime(_ offsetTime: Timestamp?) -> Query {
+        if let offsetTime = offsetTime {
+            self.whereField(MessageField.timestamp.rawValue, isGreaterThan: offsetTime)
+        } else {
+            self
+        }
     }
 }
+

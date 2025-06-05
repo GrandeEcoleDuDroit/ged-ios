@@ -1,11 +1,11 @@
-struct User: Codable, Hashable, Identifiable {
-    var id: String
-    var firstName: String
-    var lastName: String
-    var email: String
-    var schoolLevel: String
-    var isMember: Bool
-    var profilePictureUrl: String?
+struct User: Decodable, Hashable, Identifiable {
+    let id: String
+    let firstName: String
+    let lastName: String
+    let email: String
+    let schoolLevel: SchoolLevel
+    let isMember: Bool
+    let profilePictureFileName: String?
     
     var fullName: String {
         (firstName + " " + lastName).capitalized
@@ -16,9 +16,9 @@ struct User: Codable, Hashable, Identifiable {
         firstName: String? = nil,
         lastName: String? = nil,
         email: String? = nil,
-        schoolLevel: String? = nil,
+        schoolLevel: SchoolLevel? = nil,
         isMember: Bool? = nil,
-        profilePictureUrl: String? = nil
+        profilePictureFileName: String? = nil
     ) -> User {
         User(
             id: id ?? self.id,
@@ -27,7 +27,16 @@ struct User: Codable, Hashable, Identifiable {
             email: email ?? self.email,
             schoolLevel: schoolLevel ?? self.schoolLevel,
             isMember: isMember ?? self.isMember,
-            profilePictureUrl: profilePictureUrl ?? self.profilePictureUrl
+            profilePictureFileName: profilePictureFileName ?? self.profilePictureFileName
         )
     }
+}
+
+enum SchoolLevel: String, CaseIterable, Identifiable, Decodable {
+    case ged1 = "GED 1"
+    case ged2 = "GED 2"
+    case ged3 = "GED 3"
+    case ged4 = "GED 4"
+    
+    var id: String { self.rawValue }
 }

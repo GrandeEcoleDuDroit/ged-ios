@@ -1,4 +1,6 @@
 import Combine
+import FirebaseCore
+import Foundation
 
 class ConversationRemoteDataSource {
     private let conversationApi: ConversationApi
@@ -11,12 +13,14 @@ class ConversationRemoteDataSource {
         conversationApi.listenConversations(userId: userId)
     }
     
-    func createConversation(remoteConversation: RemoteConversation) async throws {
-        try await conversationApi.createConversation(remoteConversation: remoteConversation)
+    func createConversation(conversation: Conversation, userId: String) async throws {
+        let data = conversation.toRemote(userId: userId).toMap()
+        try await conversationApi.createConversation(conversationId: conversation.id, data: data)
     }
     
-    func deleteConversation(conversationId: String) async throws {
-        try await conversationApi.deleteConversation(conversationId: conversationId)
+    func updateConversationDeleteTime(conversationId: String, userId: String, deleteTime: Date) async throws {
+        let data = ["\(ConversationField.deleteTime.rawValue).\(userId)": Timestamp(date: deleteTime)]
+        try await conversationApi.updateConversation(conversationId: conversationId, data: data)
     }
     
     func stopListeningConversations() {

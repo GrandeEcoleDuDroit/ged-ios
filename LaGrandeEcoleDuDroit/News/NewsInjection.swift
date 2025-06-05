@@ -28,68 +28,64 @@ class NewsInjection: DependencyInjectionContainer {
             )
         }.inObjectScope(.container)
         
-        container.register(GetAnnouncementsUseCase.self) { resolver in
-            GetAnnouncementsUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
-        }
-        
-        container.register(GetAnnouncementUseCase.self) { resolver in
-            GetAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
-        }
         
         container.register(CreateAnnouncementUseCase.self) { resolver in
             CreateAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
         }
         
-        container.register(UpdateAnnouncementUseCase.self) { resolver in
-            UpdateAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
-        }
-        
         container.register(DeleteAnnouncementUseCase.self) { resolver in
-            DeleteAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
+            DeleteAnnouncementUseCase(
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+            )
         }
         
-        container.register(ResendErrorAnnouncementUseCase.self) { resolver in
-            ResendErrorAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
+        container.register(ResendAnnouncementUseCase.self) { resolver in
+            ResendAnnouncementUseCase(
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+            )
         }
         
         container.register(RefreshAnnouncementsUseCase.self) { resolver in
-            RefreshAnnouncementsUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
+            RefreshAnnouncementsUseCase(
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+            )
         }
         
         container.register(NewsViewModel.self) { resolver in
             NewsViewModel(
-                getCurrentUserUseCase: CommonInjection.shared.resolve(GetCurrentUserUseCase.self),
-                getAnnouncementsUseCase: resolver.resolve(GetAnnouncementsUseCase.self)!,
+                userRepository: CommonInjection.shared.resolve(UserRepository.self),
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
                 deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
-                resendErrorAnnouncementUseCase: resolver.resolve(ResendErrorAnnouncementUseCase.self)!,
-                refreshAnnouncementsUseCase: resolver.resolve(RefreshAnnouncementsUseCase.self)!
+                recreateAnnouncementUseCase: resolver.resolve(ResendAnnouncementUseCase.self)!,
+                refreshAnnouncementsUseCase: resolver.resolve(RefreshAnnouncementsUseCase.self)!,
             )
         }.inObjectScope(.weak)
         
-        container.register(ReadAnnouncementViewModel.self) { (resolver, announcement: Any) in
-            let announcement = announcement as! Announcement
+        container.register(ReadAnnouncementViewModel.self) { (resolver, announcementId: Any) in
+            let announcementId = announcementId as! String
             return ReadAnnouncementViewModel(
-                updateAnnouncementUseCase: resolver.resolve(UpdateAnnouncementUseCase.self)!,
-                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
-                getCurrentUserUseCase: CommonInjection.shared.resolve(GetCurrentUserUseCase.self),
-                getAnnouncementUseCase: resolver.resolve(GetAnnouncementUseCase.self)!,
-                announcement: announcement
+                announcementId: announcementId,
+                userRepository: CommonInjection.shared.resolve(UserRepository.self),
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
+                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!
             )
         }.inObjectScope(.weak)
         
         container.register(CreateAnnouncementViewModel.self) { resolver in
             CreateAnnouncementViewModel(
                 createAnnouncementUseCase: resolver.resolve(CreateAnnouncementUseCase.self)!,
-                generateIdUseCase: CommonInjection.shared.resolve(GenerateIdUseCase.self),
-                getCurrentUserUseCase: CommonInjection.shared.resolve(GetCurrentUserUseCase.self)
+                userRepository: CommonInjection.shared.resolve(UserRepository.self),
             )
         }.inObjectScope(.weak)
         
         container.register(EditAnnouncementViewModel.self) { (resolver, announcement: Any) in
             let announcement = announcement as! Announcement
             return EditAnnouncementViewModel(
-                updateAnnouncementUseCase: resolver.resolve(UpdateAnnouncementUseCase.self)!,
-                announcement: announcement
+                announcement: announcement,
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!
             )
         }
         .inObjectScope(.weak)
@@ -132,41 +128,38 @@ class NewsInjection: DependencyInjectionContainer {
         let commonMockContainer = CommonInjection.shared.resolveWithMock()
         
         mockContainer.register(AnnouncementRepository.self) { _ in MockAnnouncementRepository() }
-        
-        mockContainer.register(GetAnnouncementsUseCase.self) { resolver in
-            GetAnnouncementsUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
-        }
-        
-        mockContainer.register(GetAnnouncementUseCase.self) { resolver in
-            GetAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
-        }
-        
+       
         mockContainer.register(CreateAnnouncementUseCase.self) { resolver in
             CreateAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
         }
         
-        mockContainer.register(UpdateAnnouncementUseCase.self) { resolver in
-            UpdateAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
-        }
-        
         mockContainer.register(DeleteAnnouncementUseCase.self) { resolver in
-            DeleteAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
+            DeleteAnnouncementUseCase(
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
+                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!
+            )
         }
         
-        mockContainer.register(ResendErrorAnnouncementUseCase.self) { resolver in
-            ResendErrorAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
+        mockContainer.register(ResendAnnouncementUseCase.self) { resolver in
+            ResendAnnouncementUseCase(
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
+                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!
+            )
         }
         
         mockContainer.register(RefreshAnnouncementsUseCase.self) { resolver in
-            RefreshAnnouncementsUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
+            RefreshAnnouncementsUseCase(
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
+                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!
+            )
         }
         
         mockContainer.register(NewsViewModel.self) { resolver in
             NewsViewModel(
-                getCurrentUserUseCase: commonMockContainer.resolve(GetCurrentUserUseCase.self)!,
-                getAnnouncementsUseCase: resolver.resolve(GetAnnouncementsUseCase.self)!,
+                userRepository: commonMockContainer.resolve(UserRepository.self)!,
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
                 deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
-                resendErrorAnnouncementUseCase: resolver.resolve(ResendErrorAnnouncementUseCase.self)!,
+                recreateAnnouncementUseCase: resolver.resolve(ResendAnnouncementUseCase.self)!,
                 refreshAnnouncementsUseCase: resolver.resolve(RefreshAnnouncementsUseCase.self)!
             )
         }
@@ -174,19 +167,17 @@ class NewsInjection: DependencyInjectionContainer {
         mockContainer.register(CreateAnnouncementViewModel.self) { resolver in
             CreateAnnouncementViewModel(
                 createAnnouncementUseCase: resolver.resolve(CreateAnnouncementUseCase.self)!,
-                generateIdUseCase: commonMockContainer.resolve(GenerateIdUseCase.self)!,
-                getCurrentUserUseCase: commonMockContainer.resolve(GetCurrentUserUseCase.self)!
+                userRepository: commonMockContainer.resolve(UserRepository.self)!,
             )
         }
         
-        mockContainer.register(ReadAnnouncementViewModel.self) { (resolver, announcement: Any) in
-            let announcement = announcement as! Announcement
+        mockContainer.register(ReadAnnouncementViewModel.self) { (resolver, announcementId: Any) in
+            let announcementId = announcementId as! String
             return ReadAnnouncementViewModel(
-                updateAnnouncementUseCase: resolver.resolve(UpdateAnnouncementUseCase.self)!,
-                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
-                getCurrentUserUseCase: commonMockContainer.resolve(GetCurrentUserUseCase.self)!,
-                getAnnouncementUseCase: commonMockContainer.resolve(GetAnnouncementUseCase.self)!,
-                announcement: announcement
+                announcementId: announcementId,
+                userRepository: commonMockContainer.resolve(UserRepository.self)!,
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
+                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!
             )
         }
         

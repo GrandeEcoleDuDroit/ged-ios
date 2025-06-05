@@ -1,48 +1,42 @@
 import Foundation
 
-struct Message: Codable, Identifiable, Equatable {
-    var id: String
-    var conversationId: String
-    var content: String
-    var date: Date = Date.now
-    var isRead: Bool = false
-    var senderId: String
-    var type: MessageType
-    var state: MessageState
-    
-    static func == (lhs: Message, rhs: Message) -> Bool {
-        lhs.id == rhs.id &&
-        lhs.content == rhs.content &&
-        lhs.date == rhs.date &&
-        lhs.isRead == rhs.isRead &&
-        lhs.senderId == rhs.senderId &&
-        lhs.type == rhs.type &&
-        lhs.state == rhs.state
-    }
+struct Message: Hashable {
+    let id: Int
+    let senderId: String
+    let recipientId: String
+    let conversationId: String
+    let content: String
+    let date: Date
+    let seen: Bool
+    let state: MessageState
     
     func with(
-        id: String? = nil,
+        id: Int? = nil,
+        senderId: String? = nil,
+        recipientId: String? = nil,
         conversationId: String? = nil,
         content: String? = nil,
         date: Date? = nil,
-        isRead: Bool? = nil,
-        senderId: String? = nil,
-        type: MessageType? = nil,
+        seen: Bool? = nil,
         state: MessageState? = nil
     ) -> Message {
         Message(
             id: id ?? self.id,
+            senderId: senderId ?? self.senderId,
+            recipientId: recipientId ?? self.recipientId,
             conversationId: conversationId ?? self.conversationId,
             content: content ?? self.content,
             date: date ?? self.date,
-            isRead: isRead ?? self.isRead,
-            senderId: senderId ?? self.senderId,
-            type: type ?? self.type,
+            seen: seen ?? self.seen,
             state: state ?? self.state
         )
     }
 }
 
-enum MessageType: String, Codable {
-    case text = "text"
+enum MessageState: String, Equatable, Codable {
+    case draft = "draft"
+    case loading = "loading"
+    case sent = "sent"
+    case error = "error"
 }
+

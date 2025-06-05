@@ -2,7 +2,7 @@ import Foundation
 
 struct Announcement: Identifiable, Hashable {
     var id: String
-    var title: String = ""
+    var title: String? = nil
     var content: String
     var date: Date
     var author: User
@@ -29,4 +29,10 @@ struct Announcement: Identifiable, Hashable {
             state: state ?? self.state
         )
     }
+}
+
+enum AnnouncementState: String, Hashable {
+    case publishing = "sending"
+    case published = "published"
+    case error = "error"
 }

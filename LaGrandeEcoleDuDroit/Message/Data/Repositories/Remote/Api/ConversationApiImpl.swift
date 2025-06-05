@@ -22,21 +22,9 @@ class ConversationApiImpl: ConversationApi {
                     return
                 }
                 
-                guard let snapshot = snapshot else {
-                    e(tag, "Error to listen conversations: querySnapshot is nil")
-                    return
-                }
-                
-                snapshot.documentChanges.forEach { documentChanges in
-                    switch documentChanges.type {
-                        case .added, .modified:
-                            if let remoteConversation = try? documentChanges.document.data(as: RemoteConversation.self) {
-                                subject.send(remoteConversation)
-                            } else {
-                                e(tag, "Error to convert remote conversation")
-                            }
-                        case .removed:
-                            break
+                snapshot?.documents.forEach { document in
+                    if let remoteConversation = try? document.data(as: RemoteConversation.self) {
+                        subject.send(remoteConversation)
                     }
                 }
             }
@@ -45,35 +33,16 @@ class ConversationApiImpl: ConversationApi {
         return subject.eraseToAnyPublisher()
     }
     
-    func createConversation(remoteConversation: RemoteConversation) async throws {
-        do {
-            try conversationCollection
-                .document(remoteConversation.conversationId)
-                .setData(from: remoteConversation)
-        } catch {
-            e(tag, "Error to create conversation: \(error.localizedDescription)")
-            throw ConversationError.createFailed
-        }
+    func createConversation(conversationId: String, data: [String: Any]) async throws {
+        try await conversationCollection
+            .document(conversationId)
+            .setData(data, merge: true)
     }
     
-    func deleteConversation(conversationId: String) async throws {
-        do {
-            try await conversationCollection
-                .document(conversationId)
-                .delete()
-            
-            let messagesSnapshot = try await conversationCollection
-                .document(conversationId)
-                .collection(messageTableName)
-                .getDocuments()
-            
-            for document in messagesSnapshot.documents {
-                try await document.reference.delete()
-            }
-        } catch {
-            e(tag, "Error to delete conversation: \(error.localizedDescription)")
-            throw ConversationError.deleteFailed
-        }
+    func updateConversation(conversationId: String, data: [String: Any]) async throws {
+        try await conversationCollection
+            .document(conversationId)
+            .updateData(data)
     }
     
     func stopListeningConversations() {

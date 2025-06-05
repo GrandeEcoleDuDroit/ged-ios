@@ -3,90 +3,95 @@ import Combine
 import CoreData
 import os
 
-private let messageEntityName = "LocalMessage"
-private let logger = Logger(subsystem: "com.upsaclay.gedoise", category: "MessageLocalDataSource")
-
 class MessageLocalDataSource {
     private let tag = String(describing: MessageLocalDataSource.self)
-    private let gedDatabaseContainer: GedDatabaseContainer
-    private let request = NSFetchRequest<LocalMessage>(entityName: messageEntityName)
-    private let context: NSManagedObjectContext
-    let messageSubject = PassthroughSubject<Message, Error>()
+    private let container: NSPersistentContainer
+    
+    let messageSubject = PassthroughSubject<[LocalMessage], Error>()
     
     init(gedDatabaseContainer: GedDatabaseContainer) {
-        self.gedDatabaseContainer = gedDatabaseContainer
-        context = gedDatabaseContainer.container.viewContext
+        container = gedDatabaseContainer.container
     }
     
-    private func getMessages(conversationId: String, offeset: Int, limit: Int) {
-        do {
-            request.predicate = NSPredicate(format: "conversationId == %@", conversationId)
-            request.fetchLimit = limit
-            request.fetchOffset = offeset
-            let localMessages = try context.fetch(request)
-            localMessages.forEach { localMessage in
-                if let message = MessageMapper.toDomain(localMessage: localMessage) {
-                    messageSubject.send(message)
-                }
-            }
-        } catch {
-            e(tag, "Failed to get messages: \(error)")
-            messageSubject.send(completion: .failure(MessageError.notFoundError))
-        }
-    }
-    
-    func insertMessage(message: Message) throws {
-        do {
-            MessageMapper.toLocal(message: message, context: context)
-            try context.save()
-            messageSubject.send(message)
-        } catch {
-            e(tag, "Failed to insert message: \(error)")
-            throw MessageError.createMessageError
-        }
-    }
-    
-    func upsertMessage(message: Message) throws {
-        request.predicate = NSPredicate(format: "messageId == %@", message.id)
+    func getMessages(conversationId: String) async throws -> [Message] {
+        let context = container.newBackgroundContext()
+        let fetchRequest = LocalMessage.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "\(MessageField.conversationId.rawValue) == %@", conversationId)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: MessageField.timestamp.rawValue, ascending: false)]
         
-        do {
-            let localMessages = try context.fetch(request)
+        return try context.fetch(fetchRequest).compactMap {
+            $0.toMessage()
+        }
+    }
+    
+    func getLastMessage(conversationId: String) async throws -> Message? {
+        let context = container.newBackgroundContext()
+        let fetchRequest: NSFetchRequest<LocalMessage> = LocalMessage.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "\(MessageField.conversationId.rawValue) == %@", conversationId)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: MessageField.timestamp.rawValue, ascending: false)]
+        fetchRequest.fetchLimit = 1
+        
+        return try context.fetch(fetchRequest).compactMap {
+            $0.toMessage()
+        }.first
+    }
+  
+    func upsertMessage(message: Message) async throws {
+        let context = container.newBackgroundContext()
+        try await context.perform {
+            let request = LocalMessage.fetchRequest()
+            request.predicate = NSPredicate(format: "\(MessageField.messageId.rawValue) == %@", message.id)
             
+            let localMessages = try context.fetch(request)
             if let localMessage = localMessages.first {
                 localMessage.state = message.state.rawValue
-                localMessage.isRead = message.isRead
+                localMessage.seen = message.seen
             } else {
-                MessageMapper.toLocal(message: message, context: context)
+                message.buildLocal(context: context)
             }
             
             try context.save()
-            messageSubject.send(message)
-        } catch {
-            e(tag, "Failed to upsert message: \(error)")
-            throw MessageError.upsertMessageError
         }
     }
     
-    func updateMessageState(messageId: String, state: MessageState) async throws {
-        request.predicate = NSPredicate(format: "messageId == %@", messageId)
-        
-        do {
-            let localMessages = try context.fetch(request)
+    func updateMessage(message: Message) async throws {
+        let context = container.newBackgroundContext()
+        try await context.perform {
+            let request = LocalMessage.fetchRequest()
+            request.predicate = NSPredicate(format: "\(MessageField.messageId.rawValue) == %@", message.id)
             
-            guard let localMessage = localMessages.first else {
-                e(tag, "Message not found")
-                throw MessageError.notFoundError
-            }
+            let localMessage = try context.fetch(request).first
+            localMessage?.seen = message.seen
+            localMessage?.state = message.state.rawValue
             
-            localMessage.state = state.rawValue
             try context.save()
-            
-            if let message = MessageMapper.toDomain(localMessage: localMessage) {
-                messageSubject.send(message)
+        }
+    }
+    
+    func deleteMessages(conversationId: String) async throws {
+        let context = container.newBackgroundContext()
+        try await context.perform {
+            let request: NSFetchRequest<LocalMessage> = LocalMessage.fetchRequest()
+            request.predicate = NSPredicate(format: "\(MessageField.conversationId.rawValue) == %@", conversationId)
+            let localMessages = try context.fetch(request)
+            localMessages.forEach {
+                context.delete($0)
             }
-        } catch {
-            e(tag, "Failed to update message status: \(error)")
-            throw MessageError.updateMessageError
+            
+            try context.save()
+        }
+    }
+    
+    func deleteMessages() async throws {
+        let context = container.newBackgroundContext()
+        try await context.perform {
+            let request: NSFetchRequest<LocalMessage> = LocalMessage.fetchRequest()
+            let localMessages = try context.fetch(request)
+            localMessages.forEach {
+                context.delete($0)
+            }
+            
+            try context.save()
         }
     }
 }

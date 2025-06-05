@@ -6,20 +6,18 @@ struct FirestoreUser: Codable, Hashable {
     let schoolLevel: String
     let isMember: Bool
     let profilePictureFileName: String?
-    let isOnline: Bool
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(userId)
     }
     
     enum CodingKeys: String, CodingKey {
-        case userId = "user_id"
-        case firstName = "first_name"
-        case lastName = "last_name"
+        case userId = "userId"
+        case firstName = "firstName"
+        case lastName = "lastName"
         case email = "email"
-        case schoolLevel = "school_level"
-        case isMember = "is_member"
-        case profilePictureFileName = "profile_picture_file_name"
-        case isOnline = "is_online"
+        case schoolLevel = "schoolLevel"
+        case isMember = "isMember"
+        case profilePictureFileName = "profilePictureFileName"
     }
 }
