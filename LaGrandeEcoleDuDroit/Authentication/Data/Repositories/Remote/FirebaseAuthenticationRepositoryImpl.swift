@@ -10,159 +10,54 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
         self.firebaseAuthApi = firebaseAuthApi
     }
     
+    func isAuthenticated() -> Bool {
+        firebaseAuthApi.isAuthenticated()
+    }
+    
     func loginWithEmailAndPassword(email: String, password: String) async throws {
-        do {
-            try await firebaseAuthApi.signIn(email: email, password: password)
-        } catch let error as NSError {
-            e(tag, error.localizedDescription, error)
-            if let authErrorCode = AuthErrorCode(rawValue: error.code) {
-                switch authErrorCode {
-                    case .wrongPassword, .userNotFound, .invalidCredential:
-                        throw AuthenticationError.invalidCredentials
-                    case .userDisabled:
-                        throw AuthenticationError.userDisabled
-                    case .networkError:
-                        throw AuthenticationError.network
-                    case .tooManyRequests:
-                        throw AuthenticationError.tooManyRequests
-                    default:
-                        throw AuthenticationError.unknown
-                }
-            } else {
-                throw AuthenticationError.unknown
-            }
-        }
-        catch {
-            e(tag, error.localizedDescription, error)
-            throw AuthenticationError.unknown
-        }
+        try await handleNetworkException(
+            block: { try await firebaseAuthApi.signIn(email: email, password: password) },
+            tag: tag,
+            message: "Failed to login with email and password",
+            handleSpecificException: mapAuthError
+        )
     }
     
-    func registerWithEmailAndPassword(email: String, password: String) async throws {
-        do {
-            try await firebaseAuthApi.createUserWithEmail(email: email, password: password)
-        } catch let error as NSError {
-            e(tag, error.localizedDescription, error)
-            if let authErrorCode = AuthErrorCode(rawValue: error.code) {
-                switch authErrorCode {
-                    case .emailAlreadyInUse, .credentialAlreadyInUse:
-                        throw AuthenticationError.accountAlreadyExist
-                    case .networkError:
-                        throw AuthenticationError.network
-                    case .tooManyRequests:
-                        throw AuthenticationError.tooManyRequests
-                    default:
-                        throw AuthenticationError.unknown
-                }
-            } else {
-                throw AuthenticationError.unknown
-            }
-        }
-        catch {
-            e(tag, error.localizedDescription, error)
-            throw AuthenticationError.unknown
-        }
+    func registerWithEmailAndPassword(email: String, password: String) async throws -> String {
+        try await handleNetworkException(
+            block: { try await firebaseAuthApi.signUp(email: email, password: password) },
+            tag: tag,
+            message: "Failed to register with email and password",
+            handleSpecificException: mapAuthError
+        )
     }
     
-    func logout() async throws {
-        do {
-            try await firebaseAuthApi.signOut()
-        } catch let error as NSError {
-            e(tag, error.localizedDescription, error)
-            if let authErrorCode = AuthErrorCode(rawValue: error.code) {
-                switch authErrorCode {
-                    case .networkError:
-                        throw AuthenticationError.network
-                    case .tooManyRequests:
-                        throw AuthenticationError.tooManyRequests
-                    default:
-                        throw AuthenticationError.unknown
-                }
-            } else {
-                throw AuthenticationError.unknown
-            }
-        }
-        catch {
-            e(tag, error.localizedDescription, error)
-            throw AuthenticationError.unknown
-        }
-    }
-    
-    func sendEmailVerification() async throws {
-        do {
-            try await firebaseAuthApi.sendEmailVerification()
-        } catch let error as NSError {
-            e(tag, error.localizedDescription, error)
-            if let authErrorCode = AuthErrorCode(rawValue: error.code) {
-                switch authErrorCode {
-                    case .networkError:
-                        throw AuthenticationError.network
-                    case .tooManyRequests:
-                        throw AuthenticationError.tooManyRequests
-                    default:
-                        throw AuthenticationError.unknown
-                }
-            } else {
-                throw AuthenticationError.unknown
-            }
-        }
-        catch {
-            e(tag, error.localizedDescription, error)
-            throw AuthenticationError.unknown
-        }
-    }
-    
-    func isEmailVerified() async throws -> Bool {
-        do {
-            return try await firebaseAuthApi.isEmailVerified()
-        } catch let error as NSError {
-            e(tag, error.localizedDescription, error)
-            if let authErrorCode = AuthErrorCode(rawValue: error.code) {
-                switch authErrorCode {
-                    case .userNotFound:
-                        throw AuthenticationError.userNotFound
-                    case .networkError:
-                        throw AuthenticationError.network
-                    case .tooManyRequests:
-                        throw AuthenticationError.tooManyRequests
-                    default:
-                        throw AuthenticationError.unknown
-                }
-            } else {
-                throw AuthenticationError.unknown
-            }
-        }
-        catch {
-            e(tag, error.localizedDescription, error)
-            throw AuthenticationError.unknown
-        }
+    func logout() {
+        firebaseAuthApi.signOut()
     }
     
     func resetPassword(email: String) async throws {
-        do {
-            try await firebaseAuthApi.resetPassword(email: email)
-        } catch let error as NSError {
-            e(tag, error.localizedDescription, error)
-            if let authErrorCode = AuthErrorCode(rawValue: error.code) {
-                switch authErrorCode {
-                    case .userNotFound:
-                        throw AuthenticationError.userNotFound
-                    case .networkError:
-                        throw AuthenticationError.network
-                    case .tooManyRequests:
-                        throw AuthenticationError.tooManyRequests
-                    default:
-                        throw AuthenticationError.unknown
-                }
-            }
-        }
-        catch {
-            e(tag, error.localizedDescription, error)
-            throw AuthenticationError.unknown
-        }
+        try await handleNetworkException(
+            block: { try await firebaseAuthApi.resetPassword(email: email) },
+            tag: tag,
+            message: "Failed to reset password",
+            handleSpecificException: mapAuthError
+        )
     }
     
-    func isAuthenticated() -> Bool {
-        firebaseAuthApi.isAuthenticated()
+    private func mapAuthError(error: Error) -> Error {
+        let nsError = error as NSError
+        return if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
+            switch authErrorCode {
+                case .wrongPassword, .userNotFound, .invalidCredential: AuthenticationError.invalidCredentials
+                case .emailAlreadyInUse: NetworkError.dupplicateData
+                case .userDisabled: AuthenticationError.userDisabled
+                case .networkError: NetworkError.noInternetConnection
+                case .tooManyRequests: NetworkError.tooManyRequests
+                default: error
+            }
+        } else {
+            error
+        }
     }
 }

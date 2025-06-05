@@ -53,4 +53,28 @@ class UserOracleApiImpl: UserOracleApi {
             throw RequestError.invalidResponse(serverResponse.error)
         }
     }
+    
+    func deleteProfilePictureFileName(userId: String) async throws {
+        guard let url = baseUrl(endPoint: "profile-picture-file-name/\(userId)") else {
+            throw RequestError.invalidURL("Invalid URL")
+        }
+        
+        let request = try RequestUtils.formatDeleteRequest(url: url)
+        let session = RequestUtils.getUrlSession()
+        
+        let (dataReceived, response) = try await session.data(for: request)
+        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
+                e(tag, serverResponse.message)
+            } else {
+                e(tag, serverResponse.error ?? "Error to delete user profile picture file name")
+                throw RequestError.invalidResponse(serverResponse.error)
+            }
+        } else {
+            e(tag, serverResponse.error ?? "Error to delete user profile picture file name")
+            throw RequestError.invalidResponse(serverResponse.error)
+        }
+    }
 }

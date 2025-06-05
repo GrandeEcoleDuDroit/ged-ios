@@ -1,95 +1,108 @@
 import Foundation
 import Combine
 import CoreData
-import os
-
-private let conversationEntityName = "LocalConversation"
-private let tag = String(describing: ConversationLocalDataSource.self)
 
 class ConversationLocalDataSource {
-    private let request = NSFetchRequest<LocalConversation>(entityName: conversationEntityName)
-    private let context: NSManagedObjectContext
-    
-    let conversationSubject = PassthroughSubject<LocalConversation, ConversationError>()
+    private let container: NSPersistentContainer
     
     init(gedDatabaseContainer: GedDatabaseContainer) {
-        context = gedDatabaseContainer.container.viewContext
-        fetchConversations()
+        container = gedDatabaseContainer.container
     }
     
-    private func fetchConversations() {
-        do {
-            let conversations = try context.fetch(request)
-            conversations.forEach {
-                conversationSubject.send($0)
-            }
-        } catch {
-            e(tag, "Failed to fetch conversations: \(error.localizedDescription)")
-            conversationSubject.send(completion: .failure(ConversationError.notFound))
-        }
-    }
-    
-    func insertConversation(conversation: Conversation, interlocutor: User) throws {
-        do {
-            let localConversation = try ConversationMapper.toLocal(
-                conversation: conversation,
-                interlocutor: interlocutor,
-                context: context
-            )
-            try context.save()
-            conversationSubject.send(localConversation)
-        } catch {
-            e(tag, "Failed to insert conversation: \(error.localizedDescription)")
-            throw ConversationError.createFailed
-        }
-    }
-    
-    func upsertConversation(conversation: Conversation, interlocutor: User) throws {
-        request.predicate = NSPredicate(format: "conversationId == %@", conversation.id)
+    func getConversations() async throws -> [Conversation] {
+        let context = container.newBackgroundContext()
+        let fetchRequest = LocalConversation.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: ConversationField.createdAt.rawValue, ascending: false)]
         
-        do {
-            let localConversations = try context.fetch(request)
-            
-            if let localConversation = localConversations.first {
-                guard let interlocutorJson = try? JSONEncoder().encode(interlocutor),
-                      let interlocutorJsonString = String(data: interlocutorJson, encoding: .utf8) else {
-                    e(tag, "Failed to encode interlocutor")
-                    return
-                }
-                
-                localConversation.interlocutorJson = interlocutorJsonString
-                
-                try context.save()
-                conversationSubject.send(localConversation)
+        return try context.fetch(fetchRequest).compactMap { localConversation in
+            localConversation.toConversation()
+        }
+    }
+    
+    func getConversation(interlocutorId: String) async throws -> Conversation? {
+        let context = container.newBackgroundContext()
+        let request: NSFetchRequest<LocalConversation> = LocalConversation.fetchRequest()
+        request.predicate = NSPredicate(format: "\(ConversationField.Local.interlocutorId.rawValue) == %@", interlocutorId)
+        
+        return try context.fetch(request).compactMap {
+            $0.toConversation()
+        }.first
+    }
+    
+    func updateConversation(conversation: Conversation) async throws {
+        let context = container.newBackgroundContext()
+        try await context.perform {
+            try self.update(conversation: conversation, context: context)
+        }
+    }
+    
+    func upsertConversation(conversation: Conversation) async throws {
+        let context = container.newBackgroundContext()
+        try await context.perform {
+            let request = LocalConversation.fetchRequest()
+            request.predicate = NSPredicate(format: "\(ConversationField.conversationId.rawValue) == %@", conversation.id)
+            if let localConversation = try context.fetch(request).first {
+                try self.update(localConversation: localConversation, conversation: conversation, context: context)
             } else {
-                let localConversation = try ConversationMapper.toLocal(
-                    conversation: conversation,
-                    interlocutor: interlocutor,
-                    context: context
-                )
-                
-                try context.save()
-                conversationSubject.send(localConversation)
+                try self.insert(conversation: conversation, context: context)
             }
-        } catch {
-            e(tag, "Failed to upsert conversation: \(error.localizedDescription)")
-            throw ConversationError.upsertFailed
         }
     }
     
-    func deleteConversation(conversationId: String) throws {
-        do {
-            if let localConversation = try context.fetch(request).first(where: { $0.conversationId == conversationId }) {
+    func deleteConversation(conversationId: String) async throws {
+        let context = container.newBackgroundContext()
+        try await context.perform {
+            let request = LocalConversation.fetchRequest()
+            request.predicate = NSPredicate(format: "\(ConversationField.conversationId.rawValue) == %@", conversationId)
+            
+            try context.fetch(request).first.map {
+                context.delete($0)
+                try context.save()
+            }
+        }
+    }
+    
+    func deleteConversations() async throws {
+        let context = container.newBackgroundContext()
+        try await context.perform {
+            let request = LocalConversation.fetchRequest()
+            let localConversations = try context.fetch(request)
+            for localConversation in localConversations {
                 context.delete(localConversation)
-                try context.save()
             }
-        } catch {
-            e(tag, "Failed to delete conversation: \(error.localizedDescription)")
-            throw ConversationError.deleteFailed
+            try context.save()
         }
     }
     
-    func stopListeningConversations() {
-        conversationSubject.send(completion: .finished)
+    private func insert(conversation: Conversation, context: NSManagedObjectContext) throws {
+        conversation.buildLocal(context: context)
+        try context.save()
+    }
+    
+    private func update(conversation: Conversation, context: NSManagedObjectContext) throws {
+        let request = LocalConversation.fetchRequest()
+        request.predicate = NSPredicate(format: "\(ConversationField.conversationId.rawValue) == %@", conversation.id)
+        let localConversation = try context.fetch(request).first
+        localConversation?.interlocutorId = conversation.interlocutor.id
+        localConversation?.interlocutorFirstName = conversation.interlocutor.firstName
+        localConversation?.interlocutorLastName = conversation.interlocutor.lastName
+        localConversation?.interlocutorEmail = conversation.interlocutor.email
+        localConversation?.interlocutorSchoolLevel = conversation.interlocutor.schoolLevel.rawValue
+        localConversation?.interlocutorIsMember = conversation.interlocutor.isMember
+        localConversation?.interlocutorProfilePictureFileName = UrlUtils.getFileNameFromUrl(url: conversation.interlocutor.profilePictureFileName)
+        try context.save()
+    }
+    
+    private func update(localConversation: LocalConversation, conversation: Conversation, context: NSManagedObjectContext) throws {
+        localConversation.interlocutorId = conversation.interlocutor.id
+        localConversation.interlocutorFirstName = conversation.interlocutor.firstName
+        localConversation.interlocutorLastName = conversation.interlocutor.lastName
+        localConversation.interlocutorEmail = conversation.interlocutor.email
+        localConversation.interlocutorSchoolLevel = conversation.interlocutor.schoolLevel.rawValue
+        localConversation.interlocutorIsMember = conversation.interlocutor.isMember
+        localConversation.interlocutorProfilePictureFileName = UrlUtils.getFileNameFromUrl(
+            url: conversation.interlocutor.profilePictureFileName
+        )
+        try context.save()
     }
 }

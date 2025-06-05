@@ -10,9 +10,34 @@ class MainInjection: DependencyInjectionContainer {
     }
     
     private func registerDependencies() {
+        container.register(DataListeningUseCase.self) { resolver in
+            DataListeningUseCase(
+                listenRemoteConversationsMessagesUseCase: MessageInjection.shared.resolve(ListenRemoteConversationsMessagesUseCase.self)
+            )
+        }
+        
+        container.register(ClearDataUseCase.self) { resolver in
+            ClearDataUseCase(
+                userRepository: CommonInjection.shared.resolve(UserRepository.self),
+                conversationRepository: MessageInjection.shared.resolve(ConversationRepository.self),
+                messageRepository: MessageInjection.shared.resolve(MessageRepository.self)
+            )
+        }
+        
+        container.register(NavigationViewModel.self) { resolver in
+            NavigationViewModel(
+                authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
+                getUnreadConversationsCountUseCase: MessageInjection.shared.resolve(GetUnreadConversationsCountUseCase.self)
+                
+            )
+        }
+        
         container.register(MainViewModel.self) { resolver in
             MainViewModel(
-                isUserAuthenticatedUseCase: AuthenticationInjection.shared.resolve(IsUserAuthenticatedUseCase.self)
+                authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
+                userRepository: CommonInjection.shared.resolve(UserRepository.self),
+                dataListeningUseCase: resolver.resolve(DataListeningUseCase.self)!,
+                clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!
             )
         }.inObjectScope(.weak)
     }
@@ -55,7 +80,10 @@ class MainInjection: DependencyInjectionContainer {
         
         mockContainer.register(MainViewModel.self) { resolver in
             MainViewModel(
-                isUserAuthenticatedUseCase: authenticationMockContainer.resolve(IsUserAuthenticatedUseCase.self)!
+                authenticationRepository: authenticationMockContainer.resolve(AuthenticationRepository.self)!,
+                userRepository: mockContainer.resolve(UserRepository.self)!,
+                dataListeningUseCase: resolver.resolve(DataListeningUseCase.self)!,
+                clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!
             )
         }
         

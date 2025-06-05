@@ -13,7 +13,7 @@ class UpdateProfilePictureUseCase {
     }
     
     func execute(imageData: Data) async throws {
-        guard let currentUser = userRepository.currentUser.value else {
+        guard let currentUser = userRepository.currentUser else {
             throw UserError.currentUserNotFound
         }
         
@@ -22,7 +22,7 @@ class UpdateProfilePictureUseCase {
         let fileName = "\(currentUser.id)-profile-picture-\(currentTime).\(fileType)"
         
         try await imageRepository.uploadImage(imageData: imageData, fileName: fileName)
-        try await userRepository.updateProfilePictureUrl(userId: currentUser.id, profilePictureFileName: fileName)
+        try await userRepository.updateProfilePictureFileName(userId: currentUser.id, profilePictureFileName: fileName)
     }
     
     func getImageType(from data: Data) -> String {

@@ -6,17 +6,17 @@ class AnnouncementApiImpl: AnnouncementApi {
         URL.oracleUrl(endpoint: "/announcements" + endPoint)
     }
     
-    func getAnnouncements() async throws -> [RemoteAnnouncementWithUser] {
+    func getAnnouncements() async throws -> (URLResponse, [RemoteAnnouncementWithUser]) {
         guard let url = baseUrl(endPoint: "") else {
             throw RequestError.invalidURL("Invalid URL")
         }
         
-        let request = URLRequest(url: url)
-        let (data, _) = try await URLSession.shared.data(for: request)
-        return try JSONDecoder().decode([RemoteAnnouncementWithUser].self, from: data)
+        let (data, urlResponse) = try await RequestUtils.getUrlSession().data(for: URLRequest(url: url))
+        let announcements = try JSONDecoder().decode([RemoteAnnouncementWithUser].self, from: data)
+        return (urlResponse, announcements)
     }
     
-    func createAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws {
+    func createAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "/create") else {
             throw RequestError.invalidURL("Invalid URL")
         }
@@ -24,17 +24,12 @@ class AnnouncementApiImpl: AnnouncementApi {
         let session = RequestUtils.getUrlSession()
         let postRequest = try RequestUtils.formatPostRequest(dataToSend: remoteAnnouncement, url: url)
         
-        let (dataReceived, response) = try await session.data(for: postRequest)
-        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
-        
-        if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode >= 400 {
-                throw RequestError.invalidResponse(serverResponse.error)
-            }
-        }
+        let (data, urlResponse) = try await session.data(for: postRequest)
+        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
+        return (urlResponse, serverResponse)
     }
     
-    func deleteAnnouncement(remoteAnnouncementId: String) async throws {
+    func deleteAnnouncement(remoteAnnouncementId: String) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "/\(remoteAnnouncementId)") else {
             throw RequestError.invalidURL("Invalid URL")
         }
@@ -42,17 +37,12 @@ class AnnouncementApiImpl: AnnouncementApi {
         let session = RequestUtils.getUrlSession()
         let deleteRequest = try RequestUtils.formatDeleteRequest(url: url)
         
-        let (dataReceived, response) = try await session.data(for: deleteRequest)
-        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
-        
-        if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode >= 400 {
-                throw RequestError.invalidResponse(serverResponse.error)
-            }
-        }
+        let (data, urlResponse) = try await session.data(for: deleteRequest)
+        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
+        return (urlResponse, serverResponse)
     }
     
-    func updateAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws {
+    func updateAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "/update") else {
             throw RequestError.invalidURL("Invalid URL")
         }
@@ -60,13 +50,8 @@ class AnnouncementApiImpl: AnnouncementApi {
         let session = RequestUtils.getUrlSession()
         let postRequest = try RequestUtils.formatPostRequest(dataToSend: remoteAnnouncement, url: url)
         
-        let (dataReceived, response) = try await session.data(for: postRequest)
-        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
-        
-        if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode >= 400 {
-                throw RequestError.invalidResponse(serverResponse.error)
-            }
-        }
+        let (data, urlResponse) = try await session.data(for: postRequest)
+        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
+        return (urlResponse, serverResponse)
     }
 }

@@ -2,39 +2,44 @@ import Foundation
 import Combine
 
 class MockMessageRepository: MessageRepository {
-    private let _messages = CurrentValueSubject<[Message], any Error>(messagesFixture)
+    private let messagesSubject = CurrentValueSubject<[Message], Never>(messagesFixture)
+    func getMessages(conversationId: String) -> AnyPublisher<Message, Never> {
+        messagesSubject
+            .compactMap { $0.first }
+            .eraseToAnyPublisher()
+    }
     
-    func getMessages(conversationId: String) -> AnyPublisher<Message, any Error> {
-        _messages
-            .flatMap { messages in
-                let filteredMessages = messages.filter { $0.conversationId == conversationId }
-                return Publishers.Sequence(sequence: filteredMessages)
-                    .setFailureType(to: Error.self)
-                    .eraseToAnyPublisher()
-            }
+    func getMessages(conversationId: String) async throws -> [Message] {
+        messagesFixture
+    }
+    
+    func fetchRemoteMessages(conversationId: String, offsetTime: Date?) -> AnyPublisher<Message, Error> {
+        messagesSubject.map(\.first!)
+            .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
-        }
-        
-    func getLastMessage(conversationId: String) -> AnyPublisher<Message?, ConversationError> {
-        Publishers.Sequence(sequence: lastMessagesFixture.filter({ $0.conversationId == conversationId }))
-            .eraseToAnyPublisher()
+    }
+    
+    func upsertLocalMessage(message: Message) async throws {
+        messagesSubject.send(messagesSubject.value)
+    }
+    
+    func deleteLocalMessages(conversationId: String) async throws {
+        messagesSubject.send([])
     }
     
     func createMessage(message: Message) async throws {
-        _messages.value.append(message)
+        messagesSubject.send(messagesSubject.value + [message])
     }
     
-    func updateMessageState(messageId: String, messageState: MessageState) async throws {
-        var message = _messages.value.first { $0.id == messageId }!
-        message.state = messageState
-        _messages.value = _messages.value.map { $0.id == messageId ? message : $0 }
-    }
-
-    func stopGettingMessages() {
-        // No implementation needed
+    func updateSeenMessage(message: Message) async throws {
+        messagesSubject.send(messagesSubject.value)
     }
     
-    func stopGettingLastMessages() {
-        // No implementation needed
+    func deleteLocalMessages() async throws {
+        messagesSubject.send([])
+    }
+    
+    func stopListeningMessages() {
+        
     }
 }

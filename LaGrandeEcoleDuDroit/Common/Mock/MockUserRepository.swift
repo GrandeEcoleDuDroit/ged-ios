@@ -3,14 +3,20 @@ import Combine
 
 class MockUserRepository: UserRepository {
     private var users = usersFixture
-    var currentUser = CurrentValueSubject<User?, Never>(userFixture)
+    private let userSubject = CurrentValueSubject<User?, Never>(userFixture)
     
-    func setCurrentUser(user: User) {
-        currentUser.send(user)
+    var user: AnyPublisher<User, Never> {
+        userSubject.compactMap{$0}.eraseToAnyPublisher()
     }
     
-    func removeCurrentUser() {
-        currentUser.send(nil)
+    var currentUser: User? {
+        userSubject.value
+    }
+    
+    func storeUser(_ user: User) {}
+    
+    func deleteCurrentUser() {
+        userSubject.send(nil)
     }
     
     func createUser(user: User) async throws {
@@ -25,11 +31,13 @@ class MockUserRepository: UserRepository {
         usersFixture.first { $0.email == email }
     }
     
-    func getUserPublisher(userId: String) -> AnyPublisher<User, Never> {
-        Just(users.first { $0.id == userId }!).eraseToAnyPublisher()
+    func getUserPublisher(userId: String) -> AnyPublisher<User, Error> {
+        Just(users.first { $0.id == userId }!)
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
     }
     
-    func getUsers() async throws -> [User] {
+    func getUsers() async -> [User] {
         users
     }
     
@@ -37,7 +45,7 @@ class MockUserRepository: UserRepository {
         usersFixture.filter { $0.fullName.contains(filter) }
     }
     
-    func updateProfilePictureUrl(userId: String, profilePictureFileName: String) async throws {
-        currentUser.value?.profilePictureUrl = profilePictureFileName
+    func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {
+        userSubject.value = userSubject.value?.with(profilePictureFileName: profilePictureFileName)
     }
 }

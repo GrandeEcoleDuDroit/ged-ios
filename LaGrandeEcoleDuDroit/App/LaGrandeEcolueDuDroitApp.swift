@@ -7,7 +7,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
     ) -> Bool {
         FirebaseApp.configure()
-        GedConfiguration.configureDebugFirebase()
+//        GedConfiguration.configureDebugFirebase()
         return true
     }
 }
@@ -15,10 +15,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct LaGrandeEcolueDuDroitApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject private var mainViewModel: MainViewModel = MainInjection.shared.resolve(MainViewModel.self)
 
     var body: some Scene {
         WindowGroup {
-            MainNavigationView()
+            Navigation()
         }
     }
 }

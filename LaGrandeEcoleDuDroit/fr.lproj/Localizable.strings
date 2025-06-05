@@ -1,5 +1,5 @@
 // Common
-"app_name" = "La Grande Ecole du Droit";
+"app_name" = "Grande Ecole du Droit";
 "next" = "Suivant";
 "back" = "Retour";
 "cancel" = "Annuler";
@@ -17,25 +17,18 @@
 "hours_ago_short" = "%d h";
 "days_ago_short" = "%d j";
 "weeks_ago_short" = "%d sem";
-"minutes_ago_long" = "%d minutes";
-"hours_ago_long" = "%d heures";
-"days_ago_long" = "%d jours";
-"weeks_ago_long" = "%d semaines";
 "today" = "Aujourd'hui";
 "yester" = "Hier";
 "home" = "Accueil";
 
 // Common error
-"empty_inputs_error" = "Veuillez remplir tous les champs.";
-"empty_input_error" = "Veuillez remplir le champ.";
-"timed_out_error" = "Le service a mis trop de temps à répondre.";
-"not_connected_to_internet_error" = "Aucune connexion Internet détectée. Vérifiez votre connexion et réessayez.";
+"mandatory_field_error" = "Champs obligatoire.";
+"no_internet_connection_error" = "Aucune connexion Internet.";
 "internal_server_error" = "Une erreur interne du serveur est survenue.";
-"network_connection_lost_error" = "La connexion réseau a été perdue.";
-"cannot_find_host_error" = "Impossible de trouver le serveur. Vérifiez votre connexion et réessayer.";
 "unknown_network_error" = "Une erreur réseau est survenue.";
 "unknown_error" = "Une erreur inconnue est survenue.";
-"user_not_found_error" = "Utilisateur non trouvé. Veuillez vous reconnecter.";
+"timeout_error" = "Le serveur a mis trop de temps à répondre. Veuillez réessayer.";
+"server_connection_error" = "Impossible de se connecter au serveur.";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";
@@ -49,37 +42,30 @@
 "register" = "S'inscrire";
 "registration" = "Inscription";
 "not_register_yet" = "Pas encore inscrit ?";
-"registration_step" = "Étape %d sur %d";
-"select_school_level" = "Sélectionnez votre niveau universitaire";
+"select_school_level" = "Sélectionnez votre niveau d'étude";
 "level" = "Niveau";
-"enter_names" = "Entrez votre prénom et votre nom";
-"enter_email_password" = "Entrez votre adresse mail et votre mot de passe";
-"email_verification_title" = "Vérification de l'email";
-"email_verification_explanation_begining" = "Un lien a été envoyé à l'adresse suivante : ";
-"email_verification_explanation_end" = ". Veuillez cliquer dessus pour finaliser l'inscription.";
-"send_email_verification_caption" = "Un lien de vérification vous sera envoyé.";
-"email_not_verified" = "Adresse e-mail non vérifié";
-"email_not_verified_dialog_message" = "Veuillez vérifier votre adresse e-mail avant de continuer.";
-"verify_email" = "Vérifier l'e-mail";
+"enter_names" = "Saisissez votre nom";
+"enter_email_password" = "Saisissez votre adresse mail et votre mot de passe";
 "logout_alert_title" = "Voulez-vous vous déconnecter ?";
-"forgot_password" = "Mot de passe oublié ?";
+"forgot_password" = "Mot de passe oublié";
 "forgot_password_description" = "Entrez votre adresse e-mail";
 "forgot_password_success" = "Si un compte associé à cette adresse e-mail existe, un lien de réinitialisation vous sera envoyé.";
 
 // Authtentication errors
-"invalid_email_error" = "Veuillez entrer une adresse e-mail valide.";
+"incorrect_email_format_error" = "Veuillez entrer une adresse e-mail valide.";
 "password_length_error" = "Le mot de passe doit faire au moins 8 caractères.";
-"invalid_credentials" = "Adresse e-mail ou mot de passe incorrect.";
-"user_disabled" = "Ce compte est désactivé. Veuillez contacter le support: application.ged@gmail.com pour le réactiver";
-"auth_user_not_found" = "L'utilisateur n'a pas été trouvé. Veuillez vous re-authentifier.";
+"invalid_credentials_error" = "Adresse e-mail ou mot de passe incorrect.";
+"user_not_white_listed" = "L'inscription est actuellement limitée aux utilisateurs autorisés.";
+
 "user_not_exist" = "L'utilisateur n'existe pas.";
 "email_not_verified_error" = "Veuillez validez votre adresse e-mail avant de continuer.";
-"account_already_in_use_error" = "Le compte est déjà utilisé. Veuillez vous connecter ou réinitialiser votre mot de passe.";
+"email_already_associated" = "Cette adresse e-mail est déjà utilisée.";
 "too_many_requests_error" = "Vous avez effectué trop de requêtes. Veuillez réessayer dans quelques minutes.";
 "user_not_connected" = "Vous n'êtes pas authentifié. Veuillez vous connecter avant de continuer.";
 
 // News
 "news" = "Actualités";
+"announcement" = "Annonce";
 "recent_announcements" = "Annonces récentes";
 "new_announcement" = "Nouvelle Annonce";
 "edit_announcement" = "Editer Annonce";
@@ -90,8 +76,7 @@
 "delete_announcement_alert_title" = "Êtes-vous sûr de vouloir supprimer cette annonce ?";
 
 // News errors
-"error_creating_announcement" = "Une erreur est survenue lors de la création de l'annonce.";
-"error_deleting_announcement" = "Une erreur est survenue lors de la suppression de l'annonce.";
+"announcement_refresh_error" = "Impossible de rafraîchir les annonces.";
 
 // Profile
 "profile" = "Profil";
@@ -101,6 +86,8 @@
 "edit_profile" = "Editer profil";
 "new_profile_picture" = "Nouvelle photo de profil";
 "profile_picture_updated" = "Photo de profil mise à jour";
+"member" = "Membre";
+"user_not_found" = "Aucun utilisateur trouvé";
 
 // Profile errors
 "error_logout" = "Une erreur est survenue lors de la déconnexion.";
@@ -113,6 +100,7 @@
 "new_conversation" = "Nouvelle Conversation";
 "delete_conversation_alert_message" = "Voulez-vous supprimer cette conversation ?";
 "seen" = "Vu";
+"new_messages" = "Nouveau messages";
 
 // Message errors
 "error_getting_conversations" = "Une erreur est survenue lors de la récupération des conversations.";

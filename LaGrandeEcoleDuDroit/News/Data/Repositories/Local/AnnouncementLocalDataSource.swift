@@ -3,94 +3,114 @@ import Combine
 import CoreData
 import os
 
-private let announcementEntityName = "LocalAnnouncement"
 private let tag = String(describing: AnnouncementLocalDataSource.self)
 
 class AnnouncementLocalDataSource {
-    private let request = NSFetchRequest<LocalAnnouncement>(entityName: announcementEntityName)
+    private let container: NSPersistentContainer
     private let context: NSManagedObjectContext
     
-    private(set) var announcements = CurrentValueSubject<[Announcement], Never>([])
-    
     init(gedDatabaseContainer: GedDatabaseContainer) {
-        context = gedDatabaseContainer.container.viewContext
-        fetchAnnouncements()
+        container = gedDatabaseContainer.container
+        context = container.newBackgroundContext()
     }
     
-    private func fetchAnnouncements() {
-        do {
-            let values = try context.fetch(request).map({ localAnnouncement in
-                AnnouncementMapper.toDomain(localAnnouncement: localAnnouncement)
-            })
-            announcements.send(values)
-        } catch {
-            e(tag, "Failed to fetch announcements: \(error)")
-        }
+    func listenDataChange() -> AnyPublisher<Notification, Never> {
+        NotificationCenter.default.publisher(for: .NSManagedObjectContextObjectsDidChange, object: context)
+            .debounce(for: .milliseconds(100), scheduler: RunLoop.current)
+            .eraseToAnyPublisher()
     }
     
-    func insertAnnouncement(announcement: Announcement) async throws {
-        do {
-            AnnouncementMapper.toLocal(announcement: announcement, context: context)
-            try context.save()
-            announcements.value.append(announcement)
-        } catch {
-            e(tag, "Failed to insert announcement: \(error)")
-            throw error
-        }
+    func getAnnouncements() -> [Announcement] {
+        let fetchRequest = LocalAnnouncement.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(
+            key: AnnouncementField.announcementDate.rawValue,
+            ascending: false
+        )]
+        let result = (try? context.fetch(fetchRequest)) ?? []
+        return result.compactMap { $0.toAnnouncement() }
     }
     
-    func upsertAnnouncement(announcement: Announcement) async throws {
-        if let localAnnouncement = try context.fetch(request).first(where: { $0.announcementId == announcement.id }) {
-            try await insertAnnouncement(announcement: announcement)
+    func insertAnnouncement(announcement: Announcement) {
+        try? self.insert(announcement: announcement)
+    }
+    
+    func upsertAnnouncement(announcement: Announcement) {
+        let request = LocalAnnouncement.fetchRequest()
+        request.predicate = NSPredicate(format: "\(AnnouncementField.announcementId.rawValue) == %@", announcement.id)
+        
+        if let localAnnouncement = try? context.fetch(request).first {
+            try? self.update(localAnnouncement: localAnnouncement, announcement: announcement)
         } else {
-            try await updateAnnouncement(announcement: announcement)
+            try? self.insert(announcement: announcement)
         }
     }
     
-    func updateAnnouncement(announcement: Announcement) async throws {
-        do {
-            let localAnnouncement = try context.fetch(request).first(where: { $0.announcementId == announcement.id })
-            localAnnouncement?.announcementTitle = announcement.title
-            localAnnouncement?.announcementContent = announcement.content
-            localAnnouncement?.announcementDate = Int32(announcement.date.timeIntervalSince1970)
-            localAnnouncement?.announcementState = announcement.state.description
-            localAnnouncement?.userId = announcement.author.id
-            localAnnouncement?.userFirstName = announcement.author.firstName
-            localAnnouncement?.userLastName = announcement.author.lastName
-            localAnnouncement?.userEmail = announcement.author.email
-            localAnnouncement?.userSchoolLevel = announcement.author.schoolLevel
-            localAnnouncement?.userIsMember = announcement.author.isMember
-            localAnnouncement?.userProfilePictureUrl = announcement.author.profilePictureUrl
+    func updateAnnouncement(announcement: Announcement) {
+        try? self.update(announcement: announcement)
+    }
+    
+    func deleteAnnouncement(announcementId: String) {
+        let request = LocalAnnouncement.fetchRequest()
+        request.predicate = NSPredicate(
+            format: "\(AnnouncementField.announcementId.rawValue) == %@",
+            announcementId
+        )
+        
+        try? context.fetch(request).first.map {
+            context.delete($0)
             try context.save()
-            
-            announcements.value = announcements.value.map({ $0.id == announcement.id ? announcement : $0 })
-        } catch {
-            e(tag, "Failed to update announcement: \(error)")
-            throw error
         }
     }
     
-    func updateAnnouncementState(announcementId: String, state: AnnouncementState) async throws {
-        do {
-            let localAnnouncement = try context.fetch(request).first(where: { $0.announcementId == announcementId })
-            localAnnouncement?.announcementState = state.description
-            try context.save()
-            
-            announcements.value = announcements.value.map({ $0.id == announcementId ? AnnouncementMapper.toDomain(localAnnouncement: localAnnouncement!) : $0 })
-        } catch {
-            e(tag, "Failed to update announcement state: \(error)")
-            throw error
-        }
+    private func insert(announcement: Announcement) throws {
+        announcement.buildLocal(context: context)
+        try context.save()
     }
     
-    func deleteAnnouncement(announcementId: String) async throws {
-        let localAnnouncement = try context.fetch(request).first {
-            $0.announcementId == announcementId
-        }
-        if localAnnouncement != nil {
-            context.delete(localAnnouncement!)
-            try context.save()
-        }
-        announcements.value.removeAll { $0.id == announcementId }
+    private func update(announcement: Announcement) throws {
+        let request = LocalAnnouncement.fetchRequest()
+        request.predicate = NSPredicate(format: "\(AnnouncementField.announcementId.rawValue) == %@", announcement.id)
+        let localAnnouncement = try context.fetch(request).first
+        localAnnouncement?.modify(announcement: announcement)
+        try context.save()
+    }
+    
+    private func update(localAnnouncement: LocalAnnouncement, announcement: Announcement) throws {
+        localAnnouncement.modify(announcement: announcement)
+        try context.save()
+    }
+}
+
+private extension Announcement {
+    func buildLocal(context: NSManagedObjectContext) {
+        let localAnnouncement = LocalAnnouncement(context: context)
+        localAnnouncement.announcementId = id
+        localAnnouncement.announcementTitle = title
+        localAnnouncement.announcementContent = content
+        localAnnouncement.announcementDate = date
+        localAnnouncement.announcementState = state.rawValue
+        localAnnouncement.userId = author.id
+        localAnnouncement.userFirstName = author.firstName
+        localAnnouncement.userLastName = author.lastName
+        localAnnouncement.userEmail = author.email
+        localAnnouncement.userSchoolLevel = author.schoolLevel.rawValue
+        localAnnouncement.userIsMember = author.isMember
+        localAnnouncement.userProfilePictureFileName = UrlUtils.getFileNameFromUrl(url: author.profilePictureFileName)
+    }
+}
+
+private extension LocalAnnouncement {
+    func modify(announcement: Announcement) {
+        announcementTitle = announcement.title
+        announcementContent = announcement.content
+        announcementDate = announcement.date
+        announcementState = announcement.state.rawValue
+        userId = announcement.author.id
+        userFirstName = announcement.author.firstName
+        userLastName = announcement.author.lastName
+        userEmail = announcement.author.email
+        userSchoolLevel = announcement.author.schoolLevel.rawValue
+        userIsMember = announcement.author.isMember
+        userProfilePictureFileName = announcement.author.profilePictureFileName
     }
 }

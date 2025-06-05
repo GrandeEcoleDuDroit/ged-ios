@@ -8,19 +8,26 @@ class AnnouncementRemoteDataSource {
     }
     
     func getAnnouncements() async throws -> [Announcement] {
-        let localAnnouncements = try await announcementApi.getAnnouncements()
-        return localAnnouncements.map { AnnouncementMapper.toDomain(remoteAnnouncementWithUser: $0) }
+        try await handleRetrofitError(
+            block: { try await announcementApi.getAnnouncements() }
+        ).map { $0.toAnnouncement() }
     }
     
     func createAnnouncement(announcement: Announcement) async throws {
-        try await announcementApi.createAnnouncement(remoteAnnouncement: AnnouncementMapper.toRemote(announcement: announcement))
+        try await handleRetrofitError(
+            block: { try await announcementApi.createAnnouncement(remoteAnnouncement: announcement.toRemote()) }
+        )
     }
     
     func updateAnnouncement(announcement: Announcement) async throws {
-        try await announcementApi.updateAnnouncement(remoteAnnouncement: AnnouncementMapper.toRemote(announcement: announcement))
+        try await handleRetrofitError(
+            block: { try await announcementApi.updateAnnouncement(remoteAnnouncement: announcement.toRemote()) }
+        )
     }
     
     func deleteAnnouncement(announcementId: String) async throws {
-        try await announcementApi.deleteAnnouncement(remoteAnnouncementId: announcementId)
+        try await handleRetrofitError(
+            block: { try await announcementApi.deleteAnnouncement(remoteAnnouncementId: announcementId) }
+        )
     }
 }

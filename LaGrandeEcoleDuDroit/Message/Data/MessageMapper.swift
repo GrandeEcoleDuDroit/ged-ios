@@ -1,69 +1,68 @@
 import Firebase
 import CoreData
 
-class MessageMapper {
-    static func toDomain(remoteMessage: RemoteMessage) -> Message? {
-        guard let type = MessageType(rawValue: remoteMessage.type) else {
-            return nil
-        }
-        
-        return Message(
-            id: remoteMessage.messageId,
-            conversationId: remoteMessage.conversationId,
-            content: remoteMessage.content,
-            date: remoteMessage.timestamp.dateValue(),
-            isRead: remoteMessage.isRead,
-            senderId: remoteMessage.senderId,
-            type: type,
+extension RemoteMessage {
+    func toMessage() -> Message {
+        Message(
+            id: messageId,
+            senderId: senderId,
+            recipientId: recipientId,
+            conversationId: conversationId,
+            content: content,
+            date: timestamp.dateValue(),
+            seen: seen,
             state: .sent
         )
     }
+}
+
+extension Message {
+    func toRemote() -> RemoteMessage {
+        RemoteMessage(
+            messageId: id,
+            conversationId: conversationId,
+            senderId: senderId,
+            recipientId: recipientId,
+            content: content,
+            timestamp: Timestamp(date: date),
+            seen: seen
+        )
+    }
     
-    static func toDomain(localMessage: LocalMessage) -> Message? {
-        guard let id = localMessage.messageId,
-              let conversationId = localMessage.conversationId,
-              let content = localMessage.content,
-              let date = localMessage.date,
-              let senderId = localMessage.senderId,
-              let type = MessageType(rawValue: localMessage.type ?? ""),
-              let state = MessageState(rawValue: localMessage.state ?? "")
+    func buildLocal(context: NSManagedObjectContext) {
+        let localMessage = LocalMessage(context: context)
+        localMessage.messageId = Int32(id)
+        localMessage.conversationId = conversationId
+        localMessage.senderId = senderId
+        localMessage.recipientId = recipientId
+        localMessage.content = content
+        localMessage.date = date
+        localMessage.seen = seen
+        localMessage.state = state.rawValue
+    }
+}
+
+extension LocalMessage {
+    func toMessage() -> Message? {
+        guard let content = content,
+              let date = date,
+              let senderId = senderId,
+              let recipientId = recipientId,
+              let conversationId = conversationId,
+              let state = MessageState(rawValue: state ?? "")
         else {
             return nil
         }
         
         return Message(
-            id: id,
+            id: messageId.toInt(),
+            senderId: senderId,
+            recipientId: recipientId,
             conversationId: conversationId,
             content: content,
             date: date,
-            isRead: localMessage.isRead,
-            senderId: senderId,
-            type: type,
+            seen: seen,
             state: state
-        )
-    }
-
-    static func toLocal(message: Message, context: NSManagedObjectContext) {
-        let localMessage = LocalMessage(context: context)
-        localMessage.messageId = message.id
-        localMessage.conversationId = message.conversationId
-        localMessage.senderId = message.senderId
-        localMessage.content = message.content
-        localMessage.date = message.date
-        localMessage.isRead = message.isRead
-        localMessage.type = message.type.rawValue
-        localMessage.state = message.state.rawValue
-    }
-    
-    static func toRemote(message: Message) -> RemoteMessage {
-        RemoteMessage(
-            messageId: message.id,
-            conversationId: message.conversationId,
-            senderId: message.senderId,
-            content: message.content,
-            timestamp: Timestamp(date: message.date),
-            isRead: message.isRead,
-            type: message.type.rawValue
         )
     }
 }

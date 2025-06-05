@@ -14,21 +14,17 @@ struct ProfilePicture: View {
             AsyncImage(url: URL(string: url)) { phase in
                 switch phase {
                     case .empty:
-                        ZStack {
-                            ProgressView()
-                                .frame(
-                                    width: GedNumber.defaultImageSize * scale,
-                                    height: GedNumber.defaultImageSize * scale
-                                )
-                                .clipShape(Circle())
-                        }.overlay {
-                            Circle()
-                                .stroke(Color(.lightGrey), lineWidth: 1)
-                        }
+                        ProgressView()
+                            .frame(
+                                width: GedNumber.defaultImageSize * scale,
+                                height: GedNumber.defaultImageSize * scale
+                            )
+                            .background(.profilePictureLoading)
+                            .clipShape(Circle())
                         
                     case .success(let image):
                         image.fitCircle(scale: scale)
-                    default: DefaultProfilePicture()
+                    default: DefaultProfilePicture(scale: scale)
                 }
             }
         } else {
@@ -95,12 +91,8 @@ struct ClickableProfilePicture: View {
                             width: GedNumber.defaultImageSize * scale,
                             height: GedNumber.defaultImageSize * scale
                         )
-                        .background(Color(UIColor.systemBackground))
                         .onClick(isClicked: $isClicked, action: onClick)
-                        .overlay {
-                            Circle()
-                                .stroke(Color(.lightGrey), lineWidth: 1)
-                        }
+                        .background(.profilePictureLoading)
                         .clipShape(Circle())
                         
                     case .success(let image):
@@ -154,21 +146,17 @@ struct ClickableDefaultProfilePicture: View {
     
     ScrollView {
         VStack {
+            DefaultProfilePicture()
             Text("Default profile picture")
                 .font(.caption)
-            DefaultProfilePicture()
             
-            Text("Clickable default profile picture")
-                .font(.caption)
-            ClickableDefaultProfilePicture(onClick: {})
-            
+            ProfilePicture(url: url)
             Text("Profile picture")
                 .font(.caption)
-            ProfilePicture(url: url)
             
-            Text("Clickable profile picture")
+            ProfilePicture(url: "")
+            Text("Loading picture")
                 .font(.caption)
-            ClickableProfilePicture(url: url, onClick: {})
         }
     }
 }
