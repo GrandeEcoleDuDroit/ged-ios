@@ -15,14 +15,14 @@ class ProfileInjection: DependencyInjectionContainer {
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self)
             )
-        }.inObjectScope(.weak)
+        }
         
         container.register(AccountViewModel.self) { resolver in
             AccountViewModel(
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 updateProfilePictureUseCase: CommonInjection.shared.resolve(UpdateProfilePictureUseCase.self)
             )
-        }.inObjectScope(.weak)
+        }
     }
     
     func resolve<T>(_ type: T.Type) -> T {

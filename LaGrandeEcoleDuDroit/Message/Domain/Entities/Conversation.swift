@@ -10,14 +10,15 @@ struct Conversation: Hashable {
     func with(
         id: String? = nil,
         interlocutor: User? = nil,
-        state: ConversationState? = nil
+        state: ConversationState? = nil,
+        deleteTime: Date? = nil,
     ) -> Conversation {
         Conversation(
             id: id ?? self.id,
             interlocutor: interlocutor ?? self.interlocutor,
             createdAt: createdAt,
             state: state ?? self.state,
-            deleteTime: deleteTime
+            deleteTime: deleteTime ?? self.deleteTime
         )
     }
     

@@ -9,7 +9,11 @@ class ConversationRepositoryImpl: ConversationRepository {
     private let conversationLocalDataSource: ConversationLocalDataSource
     private let conversationRemoteDataSource: ConversationRemoteDataSource
     private var interlocutors: [String: User] = [:]
+    private var cancellables: Set<AnyCancellable> = []
     private let conversationsPublisher = CurrentValueSubject<[String: Conversation], Never>([:])
+    var conversations: AnyPublisher<[String: Conversation], Never> {
+        conversationsPublisher.eraseToAnyPublisher()
+    }
     
     init(
         messageRepository: MessageRepository,
@@ -21,39 +25,60 @@ class ConversationRepositoryImpl: ConversationRepository {
         self.userRepository = userRepository
         self.conversationLocalDataSource = conversationLocalDataSource
         self.conversationRemoteDataSource = conversationRemoteDataSource
-        initConversations()
+        loadConversations()
+        listen()
     }
     
-    private func initConversations() {
+    private func loadConversations() {
         Task {
-            do {
-                try await conversationLocalDataSource.getConversations().forEach { conversation in
-                    conversationsPublisher.value[conversation.id] = conversation
-                }
-            } catch {
-                e(tag, "Failed to load conversations: \(error)", error)
+            try? await conversationLocalDataSource.getConversations().forEach { conversation in
+                conversationsPublisher.value[conversation.id] = conversation
             }
         }
     }
     
-    var conversations: AnyPublisher<[Conversation], Never> {
-        conversationsPublisher
-            .map { $0.values.map(\.self) }
-            .eraseToAnyPublisher()
+    private func listen() {
+        conversationLocalDataSource.listenDataChange()
+            .receive(on: DispatchQueue.global(qos: .background))
+            .sink { [weak self] change in
+                change.inserted.forEach { conversation in
+                    self?.conversationsPublisher.value[conversation.id] = conversation
+                }
+                
+                change.updated.forEach { conversation in
+                    self?.conversationsPublisher.value[conversation.id] = conversation
+                }
+                
+                change.deleted.forEach { conversation in
+                    self?.conversationsPublisher.value[conversation.id] = nil
+                }
+            }.store(in: &cancellables)
+    }
+    
+    func getConversations() async -> [Conversation] {
+        let conversations = try? await conversationLocalDataSource.getConversations()
+        return conversations ?? []
     }
     
     func getConversation(interlocutorId: String) async -> Conversation? {
          try? await conversationLocalDataSource.getConversation(interlocutorId: interlocutorId)
     }
     
-    func fetchRemoteConversations(userId: String) -> AnyPublisher<Conversation, Error> {
+    func getLastConversationDate() async -> Date? {
+        try? await conversationLocalDataSource.getLastConversation()?.createdAt
+    }
+    
+    func getConversationPublisher(interlocutorId: String) -> AnyPublisher<Conversation?, Never> {
+        conversationsPublisher.map { conversations in
+            conversations.values.first { $0.interlocutor.id == interlocutorId }
+        }.eraseToAnyPublisher()
+    }
+    
+    func fetchRemoteConversations(userId: String, offsetTime: Date?) -> AnyPublisher<Conversation, Error> {
         conversationRemoteDataSource
-            .listenConversations(userId: userId)
+            .listenConversations(userId: userId, offsetTime: offsetTime)
             .flatMap { remoteConversation in
-                guard let interlocutorId = remoteConversation
-                    .participants
-                    .first(where: { $0 != userId })
-                else {
+                guard let interlocutorId = remoteConversation.participants.first(where: { $0 != userId }) else {
                     return Empty<Conversation, Error>().eraseToAnyPublisher()
                 }
 
@@ -75,39 +100,36 @@ class ConversationRepositoryImpl: ConversationRepository {
     func createConversation(conversation: Conversation, userId: String) async throws {
         try await handleNetworkException(
             block: {
-                try await conversationLocalDataSource.upsertConversation(conversation: conversation)
+                try? await conversationLocalDataSource.insertConversation(conversation: conversation)
                 try await conversationRemoteDataSource.createConversation(conversation: conversation, userId: userId)
-                conversationsPublisher.value[conversation.id] = conversation
             },
             tag: tag,
             message: "Failed to create conversation"
         )
     }
     
-    func updateLocalConversation(conversation: Conversation) async throws {
-        try await conversationLocalDataSource.updateConversation(conversation: conversation)
-        conversationsPublisher.value[conversation.id] = conversation
+    func updateLocalConversation(conversation: Conversation) async {
+        try? await conversationLocalDataSource.updateConversation(conversation: conversation)
     }
     
-    func upsertLocalConversation(conversation: Conversation) async throws {
-        try await conversationLocalDataSource.upsertConversation(conversation: conversation)
-        conversationsPublisher.value[conversation.id] = conversation
+    func upsertLocalConversation(conversation: Conversation) async {
+        try? await conversationLocalDataSource.upsertConversation(conversation: conversation)
     }
     
-    func deleteConversation(conversationId: String, userId: String) async throws {
+    func deleteConversation(conversation: Conversation, userId: String) async throws {
         let deleteTime = Date()
         try await handleNetworkException(
             block: {
-                try await conversationRemoteDataSource.updateConversationDeleteTime(conversationId: conversationId, userId: userId, deleteTime: deleteTime)
-                try await conversationLocalDataSource.deleteConversation(conversationId: conversationId)
-                conversationsPublisher.value.removeValue(forKey: conversationId)
+                try? await conversationLocalDataSource.updateConversation(
+                    conversation: conversation.with(deleteTime: deleteTime)
+                )
+                try await conversationRemoteDataSource.updateConversationDeleteTime(conversationId: conversation.id, userId: userId, deleteTime: deleteTime)
             }
         )
     }
     
-    func deleteLocalConversations() async throws {
-        try await conversationLocalDataSource.deleteConversations()
-        conversationsPublisher.value.removeAll()
+    func deleteLocalConversations() async {
+        try? await conversationLocalDataSource.deleteConversations()
     }
     
     func stopListenConversations() {

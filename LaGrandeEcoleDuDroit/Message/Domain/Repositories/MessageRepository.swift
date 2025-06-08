@@ -2,21 +2,29 @@ import Combine
 import Foundation
 
 protocol MessageRepository {
-    func getMessages(conversationId: String) -> AnyPublisher<Message, Never>
+    var messagePublisher: AnyPublisher<CoreDataChange<Message>, Never> { get }
+
+    func getMessages(conversationId: String, offset: Int) async -> [Message]
     
-    func getMessages(conversationId: String) async throws -> [Message]
+    func getLastMessage(conversationId: String) async -> Message?
     
     func fetchRemoteMessages(conversationId: String, offsetTime: Date?) -> AnyPublisher<Message, Error>
         
     func createMessage(message: Message) async throws
     
-    func updateSeenMessage(message: Message) async throws
+    func updateLocalMessage(message: Message) async
     
-    func upsertLocalMessage(message: Message) async throws
+    func updateRemoteSeenMessages(conversationId: String, userId: String) async throws
+    
+    func updateLocalSeenMessages(conversationId: String) async throws
+    
+    func upsertLocalMessage(message: Message) async
         
-    func deleteLocalMessages(conversationId: String) async throws
+    func deleteLocalMessages(conversationId: String) async
     
-    func deleteLocalMessages() async throws
+    func deleteLocalMessages() async
+    
+    func getLastMessageDate(conversationId: String) async -> Date?
     
     func stopListeningMessages()
 }

@@ -19,7 +19,7 @@ struct MessageNavigation: View {
                     case .chat(let conversation):
                         ChatDestination(
                             conversation: conversation,
-                            onBackClick: { path.removeLast() }
+                            onBackClick: { path.removeAll() }
                         )
                         .onAppear { tabBarVisibility.show = false }
                         .background(Color.background)

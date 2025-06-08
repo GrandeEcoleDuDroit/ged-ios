@@ -14,12 +14,11 @@ struct MessageFeed: View {
                         if let index = messages.firstIndex(where: { $0.id == message.id }) {
                             let isSender = message.senderId != conversation.interlocutor.id
                             let isFirstMessage = index == 0
-                            let isLastMessage = index == messages.count - 1
                             let previousMessage = (index > 0) ? messages[index - 1] : nil
                             
                             let previousSenderId = previousMessage?.senderId ?? ""
                             let sameSender = message.senderId == previousSenderId
-                            let showSeenMessage = isLastMessage && isSender && message.seen
+                            let showSeenMessage = isFirstMessage && isSender && message.seen
                             
                             let sameTime = if let previousMessage = previousMessage {
                                 sameDateTime(
@@ -69,8 +68,7 @@ struct MessageFeed: View {
                     }
                     Spacer().frame(height: 4).id("last")
                 }
-                .rotationEffect(.degrees(180))
-                .rotationEffect(.degrees(180))
+                .rotationEffect(.degrees(360))
                 .onAppear {
                     proxy.scrollTo("last", anchor: .bottom)
                 }

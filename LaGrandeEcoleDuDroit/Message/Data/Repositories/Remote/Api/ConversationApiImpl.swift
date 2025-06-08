@@ -10,14 +10,14 @@ class ConversationApiImpl: ConversationApi {
     private let conversationCollection: CollectionReference = Firestore.firestore().collection(conversationTableName)
     private var cancellables: Set<AnyCancellable> = []
     
-    func listenConversations(userId: String) -> AnyPublisher<RemoteConversation, Error> {
+    func listenConversations(userId: String, offsetTime: Timestamp?) -> AnyPublisher<RemoteConversation, Error> {
         let subject = PassthroughSubject<RemoteConversation, Error>()
         
         let listener = conversationCollection
             .whereField(ConversationDataFields.participants, arrayContains: userId)
+            .withOffsetTime(offsetTime)
             .addSnapshotListener { snapshot, error in
                 if let error = error {
-                    e(tag, "Error to listen conversations: \(error.localizedDescription)")
                     subject.send(completion: .failure(error))
                     return
                 }

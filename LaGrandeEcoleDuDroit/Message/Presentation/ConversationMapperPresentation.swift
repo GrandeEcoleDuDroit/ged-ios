@@ -24,7 +24,7 @@ extension Conversation {
 
 extension ConversationMessage {
     func toConversationUi() -> ConversationUi {
-        ConversationUi(
+       ConversationUi(
             id: conversation.id,
             interlocutor: conversation.interlocutor,
             lastMessage: lastMessage,

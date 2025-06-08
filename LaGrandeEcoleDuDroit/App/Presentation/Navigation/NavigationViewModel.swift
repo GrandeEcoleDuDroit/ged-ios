@@ -22,6 +22,7 @@ class NavigationViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isAuthenticated in
                 self?.uiState.startDestination = isAuthenticated ? .home : .authentication
+                self?.uiState.selectedDestination = .home
             }.store(in: &cancellables)
     }
     
@@ -43,6 +44,7 @@ class NavigationViewModel: ObservableObject {
     struct NavigationUiState {
         var startDestination: Route = .splash
         var topLevelDestinations: [TopLevelDestination] = [.home, .message(), .profile]
+        var selectedDestination: TopLevelDestination = .home
     }
     
     enum Route {

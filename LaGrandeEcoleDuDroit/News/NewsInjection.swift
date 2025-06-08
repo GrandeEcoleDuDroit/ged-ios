@@ -10,8 +10,9 @@ class NewsInjection: DependencyInjectionContainer {
     }
     
     private func registerDependencies() {
-        container.register(AnnouncementApi.self) { _ in AnnouncementApiImpl() }
-            .inObjectScope(.container)
+        container.register(AnnouncementApi.self) { _ in
+            AnnouncementApiImpl()
+        }.inObjectScope(.container)
         
         container.register(AnnouncementRemoteDataSource.self) { resolver in
             AnnouncementRemoteDataSource(announcementApi: resolver.resolve(AnnouncementApi.self)!)
@@ -31,28 +32,28 @@ class NewsInjection: DependencyInjectionContainer {
         
         container.register(CreateAnnouncementUseCase.self) { resolver in
             CreateAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
-        }
+        }.inObjectScope(.container)
         
         container.register(DeleteAnnouncementUseCase.self) { resolver in
             DeleteAnnouncementUseCase(
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
                 networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
             )
-        }
+        }.inObjectScope(.container)
         
         container.register(ResendAnnouncementUseCase.self) { resolver in
             ResendAnnouncementUseCase(
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
                 networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
             )
-        }
+        }.inObjectScope(.container)
         
         container.register(RefreshAnnouncementsUseCase.self) { resolver in
             RefreshAnnouncementsUseCase(
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
                 networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
             )
-        }
+        }.inObjectScope(.container)
         
         container.register(NewsViewModel.self) { resolver in
             NewsViewModel(
@@ -62,7 +63,7 @@ class NewsInjection: DependencyInjectionContainer {
                 recreateAnnouncementUseCase: resolver.resolve(ResendAnnouncementUseCase.self)!,
                 refreshAnnouncementsUseCase: resolver.resolve(RefreshAnnouncementsUseCase.self)!,
             )
-        }.inObjectScope(.weak)
+        }
         
         container.register(ReadAnnouncementViewModel.self) { (resolver, announcementId: Any) in
             let announcementId = announcementId as! String
@@ -72,14 +73,14 @@ class NewsInjection: DependencyInjectionContainer {
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
                 deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!
             )
-        }.inObjectScope(.weak)
+        }
         
         container.register(CreateAnnouncementViewModel.self) { resolver in
             CreateAnnouncementViewModel(
                 createAnnouncementUseCase: resolver.resolve(CreateAnnouncementUseCase.self)!,
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
             )
-        }.inObjectScope(.weak)
+        }
         
         container.register(EditAnnouncementViewModel.self) { (resolver, announcement: Any) in
             let announcement = announcement as! Announcement
@@ -88,7 +89,6 @@ class NewsInjection: DependencyInjectionContainer {
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!
             )
         }
-        .inObjectScope(.weak)
     }
     
     func resolve<T>(_ type: T.Type) -> T {

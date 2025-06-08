@@ -6,8 +6,7 @@ private let tag = String(describing: MessageRepositoryImpl.self)
 class MessageRepositoryImpl: MessageRepository {
     private let messageLocalDataSource: MessageLocalDataSource
     private let messageRemoteDataSource: MessageRemoteDataSource
-    private var cancellables = Set<AnyCancellable>()
-    private let messagePublisher = PassthroughSubject<Message, Never>()
+    var messagePublisher: AnyPublisher<CoreDataChange<Message>, Never>
     
     init(
         messageLocalDataSource: MessageLocalDataSource,
@@ -15,14 +14,19 @@ class MessageRepositoryImpl: MessageRepository {
     ) {
         self.messageLocalDataSource = messageLocalDataSource
         self.messageRemoteDataSource = messageRemoteDataSource
+        messagePublisher = messageLocalDataSource.listenDataChange().eraseToAnyPublisher()
+    }
+
+    func getMessages(conversationId: String, offset: Int) async -> [Message] {
+        (try? await messageLocalDataSource.getMessages(conversationId: conversationId, offset: offset)) ?? []
     }
     
-    func getMessages(conversationId: String) -> AnyPublisher<Message, Never> {
-        messagePublisher.filter { $0.conversationId == conversationId }.eraseToAnyPublisher()
+    func getLastMessage(conversationId: String) async -> Message? {
+        try? await messageLocalDataSource.getLastMessage(conversationId: conversationId)
     }
     
-    func getMessages(conversationId: String) async throws -> [Message] {
-        try await messageLocalDataSource.getMessages(conversationId: conversationId)
+    func getLastMessageDate(conversationId: String) async -> Date? {
+        try? await messageLocalDataSource.getLastMessage(conversationId: conversationId)?.date
     }
     
     func fetchRemoteMessages(conversationId: String, offsetTime: Date?) -> AnyPublisher<Message, Error> {
@@ -32,40 +36,47 @@ class MessageRepositoryImpl: MessageRepository {
     func createMessage(message: Message) async throws {
         try await handleNetworkException(
             block: {
-                try await messageLocalDataSource.upsertMessage(message: message)
-                messagePublisher.send(message)
+                try? await messageLocalDataSource.insertMessage(message: message)
                 try await messageRemoteDataSource.createMessage(message: message)
             },
             tag: tag,
             message: "Failed to create message"
         )
     }
+    
+    func updateLocalMessage(message: Message) async {
+        try? await messageLocalDataSource.updateMessage(message: message)
+    }
         
-    func updateSeenMessage(message: Message) async throws {
+    func updateRemoteSeenMessages(conversationId: String, userId: String) async throws {
         try await handleNetworkException(
             block: {
-                try await messageLocalDataSource.updateMessage(message: message)
-                messagePublisher.send(message)
-                try await messageRemoteDataSource.updateSeenMessage(message: message)
+                let unreadMessages = (try? await messageLocalDataSource.getUnreadMessagesByUser(conversationId: conversationId, userId: userId)) ?? []
+                
+                for message in unreadMessages {
+                    try? await messageRemoteDataSource.updateSeenMessage(message: message)
+                }
             }
         )
     }
     
-    func upsertLocalMessage(message: Message) async throws {
-        try await messageLocalDataSource.upsertMessage(message: message)
-        messagePublisher.send(message)
+    func updateLocalSeenMessages(conversationId: String) async throws {
+        try? await messageLocalDataSource.updateSeenMessages(conversationId: conversationId)
     }
     
-    func deleteLocalMessages(conversationId: String) async throws {
-        try await messageLocalDataSource.deleteMessages(conversationId: conversationId)
+    func upsertLocalMessage(message: Message) async {
+        try? await messageLocalDataSource.upsertMessage(message: message)
     }
     
-    func deleteLocalMessages() async throws {
-        try await messageLocalDataSource.deleteMessages()
+    func deleteLocalMessages(conversationId: String) async {
+        try? await messageLocalDataSource.deleteMessages(conversationId: conversationId)
+    }
+    
+    func deleteLocalMessages() async {
+        try? await messageLocalDataSource.deleteMessages()
     }
     
     func stopListeningMessages() {
         messageRemoteDataSource.stopListeningMessages()
-        cancellables.forEach { $0.cancel() }
     }
 }

@@ -22,6 +22,20 @@ class ConversationViewModel: ObservableObject {
         self.getConversationsUiUseCase = getConversationsUiUseCase
         self.deleteConversationUseCase = deleteConversationUseCase
         listenConversations()
+        print("\(tag) init")
+    }
+    
+    func onQueryChange(query: String) {
+        uiState.query = query
+        guard !query.isEmpty else {
+            uiState.conversations = defaultConversations
+            return
+        }
+        
+        uiState.conversations = defaultConversations.filter {
+            $0.interlocutor.firstName.lowercased().contains(query.lowercased()) ||
+                $0.interlocutor.lastName.lowercased().contains(query.lowercased())
+        }
     }
     
     func deleteConversation(conversation: Conversation) {
@@ -35,30 +49,6 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-    private func mapErrorMessage(_ e: Error) -> String {
-        return mapNetworkErrorMessage(e) {
-            return if e as? UserError == .currentUserNotFound {
-                getString(.userNotFound)
-            } else {
-                getString(.unknownError)
-            }
-        }
-    }
-    
-    func onQueryChange(query: String) {
-        uiState.query = query
-        guard !query.isEmpty else {
-            uiState.conversations = defaultConversations
-            return
-        }
-        
-        uiState.conversations = defaultConversations.filter {
-            $0.interlocutor.fullName
-                .lowercased()
-                .contains(query.lowercased())
-        }
-    }
-    
     private func listenConversations() {
         getConversationsUiUseCase.execute()
             .receive(on: DispatchQueue.main)
@@ -67,9 +57,23 @@ class ConversationViewModel: ObservableObject {
             }.store(in: &cancellables)
     }
     
+    private func mapErrorMessage(_ error: Error) -> String {
+        mapNetworkErrorMessage(error) {
+            if error as? UserError == .currentUserNotFound {
+                getString(.userNotFound)
+            } else {
+                getString(.unknownError)
+            }
+        }
+    }
+    
     struct ConversationUiState {
         var conversations: [ConversationUi] = []
         var query: String = ""
         var loading = true
+    }
+    
+    deinit {
+        print("\(tag) deinit")
     }
 }

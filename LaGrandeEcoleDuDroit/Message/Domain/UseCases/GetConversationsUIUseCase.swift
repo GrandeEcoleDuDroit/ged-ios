@@ -10,9 +10,7 @@ class GetConversationsUiUseCase {
     func execute() -> AnyPublisher<[ConversationUi], Never> {
         conversationMessageRepository.conversationsMessage
             .map { conversationMessages in
-                conversationMessages.map {
-                    $0.toConversationUi()
-                }
+                conversationMessages.values.map { $0.toConversationUi() }
             }
             .eraseToAnyPublisher()
     }

@@ -43,13 +43,11 @@ class CreateAnnouncementViewModel: ObservableObject {
     
     func onTitleChange(_ title: String) {
         uiState.title = title
-        print(uiState.title.count)
         uiState.enableCreate = validateInput()
     }
     
     func onContentChange(_ content: String) {
         uiState.content = content
-        print(uiState.content.count)
         uiState.enableCreate = validateInput()
     }
     

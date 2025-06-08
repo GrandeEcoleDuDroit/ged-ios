@@ -30,11 +30,11 @@
     <entity name="LocalMessage" representedClassName="LocalMessage" syncable="YES" codeGenerationType="class">
         <attribute name="content" attributeType="String"/>
         <attribute name="conversationId" attributeType="String"/>
-        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="messageId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="messageId" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="recipientId" optional="YES" attributeType="String"/>
         <attribute name="seen" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="senderId" attributeType="String"/>
         <attribute name="state" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
 </model>

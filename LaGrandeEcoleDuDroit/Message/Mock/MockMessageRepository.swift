@@ -3,6 +3,11 @@ import Combine
 
 class MockMessageRepository: MessageRepository {
     private let messagesSubject = CurrentValueSubject<[Message], Never>(messagesFixture)
+    
+    var messagePublisher: AnyPublisher<CoreDataChange<Message>, Never> {
+        Empty().eraseToAnyPublisher()
+    }
+    
     func getMessages(conversationId: String) -> AnyPublisher<Message, Never> {
         messagesSubject
             .compactMap { $0.first }
@@ -19,11 +24,11 @@ class MockMessageRepository: MessageRepository {
             .eraseToAnyPublisher()
     }
     
-    func upsertLocalMessage(message: Message) async throws {
+    func upsertLocalMessage(message: Message) {
         messagesSubject.send(messagesSubject.value)
     }
     
-    func deleteLocalMessages(conversationId: String) async throws {
+    func deleteLocalMessages(conversationId: String) {
         messagesSubject.send([])
     }
     
@@ -31,15 +36,31 @@ class MockMessageRepository: MessageRepository {
         messagesSubject.send(messagesSubject.value + [message])
     }
     
-    func updateSeenMessage(message: Message) async throws {
-        messagesSubject.send(messagesSubject.value)
-    }
+    func updateRemoteSeenMessages(conversationId: String, userId: String) async throws {}
     
-    func deleteLocalMessages() async throws {
+    func updateLocalSeenMessages(conversationId: String) async throws {}
+    
+    func deleteLocalMessages() {
         messagesSubject.send([])
     }
     
-    func stopListeningMessages() {
-        
+    func stopListeningMessages() {}
+    
+    func listen() -> AnyPublisher<CoreDataChange<Message>, Never> {
+        Empty().eraseToAnyPublisher()
     }
+    
+    func getMessages(conversationId: String, offset: Int) -> [Message] {
+        messagesFixture
+    }
+    
+    func getLastMessage(conversationId: String) -> Message? {
+        messageFixture
+    }
+    
+    func getLastMessageDate(conversationId: String) async -> Date? {
+        Date()
+    }
+    
+    func updateLocalMessage(message: Message) {}
 }

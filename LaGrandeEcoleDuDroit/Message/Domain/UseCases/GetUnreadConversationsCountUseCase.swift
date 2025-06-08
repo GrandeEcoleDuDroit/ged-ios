@@ -16,9 +16,10 @@ class GetUnreadConversationsCountUseCase {
         userRepository.user.flatMap { user in
             self.conversationMessageRepository.conversationsMessage
                 .map { conversationMessages in
-                    conversationMessages.count {
-                        $0.lastMessage.senderId != user.id && !$0.lastMessage.seen
-                    }
+                    conversationMessages.values.filter {
+                        guard let lastMessage = $0.lastMessage else { return false }
+                        return lastMessage.senderId != user.id && !lastMessage.seen
+                    }.count
                 }
         }.eraseToAnyPublisher()
     }

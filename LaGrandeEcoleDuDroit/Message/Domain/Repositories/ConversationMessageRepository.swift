@@ -1,5 +1,5 @@
 import Combine
 
 protocol ConversationMessageRepository {
-    var conversationsMessage: AnyPublisher<[ConversationMessage], Never> { get }
+    var conversationsMessage: AnyPublisher<[String: ConversationMessage], Never>{ get }
 }

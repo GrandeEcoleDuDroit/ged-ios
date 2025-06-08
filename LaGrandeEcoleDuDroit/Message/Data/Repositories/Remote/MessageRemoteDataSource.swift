@@ -10,14 +10,18 @@ class MessageRemoteDataSource {
     
     func listenMessages(conversationId: String, offsetTime: Date?) -> AnyPublisher<Message, Error> {
         let offsetTime: Timestamp? = offsetTime.map { Timestamp(date: $0) }
-        
         return messageApi.listenMessages(conversationId: conversationId, offsetTime: offsetTime)
             .map { $0.toMessage() }
             .eraseToAnyPublisher()
     }
     
     func createMessage(message: Message) async throws {
-        try await messageApi.createMessage(remoteMessage: message.toRemote())
+        let data = message.toRemote().toMap()
+        try await messageApi.createMessage(
+            conversationId: message.conversationId,
+            messageId: message.id.toString(),
+            data: data
+        )
     }
     
     func updateSeenMessage(message: Message) async throws {

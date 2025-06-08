@@ -9,7 +9,10 @@ struct Navigation: View {
         ZStack {
             switch viewModel.uiState.startDestination {
                 case .authentication: AuthenticationNavigation()
-                case .home: MainNavigation(topLevelDestinations: viewModel.uiState.topLevelDestinations)
+                case .home: MainNavigation(
+                    topLevelDestinations: viewModel.uiState.topLevelDestinations,
+                    selectedTopLevelDestination: $viewModel.uiState.selectedDestination
+                )
                 case .splash: SplashScreen()
             }
         }
@@ -19,16 +22,16 @@ struct Navigation: View {
 
 private struct MainNavigation: View {
     let topLevelDestinations: [TopLevelDestination]
-    @State private var currentTopLevelDestination: TopLevelDestination = .home
+    @Binding var selectedTopLevelDestination: TopLevelDestination
     @StateObject private var tabBarVisibility = TabBarVisibility()
 
     var body: some View {
-        TabView(selection: $currentTopLevelDestination) {
+        TabView(selection: $selectedTopLevelDestination) {
             ForEach(topLevelDestinations, id: \.self) { destination in
-                ChooseDestination(destination: destination)
+                Destination(destination: destination)
                     .environmentObject(tabBarVisibility)
                     .tabItem {
-                        let icon = currentTopLevelDestination == destination ? destination.filledIcon : destination.outlinedIcon
+                        let icon = selectedTopLevelDestination == destination ? destination.filledIcon : destination.outlinedIcon
                         Label(destination.label, systemImage: icon)
                             .environment(\.symbolVariants, .none)
                     }
@@ -39,7 +42,7 @@ private struct MainNavigation: View {
     }
 }
 
-private struct ChooseDestination: View {
+private struct Destination: View {
     let destination: TopLevelDestination
 
     var body: some View {
@@ -56,5 +59,8 @@ class TabBarVisibility: ObservableObject {
 }
 
 #Preview {
-    MainNavigation(topLevelDestinations: [.home, .message(badges: 3), .profile])
+    MainNavigation(
+        topLevelDestinations: [.home, .message(badges: 3), .profile],
+        selectedTopLevelDestination: .constant(.home)
+    )
 }

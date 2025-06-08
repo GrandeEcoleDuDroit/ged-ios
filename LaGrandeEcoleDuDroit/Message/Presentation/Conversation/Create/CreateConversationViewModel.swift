@@ -1,23 +1,26 @@
 import SwiftUI
 import Combine
 
+private let tag = String(describing: CreateConversationViewModel.self)
+
 class CreateConversationViewModel: ObservableObject {
     private var defaultUsers: [User] = []
     private var cancellables = Set<AnyCancellable>()
     
     private let userRepository: UserRepository
-    private let getLocalConversationUseCase: GetLocalConversationUseCase
+    private let getLocalConversationUseCase: GetConversationUseCase
     
     @Published var uiState: CreateConversationUiState = CreateConversationUiState()
     @Published var event: SingleUiEvent? = nil
     
     init(
         userRepository: UserRepository,
-        getLocalConversationUseCase: GetLocalConversationUseCase
+        getLocalConversationUseCase: GetConversationUseCase
     ) {
         self.userRepository = userRepository
         self.getLocalConversationUseCase = getLocalConversationUseCase
         fetchUsers()
+        print("\(tag) init")
     }
     
     func onQueryChange(_ query: String) {
@@ -77,5 +80,9 @@ class CreateConversationViewModel: ObservableObject {
         var users: [User] = []
         var loading: Bool = true
         var query: String = ""
+    }
+    
+    deinit {
+        print("\(tag) deinit")
     }
 }

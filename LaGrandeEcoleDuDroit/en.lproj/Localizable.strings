@@ -24,6 +24,7 @@
 "today" = "Today";
 "yesterday" = "Yesterday";
 "home" = "Home";
+"sending" = "Sending...";
 
 // Common error
 "mandatory_field_error" = "Mandatory field";
