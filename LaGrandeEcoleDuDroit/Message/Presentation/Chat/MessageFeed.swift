@@ -42,11 +42,9 @@ struct MessageFeed: View {
                             let displayProfilePicture = !sameTime || isFirstMessage || !sameSender
                             
                             if isFirstMessage || !sameDay {
-                                let topPadding = isFirstMessage ? GedSpacing.large : 0
-                                
                                 Text(formatDate(date: message.date))
                                     .foregroundStyle(.gray)
-                                    .padding(.vertical, topPadding)
+                                    .padding(.vertical, GedSpacing.large)
                                     .font(.footnote)
                                     .frame(maxWidth: .infinity, alignment: .center)
                             }
