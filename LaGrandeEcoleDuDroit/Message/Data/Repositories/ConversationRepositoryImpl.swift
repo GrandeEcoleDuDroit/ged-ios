@@ -9,11 +9,7 @@ class ConversationRepositoryImpl: ConversationRepository {
     private let conversationLocalDataSource: ConversationLocalDataSource
     private let conversationRemoteDataSource: ConversationRemoteDataSource
     private var interlocutors: [String: User] = [:]
-    private var cancellables: Set<AnyCancellable> = []
-    private let conversationsPublisher = CurrentValueSubject<[String: Conversation], Never>([:])
-    var conversations: AnyPublisher<[String: Conversation], Never> {
-        conversationsPublisher.eraseToAnyPublisher()
-    }
+    var conversationChanges: AnyPublisher<CoreDataChange<Conversation>, Never>
     
     init(
         messageRepository: MessageRepository,
@@ -25,36 +21,9 @@ class ConversationRepositoryImpl: ConversationRepository {
         self.userRepository = userRepository
         self.conversationLocalDataSource = conversationLocalDataSource
         self.conversationRemoteDataSource = conversationRemoteDataSource
-        loadConversations()
-        listen()
+        conversationChanges = conversationLocalDataSource.listenDataChange()
     }
-    
-    private func loadConversations() {
-        Task {
-            try? await conversationLocalDataSource.getConversations().forEach { conversation in
-                conversationsPublisher.value[conversation.id] = conversation
-            }
-        }
-    }
-    
-    private func listen() {
-        conversationLocalDataSource.listenDataChange()
-            .receive(on: DispatchQueue.global(qos: .background))
-            .sink { [weak self] change in
-                change.inserted.forEach { conversation in
-                    self?.conversationsPublisher.value[conversation.id] = conversation
-                }
-                
-                change.updated.forEach { conversation in
-                    self?.conversationsPublisher.value[conversation.id] = conversation
-                }
-                
-                change.deleted.forEach { conversation in
-                    self?.conversationsPublisher.value[conversation.id] = nil
-                }
-            }.store(in: &cancellables)
-    }
-    
+
     func getConversations() async -> [Conversation] {
         let conversations = try? await conversationLocalDataSource.getConversations()
         return conversations ?? []
@@ -66,12 +35,6 @@ class ConversationRepositoryImpl: ConversationRepository {
     
     func getLastConversationDate() async -> Date? {
         try? await conversationLocalDataSource.getLastConversation()?.createdAt
-    }
-    
-    func getConversationPublisher(interlocutorId: String) -> AnyPublisher<Conversation?, Never> {
-        conversationsPublisher.map { conversations in
-            conversations.values.first { $0.interlocutor.id == interlocutorId }
-        }.eraseToAnyPublisher()
     }
     
     func fetchRemoteConversations(userId: String, offsetTime: Date?) -> AnyPublisher<Conversation, Error> {

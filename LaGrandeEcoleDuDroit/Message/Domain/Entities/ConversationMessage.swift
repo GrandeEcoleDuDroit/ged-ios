@@ -1,4 +1,4 @@
-struct ConversationMessage {
+struct ConversationMessage: Equatable  {
     var conversation: Conversation
-    var lastMessage: Message?
+    var lastMessage: Message
 }

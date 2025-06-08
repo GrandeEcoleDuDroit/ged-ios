@@ -48,20 +48,27 @@ class MessageRepositoryImpl: MessageRepository {
         try? await messageLocalDataSource.updateMessage(message: message)
     }
         
-    func updateRemoteSeenMessages(conversationId: String, userId: String) async throws {
+    func updateSeenMessages(conversationId: String, userId: String) async throws {
+        let unreadMessages = (try? await messageLocalDataSource.getUnreadMessagesByUser(conversationId: conversationId, userId: userId)) ?? []
+        try? await messageLocalDataSource.updateSeenMessages(conversationId: conversationId, userId: userId)
         try await handleNetworkException(
             block: {
-                let unreadMessages = (try? await messageLocalDataSource.getUnreadMessagesByUser(conversationId: conversationId, userId: userId)) ?? []
-                
                 for message in unreadMessages {
-                    try? await messageRemoteDataSource.updateSeenMessage(message: message)
+                    try? await messageRemoteDataSource.updateSeenMessage(message: message.with(seen: true))
                 }
-            }
+            },
+            tag: tag,
+            message: "Failed to update seen messages"
         )
     }
     
-    func updateLocalSeenMessages(conversationId: String) async throws {
-        try? await messageLocalDataSource.updateSeenMessages(conversationId: conversationId)
+    func updateSeenMessage(message: Message) async throws {
+        try? await messageLocalDataSource.updateMessage(message: message.with(seen: true))
+        try await handleNetworkException(
+            block: { try? await messageRemoteDataSource.updateSeenMessage(message: message.with(seen: true)) },
+            tag: tag,
+            message: "Failed to update seen messages"
+        )
     }
     
     func upsertLocalMessage(message: Message) async {

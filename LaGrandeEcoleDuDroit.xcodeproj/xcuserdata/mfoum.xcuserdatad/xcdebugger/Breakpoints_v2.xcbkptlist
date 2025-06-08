@@ -7,89 +7,61 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "15BA74B2-AEDF-4126-AB17-C9128F849A6D"
+            uuid = "2F102532-E571-4D38-BAC5-D980B85FB8D0"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/App/MainViewModel.swift"
+            filePath = "LaGrandeEcoleDuDroit/Message/Domain/UseCases/ListenRemoteConversationsMessagesUseCase.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "33"
-            endingLineNumber = "33"
-            landmarkName = "updateDataListening()"
+            startingLineNumber = "22"
+            endingLineNumber = "22"
+            landmarkName = "start()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "ECB4C8F2-362D-436E-A252-475BBB9F111B"
-            shouldBeEnabled = "No"
+            uuid = "F9B179EC-46B7-40BC-B58A-AE4881970CF5"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/App/MainViewModel.swift"
+            filePath = "LaGrandeEcoleDuDroit/Message/Domain/UseCases/ListenRemoteConversationsMessagesUseCase.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "34"
-            endingLineNumber = "34"
-            landmarkName = "updateDataListening()"
+            startingLineNumber = "26"
+            endingLineNumber = "26"
+            landmarkName = "start()"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "ECB4C8F2-362D-436E-A252-475BBB9F111B - 57b39482e3acf8b9"
+                  uuid = "F9B179EC-46B7-40BC-B58A-AE4881970CF5 - c611f20c2514937b"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Bool) -&gt; () in Grande_Ecole_Du_Droit.MainViewModel.updateDataListening() -&gt; ()"
+                  symbolName = "Grande_Ecole_Du_Droit.ListenRemoteConversationsMessagesUseCase.start() -&gt; ()"
                   moduleName = "Grande Ecole Du Droit.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/App/MainViewModel.swift"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/Message/Domain/UseCases/ListenRemoteConversationsMessagesUseCase.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "34"
-                  endingLineNumber = "34">
+                  startingLineNumber = "26"
+                  endingLineNumber = "26">
                </Location>
                <Location
-                  uuid = "ECB4C8F2-362D-436E-A252-475BBB9F111B - 2b5f333e6baee77e"
+                  uuid = "F9B179EC-46B7-40BC-B58A-AE4881970CF5 - 41403e082bf525c"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "closure #1 () async -&gt; Swift.Optional&lt;()&gt; in closure #1 (Swift.Bool) -&gt; () in Grande_Ecole_Du_Droit.MainViewModel.updateDataListening() -&gt; ()"
+                  symbolName = "closure #1 (Grande_Ecole_Du_Droit.Conversation) -&gt; Swift.Bool in Grande_Ecole_Du_Droit.ListenRemoteConversationsMessagesUseCase.start() -&gt; ()"
                   moduleName = "Grande Ecole Du Droit.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/App/MainViewModel.swift"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/Message/Domain/UseCases/ListenRemoteConversationsMessagesUseCase.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "29"
-                  endingLineNumber = "29">
-               </Location>
-               <Location
-                  uuid = "ECB4C8F2-362D-436E-A252-475BBB9F111B - 7de3e776ab365aca"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for closure #1 () async -&gt; Swift.Optional&lt;()&gt; in closure #1 (Swift.Bool) -&gt; () in Grande_Ecole_Du_Droit.MainViewModel.updateDataListening() -&gt; ()"
-                  moduleName = "Grande Ecole Du Droit.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/App/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "34"
-                  endingLineNumber = "34">
-               </Location>
-               <Location
-                  uuid = "ECB4C8F2-362D-436E-A252-475BBB9F111B - 111fb84bf1909ec8"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for closure #1 () async -&gt; Swift.Optional&lt;()&gt; in closure #1 (Swift.Bool) -&gt; () in Grande_Ecole_Du_Droit.MainViewModel.updateDataListening() -&gt; ()"
-                  moduleName = "Grande Ecole Du Droit.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/App/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "34"
-                  endingLineNumber = "34">
+                  startingLineNumber = "26"
+                  endingLineNumber = "26">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -97,93 +69,89 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F5DDF2C6-A706-4812-9A9A-53AAE3C20804"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/App/Domain/UseCases/ClearDataUseCase.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "18"
-            endingLineNumber = "18"
-            landmarkName = "execute()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A8CFB18B-6684-4228-8CD8-12ECB1B0EAAB"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/App/Domain/UseCases/ClearDataUseCase.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "19"
-            endingLineNumber = "19"
-            landmarkName = "execute()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "2F956758-A1F9-477F-B2EC-4449C71B8BD0"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/App/Domain/UseCases/ClearDataUseCase.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "17"
-            endingLineNumber = "17"
-            landmarkName = "execute()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "D18EC55E-073C-403B-9F2A-44755F90C605"
+            uuid = "0391A89E-EB8F-4638-AE9B-E6AFF5383CC9"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/ConversationRepositoryImpl.swift"
+            filePath = "LaGrandeEcoleDuDroit/Message/Domain/UseCases/ListenRemoteConversationsMessagesUseCase.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "132"
-            endingLineNumber = "132"
-            landmarkName = "deleteLocalConversations()"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
+            landmarkName = "start()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B0E17C6E-858C-4393-821A-6C51B06A91A3"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/Message/Domain/UseCases/ListenRemoteConversationsMessagesUseCase.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
+            landmarkName = "start()"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "D18EC55E-073C-403B-9F2A-44755F90C605 - d09f84ce0c3d8004"
+                  uuid = "B0E17C6E-858C-4393-821A-6C51B06A91A3 - c611f20c251492b9"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for Grande_Ecole_Du_Droit.ConversationRepositoryImpl.deleteLocalConversations() async -&gt; ()"
+                  symbolName = "Grande_Ecole_Du_Droit.ListenRemoteConversationsMessagesUseCase.start() -&gt; ()"
                   moduleName = "Grande Ecole Du Droit.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/Message/Data/Repositories/ConversationRepositoryImpl.swift"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/Message/Domain/UseCases/ListenRemoteConversationsMessagesUseCase.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "132"
-                  endingLineNumber = "132">
+                  startingLineNumber = "28"
+                  endingLineNumber = "28">
                </Location>
                <Location
-                  uuid = "D18EC55E-073C-403B-9F2A-44755F90C605 - 25f862b5b616cc06"
+                  uuid = "B0E17C6E-858C-4393-821A-6C51B06A91A3 - 7e9a2420c7168ea2"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for Grande_Ecole_Du_Droit.ConversationRepositoryImpl.deleteLocalConversations() async -&gt; ()"
+                  symbolName = "closure #2 (Grande_Ecole_Du_Droit.Conversation) -&gt; () in Grande_Ecole_Du_Droit.ListenRemoteConversationsMessagesUseCase.start() -&gt; ()"
                   moduleName = "Grande Ecole Du Droit.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/Message/Data/Repositories/ConversationRepositoryImpl.swift"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/Message/Domain/UseCases/ListenRemoteConversationsMessagesUseCase.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "132"
-                  endingLineNumber = "132">
+                  startingLineNumber = "28"
+                  endingLineNumber = "28">
+               </Location>
+               <Location
+                  uuid = "B0E17C6E-858C-4393-821A-6C51B06A91A3 - 150de1c1bfe0a3a1"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () async -&gt; Swift.Optional&lt;()&gt; in closure #2 (Grande_Ecole_Du_Droit.Conversation) -&gt; () in Grande_Ecole_Du_Droit.ListenRemoteConversationsMessagesUseCase.start() -&gt; ()"
+                  moduleName = "Grande Ecole Du Droit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/Message/Domain/UseCases/ListenRemoteConversationsMessagesUseCase.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "28"
+                  endingLineNumber = "28">
+               </Location>
+               <Location
+                  uuid = "B0E17C6E-858C-4393-821A-6C51B06A91A3 - 4f50a40bb5ec6978"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for closure #1 () async -&gt; Swift.Optional&lt;()&gt; in closure #2 (Grande_Ecole_Du_Droit.Conversation) -&gt; () in Grande_Ecole_Du_Droit.ListenRemoteConversationsMessagesUseCase.start() -&gt; ()"
+                  moduleName = "Grande Ecole Du Droit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/Message/Domain/UseCases/ListenRemoteConversationsMessagesUseCase.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "28"
+                  endingLineNumber = "28">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -191,166 +159,56 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "A2613667-A369-4FE4-825B-CD079C62B530"
+            uuid = "25D03094-06D5-4E9A-8C2C-D8C6A5CA846F"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/Local/ConversationLocalDataSource.swift"
+            filePath = "LaGrandeEcoleDuDroit/Message/Domain/UseCases/ListenRemoteConversationsMessagesUseCase.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "169"
-            endingLineNumber = "169"
-            landmarkName = "deleteConversations()"
+            startingLineNumber = "40"
+            endingLineNumber = "40"
+            landmarkName = "conversationPublisher(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "17B589E1-1890-4761-BD25-86B4279D6FEA"
+            uuid = "0A7D2FD5-8190-4058-B2CD-E6524EA9F056"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/Local/ConversationLocalDataSource.swift"
+            filePath = "LaGrandeEcoleDuDroit/Message/Domain/UseCases/ListenRemoteConversationsMessagesUseCase.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "172"
-            endingLineNumber = "172"
-            landmarkName = "deleteConversations()"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
+            landmarkName = "conversationPublisher(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "3E8C7B4B-B7C5-4474-82F8-815C3D61037A"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/Local/ConversationLocalDataSource.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "52"
-            endingLineNumber = "52"
-            landmarkName = "listenDataChange()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "8C18A275-A096-43A0-A787-F20D955D3AF1"
+            uuid = "CB3F1E6F-5CE2-4D58-98EF-631EBAB898AD"
             shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/Local/ConversationLocalDataSource.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "57"
-            endingLineNumber = "57"
-            landmarkName = "listenDataChange()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "1FEB8730-713F-448E-9CFB-10E63AA3EFD5"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/Local/ConversationLocalDataSource.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "56"
-            endingLineNumber = "56"
-            landmarkName = "listenDataChange()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A24CE945-CF3C-484A-A303-53001C0E52C1"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/Local/ConversationLocalDataSource.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "58"
-            endingLineNumber = "58"
-            landmarkName = "listenDataChange()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "90CC9C02-914F-435E-BDFE-108B615337FD"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/ConversationRepositoryImpl.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "53"
-            endingLineNumber = "53"
-            landmarkName = "listen()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "7B7B5EE7-31BF-42AF-8A47-B93DE34C6B62"
-            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/ConversationMessageRepositoryImpl.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "23"
-            endingLineNumber = "23"
+            startingLineNumber = "25"
+            endingLineNumber = "25"
             landmarkName = "listen()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "7B7B5EE7-31BF-42AF-8A47-B93DE34C6B62 - 2ecdef8197fec990"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Grande_Ecole_Du_Droit.ConversationMessageRepositoryImpl.listen() -&gt; ()"
-                  moduleName = "Grande Ecole Du Droit.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/Message/Data/Repositories/ConversationMessageRepositoryImpl.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "23"
-                  endingLineNumber = "23">
-               </Location>
-               <Location
-                  uuid = "7B7B5EE7-31BF-42AF-8A47-B93DE34C6B62 - 7de3e9d62b67fce2"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Dictionary&lt;Swift.String, Grande_Ecole_Du_Droit.Conversation&gt;) -&gt; Swift.Array&lt;Grande_Ecole_Du_Droit.Conversation&gt; in Grande_Ecole_Du_Droit.ConversationMessageRepositoryImpl.listen() -&gt; ()"
-                  moduleName = "Grande Ecole Du Droit.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/Message/Data/Repositories/ConversationMessageRepositoryImpl.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "23"
-                  endingLineNumber = "23">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "8CA102C9-74AC-4DCB-B609-6D8185DC4DA4"
-            shouldBeEnabled = "Yes"
+            uuid = "6759D469-6A0A-4D63-A277-276F4BD663AA"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/ConversationMessageRepositoryImpl.swift"
@@ -365,254 +223,160 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "4F1DB61C-4651-4B19-BA2E-6421BE8A39F6"
-            shouldBeEnabled = "Yes"
+            uuid = "B8B5B693-F0A8-4CCE-8C70-32D2A6D694BB"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/ConversationMessageRepositoryImpl.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "27"
-            endingLineNumber = "27"
-            landmarkName = "listen()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "46379CF5-27E7-4312-BE65-C88A506899D2"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/ConversationMessageRepositoryImpl.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "37"
-            endingLineNumber = "37"
-            landmarkName = "messagesPublisher(from:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "72518293-2397-4B03-BBD9-6A65CE9C8697"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/ConversationMessageRepositoryImpl.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "36"
-            endingLineNumber = "36"
-            landmarkName = "messagesPublisher(from:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "8EDE095C-CF58-4C59-AEE3-446332A14D25"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/ConversationMessageRepositoryImpl.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "30"
-            endingLineNumber = "30"
-            landmarkName = "listen()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "DC6BE7FD-FDC7-4F6A-8CF1-DB1BD28C08A6"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/App/MainViewModel.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "35"
-            endingLineNumber = "35"
-            landmarkName = "updateDataListening()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "6A712137-3D9A-458C-9599-D2B665E5BEC4"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/App/MainViewModel.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "23"
-            endingLineNumber = "23"
-            landmarkName = "init(authenticationRepository:userRepository:listenDataUseCase:clearDataUseCase:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "6A712137-3D9A-458C-9599-D2B665E5BEC4 - 14e551888c4a4e11"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Grande_Ecole_Du_Droit.MainViewModel.init(authenticationRepository: Grande_Ecole_Du_Droit.AuthenticationRepository, userRepository: Grande_Ecole_Du_Droit.UserRepository, dataListeningUseCase: Grande_Ecole_Du_Droit.DataListeningUseCase, clearDataUseCase: Grande_Ecole_Du_Droit.ClearDataUseCase) -&gt; Grande_Ecole_Du_Droit.MainViewModel"
-                  moduleName = "Grande Ecole Du Droit.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/App/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "23"
-                  endingLineNumber = "23">
-               </Location>
-               <Location
-                  uuid = "6A712137-3D9A-458C-9599-D2B665E5BEC4 - e10753bc79b1f7c8"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Grande_Ecole_Du_Droit.MainViewModel.init(authenticationRepository: Grande_Ecole_Du_Droit.AuthenticationRepository, userRepository: Grande_Ecole_Du_Droit.UserRepository, listenDataUseCase: Grande_Ecole_Du_Droit.ListenDataUseCase, clearDataUseCase: Grande_Ecole_Du_Droit.ClearDataUseCase) -&gt; Grande_Ecole_Du_Droit.MainViewModel"
-                  moduleName = "Grande Ecole Du Droit.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/App/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "23"
-                  endingLineNumber = "23">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "8FD7ADCF-D3E4-48AD-9A8B-F34FEF5F4C24"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/App/MainViewModel.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "27"
-            endingLineNumber = "27"
-            landmarkName = "updateDataListening()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "0422DD7D-926B-48FE-9486-378E363E64E5"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/App/MainViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "28"
             endingLineNumber = "28"
-            landmarkName = "updateDataListening()"
+            landmarkName = "listen()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "130267EF-0820-4007-A815-0C7B699A457D"
-            shouldBeEnabled = "Yes"
+            uuid = "E60CD625-E422-46E8-8F21-B88CF1C8B665"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/App/MainViewModel.swift"
+            filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/ConversationMessageRepositoryImpl.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "listen()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7EA703E7-AB7B-45E3-B708-2341326E0837"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/Message/Data/Repositories/ConversationMessageRepositoryImpl.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "33"
+            endingLineNumber = "33"
+            landmarkName = "listen()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B0C02B26-A4BE-4671-A4CF-0A7C32B4497A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/Message/Domain/UseCases/GetUnreadConversationsCountUseCase.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "19"
+            endingLineNumber = "19"
+            landmarkName = "execute()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7496E19C-3695-4098-BE6B-27A8385C2CC7"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/Message/Domain/UseCases/GetUnreadConversationsCountUseCase.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "20"
+            endingLineNumber = "20"
+            landmarkName = "execute()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "392477FC-04EB-482A-B5B5-7DB5E67B3C7F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/App/Presentation/Navigation/NavigationViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "updateMessagesBadges()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E9A9081B-7245-47A1-9398-5543E7AB51BD"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/App/Presentation/Navigation/NavigationViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "updateMessagesBadges()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "86CCDB77-0955-4A23-9919-93C6FF66B047"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/App/Presentation/Navigation/NavigationViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "30"
             endingLineNumber = "30"
-            landmarkName = "updateDataListening()"
+            landmarkName = "updateMessagesBadges()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "4E6890A4-4372-4554-AE36-FF092F21A107"
-            shouldBeEnabled = "Yes"
+            uuid = "2A2F39A8-9175-45D5-885E-C9FD5296CD1E"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/App/MainViewModel.swift"
+            filePath = "LaGrandeEcoleDuDroit/App/Presentation/Navigation/NavigationViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "31"
             endingLineNumber = "31"
-            landmarkName = "updateDataListening()"
+            landmarkName = "updateMessagesBadges()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F79521C5-B793-495F-A436-CCAB95950720"
-            shouldBeEnabled = "Yes"
+            uuid = "79ABB3AB-649B-45E5-A840-032DCE385B61"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Authentication/Data/Repositories/AuthenticationRepositoryImpl.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "36"
-            endingLineNumber = "36"
-            landmarkName = "logout()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "1EE08099-41F0-4C46-B52D-F1F7A37D2CD7"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Authentication/Data/Repositories/AuthenticationRepositoryImpl.swift"
+            filePath = "LaGrandeEcoleDuDroit/App/Presentation/Navigation/Navigation.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "37"
             endingLineNumber = "37"
-            landmarkName = "logout()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A6D90025-D368-438D-9F45-27E445A021B2"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Authentication/Data/Repositories/AuthenticationRepositoryImpl.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "38"
-            endingLineNumber = "38"
-            landmarkName = "logout()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "1A3A12CF-BD92-40FA-B5F6-97F72C78A62C"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LaGrandeEcoleDuDroit/Authentication/Data/Repositories/AuthenticationRepositoryImpl.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "24"
-            endingLineNumber = "24"
-            landmarkName = "init(firebaseAuthenticationRepository:authenticationLocalDataSource:)"
+            landmarkName = "tabView(for:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

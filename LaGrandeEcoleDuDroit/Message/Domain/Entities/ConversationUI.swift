@@ -3,7 +3,7 @@ import Foundation
 struct ConversationUi {
     let id: String
     let interlocutor: User
-    let lastMessage: Message?
+    let lastMessage: Message
     let createdAt: Date
     let state: ConversationState
     

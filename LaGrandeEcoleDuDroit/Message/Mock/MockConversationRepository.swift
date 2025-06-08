@@ -2,8 +2,8 @@ import Foundation
 import Combine
 
 class MockConversationRepository: ConversationRepository {
-    private let conversationsSubject = CurrentValueSubject<[String: Conversation], Never>([:])
-    var conversations: AnyPublisher<[String: Conversation], Never> {
+    private let conversationsSubject = CurrentValueSubject<CoreDataChange<Conversation>, Never>(CoreDataChange(inserted: [], updated: [], deleted: []))
+    var conversationChanges: AnyPublisher<CoreDataChange<Conversation>, Never> {
         conversationsSubject.eraseToAnyPublisher()
     }
     
@@ -12,35 +12,24 @@ class MockConversationRepository: ConversationRepository {
     }
     
     func getConversation(interlocutorId: String) async -> Conversation? {
-        conversationsSubject.value.values.first
+        conversationFixture
     }
     
     func fetchRemoteConversations(userId: String, offsetTime: Date?) -> AnyPublisher<Conversation, any Error> {
-        conversationsSubject.eraseToAnyPublisher()
-            .compactMap { $0.values.first }
+        Just(conversationFixture)
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
     
-    func createConversation(conversation: Conversation, userId: String) async throws {
-        conversationsSubject.value[conversation.id] = conversation
-    }
+    func createConversation(conversation: Conversation, userId: String) async throws {}
     
-    func updateLocalConversation(conversation: Conversation) async {
-        conversationsSubject.value[conversation.id] = conversation
-    }
+    func updateLocalConversation(conversation: Conversation) async {}
     
-    func upsertLocalConversation(conversation: Conversation) async {
-        conversationsSubject.value[conversation.id] = conversation
-    }
+    func upsertLocalConversation(conversation: Conversation) async {}
     
-    func deleteLocalConversations() async {
-        conversationsSubject.value.removeAll()
-    }
+    func deleteLocalConversations() async {}
     
-    func deleteConversation(conversation: Conversation, userId: String) async throws {
-        conversationsSubject.value[conversation.id] = nil
-    }
+    func deleteConversation(conversation: Conversation, userId: String) async throws {}
     
     func stopListenConversations() {}
     

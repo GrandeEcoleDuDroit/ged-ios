@@ -36,10 +36,10 @@ class MockMessageRepository: MessageRepository {
         messagesSubject.send(messagesSubject.value + [message])
     }
     
-    func updateRemoteSeenMessages(conversationId: String, userId: String) async throws {}
+    func updateSeenMessages(conversationId: String, userId: String) async throws {}
     
-    func updateLocalSeenMessages(conversationId: String) async throws {}
-    
+    func updateSeenMessage(message: Message) async throws {}
+        
     func deleteLocalMessages() {
         messagesSubject.send([])
     }

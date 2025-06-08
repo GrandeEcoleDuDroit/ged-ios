@@ -21,10 +21,6 @@ struct Conversation: Hashable {
             deleteTime: deleteTime ?? self.deleteTime
         )
     }
-    
-    func shouldBeCreated() -> Bool {
-         state == .draft || state == .error
-    }
 }
 
 enum ConversationState: String, Equatable, Hashable {

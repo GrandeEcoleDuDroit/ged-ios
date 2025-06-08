@@ -14,16 +14,17 @@ struct MessageFeed: View {
                         if let index = messages.firstIndex(where: { $0.id == message.id }) {
                             let isSender = message.senderId != conversation.interlocutor.id
                             let isFirstMessage = index == 0
+                            let isLastMessage = index == messages.count - 1
                             let previousMessage = (index > 0) ? messages[index - 1] : nil
                             
                             let previousSenderId = previousMessage?.senderId ?? ""
                             let sameSender = message.senderId == previousSenderId
-                            let showSeenMessage = isFirstMessage && isSender && message.seen
-                            
+                            let showSeenMessage = isLastMessage && isSender && message.seen
+
                             let sameTime = if let previousMessage = previousMessage {
                                 sameDateTime(
                                     date1: previousMessage.date,
-                                    date2: messages[index - 1].date
+                                    date2: messages[index].date
                                 )
                             } else {
                                 false
@@ -32,7 +33,7 @@ struct MessageFeed: View {
                             let sameDay = if let previousMessage = previousMessage {
                                 sameDay(
                                     date1: previousMessage.date,
-                                    date2: messages[index - 1].date
+                                    date2: messages[index].date
                                 )
                             } else {
                                 false
@@ -66,7 +67,11 @@ struct MessageFeed: View {
                             )
                         }
                     }
-                    Spacer().frame(height: 4).id("last")
+                    Rectangle()
+                        .foregroundColor(.clear)
+                        .frame(height: 10)
+                        .id("last")
+
                 }
                 .rotationEffect(.degrees(360))
                 .onAppear {

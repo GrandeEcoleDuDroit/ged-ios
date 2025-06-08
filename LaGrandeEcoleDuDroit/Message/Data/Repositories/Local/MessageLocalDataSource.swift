@@ -161,13 +161,14 @@ class MessageLocalDataSource {
         }
     }
     
-    func updateSeenMessages(conversationId: String) async throws {
+    func updateSeenMessages(conversationId: String, userId: String) async throws {
         try await context.perform {
             let request = LocalMessage.fetchRequest()
             request.predicate = NSPredicate(
                 format: "%K == %@ AND %K == %@",
                 MessageField.conversationId, conversationId,
                 MessageField.seen, NSNumber(value: false),
+                MessageField.recipientId, userId
             )
             let unreadMessages = try self.context.fetch(request)
             guard !unreadMessages.isEmpty else {

@@ -17,6 +17,15 @@ struct ConversationDestination: View {
             onQueryChange: viewModel.onQueryChange,
             onDeleteConversationClick: viewModel.deleteConversation
         )
+        .navigationTitle(getString(.messages))
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(
+                    action: onCreateConversationClick,
+                    label: { Image(systemName: "plus") }
+                )
+            }
+        }
         .onReceive(viewModel.$event) { event in
             if let errorEvent = event as? ErrorEvent {
                 errorMessage = errorEvent.message
@@ -104,21 +113,12 @@ private struct ConversationView: View {
         }
         .searchable(
             text: $query,
-            placement: .navigationBarDrawer(displayMode: .always)
+            placement: .navigationBarDrawer(displayMode: .automatic)
         )
         .onChange(of: query) {
             onQueryChange($0)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .navigationTitle(getString(.messages))
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(
-                    action: onCreateConversationClick,
-                    label: { Image(systemName: "plus") }
-                )
-            }
-        }
         .alert(
             getString(.deleteConversationAlertMessage),
             isPresented: $showDeleteAlert

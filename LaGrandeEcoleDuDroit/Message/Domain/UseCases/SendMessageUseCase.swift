@@ -2,15 +2,21 @@ import Foundation
 class SendMessageUseCase {
     private let messageRepository: MessageRepository
     private let conversationRepository: ConversationRepository
+    private let networkMonitor: NetworkMonitor
     
-    init(messageRepository: MessageRepository, conversationRepository: ConversationRepository) {
+    init(
+        messageRepository: MessageRepository,
+        conversationRepository: ConversationRepository,
+        networkMonitor: NetworkMonitor
+    ) {
         self.messageRepository = messageRepository
         self.conversationRepository = conversationRepository
+        self.networkMonitor = networkMonitor
     }
     
     func execute(message: Message, conversation: Conversation, userId: String) {
         Task {
-            if (conversation.shouldBeCreated()) {
+            if (shouldCreateConversation(conversation: conversation)) {
                 await createConversation(conversation: conversation, userId: userId)
             }
             await createMessage(message: message)
@@ -33,5 +39,15 @@ class SendMessageUseCase {
         } catch {
             await messageRepository.updateLocalMessage(message: message.with(state: .error))
         }
+    }
+    
+    private func shouldCreateConversation(conversation: Conversation) -> Bool {
+        conversation.state == .draft ||
+        conversation.state == .error ||
+        (
+            conversation.state == .loading &&
+            conversation.createdAt.timeIntervalSinceNow < -10 &&
+            networkMonitor.isConnected
+        )
     }
 }

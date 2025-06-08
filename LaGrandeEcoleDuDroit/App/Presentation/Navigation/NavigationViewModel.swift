@@ -22,7 +22,6 @@ class NavigationViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isAuthenticated in
                 self?.uiState.startDestination = isAuthenticated ? .home : .authentication
-                self?.uiState.selectedDestination = .home
             }.store(in: &cancellables)
     }
     
@@ -30,21 +29,13 @@ class NavigationViewModel: ObservableObject {
         getUnreadConversationsCountUseCase.execute()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] number in
-                guard let self = self else { return }
-                self.uiState.topLevelDestinations = self.uiState.topLevelDestinations
-                    .map { destination in
-                        switch destination {
-                            case .message: .message(badges: number)
-                            default: destination
-                        }
-                    }
+                self?.uiState.badges[.message] = number
             }.store(in: &cancellables)
     }
     
     struct NavigationUiState {
         var startDestination: Route = .splash
-        var topLevelDestinations: [TopLevelDestination] = [.home, .message(), .profile]
-        var selectedDestination: TopLevelDestination = .home
+        var badges: [TopLevelDestination: Int] = [:]
     }
     
     enum Route {
