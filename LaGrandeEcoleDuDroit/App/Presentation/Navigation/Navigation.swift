@@ -40,6 +40,7 @@ struct MainNavigation: View {
             .environmentObject(tabBarVisibility)
             .tabItem {
                 Label(destination.label, systemImage: icon)
+                    .environment(\.symbolVariants, .none)
             }
             .badge(badgeCount)
             .tag(destination)
