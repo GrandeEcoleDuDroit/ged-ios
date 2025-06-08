@@ -11,7 +11,7 @@ struct ConversationDestination: View {
     var body: some View {
         ConversationView(
             conversations: viewModel.uiState.conversations,
-            query: viewModel.uiState.query,
+            query: $viewModel.uiState.query,
             onCreateConversationClick: onCreateConversationClick,
             onConversationClick: onConversationClick,
             onQueryChange: viewModel.onQueryChange,
@@ -37,7 +37,7 @@ struct ConversationDestination: View {
 
 private struct ConversationView: View {
     let conversations: [ConversationUi]?
-    let query: String
+    @Binding var query: String
     let onCreateConversationClick: () -> Void
     let onConversationClick: (ConversationUi) -> Void
     let onQueryChange: (String) -> Void
@@ -54,6 +54,7 @@ private struct ConversationView: View {
                 if conversations.isEmpty {
                     VStack {
                         Text(getString(.noConversation))
+                            .font(.callout)
                             .foregroundColor(.secondary)
                         
                         Button(
@@ -61,15 +62,16 @@ private struct ConversationView: View {
                             action: onCreateConversationClick
                         )
                         .fontWeight(.semibold)
+                        .font(.callout)
                         .foregroundColor(.gedPrimary)
                     }
-                    .padding(.top, GedSpacing.large)
+                    .padding(.top, GedSpacing.medium)
                     .padding(.horizontal, GedSpacing.extraSmall)
                 } else {
                     ScrollView {
                         VStack(spacing: 0) {
                             ForEach(conversations, id: \.id) { conversation in
-                                GetConversationItem(
+                                ConversationItem(
                                     conversation: conversation,
                                     onClick: { onConversationClick(conversation) },
                                     onLongClick: {
@@ -101,12 +103,12 @@ private struct ConversationView: View {
             }
         }
         .searchable(
-            text: Binding(
-                get: { query },
-                set: onQueryChange
-            ),
+            text: $query,
             placement: .navigationBarDrawer(displayMode: .always)
         )
+        .onChange(of: query) {
+            onQueryChange($0)
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .navigationTitle(getString(.messages))
         .toolbar {
@@ -134,34 +136,11 @@ private struct ConversationView: View {
     }
 }
 
-private struct GetConversationItem: View {
-    let conversation: ConversationUi
-    let onClick: () -> Void
-    let onLongClick: () -> Void
-    
-    var body: some View {
-        if !conversation.lastMessage.seen &&
-            conversation.lastMessage.senderId == conversation.interlocutor.id {
-            UnreadConversationItem(
-                conversation: conversation,
-                onClick: onClick,
-                onLongClick: onLongClick
-            )
-        } else {
-            ReadConversationItem(
-                conversation: conversation,
-                onClick: onClick,
-                onLongClick: onLongClick
-            )
-        }
-    }
-}
-
 #Preview {
     NavigationStack {
         ConversationView(
-            conversations: conversationsUiFixture,
-            query: "",
+            conversations: [],
+            query: .constant(""),
             onCreateConversationClick: {},
             onConversationClick: {_ in},
             onQueryChange: {_ in},

@@ -1,34 +1,34 @@
-enum ConversationField : String, CodingKey {
-    case conversationId = "conversationId"
-    case createdAt = "createdAt"
-    case deleteTime = "deleteTime"
+struct ConversationField {
+    static let conversationId = "conversationId"
+    static let createdAt = "createdAt"
+    static let deleteTime = "deleteTime"
     
-    enum Remote : String, CodingKey{
-        case participants = "participants"
+    struct Remote {
+        static let participants = "participants"
     }
     
-    enum Local : String, CodingKey{
-        case state = "state"
-        case interlocutorId = "interlocutorId"
-        case interlocutorFirstName = "interlocutorFirstName"
-        case interlocutorLastName = "interlocutorLastName"
-        case interlocutorEmail = "interlocutorEmail"
-        case interlocutorSchoolLevel = "interlocutorSchoolLevel"
-        case interlocutorIsMember = "interlocutorIsMember"
-        case interlocutorProfilePictureFileName = "interlocutorProfilePictureFileName"
+    struct Local {
+        static let state = "state"
+        static let interlocutorId = "interlocutorId"
+        static let interlocutorFirstName = "interlocutorFirstName"
+        static let interlocutorLastName = "interlocutorLastName"
+        static let interlocutorEmail = "interlocutorEmail"
+        static let interlocutorSchoolLevel = "interlocutorSchoolLevel"
+        static let interlocutorIsMember = "interlocutorIsMember"
+        static let interlocutorProfilePictureFileName = "interlocutorProfilePictureFileName"
     }
 }
 
-enum MessageField : String, CodingKey {
-    case messageId = "messageId"
-    case conversationId = "conversationId"
-    case senderId = "senderId"
-    case recipientId = "recipientId"
-    case content = "content"
-    case timestamp = "timestamp"
-    case seen = "seen"
+struct MessageField {
+    static let messageId = "messageId"
+    static let conversationId = "conversationId"
+    static let senderId = "senderId"
+    static let recipientId = "recipientId"
+    static let content = "content"
+    static let timestamp = "timestamp"
+    static let seen = "seen"
     
-    enum Local : String, CodingKey {
-        case state = "state"
+    struct Local {
+        static let state = "state"
     }
 }

@@ -18,28 +18,24 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
     ) {
         self.announcementLocalDataSource = announcementLocalDataSource
         self.announcementRemoteDataSource = announcementRemoteDataSource
-        getLocalAnnouncements()
+        loadAnnouncements()
         listen()
     }
     
     private func listen() {
         announcementLocalDataSource.listenDataChange()
             .sink { [weak self] _ in
-                self?.getLocalAnnouncements()
+                self?.loadAnnouncements()
             }.store(in: &cancellables)
     }
     
-    private func getLocalAnnouncements() {
-        announcementsPublisher.send(announcementLocalDataSource.getAnnouncements())
-    }
-    
-    func getAnnouncement(announcementId: String) -> Announcement? {
-        announcementsPublisher.value.first { $0.id == announcementId }
+    private func loadAnnouncements() {
+        try? announcementsPublisher.send(announcementLocalDataSource.getAnnouncements())
     }
     
     func getAnnouncementPublisher(announcementId: String) -> AnyPublisher<Announcement?, Never> {
-        announcementsPublisher.map {
-            $0.first { $0.id == announcementId }
+        announcementsPublisher.map { announcements in
+            announcements.first { $0.id == announcementId }
         }.eraseToAnyPublisher()
     }
     
@@ -54,18 +50,18 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
             .filter { $0.state == .published }
             .filter { !remoteAnnouncements.contains($0) }
         announcementToDelete.forEach {
-            announcementLocalDataSource.deleteAnnouncement(announcementId: $0.id)
+            try? announcementLocalDataSource.deleteAnnouncement(announcementId: $0.id)
         }
         
         let announcementToUpsert = remoteAnnouncements
             .filter { !announcementsPublisher.value.contains($0) }
         announcementToUpsert.forEach {
-            announcementLocalDataSource.upsertAnnouncement(announcement: $0)
+            try? announcementLocalDataSource.upsertAnnouncement(announcement: $0)
         }
     }
     
     func createLocalAnnouncement(announcement: Announcement) {
-        announcementLocalDataSource.insertAnnouncement(announcement: announcement)
+        try? announcementLocalDataSource.insertAnnouncement(announcement: announcement)
     }
     
     func createRemoteAnnouncement(announcement: Announcement) async throws {
@@ -80,7 +76,7 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
         try await handleNetworkException(
             block: {
                 try await announcementRemoteDataSource.updateAnnouncement(announcement: announcement)
-                announcementLocalDataSource.updateAnnouncement(announcement: announcement)
+                try? announcementLocalDataSource.updateAnnouncement(announcement: announcement)
             },
             tag: tag,
             message: "Failed to update announcement"
@@ -88,14 +84,14 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
     }
     
     func updateLocalAnnouncement(announcement: Announcement) {
-        announcementLocalDataSource.updateAnnouncement(announcement: announcement)
+        try? announcementLocalDataSource.updateAnnouncement(announcement: announcement)
     }
     
     func deleteAnnouncement(announcementId: String) async throws {
         try await handleNetworkException(
             block: {
                 try await announcementRemoteDataSource.deleteAnnouncement(announcementId: announcementId)
-                announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
+                try? announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
             },
             tag: tag,
             message: "Failed to delete announcement"
@@ -103,6 +99,6 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
     }
     
     func deleteLocalAnnouncement(announcementId: String) {
-        announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
+        try? announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
     }
 }

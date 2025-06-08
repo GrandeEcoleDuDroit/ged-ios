@@ -15,32 +15,16 @@ extension RemoteConversation {
     
     func toMap() -> [String: Any] {
         var data = [
-            ConversationField.conversationId.rawValue: conversationId,
-            ConversationField.Remote.participants.rawValue: participants,
-            ConversationField.createdAt.rawValue: createdAt
-        ] as [String : Any]
-        deleteTime.map { data[ConversationField.deleteTime.rawValue] = $0 }
+            ConversationField.conversationId: conversationId,
+            ConversationField.Remote.participants: participants,
+            ConversationField.createdAt: createdAt
+        ] as [String: Any]
+        deleteTime.map { data[ConversationField.deleteTime] = $0 }
         return data
     }
 }
 
 extension Conversation {
-    func buildLocal(context: NSManagedObjectContext) {
-        let localConversation = LocalConversation(context: context)
-        localConversation.conversationId = id
-        localConversation.interlocutorId = interlocutor.id
-        localConversation.interlocutorFirstName = interlocutor.firstName
-        localConversation.interlocutorLastName = interlocutor.lastName
-        localConversation.interlocutorEmail = interlocutor.email
-        localConversation.interlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
-        localConversation.interlocutorIsMember = interlocutor.isMember
-        localConversation.interlocutorProfilePictureFileName = UrlUtils.getFileNameFromUrl(
-            url: interlocutor.profilePictureFileName
-        )
-        localConversation.createdAt = createdAt
-        localConversation.state = state.rawValue
-    }
-    
     func toLocal() -> LocalConversation? {
         let localConversation = LocalConversation()
         localConversation.conversationId = id

@@ -1,6 +1,6 @@
 import Foundation
 
-class GetLocalConversationUseCase {
+class GetConversationUseCase {
     private let userRepository: UserRepository
     private let conversationRepository: ConversationRepository
     
@@ -17,11 +17,11 @@ class GetLocalConversationUseCase {
             return conversation
         }
         
-        guard let user = userRepository.currentUser else {
+        if let user = userRepository.currentUser {
+            return generateNewConversation(userId: user.id, interlocutor: interlocutor)
+        } else {
             throw NSError()
         }
-        
-        return generateNewConversation(userId: user.id, interlocutor: interlocutor)
     }
 
     

@@ -10,11 +10,12 @@ class MainInjection: DependencyInjectionContainer {
     }
     
     private func registerDependencies() {
-        container.register(DataListeningUseCase.self) { resolver in
-            DataListeningUseCase(
-                listenRemoteConversationsMessagesUseCase: MessageInjection.shared.resolve(ListenRemoteConversationsMessagesUseCase.self)
+        container.register(ListenDataUseCase.self) { resolver in
+            ListenDataUseCase(
+                listenRemoteMessagesUseCase: MessageInjection.shared.resolve(ListenRemoteMessagesUseCase.self),
+                listenRemoteConversationUseCase: MessageInjection.shared.resolve(ListenRemoteConversationUseCase.self)
             )
-        }
+        }.inObjectScope(.container)
         
         container.register(ClearDataUseCase.self) { resolver in
             ClearDataUseCase(
@@ -22,7 +23,7 @@ class MainInjection: DependencyInjectionContainer {
                 conversationRepository: MessageInjection.shared.resolve(ConversationRepository.self),
                 messageRepository: MessageInjection.shared.resolve(MessageRepository.self)
             )
-        }
+        }.inObjectScope(.container)
         
         container.register(NavigationViewModel.self) { resolver in
             NavigationViewModel(
@@ -36,10 +37,10 @@ class MainInjection: DependencyInjectionContainer {
             MainViewModel(
                 authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
-                dataListeningUseCase: resolver.resolve(DataListeningUseCase.self)!,
+                listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!
             )
-        }.inObjectScope(.weak)
+        }
     }
     
     func resolve<T>(_ type: T.Type) -> T {
@@ -82,7 +83,7 @@ class MainInjection: DependencyInjectionContainer {
             MainViewModel(
                 authenticationRepository: authenticationMockContainer.resolve(AuthenticationRepository.self)!,
                 userRepository: mockContainer.resolve(UserRepository.self)!,
-                dataListeningUseCase: resolver.resolve(DataListeningUseCase.self)!,
+                listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!
             )
         }

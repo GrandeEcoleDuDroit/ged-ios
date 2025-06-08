@@ -14,6 +14,18 @@ extension RemoteMessage {
             state: .sent
         )
     }
+    
+    func toMap() -> [String: Any] {
+        [
+            MessageField.messageId: messageId,
+            MessageField.conversationId: conversationId,
+            MessageField.senderId: senderId,
+            MessageField.recipientId: recipientId,
+            MessageField.content: content,
+            MessageField.timestamp: timestamp,
+            MessageField.seen: seen
+        ]
+    }
 }
 
 extension Message {
@@ -28,24 +40,12 @@ extension Message {
             seen: seen
         )
     }
-    
-    func buildLocal(context: NSManagedObjectContext) {
-        let localMessage = LocalMessage(context: context)
-        localMessage.messageId = Int32(id)
-        localMessage.conversationId = conversationId
-        localMessage.senderId = senderId
-        localMessage.recipientId = recipientId
-        localMessage.content = content
-        localMessage.date = date
-        localMessage.seen = seen
-        localMessage.state = state.rawValue
-    }
 }
 
 extension LocalMessage {
     func toMessage() -> Message? {
         guard let content = content,
-              let date = date,
+              let date = timestamp,
               let senderId = senderId,
               let recipientId = recipientId,
               let conversationId = conversationId,
@@ -55,7 +55,7 @@ extension LocalMessage {
         }
         
         return Message(
-            id: messageId.toInt(),
+            id: messageId,
             senderId: senderId,
             recipientId: recipientId,
             conversationId: conversationId,

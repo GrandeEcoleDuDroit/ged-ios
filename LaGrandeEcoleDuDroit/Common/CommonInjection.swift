@@ -10,55 +10,62 @@ class CommonInjection: DependencyInjectionContainer {
     }
     
     private func registerDependencies() {        
-        container.register(UserFirestoreApi.self) { _ in UserFirestoreApiImpl() }
-            .inObjectScope(.container)
+        container.register(UserFirestoreApi.self) { _ in
+            UserFirestoreApiImpl()
+        }.inObjectScope(.container)
         
-        container.register(UserOracleApi.self) { _ in UserOracleApiImpl() }
-            .inObjectScope(.container)
+        container.register(UserOracleApi.self) { _ in
+            UserOracleApiImpl()
+        }.inObjectScope(.container)
         
-        container.register(ImageApi.self) { _ in ImageApiImpl() }
+        container.register(ImageApi.self) { _ in
+            ImageApiImpl()
+        }.inObjectScope(.container)
         
-        container.register(UserLocalDataSource.self) { _ in UserLocalDataSource() }
-            .inObjectScope(.container)
+        container.register(UserLocalDataSource.self) { _ in
+            UserLocalDataSource()
+        }.inObjectScope(.container)
         
         container.register(UserRemoteDataSource.self) { resolver in
             UserRemoteDataSource(
                 userFirestoreApi: resolver.resolve(UserFirestoreApi.self)!,
                 userOracleApi: resolver.resolve(UserOracleApi.self)!
             )
-        }
-        .inObjectScope(.container)
+        }.inObjectScope(.container)
         
-        container.register(NetworkMonitor.self) { _ in NetworkMonitorImpl() }
-            .inObjectScope(.container)
+        container.register(NetworkMonitor.self) { _ in
+            NetworkMonitorImpl()
+        }.inObjectScope(.container)
         
         container.register(ImageRemoteDataSource.self) { resolver in
             ImageRemoteDataSource(imageApi: resolver.resolve(ImageApi.self)!)
-        }
+        }.inObjectScope(.container)
         
-        container.register(GedDatabaseContainer.self) { _ in GedDatabaseContainer() }
-            .inObjectScope(.container)
+        container.register(GedDatabaseContainer.self) { _ in
+            GedDatabaseContainer()
+        }.inObjectScope(.container)
         
         container.register(UserRepository.self) { resolver in
             UserRepositoryImpl(
                 userLocalDataSource: resolver.resolve(UserLocalDataSource.self)!,
                 userRemoteDataSource: resolver.resolve(UserRemoteDataSource.self)!
             )
-        }
-        .inObjectScope(.container)
+        }.inObjectScope(.container)
         
         container.register(ImageRepository.self) { resolver in
             ImageRepositoryImpl(imageRemoteDataSource: resolver.resolve(ImageRemoteDataSource.self)!)
-        }
+        }.inObjectScope(.container)
         
-        container.register(GenerateIdUseCase.self) { _ in GenerateIdUseCase() }
+        container.register(GenerateIdUseCase.self) { _ in
+            GenerateIdUseCase()
+        }.inObjectScope(.container)
         
         container.register(UpdateProfilePictureUseCase.self) { resolver in
             UpdateProfilePictureUseCase(
                 userRepository: resolver.resolve(UserRepository.self)!,
                 imageRepository: resolver.resolve(ImageRepository.self)!
             )
-        }
+        }.inObjectScope(.container)
     }
     
     func resolve<T>(_ type: T.Type) -> T {

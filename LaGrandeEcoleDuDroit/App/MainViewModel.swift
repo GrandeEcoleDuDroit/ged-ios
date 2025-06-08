@@ -6,33 +6,33 @@ private let tag = String(describing: MainViewModel.self)
 class MainViewModel: ObservableObject {
     private let authenticationRepository: AuthenticationRepository
     private let userRepository: UserRepository
-    private let dataListeningUseCase: DataListeningUseCase
+    private let listenDataUseCase: ListenDataUseCase
     private let clearDataUseCase: ClearDataUseCase
     private var cancellables: Set<AnyCancellable> = []
     
     init(
         authenticationRepository: AuthenticationRepository,
         userRepository: UserRepository,
-        dataListeningUseCase: DataListeningUseCase,
+        listenDataUseCase: ListenDataUseCase,
         clearDataUseCase: ClearDataUseCase
     ) {
         self.authenticationRepository = authenticationRepository
         self.userRepository = userRepository
-        self.dataListeningUseCase = dataListeningUseCase
+        self.listenDataUseCase = listenDataUseCase
         self.clearDataUseCase = clearDataUseCase
         updateDataListening()
     }
     
     private func updateDataListening() {
         authenticationRepository.authenticated
-            .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.global(qos: .background))
             .sink { [weak self] isAuthenticated in
                 if isAuthenticated {
-                    self?.dataListeningUseCase.start()
+                    self?.listenDataUseCase.start()
                 } else {
-                    self?.dataListeningUseCase.stop()
+                    self?.listenDataUseCase.stop()
                     Task { await self?.clearDataUseCase.execute() }
-                }                
+                }
             }.store(in: &cancellables)
     }
     
@@ -49,7 +49,8 @@ class MainViewModel: ObservableObject {
                             }
                         } else {
                             self?.authenticationRepository.logout()
-                            self?.userRepository.deleteCurrentUser()
+                            self?.listenDataUseCase.stop()
+                            Task { await self?.clearDataUseCase.execute() }
                         }
                     } catch {
                         e(tag, "Error while checking current user: \(error)", error)

@@ -24,7 +24,6 @@ class MessageApiImpl: MessageApi {
                 }
                 
                 snapshot?.documents
-                    .filter({ !$0.metadata.isFromCache })
                     .compactMap({ try? $0.data(as: RemoteMessage.self) })
                     .forEach {
                         subject.send($0)
@@ -35,34 +34,27 @@ class MessageApiImpl: MessageApi {
         return subject.eraseToAnyPublisher()
     }
     
-    func createMessage(remoteMessage: RemoteMessage) async throws {
+    func createMessage(conversationId: String, messageId: String, data: [String: Any]) async throws {
         try await conversationCollection
-            .document(remoteMessage.conversationId)
+            .document(conversationId)
             .collection(messageTableName)
-            .document(remoteMessage.messageId.toString())
-            .updateData([MessageField.seen: remoteMessage.seen])
+            .document(messageId)
+            .setData(data, merge: true)
     }
     
-    func updateSeenMessage(remoteMessage: RemoteMessage) async throws {
-        try await conversationCollection
+    func updateSeenMessage(remoteMessage: RemoteMessage) throws {
+        conversationCollection
             .document(remoteMessage.conversationId)
             .collection(messageTableName)
             .document(remoteMessage.messageId.toString())
-            .updateData([MessageDataFields.seen: remoteMessage.seen])
+            .updateData([MessageField.seen: remoteMessage.seen]) { completion in
+                completion.map { error in
+                    e("MessageApiImpl", error.localizedDescription)
+                }
+            }
     }
     
     func stopListeningMessages() {
         messageListeners.forEach { $0.remove() }
     }
 }
-
-extension CollectionReference {
-    func withOffsetTime(_ offsetTime: Timestamp?) -> Query {
-        if let offsetTime = offsetTime {
-            self.whereField(MessageField.timestamp.rawValue, isGreaterThan: offsetTime)
-        } else {
-            self
-        }
-    }
-}
-

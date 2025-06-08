@@ -2,9 +2,7 @@ import Combine
 
 protocol AnnouncementRepository {
     var announcements: AnyPublisher<[Announcement], Never> { get }
-    
-    func getAnnouncement(announcementId: String) -> Announcement?
-        
+            
     func getAnnouncementPublisher(announcementId: String) -> AnyPublisher<Announcement?, Never>
         
     func refreshAnnouncements() async throws

@@ -10,8 +10,9 @@ class AuthenticationInjection: DependencyInjectionContainer {
     }
     
     private func registerDependencies() {
-        container.register(FirebaseAuthApi.self) { _ in FirebaseAuthApiImpl() }
-            .inObjectScope(.container)
+        container.register(FirebaseAuthApi.self) { _ in
+            FirebaseAuthApiImpl()
+        }.inObjectScope(.container)
         
         container.register(FirebaseAuthenticationRepository.self) { resolver in
             FirebaseAuthenticationRepositoryImpl(firebaseAuthApi: resolver.resolve(FirebaseAuthApi.self)!)
@@ -34,32 +35,31 @@ class AuthenticationInjection: DependencyInjectionContainer {
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
             )
-        }
+        }.inObjectScope(.container)
     
         container.register(FirstRegistrationViewModel.self) { resolver in
             FirstRegistrationViewModel()
         }
-        .inObjectScope(.weak)
         
         container.register(SecondRegistrationViewModel.self) { resolver in
             SecondRegistrationViewModel()
-        }.inObjectScope(.weak)
+        }
         
         container.register(AuthenticationViewModel.self) { resolver in
             AuthenticationViewModel(
                 loginUseCase: resolver.resolve(LoginUseCase.self)!
             )
-        }.inObjectScope(.weak)
+        }
         
         container.register(FirstRegistrationViewModel.self) { resolver in
             FirstRegistrationViewModel()
-        }.inObjectScope(.weak)
+        }
         
         container.register(ThirdRegistrationViewModel.self) { resolver in
             ThirdRegistrationViewModel(
                 registerUseCase: resolver.resolve(RegisterUseCase.self)!
             )
-        }.inObjectScope(.weak)
+        }
     }
     
     func resolve<T>(_ type: T.Type) -> T {

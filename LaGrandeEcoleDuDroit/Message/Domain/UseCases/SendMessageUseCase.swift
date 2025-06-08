@@ -8,11 +8,10 @@ class SendMessageUseCase {
         self.conversationRepository = conversationRepository
     }
     
-    func execute(conversation: Conversation, user: User, content: String) {
-        let message = newMessage(conversation: conversation, user: user, content: content)
+    func execute(message: Message, conversation: Conversation, userId: String) {
         Task {
             if (conversation.shouldBeCreated()) {
-                await createConversation(conversation: conversation, userId: user.id)
+                await createConversation(conversation: conversation, userId: userId)
             }
             await createMessage(message: message)
         }
@@ -20,32 +19,19 @@ class SendMessageUseCase {
     
     private func createConversation(conversation: Conversation, userId: String) async {
         do {
-            try await conversationRepository.upsertLocalConversation(conversation: conversation.with(state: .loading))
-            try await conversationRepository.createConversation(conversation: conversation, userId: userId)
+            try await conversationRepository.createConversation(conversation:  conversation.with(state: .loading), userId: userId)
+            await conversationRepository.updateLocalConversation(conversation: conversation.with(state: .created))
         } catch {
-            try? await conversationRepository.updateLocalConversation(conversation: conversation.with(state: .error))
+            await conversationRepository.updateLocalConversation(conversation: conversation.with(state: .error))
         }
     }
     
     private func createMessage(message: Message) async {
         do {
-            try await messageRepository.upsertLocalMessage(message: message.with(state: .loading))
-            try await messageRepository.createMessage(message: message.with(state: .sent))
+            try await messageRepository.createMessage(message: message.with(state: .loading))
+            await messageRepository.updateLocalMessage(message: message.with(state: .sent))
         } catch {
-            try? await messageRepository.upsertLocalMessage(message: message.with(state: .error))
+            await messageRepository.updateLocalMessage(message: message.with(state: .error))
         }
-    }
-    
-    private func newMessage(conversation: Conversation, user: User, content: String) -> Message {
-        Message(
-            id: GenerateIdUseCase.intId(),
-            senderId: user.id,
-            recipientId: conversation.interlocutor.id,
-            conversationId: conversation.id,
-            content: content,
-            date: Date(),
-            seen: false,
-            state: .draft
-        )
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
 
 struct Message: Hashable {
-    let id: Int
+    let id: Int64
     let senderId: String
     let recipientId: String
     let conversationId: String
@@ -11,7 +11,7 @@ struct Message: Hashable {
     let state: MessageState
     
     func with(
-        id: Int? = nil,
+        id: Int64? = nil,
         senderId: String? = nil,
         recipientId: String? = nil,
         conversationId: String? = nil,

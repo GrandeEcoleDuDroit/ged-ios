@@ -5,7 +5,7 @@ extension View {
         self
             .contentShape(Rectangle())
             .background(
-                Color(.lightGrey)
+                Color(.click)
                     .opacity(isClicked.wrappedValue ? 1 : 0)
                     .animation(.easeInOut(duration: 0.1), value: isClicked.wrappedValue)
             )
@@ -22,7 +22,7 @@ extension View {
         self
             .contentShape(Rectangle())
             .background(
-                Color(.lightGrey)
+                Color(.click)
                     .opacity(isClicked.wrappedValue ? 1 : 0)
                     .animation(.easeInOut(duration: 0.1), value: isClicked.wrappedValue)
             )
@@ -47,7 +47,7 @@ extension View {
                 }
             )
             .background(
-                Color(.lightGrey)
+                Color(.click)
                     .opacity(isClicked.wrappedValue ? 1 : 0)
                     .animation(.easeInOut(duration: 0.1), value: isClicked.wrappedValue)
             )

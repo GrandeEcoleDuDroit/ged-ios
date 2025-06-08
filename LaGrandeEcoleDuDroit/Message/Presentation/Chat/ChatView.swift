@@ -14,8 +14,7 @@ struct ChatDestination: View {
     ) {
         self.conversation = conversation
         _viewModel = StateObject(
-            wrappedValue: MessageInjection.shared.resolveWithMock()
-                .resolve(ChatViewModel.self, argument: conversation)!
+            wrappedValue: MessageInjection.shared.resolve(ChatViewModel.self, arguments: conversation)!
         )
         self.onBackClick = onBackClick
     }
@@ -23,7 +22,7 @@ struct ChatDestination: View {
     var body: some View {
         ChatView(
             conversation: conversation,
-            messages: viewModel.uiState.messages.values.map(\.self),
+            messages: viewModel.uiState.messages.values.map(\.self).sorted { $0.date < $1.date },
             text: $viewModel.uiState.text,
             onSendMessagesClick: viewModel.sendMessage,
             onBackClick: onBackClick

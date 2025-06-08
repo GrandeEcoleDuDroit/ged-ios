@@ -21,10 +21,7 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     ) {
         self.firebaseAuthenticationRepository = firebaseAuthenticationRepository
         self.authenticationLocalDataSource = authenticationLocalDataSource
-        authenticatedPublisher.send(
-            authenticationLocalDataSource.isAuthenticated() &&
-                firebaseAuthenticationRepository.isAuthenticated()
-        )
+        initAuthentication()
     }
     
     func loginWithEmailAndPassword(email: String, password: String) async throws {
@@ -38,7 +35,6 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     func logout() {
         firebaseAuthenticationRepository.logout()
         setAuthenticated(false)
-        authenticatedPublisher.send(false)
     }
     
     func setAuthenticated(_ isAuthenticated: Bool) {
@@ -48,5 +44,12 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     
     func resetPassword(email: String) async throws {
         try await firebaseAuthenticationRepository.resetPassword(email: email)
+    }
+    
+    private func initAuthentication() {
+        authenticatedPublisher.send(
+            authenticationLocalDataSource.isAuthenticated() &&
+                firebaseAuthenticationRepository.isAuthenticated()
+        )
     }
 }

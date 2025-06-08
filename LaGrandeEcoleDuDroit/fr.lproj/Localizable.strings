@@ -20,6 +20,7 @@
 "today" = "Aujourd'hui";
 "yester" = "Hier";
 "home" = "Accueil";
+"sending" = "Envoi...";
 
 // Common error
 "mandatory_field_error" = "Champs obligatoire.";

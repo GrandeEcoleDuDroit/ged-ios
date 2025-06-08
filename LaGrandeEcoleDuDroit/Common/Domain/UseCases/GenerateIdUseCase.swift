@@ -7,11 +7,11 @@ class GenerateIdUseCase {
         return uniqueID
     }
     
-    static func intId() -> Int {
+    static func intId() -> Int64 {
         let uuid = UUID().uuid
         let raw = withUnsafeBytes(of: uuid) { ptr in
-            ptr.load(as: UInt64.self)
+            ptr.load(as: Int64.self)
         }
-        return Int(raw % UInt64(Int.max))
+        return abs(raw)
     }
 }

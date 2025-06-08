@@ -3,8 +3,6 @@ import Combine
 import CoreData
 import os
 
-private let tag = String(describing: AnnouncementLocalDataSource.self)
-
 class AnnouncementLocalDataSource {
     private let container: NSPersistentContainer
     private let context: NSManagedObjectContext
@@ -15,48 +13,51 @@ class AnnouncementLocalDataSource {
     }
     
     func listenDataChange() -> AnyPublisher<Notification, Never> {
-        NotificationCenter.default.publisher(for: .NSManagedObjectContextObjectsDidChange, object: context)
+        NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: context)
             .debounce(for: .milliseconds(100), scheduler: RunLoop.current)
             .eraseToAnyPublisher()
     }
     
-    func getAnnouncements() -> [Announcement] {
+    func getAnnouncements() throws -> [Announcement] {
         let fetchRequest = LocalAnnouncement.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(
-            key: AnnouncementField.announcementDate.rawValue,
+            key: AnnouncementField.announcementDate,
             ascending: false
         )]
-        let result = (try? context.fetch(fetchRequest)) ?? []
-        return result.compactMap { $0.toAnnouncement() }
+        
+        return try context.fetch(fetchRequest).compactMap { $0.toAnnouncement() }
     }
     
-    func insertAnnouncement(announcement: Announcement) {
-        try? self.insert(announcement: announcement)
+    func insertAnnouncement(announcement: Announcement) throws {
+        try insert(announcement: announcement)
     }
     
-    func upsertAnnouncement(announcement: Announcement) {
+    func upsertAnnouncement(announcement: Announcement) throws {
         let request = LocalAnnouncement.fetchRequest()
-        request.predicate = NSPredicate(format: "\(AnnouncementField.announcementId.rawValue) == %@", announcement.id)
+        request.predicate = NSPredicate(
+            format: "\(AnnouncementField.announcementId) == %@",
+            announcement.id
+        )
         
         if let localAnnouncement = try? context.fetch(request).first {
-            try? self.update(localAnnouncement: localAnnouncement, announcement: announcement)
+            try update(localAnnouncement: localAnnouncement, announcement: announcement)
         } else {
-            try? self.insert(announcement: announcement)
+            try insert(announcement: announcement)
         }
     }
     
-    func updateAnnouncement(announcement: Announcement) {
-        try? self.update(announcement: announcement)
+    func updateAnnouncement(announcement: Announcement) throws {
+        try update(announcement: announcement)
     }
     
-    func deleteAnnouncement(announcementId: String) {
+    func deleteAnnouncement(announcementId: String) throws {
         let request = LocalAnnouncement.fetchRequest()
         request.predicate = NSPredicate(
-            format: "\(AnnouncementField.announcementId.rawValue) == %@",
+            format: "\(AnnouncementField.announcementId) == %@",
             announcementId
         )
         
-        try? context.fetch(request).first.map {
+        try context.fetch(request).first.map {
             context.delete($0)
             try context.save()
         }
@@ -69,9 +70,11 @@ class AnnouncementLocalDataSource {
     
     private func update(announcement: Announcement) throws {
         let request = LocalAnnouncement.fetchRequest()
-        request.predicate = NSPredicate(format: "\(AnnouncementField.announcementId.rawValue) == %@", announcement.id)
-        let localAnnouncement = try context.fetch(request).first
-        localAnnouncement?.modify(announcement: announcement)
+        request.predicate = NSPredicate(
+            format: "\(AnnouncementField.announcementId) == %@",
+            announcement.id
+        )
+        try context.fetch(request).first?.modify(announcement: announcement)
         try context.save()
     }
     
