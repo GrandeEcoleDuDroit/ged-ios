@@ -22,7 +22,6 @@ class ConversationViewModel: ObservableObject {
         self.getConversationsUiUseCase = getConversationsUiUseCase
         self.deleteConversationUseCase = deleteConversationUseCase
         listenConversations()
-        print("\(tag) init")
     }
     
     func onQueryChange(query: String) {
@@ -53,7 +52,9 @@ class ConversationViewModel: ObservableObject {
         getConversationsUiUseCase.execute()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] conversations in
-                self?.uiState.conversations = conversations
+                self?.uiState.conversations = conversations.sorted(
+                    by: { $0.lastMessage.date > $1.lastMessage.date }
+                )
             }.store(in: &cancellables)
     }
     
@@ -71,9 +72,5 @@ class ConversationViewModel: ObservableObject {
         var conversations: [ConversationUi] = []
         var query: String = ""
         var loading = true
-    }
-    
-    deinit {
-        print("\(tag) deinit")
     }
 }

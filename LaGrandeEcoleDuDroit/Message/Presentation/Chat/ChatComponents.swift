@@ -89,7 +89,7 @@ private struct MessageText: View {
                 .foregroundStyle(dateColor)
                 .font(.caption)
         }
-        .padding(.vertical, GedSpacing.smallMedium)
+        .padding(.vertical, GedSpacing.small)
         .padding(.horizontal, GedSpacing.medium)
         .background(backgroundColor)
         .clipShape(.rect(cornerRadius: 24))

@@ -9,10 +9,8 @@ struct Navigation: View {
         ZStack {
             switch viewModel.uiState.startDestination {
                 case .authentication: AuthenticationNavigation()
-                case .home: MainNavigation(
-                    topLevelDestinations: viewModel.uiState.topLevelDestinations,
-                    selectedTopLevelDestination: $viewModel.uiState.selectedDestination
-                )
+                case .home: MainNavigation()
+                        .environmentObject(viewModel)
                 case .splash: SplashScreen()
             }
         }
@@ -20,36 +18,43 @@ struct Navigation: View {
     }
 }
 
-private struct MainNavigation: View {
-    let topLevelDestinations: [TopLevelDestination]
-    @Binding var selectedTopLevelDestination: TopLevelDestination
+struct MainNavigation: View {
+    @EnvironmentObject var viewModel: NavigationViewModel
+    @State var selectedTab: TopLevelDestination = .home
     @StateObject private var tabBarVisibility = TabBarVisibility()
 
     var body: some View {
-        TabView(selection: $selectedTopLevelDestination) {
-            ForEach(topLevelDestinations, id: \.self) { destination in
-                Destination(destination: destination)
-                    .environmentObject(tabBarVisibility)
-                    .tabItem {
-                        let icon = selectedTopLevelDestination == destination ? destination.filledIcon : destination.outlinedIcon
-                        Label(destination.label, systemImage: icon)
-                            .environment(\.symbolVariants, .none)
-                    }
-                    .tag(destination)
-                    .toolbar(tabBarVisibility.show ? .visible : .hidden, for: .tabBar)
+        TabView(selection: $selectedTab) {
+            ForEach(TopLevelDestination.allCases, id: \.self) { destination in
+                tabView(for: destination)
             }
         }
     }
-}
 
-private struct Destination: View {
-    let destination: TopLevelDestination
+    @ViewBuilder
+    private func tabView(for destination: TopLevelDestination) -> some View {
+        let icon = selectedTab == destination ? destination.filledIcon : destination.outlinedIcon
+        let badgeCount = viewModel.uiState.badges[destination] ?? 0
 
-    var body: some View {
+        destinationView(for: destination)
+            .environmentObject(tabBarVisibility)
+            .tabItem {
+                Label(destination.label, systemImage: icon)
+            }
+            .badge(badgeCount)
+            .tag(destination)
+            .toolbar(tabBarVisibility.show ? .visible : .hidden, for: .tabBar)
+    }
+
+    @ViewBuilder
+    private func destinationView(for destination: TopLevelDestination) -> some View {
         switch destination {
-            case .home: NewsNavigation()
-            case let .message(badges): MessageNavigation().badge(badges)
-            case .profile: ProfileNavigation()
+        case .home:
+            NewsNavigation()
+        case .message:
+            MessageNavigation()
+        case .profile:
+            ProfileNavigation()
         }
     }
 }
@@ -59,8 +64,8 @@ class TabBarVisibility: ObservableObject {
 }
 
 #Preview {
-    MainNavigation(
-        topLevelDestinations: [.home, .message(badges: 3), .profile],
-        selectedTopLevelDestination: .constant(.home)
-    )
+    MainNavigation()
+        .environmentObject(
+            MainInjection.shared.resolveWithMock().resolve(NavigationViewModel.self)!
+        )
 }

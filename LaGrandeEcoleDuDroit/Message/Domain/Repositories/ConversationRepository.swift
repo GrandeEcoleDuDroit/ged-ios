@@ -2,7 +2,7 @@ import Combine
 import Foundation
 
 protocol ConversationRepository {
-    var conversations: AnyPublisher<[String: Conversation], Never> { get }
+    var conversationChanges: AnyPublisher<CoreDataChange<Conversation>, Never> { get }
     
     func getConversations() async -> [Conversation]
     

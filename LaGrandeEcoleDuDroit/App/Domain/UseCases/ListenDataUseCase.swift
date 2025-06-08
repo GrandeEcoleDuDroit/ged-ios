@@ -1,22 +1,22 @@
 class ListenDataUseCase {
-    private let listenRemoteConversationUseCase: ListenRemoteConversationUseCase
+    private let listenRemoteConversationsUseCase: ListenRemoteConversationsUseCase
     private let listenRemoteMessagesUseCase: ListenRemoteMessagesUseCase
     
     init(
         listenRemoteMessagesUseCase: ListenRemoteMessagesUseCase,
-        listenRemoteConversationUseCase: ListenRemoteConversationUseCase
+        listenRemoteConversationsUseCase: ListenRemoteConversationsUseCase
     ) {
         self.listenRemoteMessagesUseCase = listenRemoteMessagesUseCase
-        self.listenRemoteConversationUseCase = listenRemoteConversationUseCase
+        self.listenRemoteConversationsUseCase = listenRemoteConversationsUseCase
     }
     
     func start() {
-        listenRemoteConversationUseCase.start()
-//        listenRemoteMessagesUseCase.start()
+        listenRemoteConversationsUseCase.start()
+        listenRemoteMessagesUseCase.start()
     }
     
     func stop() {
-        listenRemoteConversationUseCase.stop()
+        listenRemoteConversationsUseCase.stop()
         listenRemoteMessagesUseCase.stop()
     }
 }

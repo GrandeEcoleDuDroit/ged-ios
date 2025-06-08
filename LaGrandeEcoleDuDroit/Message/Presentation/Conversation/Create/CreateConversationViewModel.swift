@@ -20,7 +20,6 @@ class CreateConversationViewModel: ObservableObject {
         self.userRepository = userRepository
         self.getLocalConversationUseCase = getLocalConversationUseCase
         fetchUsers()
-        print("\(tag) init")
     }
     
     func onQueryChange(_ query: String) {
@@ -80,9 +79,5 @@ class CreateConversationViewModel: ObservableObject {
         var users: [User] = []
         var loading: Bool = true
         var query: String = ""
-    }
-    
-    deinit {
-        print("\(tag) deinit")
     }
 }

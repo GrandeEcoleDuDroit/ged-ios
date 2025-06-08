@@ -42,16 +42,12 @@ class MessageApiImpl: MessageApi {
             .setData(data, merge: true)
     }
     
-    func updateSeenMessage(remoteMessage: RemoteMessage) throws {
-        conversationCollection
+    func updateSeenMessage(remoteMessage: RemoteMessage) async throws {
+        try await conversationCollection
             .document(remoteMessage.conversationId)
             .collection(messageTableName)
             .document(remoteMessage.messageId.toString())
-            .updateData([MessageField.seen: remoteMessage.seen]) { completion in
-                completion.map { error in
-                    e("MessageApiImpl", error.localizedDescription)
-                }
-            }
+            .updateData([MessageField.seen: remoteMessage.seen])
     }
     
     func stopListeningMessages() {

@@ -13,7 +13,7 @@ class MainInjection: DependencyInjectionContainer {
         container.register(ListenDataUseCase.self) { resolver in
             ListenDataUseCase(
                 listenRemoteMessagesUseCase: MessageInjection.shared.resolve(ListenRemoteMessagesUseCase.self),
-                listenRemoteConversationUseCase: MessageInjection.shared.resolve(ListenRemoteConversationUseCase.self)
+                listenRemoteConversationsUseCase: MessageInjection.shared.resolve(ListenRemoteConversationsUseCase.self)
             )
         }.inObjectScope(.container)
         

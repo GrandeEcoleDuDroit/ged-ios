@@ -179,6 +179,7 @@ private extension Conversation {
         localConversation.conversationId = id
         localConversation.createdAt = createdAt
         localConversation.state = state.rawValue
+        localConversation.deleteTime = deleteTime
         localConversation.interlocutorId = interlocutor.id
         localConversation.interlocutorFirstName = interlocutor.firstName
         localConversation.interlocutorLastName = interlocutor.lastName
@@ -193,6 +194,10 @@ private extension Conversation {
 
 private extension LocalConversation {
     func modify(conversation: Conversation) {
+        conversationId = conversation.id
+        createdAt = conversation.createdAt
+        state = conversation.state.rawValue
+        deleteTime = conversation.deleteTime
         interlocutorId = conversation.interlocutor.id
         interlocutorFirstName = conversation.interlocutor.firstName
         interlocutorLastName = conversation.interlocutor.lastName
@@ -204,6 +209,9 @@ private extension LocalConversation {
     
     func equals(_ conversation: Conversation) -> Bool {
         conversationId == conversation.id &&
+        createdAt == conversation.createdAt &&
+        state == conversation.state.rawValue &&
+        deleteTime == conversation.deleteTime &&
         interlocutorId == conversation.interlocutor.id &&
         interlocutorFirstName == conversation.interlocutor.firstName &&
         interlocutorLastName == conversation.interlocutor.lastName &&

@@ -14,10 +14,10 @@ protocol MessageRepository {
     
     func updateLocalMessage(message: Message) async
     
-    func updateRemoteSeenMessages(conversationId: String, userId: String) async throws
+    func updateSeenMessages(conversationId: String, userId: String) async throws
     
-    func updateLocalSeenMessages(conversationId: String) async throws
-    
+    func updateSeenMessage(message: Message) async throws
+        
     func upsertLocalMessage(message: Message) async
         
     func deleteLocalMessages(conversationId: String) async

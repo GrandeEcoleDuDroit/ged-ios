@@ -6,7 +6,7 @@ struct ConversationItem: View {
     let conversation: ConversationUi
     let onClick: () -> Void
     let onLongClick: () -> Void
-    private let lastMessage: Message?
+    private let lastMessage: Message
     private let interlocutor: User
     private let text: String
     private let isNotSender: Bool
@@ -21,36 +21,21 @@ struct ConversationItem: View {
         self.onLongClick = onLongClick
         self.lastMessage = conversation.lastMessage
         self.interlocutor = conversation.interlocutor
-        self.text = if let lastMessage {
-            lastMessage.state == .sent ? lastMessage.content : getString(.sending)
-        } else {
-            getString(.tapToChat)
-        }
-        self.isNotSender = lastMessage?.senderId == interlocutor.id
+        self.text = lastMessage.state == .sent ? lastMessage.content : getString(.sending)
+        self.isNotSender = lastMessage.senderId == interlocutor.id
     }
     
     var body: some View {
-        if let lastMessage = lastMessage {
-            SwitchConversationItem(
-                interlocutor: interlocutor,
-                conversationState: conversation.state,
-                lastMessage: lastMessage,
-                isUnread: isNotSender && !lastMessage.seen,
-                text: text,
-                onClick: onClick,
-                onLongClick: onLongClick
-            )
-        } else {
-            ConversationItemStructure(
-                interlocutor: interlocutor,
-                onClick: onClick,
-                onLongClick: onLongClick
-            ) {
-                EmptyConversationItem(interlocutorName: interlocutor.fullName)
-            }
-        }
+        SwitchConversationItem(
+            interlocutor: interlocutor,
+            conversationState: conversation.state,
+            lastMessage: lastMessage,
+            isUnread: isNotSender && !lastMessage.seen,
+            text: text,
+            onClick: onClick,
+            onLongClick: onLongClick
+        )
     }
-
 }
 
 private struct SwitchConversationItem: View {

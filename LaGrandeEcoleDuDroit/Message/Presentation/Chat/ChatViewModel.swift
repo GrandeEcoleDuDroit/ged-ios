@@ -71,11 +71,10 @@ class ChatViewModel: ObservableObject {
             return
         }
         Task {
-            try? await messageRepository.updateRemoteSeenMessages(
+            try? await messageRepository.updateSeenMessages(
                 conversationId: conversation.id,
                 userId: user.id
             )
-            try? await messageRepository.updateLocalSeenMessages(conversationId: conversation.id)
         }
     }
     
@@ -85,14 +84,16 @@ class ChatViewModel: ObservableObject {
             .sink { [weak self] change in
                 change.inserted
                     .filter { $0.conversationId == self?.conversation.id }
-                    .forEach {
-                        self?.addOrUpdateMessage($0)
+                    .forEach { message in
+                        self?.addOrUpdateMessage(message)
+                        self?.seeMessage(message: message)
                     }
                 
                 change.updated
                     .filter { $0.conversationId == self?.conversation.id }
-                    .forEach {
-                        self?.addOrUpdateMessage($0)
+                    .forEach { message in
+                        self?.addOrUpdateMessage(message)
+                        self?.seeMessage(message: message)
                     }
                 
                 change.deleted
@@ -109,6 +110,12 @@ class ChatViewModel: ObservableObject {
     
     private func removeMessage(_ message: Message) {
         uiState.messages[message.id] = nil
+    }
+    
+    private func seeMessage(message: Message) {
+        if !message.seen && message.senderId == conversation.interlocutor.id {
+            Task { try? await messageRepository.updateSeenMessage(message: message) }
+        }
     }
     
     struct ChatUiState {

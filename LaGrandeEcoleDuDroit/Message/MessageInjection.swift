@@ -57,8 +57,8 @@ class MessageInjection: DependencyInjectionContainer {
             )
         }.inObjectScope(.container)
         
-        container.register(ListenRemoteConversationUseCase.self) { resolver in
-            ListenRemoteConversationUseCase(
+        container.register(ListenRemoteConversationsUseCase.self) { resolver in
+            ListenRemoteConversationsUseCase(
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 conversationRepository: resolver.resolve(ConversationRepository.self)!
             )
@@ -102,7 +102,8 @@ class MessageInjection: DependencyInjectionContainer {
         container.register(SendMessageUseCase.self) { resolver in
             SendMessageUseCase(
                 messageRepository: resolver.resolve(MessageRepository.self)!,
-                conversationRepository: resolver.resolve(ConversationRepository.self)!
+                conversationRepository: resolver.resolve(ConversationRepository.self)!,
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
             )
         }.inObjectScope(.container)
 
@@ -175,7 +176,8 @@ class MessageInjection: DependencyInjectionContainer {
         mockContainer.register(SendMessageUseCase.self) { resolver in
             SendMessageUseCase(
                 messageRepository: resolver.resolve(MessageRepository.self)!,
-                conversationRepository: resolver.resolve(ConversationRepository.self)!
+                conversationRepository: resolver.resolve(ConversationRepository.self)!,
+                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!
             )
         }
         
