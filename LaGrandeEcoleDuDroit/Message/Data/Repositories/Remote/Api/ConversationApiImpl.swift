@@ -46,6 +46,6 @@ class ConversationApiImpl: ConversationApi {
     }
     
     func stopListeningConversations() {
-        listeners.removeAll()
+        listeners.forEach { $0.remove() }
     }
 }
