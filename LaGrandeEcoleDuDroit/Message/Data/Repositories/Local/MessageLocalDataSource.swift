@@ -6,34 +6,41 @@ import os
 class MessageLocalDataSource {
     private let container: NSPersistentContainer
     private let context: NSManagedObjectContext
-    
-    let messageSubject = PassthroughSubject<[LocalMessage], Error>()
-    
+    private let messageActor: MessageCoreDataActor
+
     init(gedDatabaseContainer: GedDatabaseContainer) {
         container = gedDatabaseContainer.container
         context = container.newBackgroundContext()
+        messageActor = MessageCoreDataActor(context: context)
     }
     
     func listenDataChange() -> AnyPublisher<CoreDataChange<Message>, Never> {
         NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: context)
-            .compactMap { notification -> (inserted: [NSManagedObjectID], updated: [NSManagedObjectID], deleted: [NSManagedObjectID])? in
-                let insertedIDs = (notification.userInfo?[NSInsertedObjectsKey] as? Set<NSManagedObject>)?
-                    .compactMap { $0 as? LocalMessage }
-                    .map { $0.objectID } ?? []
-
-                let updatedIDs = (notification.userInfo?[NSUpdatedObjectsKey] as? Set<NSManagedObject>)?
-                    .compactMap { $0 as? LocalMessage }
-                    .map { $0.objectID } ?? []
-
-                let deletedIDs = (notification.userInfo?[NSDeletedObjectsKey] as? Set<NSManagedObject>)?
-                    .compactMap { $0 as? LocalMessage }
-                    .map { $0.objectID } ?? []
-
-                if insertedIDs.isEmpty && updatedIDs.isEmpty && deletedIDs.isEmpty {
+            .collect(.byTime(RunLoop.current, .milliseconds(100)))
+            .compactMap {
+                notifications -> (
+                    inserted: [NSManagedObjectID],
+                    updated: [NSManagedObjectID],
+                    deleted: [NSManagedObjectID]
+                )? in
+                
+                let extractIDs: (String) -> [NSManagedObjectID] = { key in
+                    notifications.flatMap {
+                        ($0.userInfo?[key] as? Set<NSManagedObject>)?
+                            .compactMap { $0 as? LocalMessage }
+                            .map(\.objectID) ?? []
+                    }
+                }
+                
+                let inserted = extractIDs(NSInsertedObjectsKey)
+                let updated = extractIDs(NSUpdatedObjectsKey)
+                let deleted = extractIDs(NSDeletedObjectsKey)
+                
+                guard !inserted.isEmpty || !updated.isEmpty || !deleted.isEmpty else {
                     return nil
                 }
-
-                return (inserted: insertedIDs, updated: updatedIDs, deleted: deletedIDs)
+                
+                return (inserted: inserted, updated: updated, deleted: deleted)
             }
             .map { [weak self] objectIDs -> CoreDataChange<Message> in
                 guard let self = self else {
@@ -45,22 +52,26 @@ class MessageLocalDataSource {
                 var deleted: [Message] = []
 
                 self.context.performAndWait {
-                    inserted = objectIDs.inserted.compactMap {
-                        (try? self.context.existingObject(with: $0) as? LocalMessage)?.toMessage()
+                    func resolve(_ ids: [NSManagedObjectID]) -> [Message] {
+                        ids.compactMap {
+                            guard let object = try? self.context.existingObject(with: $0),
+                                  let local = object as? LocalMessage else {
+                                return nil
+                            }
+                            return local.toMessage()
+                        }
                     }
-                    updated = objectIDs.updated.compactMap {
-                        (try? self.context.existingObject(with: $0) as? LocalMessage)?.toMessage()
-                    }
-                    deleted = objectIDs.deleted.compactMap {
-                        (try? self.context.existingObject(with: $0) as? LocalMessage)?.toMessage()
-                    }
+
+                    inserted = resolve(objectIDs.inserted)
+                    updated = resolve(objectIDs.updated)
+                    deleted = []
                 }
 
                 return CoreDataChange(inserted: inserted, updated: updated, deleted: deleted)
             }
-            .throttle(for: .milliseconds(100), scheduler: RunLoop.current, latest: false)
             .eraseToAnyPublisher()
     }
+
     
     func getMessages(conversationId: String, offset: Int) async throws -> [Message] {
         try await context.perform {
@@ -74,7 +85,7 @@ class MessageLocalDataSource {
                 ascending: false
             )]
             
-            fetchRequest.fetchOffset = 0
+            fetchRequest.fetchOffset = offset
             fetchRequest.fetchLimit = 20
             
             return try self.context.fetch(fetchRequest).compactMap { $0.toMessage() }
@@ -112,38 +123,65 @@ class MessageLocalDataSource {
             return unreadMessages.compactMap { $0.toMessage() }
         }
     }
-        
     
     func insertMessage(message: Message) async throws {
+        try await messageActor.insert(message: message)
+    }
+  
+    func upsertMessage(message: Message) async throws {
+        try await messageActor.upsert(message: message)
+    }
+    
+    func updateMessage(message: Message) async throws {
+        try await messageActor.updateMessage(message: message)
+    }
+    
+    func updateSeenMessages(conversationId: String, userId: String) async throws {
+        try await messageActor.updateSeenMessages(conversationId: conversationId, userId: userId)
+    }
+    
+    func deleteMessages(conversationId: String) async throws {
+        try await messageActor.deleteMessages(conversationId: conversationId)
+    }
+    
+    func deleteMessages() async throws {
+       try await messageActor.deleteMessages()
+    }
+}
+
+actor MessageCoreDataActor {
+    private let context: NSManagedObjectContext
+    
+    init(context: NSManagedObjectContext) {
+        self.context = context
+    }
+    
+    func insert(message: Message) async throws {
         try await context.perform {
             let localMessage = LocalMessage(context: self.context)
             message.buildLocal(localMessage: localMessage)
             try self.context.save()
         }
     }
-  
-    func upsertMessage(message: Message) async throws {
+    
+    func upsert(message: Message) async throws {
         try await context.perform {
             let request = LocalMessage.fetchRequest()
             request.predicate = NSPredicate(
                 format: "%K == %lld",
                 MessageField.messageId, message.id
             )
-            
             let localMessages = try self.context.fetch(request)
             let localMessage = localMessages.first
             
-            guard localMessage?.equals(message) != true else {
-                return
-            }
+            guard localMessage?.equals(message) != true else { return }
             
-            if localMessage != nil {
-                localMessage!.modify(message: message)
+            if let localMessage = localMessage {
+                localMessage.modify(message: message)
             } else {
-                let localMessage = LocalMessage(context: self.context)
-                message.buildLocal(localMessage: localMessage)
+                let newLocalMessage = LocalMessage(context: self.context)
+                message.buildLocal(localMessage: newLocalMessage)
             }
-            
             try self.context.save()
         }
     }
@@ -165,7 +203,7 @@ class MessageLocalDataSource {
         try await context.perform {
             let request = LocalMessage.fetchRequest()
             request.predicate = NSPredicate(
-                format: "%K == %@ AND %K == %@",
+                format: "%K == %@ AND %K == %@ AND %K == %@",
                 MessageField.conversationId, conversationId,
                 MessageField.seen, NSNumber(value: false),
                 MessageField.recipientId, userId

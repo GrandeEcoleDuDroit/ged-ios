@@ -68,7 +68,7 @@ class ListenRemoteMessagesUseCase {
         let publishers = conversations.map { conversation in
             self.getLastMessageDate(for: conversation.id)
                 .flatMap { offsetTime in
-                    self.remoteMessagePublisher(conversationId: conversation.id, offsetTime: offsetTime)
+                    self.remoteMessagePublisher(conversation: conversation, offsetTime: offsetTime)
                 }
                 .eraseToAnyPublisher()
         }
@@ -86,9 +86,9 @@ class ListenRemoteMessagesUseCase {
         }
     }
         
-    private func remoteMessagePublisher(conversationId: String, offsetTime: Date?) -> AnyPublisher<Message, Never> {
+    private func remoteMessagePublisher(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Never> {
         messageRepository
-            .fetchRemoteMessages(conversationId: conversationId, offsetTime: offsetTime)
+            .fetchRemoteMessages(conversation: conversation, offsetTime: offsetTime)
             .catch { error -> Empty<Message, Never> in
                 e(tag, "Failed to fetch message: \(error)", error)
                 return Empty(completeImmediately: true)

@@ -10,13 +10,14 @@ class MessageApiImpl: MessageApi {
     private var messageListeners: [ListenerRegistration] = []
     private let conversationCollection: CollectionReference = Firestore.firestore().collection(conversationTableName)
     
-    func listenMessages(conversationId: String, offsetTime: Timestamp?) -> AnyPublisher<RemoteMessage, Error> {
+    func listenMessages(conversation: Conversation, offsetTime: Timestamp?) -> AnyPublisher<RemoteMessage, Error> {
         let subject = PassthroughSubject<RemoteMessage, Error>()
         
         let listener = conversationCollection
-            .document(conversationId.description)
+            .document(conversation.id.description)
             .collection(messageTableName)
             .withOffsetTime(offsetTime)
+            .whereField(MessageField.senderId, isEqualTo: conversation.interlocutor.id)
             .addSnapshotListener { snapshot, error in
                 if let error = error {
                     subject.send(completion: .failure(error))
@@ -24,6 +25,7 @@ class MessageApiImpl: MessageApi {
                 }
                 
                 snapshot?.documents
+                    .filter { !$0.metadata.hasPendingWrites && !$0.metadata.isFromCache }
                     .compactMap({ try? $0.data(as: RemoteMessage.self) })
                     .forEach {
                         subject.send($0)

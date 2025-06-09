@@ -48,13 +48,20 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
+    func clearQuery() {
+        uiState.query = ""
+        uiState.conversations = defaultConversations
+    }
+    
     private func listenConversations() {
         getConversationsUiUseCase.execute()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] conversations in
-                self?.uiState.conversations = conversations.sorted(
-                    by: { $0.lastMessage.date > $1.lastMessage.date }
-                )
+                let sortedConversations = conversations.sorted {
+                    $0.lastMessage.date > $1.lastMessage.date
+                }
+                self?.uiState.conversations = sortedConversations
+                self?.defaultConversations = sortedConversations
             }.store(in: &cancellables)
     }
     

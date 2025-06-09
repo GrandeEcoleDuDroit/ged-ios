@@ -2,13 +2,13 @@ import Combine
 import Foundation
 
 protocol MessageRepository {
-    var messagePublisher: AnyPublisher<CoreDataChange<Message>, Never> { get }
+    var messageChanges: AnyPublisher<CoreDataChange<Message>, Never> { get }
 
     func getMessages(conversationId: String, offset: Int) async -> [Message]
     
     func getLastMessage(conversationId: String) async -> Message?
     
-    func fetchRemoteMessages(conversationId: String, offsetTime: Date?) -> AnyPublisher<Message, Error>
+    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Error>
         
     func createMessage(message: Message) async throws
     

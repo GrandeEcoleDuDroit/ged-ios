@@ -6,7 +6,11 @@ private let tag = String(describing: MessageRepositoryImpl.self)
 class MessageRepositoryImpl: MessageRepository {
     private let messageLocalDataSource: MessageLocalDataSource
     private let messageRemoteDataSource: MessageRemoteDataSource
-    var messagePublisher: AnyPublisher<CoreDataChange<Message>, Never>
+    private let messageChangesSubject = PassthroughSubject<CoreDataChange<Message>, Never>()
+    var messageChanges: AnyPublisher<CoreDataChange<Message>, Never> {
+        messageChangesSubject.eraseToAnyPublisher()
+    }
+    private var cancellables = Set<AnyCancellable>()
     
     init(
         messageLocalDataSource: MessageLocalDataSource,
@@ -14,7 +18,16 @@ class MessageRepositoryImpl: MessageRepository {
     ) {
         self.messageLocalDataSource = messageLocalDataSource
         self.messageRemoteDataSource = messageRemoteDataSource
-        messagePublisher = messageLocalDataSource.listenDataChange().eraseToAnyPublisher()
+        listenDataChanges()
+    }
+    
+    private func listenDataChanges() {
+        messageLocalDataSource.listenDataChange()
+            .receive(on: DispatchQueue.global(qos: .background))
+            .sink { [weak self] change in
+                self?.messageChangesSubject.send(change)
+            }
+            .store(in: &cancellables)
     }
 
     func getMessages(conversationId: String, offset: Int) async -> [Message] {
@@ -29,8 +42,8 @@ class MessageRepositoryImpl: MessageRepository {
         try? await messageLocalDataSource.getLastMessage(conversationId: conversationId)?.date
     }
     
-    func fetchRemoteMessages(conversationId: String, offsetTime: Date?) -> AnyPublisher<Message, Error> {
-        messageRemoteDataSource.listenMessages(conversationId: conversationId, offsetTime: offsetTime)
+    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Error> {
+        messageRemoteDataSource.listenMessages(conversation: conversation, offsetTime: offsetTime)
     }
     
     func createMessage(message: Message) async throws {
@@ -85,5 +98,11 @@ class MessageRepositoryImpl: MessageRepository {
     
     func stopListeningMessages() {
         messageRemoteDataSource.stopListeningMessages()
+    }
+    
+    deinit {
+        stopListeningMessages()
+        cancellables.forEach { $0.cancel() }
+        cancellables.removeAll()
     }
 }

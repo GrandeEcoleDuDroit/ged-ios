@@ -89,7 +89,7 @@ class ConversationMessageRepositoryImpl: ConversationMessageRepository {
     }
     
     private func listenLastMessageChangesPublisher(conversation: Conversation) -> AnyPublisher<ConversationMessage, Never> {
-        messageRepository.messagePublisher
+        messageRepository.messageChanges
             .compactMap { change in
                 change.inserted.first(where: { $0.conversationId == conversation.id }) ??
                 change.updated.first(where: { $0.conversationId == conversation.id })

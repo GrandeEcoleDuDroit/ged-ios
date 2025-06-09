@@ -9,8 +9,8 @@ class DeleteConversationUseCase {
     
     func execute(conversation: Conversation, userId: String) {
         Task {
-            await messageRepository.deleteLocalMessages(conversationId: conversation.id)
             try? await conversationRepository.deleteConversation(conversation: conversation, userId: userId)
+            await messageRepository.deleteLocalMessages(conversationId: conversation.id)
         }
     }
 }
