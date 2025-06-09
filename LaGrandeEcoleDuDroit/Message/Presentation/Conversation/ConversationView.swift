@@ -81,7 +81,7 @@ private struct ConversationView: View {
                     .padding(.horizontal, GedSpacing.extraSmall)
                 } else {
                     ScrollView {
-                        VStack(spacing: 0) {
+                        LazyVStack(spacing: 0) {
                             ForEach(conversations, id: \.id) { conversation in
                                 ConversationItem(
                                     conversation: conversation,

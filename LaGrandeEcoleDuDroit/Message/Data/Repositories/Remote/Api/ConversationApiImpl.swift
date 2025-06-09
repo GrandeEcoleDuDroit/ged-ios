@@ -3,7 +3,6 @@ import FirebaseFirestore
 import os
 
 let conversationTableName = "conversations"
-private let tag = String(describing: ConversationApiImpl.self)
 
 class ConversationApiImpl: ConversationApi {
     private var listeners: [ListenerRegistration] = []
