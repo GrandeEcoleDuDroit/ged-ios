@@ -3,7 +3,6 @@ import SwiftUI
 struct SendMessageItem: View {
     let message: Message
     let showSeen: Bool
-    let screenWidth: CGFloat
     
     var body: some View {
         HStack(alignment: .bottom) {
@@ -23,7 +22,7 @@ struct SendMessageItem: View {
                         .padding(.trailing, GedSpacing.smallMedium)
                 }
             }
-            .frame(maxWidth: screenWidth / 1.5, alignment: .trailing)
+            .frame(maxWidth: .infinity, alignment: .trailing)
             
             switch message.state {
                 case .loading:
@@ -40,6 +39,7 @@ struct SendMessageItem: View {
                     EmptyView()
             }
         }
+        .padding(.leading, GedSpacing.veryExtraLarge)
         .frame(maxWidth: .infinity, alignment: .trailing)
     }
 }
@@ -48,7 +48,6 @@ struct ReceiveMessageItem: View {
     let message: Message
     let profilePictureUrl: String?
     let displayProfilePicture: Bool
-    let screenWidth: CGFloat
     
     var body: some View {
         HStack(alignment: .bottom) {
@@ -67,8 +66,8 @@ struct ReceiveMessageItem: View {
                 textColor: .primary,
                 dateColor: .gray
             )
-            .frame(maxWidth: screenWidth / 1.5, alignment: .leading)
         }
+        .padding(.trailing, GedSpacing.veryExtraLarge)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -182,126 +181,28 @@ struct NewMessageIndicator: View {
                 ReceiveMessageItem(
                     message: messageFixture,
                     profilePictureUrl: nil,
-                    displayProfilePicture: true,
-                    screenWidth: 400
-                )
-                
-                SendMessageItem(
-                    message: messageFixture.with(state: .error),
-                    showSeen: false,
-                    screenWidth: 400
-                )
-                
-                SendMessageItem(
-                    message: messageFixture.with(state: .loading),
-                    showSeen: false,
-                    screenWidth: 400
-                )
-                
-                SendMessageItem(
-                    message: messageFixture2,
-                    showSeen: true,
-                    screenWidth: 400
+                    displayProfilePicture: true
                 )
                 
                 ReceiveMessageItem(
-                    message: messageFixture,
+                    message: messageFixture2,
                     profilePictureUrl: nil,
-                    displayProfilePicture: true,
-                    screenWidth: 400
+                    displayProfilePicture: true
                 )
                 
                 SendMessageItem(
                     message: messageFixture.with(state: .error),
-                    showSeen: false,
-                    screenWidth: 400
+                    showSeen: false
                 )
                 
                 SendMessageItem(
                     message: messageFixture.with(state: .loading),
-                    showSeen: false,
-                    screenWidth: 400
+                    showSeen: false
                 )
                 
                 SendMessageItem(
                     message: messageFixture2,
-                    showSeen: true,
-                    screenWidth: 400
-                )
-                
-                ReceiveMessageItem(
-                    message: messageFixture,
-                    profilePictureUrl: nil,
-                    displayProfilePicture: true,
-                    screenWidth: 400
-                )
-                
-                SendMessageItem(
-                    message: messageFixture.with(state: .error),
-                    showSeen: false,
-                    screenWidth: 400
-                )
-                
-                SendMessageItem(
-                    message: messageFixture.with(state: .loading),
-                    showSeen: false,
-                    screenWidth: 400
-                )
-                
-                SendMessageItem(
-                    message: messageFixture2,
-                    showSeen: true,
-                    screenWidth: 400
-                )
-                
-                ReceiveMessageItem(
-                    message: messageFixture,
-                    profilePictureUrl: nil,
-                    displayProfilePicture: true,
-                    screenWidth: 400
-                )
-                
-                SendMessageItem(
-                    message: messageFixture.with(state: .error),
-                    showSeen: false,
-                    screenWidth: 400
-                )
-                
-                SendMessageItem(
-                    message: messageFixture.with(state: .loading),
-                    showSeen: false,
-                    screenWidth: 400
-                )
-                
-                SendMessageItem(
-                    message: messageFixture2,
-                    showSeen: true,
-                    screenWidth: 400
-                )
-                
-                ReceiveMessageItem(
-                    message: messageFixture,
-                    profilePictureUrl: nil,
-                    displayProfilePicture: true,
-                    screenWidth: 400
-                )
-                
-                SendMessageItem(
-                    message: messageFixture.with(state: .error),
-                    showSeen: false,
-                    screenWidth: 400
-                )
-                
-                SendMessageItem(
-                    message: messageFixture.with(state: .loading),
-                    showSeen: false,
-                    screenWidth: 400
-                )
-                
-                SendMessageItem(
-                    message: messageFixture2,
-                    showSeen: true,
-                    screenWidth: 400
+                    showSeen: true
                 )
             }
             

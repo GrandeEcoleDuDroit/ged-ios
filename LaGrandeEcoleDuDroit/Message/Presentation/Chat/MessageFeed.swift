@@ -4,10 +4,7 @@ import Combine
 struct MessageFeed: View {
     let messages: [Message]
     let conversation: Conversation
-    let screenWidth: CGFloat
     let loadMoreMessages: () -> Void
-    
-    @State private var scrollPosition: CGPoint = .zero
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -57,10 +54,8 @@ struct MessageFeed: View {
                                 interlocutorId: conversation.interlocutor.id,
                                 showSeen: showSeenMessage,
                                 displayProfilePicture: displayProfilePicture,
-                                profilePictureUrl: conversation.interlocutor.profilePictureFileName,
-                                screenWidth: screenWidth,
+                                profilePictureUrl: conversation.interlocutor.profilePictureFileName
                             )
-                            .id(message.id)
                             .messageItemPadding(
                                 sameSender: sameSender,
                                 sameTime: sameTime,
@@ -68,11 +63,6 @@ struct MessageFeed: View {
                             )
                         }
                     }
-                    
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(height: 10)
-                        .id("last")
                 }
                 .rotationEffect(.degrees(180))
                 .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
@@ -111,22 +101,19 @@ private struct GetMessageItem: View {
     let showSeen: Bool
     let displayProfilePicture: Bool
     let profilePictureUrl: String?
-    let screenWidth: CGFloat
     
     var body: some View {
         if message.senderId == interlocutorId {
             ReceiveMessageItem(
                 message: message,
                 profilePictureUrl: profilePictureUrl,
-                displayProfilePicture: displayProfilePicture,
-                screenWidth: screenWidth
+                displayProfilePicture: displayProfilePicture
             )
         } else {
             VStack(alignment: .trailing) {
                 SendMessageItem(
                     message: message,
-                    showSeen: showSeen,
-                    screenWidth: screenWidth
+                    showSeen: showSeen
                 )
             }
         }
