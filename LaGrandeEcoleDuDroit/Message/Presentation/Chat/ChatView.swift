@@ -25,7 +25,8 @@ struct ChatDestination: View {
             messages: viewModel.uiState.messages.values.map(\.self).sorted { $0.date < $1.date },
             text: $viewModel.uiState.text,
             onSendMessagesClick: viewModel.sendMessage,
-            onBackClick: onBackClick
+            onBackClick: onBackClick,
+            loadMoreMessages: viewModel.loadMoreMessages
         )
         .navigationBarBackButtonHidden()
     }
@@ -37,6 +38,7 @@ private struct ChatView: View {
     @Binding var text: String
     let onSendMessagesClick: () -> Void
     let onBackClick: () -> Void
+    let loadMoreMessages: () -> Void
     
     @State private var inputFocused: Bool = false
 
@@ -46,7 +48,8 @@ private struct ChatView: View {
                 MessageFeed(
                     messages: messages,
                     conversation: conversation,
-                    screenWidth: geometry.size.width
+                    screenWidth: geometry.size.width,
+                    loadMoreMessages: loadMoreMessages
                 )
             }
             
@@ -90,7 +93,8 @@ private struct ChatView: View {
             messages: messagesFixture,
             text: .constant(""),
             onSendMessagesClick: {},
-            onBackClick: {}
+            onBackClick: {},
+            loadMoreMessages: {}
         )
         .background(Color.background)
     }

@@ -13,7 +13,10 @@ struct ConversationDestination: View {
             conversations: viewModel.uiState.conversations,
             query: $viewModel.uiState.query,
             onCreateConversationClick: onCreateConversationClick,
-            onConversationClick: onConversationClick,
+            onConversationClick: {
+                viewModel.clearQuery()
+                onConversationClick($0)
+            },
             onQueryChange: viewModel.onQueryChange,
             onDeleteConversationClick: viewModel.deleteConversation
         )

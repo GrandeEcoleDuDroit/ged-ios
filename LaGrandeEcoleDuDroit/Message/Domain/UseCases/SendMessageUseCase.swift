@@ -1,4 +1,5 @@
 import Foundation
+
 class SendMessageUseCase {
     private let messageRepository: MessageRepository
     private let conversationRepository: ConversationRepository

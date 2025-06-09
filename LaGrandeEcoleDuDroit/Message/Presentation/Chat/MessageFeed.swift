@@ -5,6 +5,9 @@ struct MessageFeed: View {
     let messages: [Message]
     let conversation: Conversation
     let screenWidth: CGFloat
+    let loadMoreMessages: () -> Void
+    
+    @State private var scrollPosition: CGPoint = .zero
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -20,7 +23,7 @@ struct MessageFeed: View {
                             let previousSenderId = previousMessage?.senderId ?? ""
                             let sameSender = message.senderId == previousSenderId
                             let showSeenMessage = isLastMessage && isSender && message.seen
-
+                            
                             let sameTime = if let previousMessage = previousMessage {
                                 sameDateTime(
                                     date1: previousMessage.date,
@@ -65,23 +68,40 @@ struct MessageFeed: View {
                             )
                         }
                     }
+                    
                     Rectangle()
                         .foregroundColor(.clear)
                         .frame(height: 10)
                         .id("last")
-
                 }
-                .rotationEffect(.degrees(360))
-                .onAppear {
-                    proxy.scrollTo("last", anchor: .bottom)
-                }
-                .onChange(of: messages.count) { _ in
-                    withAnimation {
-                        proxy.scrollTo("last", anchor: .bottom)
+                .rotationEffect(.degrees(180))
+                .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                .background(
+                    GeometryReader { geometry in
+                        Color.clear.preference(
+                            key: ScrollOffsetPreferenceKey.self,
+                            value: geometry.frame(in: .named("scroll")).origin
+                        )
+                    }
+                )
+                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+                    if value.y >= 0 && messages.count >= 20 {
+                        loadMoreMessages()
                     }
                 }
             }
+            .rotationEffect(.degrees(180))
+            .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+            .coordinateSpace(name: "scroll")
         }
+    }
+}
+
+
+struct ScrollOffsetPreferenceKey: PreferenceKey {
+    static var defaultValue: CGPoint = .zero
+
+    static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {
     }
 }
 

@@ -4,7 +4,7 @@ import Combine
 class MockMessageRepository: MessageRepository {
     private let messagesSubject = CurrentValueSubject<[Message], Never>(messagesFixture)
     
-    var messagePublisher: AnyPublisher<CoreDataChange<Message>, Never> {
+    var messageChanges: AnyPublisher<CoreDataChange<Message>, Never> {
         Empty().eraseToAnyPublisher()
     }
     
@@ -18,7 +18,7 @@ class MockMessageRepository: MessageRepository {
         messagesFixture
     }
     
-    func fetchRemoteMessages(conversationId: String, offsetTime: Date?) -> AnyPublisher<Message, Error> {
+    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Error> {
         messagesSubject.map(\.first!)
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()

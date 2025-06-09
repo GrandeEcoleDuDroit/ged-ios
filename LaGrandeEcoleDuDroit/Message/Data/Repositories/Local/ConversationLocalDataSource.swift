@@ -5,32 +5,41 @@ import CoreData
 class ConversationLocalDataSource {
     private let container: NSPersistentContainer
     private let context: NSManagedObjectContext
+    private let conversationActor: ConversationCoreDataActor
 
     init(gedDatabaseContainer: GedDatabaseContainer) {
         container = gedDatabaseContainer.container
         context = container.newBackgroundContext()
+        conversationActor = ConversationCoreDataActor(context: context)
     }
     
     func listenDataChange() -> AnyPublisher<CoreDataChange<Conversation>, Never> {
         NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: context)
-            .compactMap { notification -> (inserted: [NSManagedObjectID], updated: [NSManagedObjectID], deleted: [NSManagedObjectID])? in
-                let insertedIDs = (notification.userInfo?[NSInsertedObjectsKey] as? Set<NSManagedObject>)?
-                    .compactMap { $0 as? LocalConversation }
-                    .map { $0.objectID } ?? []
+            .collect(.byTime(RunLoop.current, .milliseconds(100)))
+            .compactMap {
+                notifications -> (
+                    inserted: [NSManagedObjectID],
+                    updated: [NSManagedObjectID],
+                    deleted: [NSManagedObjectID]
+                )? in
+                
+                let extractIDs: (String) -> [NSManagedObjectID] = { key in
+                    notifications.flatMap {
+                        ($0.userInfo?[key] as? Set<NSManagedObject>)?
+                            .compactMap { $0 as? LocalConversation }
+                            .map(\.objectID) ?? []
+                    }
+                }
 
-                let updatedIDs = (notification.userInfo?[NSUpdatedObjectsKey] as? Set<NSManagedObject>)?
-                    .compactMap { $0 as? LocalConversation }
-                    .map { $0.objectID } ?? []
-
-                let deletedIDs = (notification.userInfo?[NSDeletedObjectsKey] as? Set<NSManagedObject>)?
-                    .compactMap { $0 as? LocalConversation }
-                    .map { $0.objectID } ?? []
-
-                if insertedIDs.isEmpty && updatedIDs.isEmpty && deletedIDs.isEmpty {
+                let inserted = extractIDs(NSInsertedObjectsKey)
+                let updated = extractIDs(NSUpdatedObjectsKey)
+                let deleted = extractIDs(NSDeletedObjectsKey)
+                
+                guard !inserted.isEmpty || !updated.isEmpty || !deleted.isEmpty else {
                     return nil
                 }
 
-                return (inserted: insertedIDs, updated: updatedIDs, deleted: deletedIDs)
+                return (inserted: inserted, updated: updated, deleted: deleted)
             }
             .map { [weak self] objectIDs -> CoreDataChange<Conversation> in
                 guard let self = self else {
@@ -42,23 +51,26 @@ class ConversationLocalDataSource {
                 var deleted: [Conversation] = []
 
                 self.context.performAndWait {
-                    inserted = objectIDs.inserted.compactMap {
-                        (try? self.context.existingObject(with: $0) as? LocalConversation)?.toConversation()
+                    func resolve(_ ids: [NSManagedObjectID]) -> [Conversation] {
+                        ids.compactMap {
+                            guard let object = try? self.context.existingObject(with: $0),
+                                  let local = object as? LocalConversation else {
+                                return nil
+                            }
+                            return local.toConversation()
+                        }
                     }
-                    updated = objectIDs.updated.compactMap {
-                        (try? self.context.existingObject(with: $0) as? LocalConversation)?.toConversation()
-                    }
-                    deleted = objectIDs.deleted.compactMap {
-                        (try? self.context.existingObject(with: $0) as? LocalConversation)?.toConversation()
-                    }
+
+                    inserted = resolve(objectIDs.inserted)
+                    updated = resolve(objectIDs.updated)
+                    deleted = []
                 }
 
                 return CoreDataChange(inserted: inserted, updated: updated, deleted: deleted)
             }
-            .throttle(for: .milliseconds(100), scheduler: RunLoop.current, latest: false)
             .eraseToAnyPublisher()
     }
-    
+
     func getConversations() async throws -> [Conversation] {
         try await context.perform {
             let fetchRequest = LocalConversation.fetchRequest()
@@ -85,15 +97,43 @@ class ConversationLocalDataSource {
     
     func getLastConversation() async throws -> Conversation? {
         try await context.perform {
-            let request = LocalConversation.fetchRequest()
-            request.sortDescriptors = [NSSortDescriptor(
+            let fetchRequest = LocalConversation.fetchRequest()
+            fetchRequest.sortDescriptors = [NSSortDescriptor(
                 key: ConversationField.createdAt,
                 ascending: false
             )]
-            request.fetchLimit = 1
+            fetchRequest.fetchLimit = 1
             
-            return try self.context.fetch(request).first?.toConversation()
+            return try self.context.fetch(fetchRequest).first?.toConversation()
         }
+    }
+    
+    func insertConversation(conversation: Conversation) async throws {
+        try await conversationActor.insertConversation(conversation: conversation)
+    }
+    
+    func upsertConversation(conversation: Conversation) async throws {
+        try await conversationActor.upsertConversation(conversation: conversation)
+    }
+    
+    func updateConversation(conversation: Conversation) async throws {
+        try await conversationActor.updateConversation(conversation: conversation)
+    }
+    
+    func deleteConversation(conversationId: String) async throws {
+        try await conversationActor.deleteConversation(conversationId: conversationId)
+    }
+    
+    func deleteConversations() async throws {
+        try await conversationActor.deleteConversations()
+    }
+}
+
+actor ConversationCoreDataActor {
+    private let context: NSManagedObjectContext
+    
+    init(context: NSManagedObjectContext) {
+        self.context = context
     }
     
     func insertConversation(conversation: Conversation) async throws {

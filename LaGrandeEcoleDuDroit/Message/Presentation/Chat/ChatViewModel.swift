@@ -28,6 +28,32 @@ class ChatViewModel: ObservableObject {
         seeMessages()
     }
     
+    private func listenMessages() {
+        messageRepository.messageChanges
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] change in
+                change.inserted
+                    .filter { $0.conversationId == self?.conversation.id }
+                    .forEach { message in
+                        self?.addOrUpdateMessage(message)
+                        self?.seeMessage(message: message)
+                    }
+                
+                change.updated
+                    .filter { $0.conversationId == self?.conversation.id }
+                    .forEach { message in
+                        self?.addOrUpdateMessage(message)
+                        self?.seeMessage(message: message)
+                    }
+                
+                change.deleted
+                    .filter { $0.conversationId == self?.conversation.id }
+                    .forEach {
+                        self?.removeMessage($0)
+                    }
+            }.store(in: &cancellables)
+    }
+    
     func sendMessage() {
         guard !uiState.text.isEmpty, let user = user else {
             return
@@ -48,7 +74,7 @@ class ChatViewModel: ObservableObject {
         uiState.text = ""
     }
     
-    func loadMessage() {
+    func loadMoreMessages() {
         getMessages()
         offset += 20
     }
@@ -78,32 +104,6 @@ class ChatViewModel: ObservableObject {
         }
     }
     
-    private func listenMessages() {
-        messageRepository.messagePublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] change in
-                change.inserted
-                    .filter { $0.conversationId == self?.conversation.id }
-                    .forEach { message in
-                        self?.addOrUpdateMessage(message)
-                        self?.seeMessage(message: message)
-                    }
-                
-                change.updated
-                    .filter { $0.conversationId == self?.conversation.id }
-                    .forEach { message in
-                        self?.addOrUpdateMessage(message)
-                        self?.seeMessage(message: message)
-                    }
-                
-                change.deleted
-                    .filter { $0.conversationId == self?.conversation.id }
-                    .forEach {
-                        self?.removeMessage($0)
-                    }
-            }.store(in: &cancellables)
-    }
-    
     private func addOrUpdateMessage(_ message: Message) {
         uiState.messages[message.id] = message
     }
@@ -121,5 +121,6 @@ class ChatViewModel: ObservableObject {
     struct ChatUiState {
         var messages: [Int64: Message] = [:]
         var text: String = ""
+        var loading: Bool = false
     }
 }

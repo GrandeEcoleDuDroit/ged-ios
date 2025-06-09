@@ -274,4 +274,6 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String 
             onLongClick: {}
         )
     }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Color.background)
 }

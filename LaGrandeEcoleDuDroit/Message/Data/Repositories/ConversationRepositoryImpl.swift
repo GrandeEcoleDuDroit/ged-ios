@@ -9,7 +9,11 @@ class ConversationRepositoryImpl: ConversationRepository {
     private let conversationLocalDataSource: ConversationLocalDataSource
     private let conversationRemoteDataSource: ConversationRemoteDataSource
     private var interlocutors: [String: User] = [:]
-    var conversationChanges: AnyPublisher<CoreDataChange<Conversation>, Never>
+    private let conversationChangesSubject = PassthroughSubject<CoreDataChange<Conversation>, Never>()
+    var conversationChanges: AnyPublisher<CoreDataChange<Conversation>, Never> {
+        conversationChangesSubject.eraseToAnyPublisher()
+    }
+    private var cancellables: Set<AnyCancellable> = []
     
     init(
         messageRepository: MessageRepository,
@@ -21,7 +25,16 @@ class ConversationRepositoryImpl: ConversationRepository {
         self.userRepository = userRepository
         self.conversationLocalDataSource = conversationLocalDataSource
         self.conversationRemoteDataSource = conversationRemoteDataSource
-        conversationChanges = conversationLocalDataSource.listenDataChange()
+        listenDataChanges()
+    }
+    
+    private func listenDataChanges() {
+        conversationLocalDataSource.listenDataChange()
+            .receive(on: DispatchQueue.global(qos: .background))
+            .sink { [weak self] change in
+                self?.conversationChangesSubject.send(change)
+            }
+            .store(in: &cancellables)
     }
 
     func getConversations() async -> [Conversation] {
@@ -47,6 +60,7 @@ class ConversationRepositoryImpl: ConversationRepository {
 
                 if let interlocutor = self.interlocutors[interlocutorId] {
                     let conversation = remoteConversation.toConversation(userId: userId, interlocutor: interlocutor)
+                    
                     return Just(conversation)
                         .setFailureType(to: Error.self)
                         .eraseToAnyPublisher()
