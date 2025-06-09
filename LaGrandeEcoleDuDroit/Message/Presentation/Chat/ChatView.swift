@@ -43,15 +43,12 @@ private struct ChatView: View {
     @State private var inputFocused: Bool = false
 
     var body: some View {
-        VStack {
-            GeometryReader { geometry in
-                MessageFeed(
-                    messages: messages,
-                    conversation: conversation,
-                    screenWidth: geometry.size.width,
-                    loadMoreMessages: loadMoreMessages
-                )
-            }
+        VStack(spacing: GedSpacing.medium) {
+            MessageFeed(
+                messages: messages,
+                conversation: conversation,
+                loadMoreMessages: loadMoreMessages
+            )
             
             ChatInputField(
                 text: $text,
