@@ -1,12 +1,10 @@
 import SwiftUI
 import Combine
 
-private let tag = String(describing: CreateConversationViewModel.self)
-
 class CreateConversationViewModel: ObservableObject {
     private var defaultUsers: [User] = []
     private var cancellables = Set<AnyCancellable>()
-    
+    private let tag = String(describing: CreateConversationViewModel.self)
     private let userRepository: UserRepository
     private let getLocalConversationUseCase: GetConversationUseCase
     

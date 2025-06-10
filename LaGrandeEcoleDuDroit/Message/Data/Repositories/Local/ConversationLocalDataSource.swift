@@ -74,6 +74,7 @@ class ConversationLocalDataSource {
     func getConversations() async throws -> [Conversation] {
         try await context.perform {
             let fetchRequest = LocalConversation.fetchRequest()
+            
             fetchRequest.sortDescriptors = [NSSortDescriptor(
                 key: ConversationField.createdAt,
                 ascending: false
@@ -86,6 +87,7 @@ class ConversationLocalDataSource {
     func getConversation(interlocutorId: String) async throws -> Conversation? {
         try await context.perform {
             let request = LocalConversation.fetchRequest()
+            
             request.predicate = NSPredicate(
                 format: "%K == %@",
                 ConversationField.Local.interlocutorId, interlocutorId
@@ -98,6 +100,7 @@ class ConversationLocalDataSource {
     func getLastConversation() async throws -> Conversation? {
         try await context.perform {
             let fetchRequest = LocalConversation.fetchRequest()
+            
             fetchRequest.sortDescriptors = [NSSortDescriptor(
                 key: ConversationField.createdAt,
                 ascending: false
@@ -154,11 +157,9 @@ actor ConversationCoreDataActor {
             )
             
             let localConversation = try self.context.fetch(request).first
-            
             guard localConversation?.equals(conversation) != true else {
                 return
             }
-            
             if localConversation != nil {
                 localConversation!.modify(conversation: conversation)
             } else {
@@ -227,7 +228,7 @@ private extension Conversation {
         localConversation.interlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
         localConversation.interlocutorIsMember = interlocutor.isMember
         localConversation.interlocutorProfilePictureFileName = UrlUtils.getFileNameFromUrl(
-            url: interlocutor.profilePictureFileName
+            url: interlocutor.profilePictureUrl
         )
     }
 }
@@ -244,7 +245,7 @@ private extension LocalConversation {
         interlocutorEmail = conversation.interlocutor.email
         interlocutorSchoolLevel = conversation.interlocutor.schoolLevel.rawValue
         interlocutorIsMember = conversation.interlocutor.isMember
-        interlocutorProfilePictureFileName = UrlUtils.getFileNameFromUrl(url: conversation.interlocutor.profilePictureFileName)
+        interlocutorProfilePictureFileName = UrlUtils.getFileNameFromUrl(url: conversation.interlocutor.profilePictureUrl)
     }
     
     func equals(_ conversation: Conversation) -> Bool {
@@ -258,6 +259,6 @@ private extension LocalConversation {
         interlocutorEmail == conversation.interlocutor.email &&
         interlocutorSchoolLevel == conversation.interlocutor.schoolLevel.rawValue &&
         interlocutorIsMember == conversation.interlocutor.isMember &&
-        interlocutorProfilePictureFileName == UrlUtils.getFileNameFromUrl(url: conversation.interlocutor.profilePictureFileName)
+        interlocutorProfilePictureFileName == UrlUtils.getFileNameFromUrl(url: conversation.interlocutor.profilePictureUrl)
     }
 }

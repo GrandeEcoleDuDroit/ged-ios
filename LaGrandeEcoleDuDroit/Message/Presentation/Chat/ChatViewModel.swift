@@ -85,8 +85,8 @@ class ChatViewModel: ObservableObject {
                 conversationId: conversation.id,
                 offset: offset
             ).forEach { message in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.uiState.messages[message.id] = message
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                    self?.uiState.messages[message.id] = message
                 }
             }
         }
@@ -96,6 +96,7 @@ class ChatViewModel: ObservableObject {
         guard let user = user else {
             return
         }
+        
         Task {
             try? await messageRepository.updateSeenMessages(
                 conversationId: conversation.id,

@@ -73,7 +73,7 @@ private struct ChatView: View {
                         }
                     )
                     
-                    ProfilePicture(url: conversation.interlocutor.profilePictureFileName, scale: 0.4)
+                    ProfilePicture(url: conversation.interlocutor.profilePictureUrl, scale: 0.4)
                     
                     Text(conversation.interlocutor.fullName)
                         .fontWeight(.medium)

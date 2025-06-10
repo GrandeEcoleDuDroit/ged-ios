@@ -8,6 +8,17 @@ class ImageRepositoryImpl: ImageRepository {
     }
     
     func uploadImage(imageData: Data, fileName: String) async throws {
-        try await imageRemoteDataSource.uploadImage(imageData: imageData, fileName: fileName)
+        try await handleRetrofitError {
+            try await imageRemoteDataSource.uploadImage(
+                imageData: imageData,
+                fileName: fileName
+            )
+        }
+    }
+    
+    func deleteImage(fileName: String) async throws {
+        try await handleRetrofitError {
+            try await imageRemoteDataSource.deleteImage(fileName: fileName)
+        }
     }
 }

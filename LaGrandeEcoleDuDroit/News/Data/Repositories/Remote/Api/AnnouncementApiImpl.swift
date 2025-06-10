@@ -8,7 +8,7 @@ class AnnouncementApiImpl: AnnouncementApi {
     
     func getAnnouncements() async throws -> (URLResponse, [RemoteAnnouncementWithUser]) {
         guard let url = baseUrl(endPoint: "") else {
-            throw RequestError.invalidURL("Invalid URL")
+            throw NetworkError.invalidURL("Invalid URL")
         }
         
         let (data, urlResponse) = try await RequestUtils.getUrlSession().data(for: URLRequest(url: url))
@@ -18,7 +18,7 @@ class AnnouncementApiImpl: AnnouncementApi {
     
     func createAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "/create") else {
-            throw RequestError.invalidURL("Invalid URL")
+            throw NetworkError.invalidURL("Invalid URL")
         }
         
         let session = RequestUtils.getUrlSession()
@@ -31,7 +31,7 @@ class AnnouncementApiImpl: AnnouncementApi {
     
     func deleteAnnouncement(remoteAnnouncementId: String) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "/\(remoteAnnouncementId)") else {
-            throw RequestError.invalidURL("Invalid URL")
+            throw NetworkError.invalidURL("Invalid URL")
         }
         
         let session = RequestUtils.getUrlSession()
@@ -44,7 +44,7 @@ class AnnouncementApiImpl: AnnouncementApi {
     
     func updateAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "/update") else {
-            throw RequestError.invalidURL("Invalid URL")
+            throw NetworkError.invalidURL("Invalid URL")
         }
         
         let session = RequestUtils.getUrlSession()

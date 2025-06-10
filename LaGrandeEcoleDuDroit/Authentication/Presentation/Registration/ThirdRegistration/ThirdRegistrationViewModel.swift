@@ -26,23 +26,23 @@ class ThirdRegistrationViewModel: ObservableObject {
                     schoolLevel: schoolLevel
                 )
             } catch let error as NetworkError {
-                DispatchQueue.main.sync { [self] in
-                    uiState.loading = false
+                DispatchQueue.main.sync { [weak self] in
+                    self?.uiState.loading = false
                     switch error {
-                        case .noInternetConnection: event = ErrorEvent(message: mapErrorMessage(error))
-                        case .tooManyRequests: uiState.errorMessage = getString(.tooManyRequestsError)
-                        case .dupplicateData: uiState.errorMessage = getString(.emailAlreadyAssociatedError)
+                        case .noInternetConnection: self?.event = ErrorEvent(message: getString(.noInternetConectionError))
+                        case .tooManyRequests: self?.uiState.errorMessage = getString(.tooManyRequestsError)
+                        case .dupplicateData: self?.uiState.errorMessage = getString(.emailAlreadyAssociatedError)
                         default:
-                            uiState.errorMessage = mapErrorMessage(error)
-                            uiState.password = ""
+                            self?.uiState.errorMessage = self?.mapErrorMessage(error)
+                            self?.uiState.password = ""
                             
                     }
                 }
             } catch {
-                DispatchQueue.main.sync { [self] in
-                    uiState.loading = false
-                    uiState.errorMessage = mapErrorMessage(error)
-                    uiState.password = ""
+                DispatchQueue.main.sync { [weak self] in
+                    self?.uiState.loading = false
+                    self?.uiState.errorMessage = self?.mapErrorMessage(error)
+                    self?.uiState.password = ""
                 }
             }
         }

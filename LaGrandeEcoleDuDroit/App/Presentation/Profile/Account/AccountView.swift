@@ -2,16 +2,37 @@ import SwiftUI
 import _PhotosUI_SwiftUI
 
 struct AccountDestination: View {
-    @StateObject private var viewModel = ProfileInjection.shared.resolve(AccountViewModel.self)
+    @StateObject private var viewModel = MainInjection.shared.resolve(AccountViewModel.self)
+    @State private var errorMessage: String = ""
+    @State private var showErrorAlert: Bool = false
+    @State private var profilePictureImage: UIImage? = nil
     
     var body: some View {
         AccountView(
             user: viewModel.uiState.user,
             loading: viewModel.uiState.loading,
             screenState: viewModel.uiState.screenState,
+            profilePictureImage: $profilePictureImage,
             onScreenStateChange: viewModel.onScreenStateChange,
-            onSaveProfilePictureClick: viewModel.updateProfilePicture
+            onSaveProfilePictureClick: viewModel.updateProfilePicture,
+            onDeleteProfilePictureClick: viewModel.deleteProfilePicture
         )
+        .onReceive(viewModel.$event) { event in
+            if let errorEvent = event as? ErrorEvent {
+                errorMessage = errorEvent.message
+                showErrorAlert = true
+            } else if event is SuccessEvent {
+                profilePictureImage = nil
+            }
+        }
+        .alert(
+            errorMessage,
+            isPresented: $showErrorAlert
+        ) {
+            Button(getString(.ok)) {
+                showErrorAlert = false
+            }
+        }
     }
 }
 
@@ -19,15 +40,19 @@ private struct AccountView: View {
     let user: User?
     let loading: Bool
     let screenState: AccountScreenState
+    @Binding var profilePictureImage: UIImage?
     let onScreenStateChange: (AccountScreenState) -> Void
     let onSaveProfilePictureClick: (Data?) -> Void
+    let onDeleteProfilePictureClick: () -> Void
     
-    @State private var profilePictureImage: UIImage?
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var showBottomSheet: Bool = false
     @State private var showPhotosPicker: Bool = false
     @State private var isBottomSheetItemClicked: Bool = false
     @State private var navigationTitle = getString(.accountInfos)
+    @State private var showDeleteAlert: Bool = false
+    @State private var bottomSheetItemSize: CGFloat = 1/10
+
     var body: some View {
         ZStack {
             if let user = user {
@@ -40,7 +65,7 @@ private struct AccountView: View {
                         )
                     } else {
                         ProfilePictureEdit(
-                            url: user.profilePictureFileName,
+                            url: user.profilePictureUrl,
                             onClick: { showBottomSheet = true },
                             scale: 1.6
                         )
@@ -52,7 +77,8 @@ private struct AccountView: View {
                 if loading {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color.lightGrey.opacity(0.4))
+                        .background(.loadingBackground)
+                        .opacity(0.5)
                 }
             } else {
                 ProgressView()
@@ -67,21 +93,38 @@ private struct AccountView: View {
                 }
             }
         }
+        .onChange(of: user?.profilePictureUrl) { newValue in
+            bottomSheetItemSize = newValue != nil ? 2/10 : 1/10
+        }
+        .onChange(of: bottomSheetItemSize) { _ in }
         .photosPicker(isPresented: $showPhotosPicker, selection: $selectedPhoto, matching: .images)
         .navigationTitle(screenState == .edit ? getString(.editProfile) : getString(.accountInfos))
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(screenState == .edit)
         .sheet(isPresented: $showBottomSheet) {
-            ItemWithIcon(
-                icon: Image(systemName: "photo.fill"),
-                text: Text(getString(.newProfilePicture))
+            ProfilePictureSheet(
+                user: user,
+                bottomSheetItemSize: bottomSheetItemSize,
+                onPhotoClick: {
+                    showPhotosPicker = true
+                    showBottomSheet = false
+                },
+                onDeleteClick: {
+                    showBottomSheet = false
+                    showDeleteAlert = true
+                }
             )
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
-            .presentationDetents([.fraction(0.10)])
-            .onClick(isClicked: $isBottomSheetItemClicked) {
-                showPhotosPicker = true
-                showBottomSheet = false
+        }
+        .alert(
+            getString(.deleteProfilePictureAlertMessage),
+            isPresented: $showDeleteAlert
+        ) {
+            Button(getString(.cancel), role: .cancel) {
+                showDeleteAlert = false
+            }
+            Button(getString(.delete), role: .destructive) {
+                onDeleteProfilePictureClick()
+                showDeleteAlert = false
             }
         }
         .toolbar {
@@ -111,6 +154,40 @@ private struct AccountView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .disabled(loading)
+    }
+}
+
+private struct ProfilePictureSheet: View {
+    let user: User?
+    let bottomSheetItemSize: CGFloat
+    let onPhotoClick: () -> Void
+    let onDeleteClick: () -> Void
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            ClickableItemWithIcon(
+                icon: Image(systemName: "photo.fill"),
+                text: Text(getString(.newProfilePicture))
+            ) {
+                onPhotoClick()
+            }
+            .font(.bodyLarge)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            
+            if user?.profilePictureUrl != nil {
+                ClickableItemWithIcon(
+                    icon: Image(systemName: "trash"),
+                    text: Text(getString(.delete))
+                ) {
+                    onDeleteClick()
+                }
+                .font(.bodyLarge)
+                .foregroundStyle(.red)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .presentationDetents([.fraction(bottomSheetItemSize)])
     }
 }
 
@@ -153,8 +230,11 @@ private struct AccountInfoItems: View {
             user: userFixture,
             loading: false,
             screenState: .read,
-            onScreenStateChange: {_ in},
-            onSaveProfilePictureClick: {_ in}
+            profilePictureImage: .constant(nil),
+            onScreenStateChange: { _ in },
+            onSaveProfilePictureClick: { _ in },
+            onDeleteProfilePictureClick: {  }
         )
+        .background(Color.background)
     }
 }

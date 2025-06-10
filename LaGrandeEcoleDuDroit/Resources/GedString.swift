@@ -91,7 +91,8 @@ enum GedString: String {
     case profilePictureUpdated = "profile_picture_updated"
     case member = "member"
     case userNotFound = "user_not_found"
-    
+    case deleteProfilePictureAlertMessage = "delete_profile_picture_alert_message"
+
     // Profile errors
     case errorLogout = "error_logout"
     

@@ -17,7 +17,7 @@ struct ProfileNavigation: View {
                     case .accountInfos:
                         AccountDestination()
                             .onAppear { tabBarVisibility.show = false }
-                            .background(Color.background)
+                            .background(.listBackground)
                 }
             }
         }

@@ -1,14 +1,13 @@
 import Combine
 import Foundation
 
-private let tag = String(describing: ListenRemoteConversationsUseCase.self)
-
 class ListenRemoteConversationsUseCase {
     private let userRepository: UserRepository
     private let conversationRepository: ConversationRepository
     private var cancellables = Set<AnyCancellable>()
     private var fetchedConversations: [String: Conversation] = [:]
-    
+    private let tag = String(describing: ListenRemoteConversationsUseCase.self)
+
     init(
         userRepository: UserRepository,
         conversationRepository: ConversationRepository
@@ -57,7 +56,7 @@ class ListenRemoteConversationsUseCase {
         conversationRepository
             .fetchRemoteConversations(userId: userId, offsetTime: offsetTime)
             .catch { error -> Empty<Conversation, Never> in
-                e(tag, "Failed to fetch conversations: \(error)", error)
+                e(self.tag, "Failed to fetch conversations: \(error)", error)
                 return Empty(completeImmediately: true)
             }.eraseToAnyPublisher()
     }

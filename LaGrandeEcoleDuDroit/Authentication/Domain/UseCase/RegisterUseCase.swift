@@ -39,7 +39,7 @@ class RegisterUseCase {
             email: email,
             schoolLevel: schoolLevel,
             isMember: false,
-            profilePictureFileName: nil
+            profilePictureUrl: nil
         )
         try await userRepository.createUser(user: user)
         authenticationRepository.setAuthenticated(true)

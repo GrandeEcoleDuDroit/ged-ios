@@ -3,7 +3,7 @@ import SwiftUI
 struct ProfileDestination: View {
     let onAccountInfosClick: () -> Void
     
-    @StateObject private var viewModel = ProfileInjection.shared.resolve(ProfileViewModel.self)
+    @StateObject private var viewModel = MainInjection.shared.resolve(ProfileViewModel.self)
     
     var body: some View {
         ProfileView(
@@ -29,8 +29,8 @@ private struct ProfileView: View {
                         Button(
                             action: onAccountInfosClick
                         ) {
-                            HStack {
-                                ProfilePicture(url: user.profilePictureFileName, scale: 0.5)
+                            HStack(spacing: GedSpacing.medium) {
+                                ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
                                 
                                 Text(user.fullName)
                                     .font(.title3)
@@ -38,7 +38,6 @@ private struct ProfileView: View {
                             }
                         }
                     }
-                    .listRowBackground(Color.listRowBackground)
                     
                     Section {
                         Button(
@@ -51,7 +50,6 @@ private struct ProfileView: View {
                             .foregroundStyle(.red)
                         }
                     }
-                    .listRowBackground(Color.listRowBackground)
                 }
             } else {
                 ProgressView()

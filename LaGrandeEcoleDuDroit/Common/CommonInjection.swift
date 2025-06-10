@@ -66,6 +66,13 @@ class CommonInjection: DependencyInjectionContainer {
                 imageRepository: resolver.resolve(ImageRepository.self)!
             )
         }.inObjectScope(.container)
+        
+        container.register(DeleteProfilePictureUseCase.self) { resolver in
+            DeleteProfilePictureUseCase(
+                userRepository: CommonInjection.shared.resolve(UserRepository.self),
+                imageRepository: CommonInjection.shared.resolve(ImageRepository.self)
+            )
+        }.inObjectScope(.container)
     }
     
     func resolve<T>(_ type: T.Type) -> T {

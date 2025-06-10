@@ -98,7 +98,7 @@ private extension Announcement {
         localAnnouncement.userEmail = author.email
         localAnnouncement.userSchoolLevel = author.schoolLevel.rawValue
         localAnnouncement.userIsMember = author.isMember
-        localAnnouncement.userProfilePictureFileName = UrlUtils.getFileNameFromUrl(url: author.profilePictureFileName)
+        localAnnouncement.userProfilePictureFileName = UrlUtils.getFileNameFromUrl(url: author.profilePictureUrl)
     }
 }
 
@@ -114,6 +114,6 @@ private extension LocalAnnouncement {
         userEmail = announcement.author.email
         userSchoolLevel = announcement.author.schoolLevel.rawValue
         userIsMember = announcement.author.isMember
-        userProfilePictureFileName = announcement.author.profilePictureFileName
+        userProfilePictureFileName = announcement.author.profilePictureUrl
     }
 }

@@ -21,20 +21,20 @@ class AuthenticationViewModel: ObservableObject {
                 try await loginUseCase.execute(email: uiState.email, password: uiState.password)
             }
             catch let error as NetworkError {
-                DispatchQueue.main.sync { [self] in
-                    uiState.loading = false
+                DispatchQueue.main.sync { [weak self] in
+                    self?.uiState.loading = false
                     switch error {
-                        case .noInternetConnection: event = ErrorEvent(message: mapErrorMessage(error))
-                        case .tooManyRequests: uiState.errorMessage = getString(.tooManyRequestsError)
-                        default: uiState.errorMessage = mapErrorMessage(error)
+                        case .noInternetConnection: self?.event = ErrorEvent(message: getString(.noInternetConectionError))
+                        case .tooManyRequests: self?.uiState.errorMessage = getString(.tooManyRequestsError)
+                        default: self?.uiState.errorMessage = self?.mapErrorMessage(error)
                     }
-                    uiState.password = ""
+                    self?.uiState.password = ""
                 }
             } catch {
-                DispatchQueue.main.sync { [self] in
-                    uiState.loading = false
-                    uiState.errorMessage = mapErrorMessage(error)
-                    uiState.password = ""
+                DispatchQueue.main.sync { [weak self] in
+                    self?.uiState.loading = false
+                    self?.uiState.errorMessage = self?.mapErrorMessage(error)
+                    self?.uiState.password = ""
                 }
             }
         }

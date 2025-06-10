@@ -35,7 +35,7 @@ extension Conversation {
         localConversation.interlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
         localConversation.interlocutorIsMember = interlocutor.isMember
         localConversation.interlocutorProfilePictureFileName = UrlUtils.getFileNameFromUrl(
-            url: interlocutor.profilePictureFileName
+            url: interlocutor.profilePictureUrl
         )
         localConversation.createdAt = createdAt
         localConversation.state = state.rawValue
@@ -71,7 +71,7 @@ extension LocalConversation {
             email: interlocutorEmail,
             schoolLevel: SchoolLevel.init(rawValue: interlocutorSchoolLevel) ?? SchoolLevel.ged1,
             isMember: interlocutorIsMember,
-            profilePictureFileName: UrlUtils.formatProfilePictureUrl(
+            profilePictureUrl: UrlUtils.formatProfilePictureUrl(
                 fileName: interlocutorProfilePictureFileName
             )
         )

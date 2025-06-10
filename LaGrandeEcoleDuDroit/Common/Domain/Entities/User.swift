@@ -5,10 +5,10 @@ struct User: Decodable, Hashable, Identifiable {
     let email: String
     let schoolLevel: SchoolLevel
     let isMember: Bool
-    let profilePictureFileName: String?
+    let profilePictureUrl: String?
     
     var fullName: String {
-        (firstName + " " + lastName).capitalized
+        firstName + " " + lastName
     }
     
     func with(
@@ -18,7 +18,7 @@ struct User: Decodable, Hashable, Identifiable {
         email: String? = nil,
         schoolLevel: SchoolLevel? = nil,
         isMember: Bool? = nil,
-        profilePictureFileName: String? = nil
+        profilePictureUrl: String? = nil
     ) -> User {
         User(
             id: id ?? self.id,
@@ -27,7 +27,7 @@ struct User: Decodable, Hashable, Identifiable {
             email: email ?? self.email,
             schoolLevel: schoolLevel ?? self.schoolLevel,
             isMember: isMember ?? self.isMember,
-            profilePictureFileName: profilePictureFileName ?? self.profilePictureFileName
+            profilePictureUrl: profilePictureUrl ?? self.profilePictureUrl
         )
     }
 }

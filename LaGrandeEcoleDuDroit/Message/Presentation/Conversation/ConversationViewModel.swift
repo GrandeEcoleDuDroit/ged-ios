@@ -1,14 +1,13 @@
 import Foundation
 import Combine
 
-private let tag = String(describing: ConversationViewModel.self)
-
 class ConversationViewModel: ObservableObject {
     private let userRepository: UserRepository
     private let deleteConversationUseCase: DeleteConversationUseCase
     private let getConversationsUiUseCase: GetConversationsUiUseCase
     private var cancellables: Set<AnyCancellable> = []
     private var defaultConversations: [ConversationUi] = []
+    private let tag = String(describing: ConversationViewModel.self)
     
     @Published var uiState: ConversationUiState = ConversationUiState()
     @Published var event: SingleUiEvent? = nil

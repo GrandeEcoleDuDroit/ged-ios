@@ -102,10 +102,9 @@ private struct ConversationView: View {
                             showBottomSheet = false
                             showDeleteAlert = true
                         }
-                        .font(.title3)
+                        .font(.bodyLarge)
                         .foregroundStyle(.red)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
                         .presentationDetents([.fraction(0.10)])
                     }
                 }

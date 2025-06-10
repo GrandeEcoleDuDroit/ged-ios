@@ -6,26 +6,50 @@ private let subsystem = "com.upsaclay.gedoise"
 
 func d(_ tag: String, _ message: String) {
     let logger = Logger(subsystem: subsystem, category: tag)
-    let date = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .medium)
-    logger.debug("🔄 \(date) \(tag)\t\(subsystem)\t D \(message)")
+    
+    let formatter = DateFormatter()
+    formatter.dateFormat = "MM-dd HH:mm:ss.SSS"
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.timeZone = TimeZone.current
+    let date = formatter.string(from: Date())
+    
+    logger.debug("🔄 \(date) \(tag)\t\(subsystem)\t [D] \(message)")
 }
 
 func i(_ tag: String, _ message: String) {
     let logger = Logger(subsystem: subsystem, category: tag)
-    let date = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .medium)
-    logger.info("🚹 \(date) \(tag)\t\(subsystem)\t I \(message)")
+    
+    let formatter = DateFormatter()
+    formatter.dateFormat = "MM-dd HH:mm:ss.SSS"
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.timeZone = TimeZone.current
+    let date = formatter.string(from: Date())
+    
+    logger.info("🚹 \(date) \(tag)\t\(subsystem)\t [I] \(message)")
 }
 
 func w(_ tag: String, _ message: String) {
     let logger = Logger(subsystem: subsystem, category: tag)
-    let date = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .medium)
-    logger.warning("⚠️ \(date) \(tag)\t\(subsystem)\t W \(message)")
+    
+    let formatter = DateFormatter()
+    formatter.dateFormat = "MM-dd HH:mm:ss.SSS"
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.timeZone = TimeZone.current
+    let date = formatter.string(from: Date())
+    
+    logger.warning("⚠️ \(date) \(tag)\t\(subsystem)\t [W] \(message)")
 }
 
 func e(_ tag: String, _ message: String, _ error: Error? = nil) {
     let logger = Logger(subsystem: subsystem, category: tag)
-    let date = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .medium)
-    logger.critical("🛑 \(date) \(tag)\t\(subsystem)\t E \(message)")
+    
+    let formatter = DateFormatter()
+    formatter.dateFormat = "MM-dd HH:mm:ss.SSS"
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.timeZone = TimeZone.current
+    let date = formatter.string(from: Date())
+    
+    logger.critical("🛑 \(date) \(tag)\t\(subsystem)\t [E] \(message)")
     logger.critical("🛑 \(message)")
     #if DEBUG
     #else
