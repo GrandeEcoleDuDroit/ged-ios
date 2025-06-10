@@ -3,6 +3,7 @@ import Foundation
 class RequestUtils {
     static func getUrlSession() -> URLSession {
         let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 10
         return URLSession(configuration: config)
     }
     
@@ -11,7 +12,6 @@ class RequestUtils {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONEncoder().encode(dataToSend)
-        
         return request
     }
     

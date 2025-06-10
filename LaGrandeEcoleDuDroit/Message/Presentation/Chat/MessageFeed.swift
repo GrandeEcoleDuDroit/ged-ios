@@ -54,7 +54,7 @@ struct MessageFeed: View {
                                 interlocutorId: conversation.interlocutor.id,
                                 showSeen: showSeenMessage,
                                 displayProfilePicture: displayProfilePicture,
-                                profilePictureUrl: conversation.interlocutor.profilePictureFileName
+                                profilePictureUrl: conversation.interlocutor.profilePictureUrl
                             )
                             .messageItemPadding(
                                 sameSender: sameSender,

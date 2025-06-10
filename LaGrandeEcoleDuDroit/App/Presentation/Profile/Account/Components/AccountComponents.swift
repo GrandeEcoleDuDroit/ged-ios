@@ -37,12 +37,7 @@ struct ProfilePictureEdit: View {
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            if let url = url {
-                ClickableProfilePicture(url: url, onClick: onClick, scale: scale)
-            }
-            else {
-                ClickableDefaultProfilePicture(onClick: onClick, scale: scale)
-            }
+            ClickableProfilePicture(url: url, scale: scale, onClick: onClick)
             
             ZStack {
                 Circle()

@@ -10,7 +10,7 @@ extension RemoteAnnouncementWithUser {
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel) ?? SchoolLevel.ged1,
             isMember: userIsMember == 1,
-            profilePictureFileName: UrlUtils.formatProfilePictureUrl(
+            profilePictureUrl: UrlUtils.formatProfilePictureUrl(
                 fileName: userProfilePictureFileName
             )
         )
@@ -59,7 +59,7 @@ extension LocalAnnouncement {
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel) ?? SchoolLevel.ged1,
             isMember: userIsMember,
-            profilePictureFileName: UrlUtils.formatProfilePictureUrl(fileName: userProfilePictureFileName)
+            profilePictureUrl: UrlUtils.formatProfilePictureUrl(fileName: userProfilePictureFileName)
         )
         
         return Announcement(

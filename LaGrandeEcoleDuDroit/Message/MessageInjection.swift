@@ -36,10 +36,9 @@ class MessageInjection: DependencyInjectionContainer {
         
         container.register(ConversationRepository.self) { resolver in
             ConversationRepositoryImpl(
-                messageRepository: resolver.resolve(MessageRepository.self)!,
-                userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 conversationLocalDataSource: resolver.resolve(ConversationLocalDataSource.self)!,
-                conversationRemoteDataSource: resolver.resolve(ConversationRemoteDataSource.self)!
+                conversationRemoteDataSource: resolver.resolve(ConversationRemoteDataSource.self)!,
+                userRepository: CommonInjection.shared.resolve(UserRepository.self)
             )
         }.inObjectScope(.container)
         
@@ -170,6 +169,10 @@ class MessageInjection: DependencyInjectionContainer {
         let commonMockContainer = CommonInjection.shared.resolveWithMock()
         
         mockContainer.register(ConversationRepository.self) { _ in MockConversationRepository() }
+        
+        mockContainer.register(ConversationMessageRepository.self) { _ in
+            MockConversationMessageRepository()
+        }
         
         mockContainer.register(MessageRepository.self) { _ in MockMessageRepository() }
         

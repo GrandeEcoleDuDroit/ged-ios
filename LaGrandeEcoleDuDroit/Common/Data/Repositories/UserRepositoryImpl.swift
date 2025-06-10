@@ -1,12 +1,10 @@
 import Foundation
 import Combine
 
-private let tag = String(describing: UserRepositoryImpl.self)
-
 class UserRepositoryImpl: UserRepository {
     private let userLocalDataSource: UserLocalDataSource
     private let userRemoteDataSource: UserRemoteDataSource
-    
+    private let tag = String(describing: UserRepositoryImpl.self)
     private var userSubject = CurrentValueSubject<User?, Never>(nil)
     var user: AnyPublisher<User, Never> {
         userSubject.compactMap{ $0 }.eraseToAnyPublisher()
@@ -21,15 +19,18 @@ class UserRepositoryImpl: UserRepository {
         initUser()
     }
     
+    private func initUser() {
+        userSubject.send(userLocalDataSource.getUser())
+    }
+    
     func createUser(user: User) async throws {
-        do {
-            try await userRemoteDataSource.createUser(user: user)
-            try? userLocalDataSource.storeUser(user: user)
-            userSubject.send(user)
-        } catch {
-            e(tag, error.localizedDescription, error)
-            throw error
-        }
+        try await handleNetworkException(
+            block: { try await userRemoteDataSource.createUser(user: user) },
+            tag: tag,
+            message: "Failed to create user"
+        )
+        try? userLocalDataSource.storeUser(user: user)
+        userSubject.send(user)
     }
     
     func getUser(userId: String) async throws -> User? {
@@ -59,18 +60,23 @@ class UserRepositoryImpl: UserRepository {
     }
     
     func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {
-        try await userRemoteDataSource.updateProfilePictureFileName(userId: userId, fileName: profilePictureFileName)
+        try await handleNetworkException(
+            block: { try await userRemoteDataSource.updateProfilePictureFileName(userId: userId, fileName: profilePictureFileName) },
+            tag: tag,
+            message: "Failed to update profile picture file name"
+        )
+
         try? userLocalDataSource.updateProfilePictureFileName(fileName: profilePictureFileName)
-        userSubject.value = userSubject.value?.with(profilePictureFileName: profilePictureFileName)
+        userSubject.value = userSubject.value?.with(profilePictureUrl: UrlUtils.formatProfilePictureUrl(fileName: profilePictureFileName))
     }
     
     func deleteProfilePictureFileName(userId: String) async throws {
-        try await userRemoteDataSource.deleteProfilePictureFileName(userId: userId)
-        try userLocalDataSource.updateProfilePictureFileName(fileName: nil)
-        userSubject.value = userSubject.value?.with(profilePictureFileName: nil)
-    }
-    
-    private func initUser() {
-        userSubject.send(userLocalDataSource.getUser())
+        try await handleNetworkException(
+            block: { try await userRemoteDataSource.deleteProfilePictureFileName(userId: userId) },
+            tag: tag,
+            message: "Failed to delete profile picture file name"
+        )
+        try? userLocalDataSource.updateProfilePictureFileName(fileName: nil)
+        userSubject.value = userSubject.value?.with(profilePictureUrl: nil)
     }
 }

@@ -1,16 +1,16 @@
 import Combine
 import Foundation
 
-private let tag = String(describing: MessageRepositoryImpl.self)
 
 class MessageRepositoryImpl: MessageRepository {
     private let messageLocalDataSource: MessageLocalDataSource
     private let messageRemoteDataSource: MessageRemoteDataSource
     private let messageChangesSubject = PassthroughSubject<CoreDataChange<Message>, Never>()
+    private var cancellables = Set<AnyCancellable>()
+    private let tag = String(describing: MessageRepositoryImpl.self)
     var messageChanges: AnyPublisher<CoreDataChange<Message>, Never> {
         messageChangesSubject.eraseToAnyPublisher()
     }
-    private var cancellables = Set<AnyCancellable>()
     
     init(
         messageLocalDataSource: MessageLocalDataSource,

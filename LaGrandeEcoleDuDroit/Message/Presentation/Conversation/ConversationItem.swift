@@ -125,7 +125,7 @@ private struct ConversationItemStructure<Content: View>: View {
     
     var body: some View {
         HStack(alignment: .center) {
-            ProfilePicture(url: interlocutor.profilePictureFileName, scale: 0.45)
+            ProfilePicture(url: interlocutor.profilePictureUrl, scale: 0.45)
             content
         }
         .frame(maxWidth: .infinity, alignment: .leading)

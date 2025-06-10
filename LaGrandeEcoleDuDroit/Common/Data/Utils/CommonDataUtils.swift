@@ -10,13 +10,6 @@ func handleNetworkException<T>(
     do {
         return try await block()
     }
-    catch let error as RequestError {
-        let errorMessage = error.localizedDescription.isEmpty ? (message ?? "Uknown error") : error.localizedDescription
-        e(tag, errorMessage, error)
-        switch error {
-            case .invalidResponse, .invalidURL: throw NetworkError.internalServer
-        }
-    }
     catch let error as URLError {
         e(tag, error.localizedDescription, error)
         switch error.code {
@@ -24,6 +17,7 @@ func handleNetworkException<T>(
             default : throw error
         }
     }
+    
     catch let error as NSError {
         e(tag, error.localizedDescription, error)
         if let errorCode = FirestoreErrorCode.Code(rawValue: error.code) {
@@ -37,6 +31,7 @@ func handleNetworkException<T>(
             throw handleSpecificException(error)
         }
     }
+    
     catch {
         e(tag, error.localizedDescription, error)
         throw handleSpecificException(error)
@@ -45,17 +40,17 @@ func handleNetworkException<T>(
 
 func handleRetrofitError(
     block: () async throws -> (URLResponse, ServerResponse),
-    specificHandle: ((URLResponse, ServerResponse) -> Void)? = nil
+    specificHandle: ((URLResponse, ServerResponse) throws -> Void)? = nil
 ) async throws -> Void {
     let (urlResponse, serverResponse) = try await block()
     
     if let httpResponse = urlResponse as? HTTPURLResponse {
         if httpResponse.statusCode >= 400 {
             guard specificHandle == nil else {
-                return specificHandle!(urlResponse, serverResponse)
+                return try specificHandle!(urlResponse, serverResponse)
             }
             
-            throw RequestError.invalidResponse(serverResponse.error)
+            throw NetworkError.internalServer(serverResponse.error)
         }
     }
 }
@@ -74,9 +69,9 @@ func handleRetrofitError<T>(
             
             if let data = data as? Data {
                 let errorBody = String(data: data, encoding: .utf8)
-                throw RequestError.invalidResponse(errorBody)
+                throw NetworkError.internalServer(errorBody)
             } else {
-                throw RequestError.invalidResponse(nil)
+                throw NetworkError.internalServer(nil)
             }
         } else {
             return data

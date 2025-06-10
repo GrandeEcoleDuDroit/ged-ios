@@ -20,4 +20,6 @@ protocol UserRepository {
     func deleteCurrentUser()
     
     func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws
+    
+    func deleteProfilePictureFileName(userId: String) async throws
 }

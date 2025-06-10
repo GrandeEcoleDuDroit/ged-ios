@@ -12,51 +12,59 @@ class UserRemoteDataSource {
     
     func listenUser(userId: String) -> AnyPublisher<User, Error> {
         userFirestoreApi.listenCurrentUser(userId: userId)
-            .compactMap { firestoreUser in
-                return if let firestoreUser = firestoreUser {
-                    firestoreUser.toUser()
-                } else {
-                    nil
-                }
-            }.eraseToAnyPublisher()
+            .compactMap { $0?.toUser() }
+            .eraseToAnyPublisher()
     }
     
     func getUser(userId: String) async throws -> User? {
-        if let firestoreUser = try await userFirestoreApi.getUser(userId: userId) {
-            firestoreUser.toUser()
-        } else {
-            nil
-        }
+        try await userFirestoreApi.getUser(userId: userId)?.toUser()
     }
     
     func getUserWithEmail(email: String) async throws -> User? {
-        if let firestoreUser = try await userFirestoreApi.getUserWithEmail(email: email) {
-            firestoreUser.toUser()
-        } else {
-            nil
-        }
+        try await userFirestoreApi.getUserWithEmail(email: email)?.toUser()
     }
     
     func getUsers() async -> [User] {
-        if let firestoreUsers = try? await userFirestoreApi.getUsers() {
-            firestoreUsers.map { $0.toUser() }
-        } else {
-            []
-        }
+        (try? await userFirestoreApi.getUsers())?.map { $0.toUser() } ?? []
     }
     
     func createUser(user: User) async throws {
-        try await userOracleApi.createUser(user: user.toOracleUser())
-        try userFirestoreApi.createUser(firestoreUser: user.toFirestoreUser())
+        try await createUserWithOracle(user: user)
+        try await createUserWithFirestore(user: user)
     }
     
     func updateProfilePictureFileName(userId: String, fileName: String) async throws {
-        try await userOracleApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
+        try await handleRetrofitError {
+            try await userOracleApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
+        }
+        
         userFirestoreApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
     }
     
     func deleteProfilePictureFileName(userId: String) async throws {
-        try await userOracleApi.deleteProfilePictureFileName(userId: userId)
+        try await handleRetrofitError {
+            try await userOracleApi.deleteProfilePictureFileName(userId: userId)
+        }
         userFirestoreApi.deleteProfilePictureFileName(userId: userId)
+    }
+    
+    private func createUserWithFirestore(user: User) async throws {
+        try await handleNetworkException {
+            try userFirestoreApi.createUser(firestoreUser: user.toFirestoreUser())
+        }
+    }
+    
+    private func createUserWithOracle(user: User) async throws {
+        try await handleRetrofitError(
+            block: { try await userOracleApi.createUser(user: user.toOracleUser()) },
+            specificHandle: { urlResponse, serverResponse in
+                if let httpResponse = urlResponse as? HTTPURLResponse {
+                    if httpResponse.statusCode == 403 {
+                        throw NetworkError.forbidden
+                    }
+                    throw parseOracleError(code: serverResponse.code, message: serverResponse.message)
+                }
+            }
+        )
     }
 }

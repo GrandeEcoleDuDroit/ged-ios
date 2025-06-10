@@ -35,27 +35,4 @@ class MainViewModel: ObservableObject {
                 }
             }.store(in: &cancellables)
     }
-    
-    private func checkCurrentUser() {
-        userRepository.user
-            .compactMap { $0 }
-            .first()
-            .sink { [weak self] user in
-                Task {
-                    do {
-                        if let remoteUser = try await self?.userRepository.getUser(userId: user.id) {
-                            if (remoteUser != user) {
-                                self?.userRepository.storeUser(remoteUser)
-                            }
-                        } else {
-                            self?.authenticationRepository.logout()
-                            self?.listenDataUseCase.stop()
-                            Task { await self?.clearDataUseCase.execute() }
-                        }
-                    } catch {
-                        e(tag, "Error while checking current user: \(error)", error)
-                    }
-                }
-            }.store(in: &cancellables)
-    }
 }

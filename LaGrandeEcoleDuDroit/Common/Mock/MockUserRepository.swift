@@ -46,6 +46,12 @@ class MockUserRepository: UserRepository {
     }
     
     func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {
-        userSubject.value = userSubject.value?.with(profilePictureFileName: profilePictureFileName)
+        userSubject.value = userSubject.value?.with(
+            profilePictureUrl: UrlUtils.formatProfilePictureUrl(fileName: profilePictureFileName)
+        )
+    }
+    
+    func deleteProfilePictureFileName(userId: String) async throws {
+        userSubject.value = userSubject.value?.with(profilePictureUrl: nil)
     }
 }

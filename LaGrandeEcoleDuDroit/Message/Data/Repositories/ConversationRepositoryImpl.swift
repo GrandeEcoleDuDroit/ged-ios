@@ -1,30 +1,27 @@
 import Combine
 import Foundation
 
-private let tag = String(describing: ConversationRepositoryImpl.self)
 
 class ConversationRepositoryImpl: ConversationRepository {
-    private let messageRepository: MessageRepository
-    private let userRepository: UserRepository
     private let conversationLocalDataSource: ConversationLocalDataSource
     private let conversationRemoteDataSource: ConversationRemoteDataSource
-    private var interlocutors: [String: User] = [:]
+    private let userRepository: UserRepository
+    private var fetchedInterlocutors: [String: User] = [:]
+    private var cancellables: Set<AnyCancellable> = []
+    private let tag = String(describing: ConversationRepositoryImpl.self)
     private let conversationChangesSubject = PassthroughSubject<CoreDataChange<Conversation>, Never>()
     var conversationChanges: AnyPublisher<CoreDataChange<Conversation>, Never> {
         conversationChangesSubject.eraseToAnyPublisher()
     }
-    private var cancellables: Set<AnyCancellable> = []
     
     init(
-        messageRepository: MessageRepository,
-        userRepository: UserRepository,
         conversationLocalDataSource: ConversationLocalDataSource,
-        conversationRemoteDataSource: ConversationRemoteDataSource
+        conversationRemoteDataSource: ConversationRemoteDataSource,
+        userRepository: UserRepository
     ) {
-        self.messageRepository = messageRepository
-        self.userRepository = userRepository
         self.conversationLocalDataSource = conversationLocalDataSource
         self.conversationRemoteDataSource = conversationRemoteDataSource
+        self.userRepository = userRepository
         listenDataChanges()
     }
     
@@ -58,7 +55,7 @@ class ConversationRepositoryImpl: ConversationRepository {
                     return Empty<Conversation, Error>().eraseToAnyPublisher()
                 }
 
-                if let interlocutor = self.interlocutors[interlocutorId] {
+                if let interlocutor = self.fetchedInterlocutors[interlocutorId] {
                     let conversation = remoteConversation.toConversation(userId: userId, interlocutor: interlocutor)
                     
                     return Just(conversation)
@@ -95,12 +92,16 @@ class ConversationRepositoryImpl: ConversationRepository {
     
     func deleteConversation(conversation: Conversation, userId: String) async throws {
         let deleteTime = Date()
+        try? await conversationLocalDataSource.updateConversation(
+            conversation: conversation.with(deleteTime: deleteTime)
+        )
         try await handleNetworkException(
             block: {
-                try? await conversationLocalDataSource.updateConversation(
-                    conversation: conversation.with(deleteTime: deleteTime)
+                try await conversationRemoteDataSource.updateConversationDeleteTime(
+                    conversationId: conversation.id,
+                    userId: userId,
+                    deleteTime: deleteTime
                 )
-                try await conversationRemoteDataSource.updateConversationDeleteTime(conversationId: conversation.id, userId: userId, deleteTime: deleteTime)
             }
         )
     }
@@ -111,5 +112,8 @@ class ConversationRepositoryImpl: ConversationRepository {
     
     func stopListenConversations() {
         conversationRemoteDataSource.stopListeningConversations()
+        cancellables.forEach { $0.cancel() }
+        cancellables.removeAll()
+        fetchedInterlocutors.removeAll()
     }
 }
