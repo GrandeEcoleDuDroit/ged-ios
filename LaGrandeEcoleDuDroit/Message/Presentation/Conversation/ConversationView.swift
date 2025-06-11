@@ -11,13 +11,8 @@ struct ConversationDestination: View {
     var body: some View {
         ConversationView(
             conversations: viewModel.uiState.conversations,
-            query: $viewModel.uiState.query,
             onCreateConversationClick: onCreateConversationClick,
-            onConversationClick: {
-                viewModel.clearQuery()
-                onConversationClick($0)
-            },
-            onQueryChange: viewModel.onQueryChange,
+            onConversationClick: onConversationClick,
             onDeleteConversationClick: viewModel.deleteConversation
         )
         .navigationTitle(getString(.messages))
@@ -49,10 +44,8 @@ struct ConversationDestination: View {
 
 private struct ConversationView: View {
     let conversations: [ConversationUi]?
-    @Binding var query: String
     let onCreateConversationClick: () -> Void
     let onConversationClick: (ConversationUi) -> Void
-    let onQueryChange: (String) -> Void
     let onDeleteConversationClick: (Conversation) -> Void
     
     @State private var selectedConversation: ConversationUi? = nil
@@ -113,13 +106,6 @@ private struct ConversationView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             }
         }
-        .searchable(
-            text: $query,
-            placement: .navigationBarDrawer(displayMode: .automatic)
-        )
-        .onChange(of: query) {
-            onQueryChange($0)
-        }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .alert(
             getString(.deleteConversationAlertMessage),
@@ -142,10 +128,8 @@ private struct ConversationView: View {
     NavigationStack {
         ConversationView(
             conversations: [],
-            query: .constant(""),
             onCreateConversationClick: {},
             onConversationClick: {_ in},
-            onQueryChange: {_ in},
             onDeleteConversationClick: {_ in}
         )
     }

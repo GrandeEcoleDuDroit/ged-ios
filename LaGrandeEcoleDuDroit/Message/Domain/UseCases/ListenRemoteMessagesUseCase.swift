@@ -22,7 +22,7 @@ class ListenRemoteMessagesUseCase {
     func start() {
         listenConversationsPublisher()
             .map(updateFetchedConversations)
-            .flatMap(launchMessagePublisher)
+            .flatMap(messagePublisher)
             .sink { [weak self] message in
                 Task { await self?.messageRepository.upsertLocalMessage(message: message) }
             }
@@ -65,12 +65,12 @@ class ListenRemoteMessagesUseCase {
         return conversations
     }
     
-    private func launchMessagePublisher(for conversations: [Conversation]) -> AnyPublisher<Message, Never> {
+    private func messagePublisher(for conversations: [Conversation]) -> AnyPublisher<Message, Never> {
         let publishers = conversations.map { conversation in
             self.getLastMessageDate(for: conversation.id)
                 .map { messageDate in
-                    self.getMessageOffsetTime(
-                        lastMessaegDate: messageDate,
+                    self.compareLatestDate(
+                        messageDate: messageDate,
                         conversationDeleteTime: conversation.deleteTime
                     )
                 }
@@ -93,14 +93,14 @@ class ListenRemoteMessagesUseCase {
         }
     }
     
-    private func getMessageOffsetTime(lastMessaegDate: Date?, conversationDeleteTime: Date?) -> Date? {
+    private func compareLatestDate(messageDate: Date?, conversationDeleteTime: Date?) -> Date? {
         if let deleteTime = conversationDeleteTime,
-            let messageDate = lastMessaegDate,
+            let messageDate = messageDate,
             deleteTime > messageDate
         {
             deleteTime
         } else {
-            lastMessaegDate
+            messageDate
         }
     }
         

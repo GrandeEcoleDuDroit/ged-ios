@@ -23,19 +23,6 @@ class ConversationViewModel: ObservableObject {
         listenConversations()
     }
     
-    func onQueryChange(query: String) {
-        uiState.query = query
-        guard !query.isEmpty else {
-            uiState.conversations = defaultConversations
-            return
-        }
-        
-        uiState.conversations = defaultConversations.filter {
-            $0.interlocutor.firstName.lowercased().contains(query.lowercased()) ||
-                $0.interlocutor.lastName.lowercased().contains(query.lowercased())
-        }
-    }
-    
     func deleteConversation(conversation: Conversation) {
         do {
             guard let user = userRepository.currentUser else {
@@ -45,11 +32,6 @@ class ConversationViewModel: ObservableObject {
         } catch {
             event = ErrorEvent(message: mapErrorMessage(error))
         }
-    }
-    
-    func clearQuery() {
-        uiState.query = ""
-        uiState.conversations = defaultConversations
     }
     
     private func listenConversations() {
@@ -76,7 +58,6 @@ class ConversationViewModel: ObservableObject {
     
     struct ConversationUiState {
         var conversations: [ConversationUi] = []
-        var query: String = ""
         var loading = true
     }
 }

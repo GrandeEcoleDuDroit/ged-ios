@@ -8,12 +8,12 @@ class ConversationApiImpl: ConversationApi {
     private var listeners: [ListenerRegistration] = []
     private let conversationCollection: CollectionReference = Firestore.firestore().collection(conversationTableName)
     
-    func listenConversations(userId: String, offsetTime: Timestamp?) -> AnyPublisher<RemoteConversation, Error> {
+    func listenConversations(userId: String, notInConversationIds: [String]) -> AnyPublisher<RemoteConversation, Error> {
         let subject = PassthroughSubject<RemoteConversation, Error>()
         
         let listener = conversationCollection
             .whereField(ConversationDataFields.participants, arrayContains: userId)
-            .withOffsetTime(offsetTime)
+            .whereField(ConversationDataFields.conversationId, notIn: notInConversationIds)
             .addSnapshotListener { snapshot, error in
                 if let error = error {
                     subject.send(completion: .failure(error))
