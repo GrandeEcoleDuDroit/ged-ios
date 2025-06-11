@@ -97,20 +97,6 @@ class ConversationLocalDataSource {
         }
     }
     
-    func getLastConversation() async throws -> Conversation? {
-        try await context.perform {
-            let fetchRequest = LocalConversation.fetchRequest()
-            
-            fetchRequest.sortDescriptors = [NSSortDescriptor(
-                key: ConversationField.createdAt,
-                ascending: false
-            )]
-            fetchRequest.fetchLimit = 1
-            
-            return try self.context.fetch(fetchRequest).first?.toConversation()
-        }
-    }
-    
     func insertConversation(conversation: Conversation) async throws {
         try await conversationActor.insertConversation(conversation: conversation)
     }

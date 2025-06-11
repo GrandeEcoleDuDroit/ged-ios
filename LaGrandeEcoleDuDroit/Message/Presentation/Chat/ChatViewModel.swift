@@ -5,6 +5,7 @@ class ChatViewModel: ObservableObject {
     private var conversation: Conversation
     private let userRepository: UserRepository
     private let messageRepository: MessageRepository
+    private let conversationRepository: ConversationRepository
     private let sendMessageUseCase: SendMessageUseCase
     private var cancellables: Set<AnyCancellable> = []
     private let user: User?
@@ -16,11 +17,13 @@ class ChatViewModel: ObservableObject {
         conversation: Conversation,
         userRepository: UserRepository,
         messageRepository: MessageRepository,
+        conversationRepository: ConversationRepository,
         sendMessageUseCase: SendMessageUseCase
     ) {
         self.conversation = conversation
         self.userRepository = userRepository
         self.messageRepository = messageRepository
+        self.conversationRepository = conversationRepository
         self.sendMessageUseCase = sendMessageUseCase
         user = userRepository.currentUser
         getMessages()
@@ -117,6 +120,16 @@ class ChatViewModel: ObservableObject {
         if !message.seen && message.senderId == conversation.interlocutor.id {
             Task { try? await messageRepository.updateSeenMessage(message: message) }
         }
+    }
+    
+    private func listenConversatinoChanges() {
+        conversationRepository.conversationChanges.map { [weak self] in
+            $0.updated.first { $0.id == self?.conversation.id }
+        }
+        .compactMap { $0 }
+        .sink { [weak self] updatedConversation in
+            self?.conversation = updatedConversation
+        }.store(in: &cancellables)
     }
     
     struct ChatUiState {

@@ -36,25 +36,25 @@ class ListenRemoteConversationsUseCase {
     }
     
     private func conversationPublisher(_ user: User) -> AnyPublisher<Conversation, Never> {
-        getLastConversationDate()
-            .flatMap { offsetTime in
-                self.listenRemoteConversations(userId: user.id, offsetTime: offsetTime)
+        getConversationIds()
+            .flatMap { conversationIds in
+                self.listenRemoteConversations(userId: user.id, notInConversationIds: conversationIds)
             }
             .eraseToAnyPublisher()
     }
     
-    private func getLastConversationDate() -> Future<Date?, Never> {
-        Future<Date?, Never> { promise in
+    private func getConversationIds() -> Future<[String], Never> {
+        Future<[String], Never> { promise in
             Task {
-                let offsetTime = await self.conversationRepository.getLastConversationDate()
-                promise(.success(offsetTime))
+                let ids = await self.conversationRepository.getConversations().map { $0.id }
+                promise(.success(ids))
             }
         }
     }
         
-    private func listenRemoteConversations(userId: String,offsetTime: Date?) -> AnyPublisher<Conversation, Never> {
+    private func listenRemoteConversations(userId: String, notInConversationIds: [String]) -> AnyPublisher<Conversation, Never> {
         conversationRepository
-            .fetchRemoteConversations(userId: userId, offsetTime: offsetTime)
+            .fetchRemoteConversations(userId: userId, notInConversationIds: notInConversationIds)
             .catch { error -> Empty<Conversation, Never> in
                 e(self.tag, "Failed to fetch conversations: \(error)", error)
                 return Empty(completeImmediately: true)

@@ -43,13 +43,9 @@ class ConversationRepositoryImpl: ConversationRepository {
          try? await conversationLocalDataSource.getConversation(interlocutorId: interlocutorId)
     }
     
-    func getLastConversationDate() async -> Date? {
-        try? await conversationLocalDataSource.getLastConversation()?.createdAt
-    }
-    
-    func fetchRemoteConversations(userId: String, offsetTime: Date?) -> AnyPublisher<Conversation, Error> {
+    func fetchRemoteConversations(userId: String, notInConversationIds: [String]) -> AnyPublisher<Conversation, Error> {
         conversationRemoteDataSource
-            .listenConversations(userId: userId, offsetTime: offsetTime)
+            .listenConversations(userId: userId, notInConversationIds: notInConversationIds)
             .flatMap { remoteConversation in
                 guard let interlocutorId = remoteConversation.participants.first(where: { $0 != userId }) else {
                     return Empty<Conversation, Error>().eraseToAnyPublisher()

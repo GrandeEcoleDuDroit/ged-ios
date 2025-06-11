@@ -8,7 +8,7 @@ protocol ConversationRepository {
     
     func getConversation(interlocutorId: String) async -> Conversation?
     
-    func fetchRemoteConversations(userId: String, offsetTime: Date?) -> AnyPublisher<Conversation, Error>
+    func fetchRemoteConversations(userId: String, notInConversationIds: [String]) -> AnyPublisher<Conversation, Error>
     
     func createConversation(conversation: Conversation, userId: String) async throws
     
@@ -19,8 +19,6 @@ protocol ConversationRepository {
     func deleteConversation(conversation: Conversation, userId: String) async throws
     
     func deleteLocalConversations() async
-        
-    func getLastConversationDate() async -> Date?
     
     func stopListenConversations()
 }

@@ -63,7 +63,7 @@ class ConversationMessageRepositoryImpl: ConversationMessageRepository {
 
         let publishers = conversations.map { conversation in
             let initial = getCurrentLastMessage(conversation: conversation)
-            let updates = listenLastMessageChangesPublisher(conversation: conversation)
+            let updates = listenLastMessageChanges(conversation: conversation)
             return initial
                 .compactMap { $0 }
                 .append(updates)
@@ -88,7 +88,7 @@ class ConversationMessageRepositoryImpl: ConversationMessageRepository {
         }
     }
     
-    private func listenLastMessageChangesPublisher(conversation: Conversation) -> AnyPublisher<ConversationMessage, Never> {
+    private func listenLastMessageChanges(conversation: Conversation) -> AnyPublisher<ConversationMessage, Never> {
         messageRepository.messageChanges
             .compactMap { change in
                 change.inserted.first(where: { $0.conversationId == conversation.id }) ??
