@@ -47,9 +47,8 @@ private struct SecondRegistrationView: View {
             .padding(.vertical, 10)
             .overlay(
                 RoundedRectangle(cornerRadius: 5)
-                    .stroke(.black, lineWidth: 1)
+                    .stroke(.outline, lineWidth: 1)
             )
-           .cornerRadius(5)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()

@@ -48,31 +48,15 @@ private struct ThirdRegistrationView: View {
     
     var body: some View {
         ZStack {
-            VStack(alignment: .leading, spacing: GedSpacing.medium) {
-                Text(getString(.enterEmailPassword))
-                    .font(.title3)
-                
-                OutlineTextField(
-                    label: getString(.email),
-                    text: $email,
-                    inputField: InputField.email,
-                    inputFieldFocused: $inputFieldFocused,
-                    isDisable: loading,
-                    errorMessage: emailError
-                )
-                .textInputAutocapitalization(.never)
-                
-                OutlinePasswordTextField(
-                    label: getString(.password),
-                    text: $password,
-                    inputField: InputField.password,
-                    inputFieldFocused: $inputFieldFocused,
-                    isDisable: loading,
-                    errorMessage: passwordError
-                )
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .padding()
+            ThirdRegistrationForm(
+                email: $email,
+                password: $password,
+                loading: loading,
+                emailError: emailError,
+                passwordError: passwordError,
+                errorMessage: errorMessage,
+                inputFieldFocused: $inputFieldFocused
+            )
             
             if loading {
                 ProgressView()

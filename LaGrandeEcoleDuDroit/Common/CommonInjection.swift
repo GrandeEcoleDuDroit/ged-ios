@@ -22,6 +22,10 @@ class CommonInjection: DependencyInjectionContainer {
             ImageApiImpl()
         }.inObjectScope(.container)
         
+        container.register(WhiteListApi.self) { _ in
+            WhiteListApiImpl()
+        }.inObjectScope(.container)
+        
         container.register(UserLocalDataSource.self) { _ in
             UserLocalDataSource()
         }.inObjectScope(.container)
@@ -54,6 +58,12 @@ class CommonInjection: DependencyInjectionContainer {
         
         container.register(ImageRepository.self) { resolver in
             ImageRepositoryImpl(imageRemoteDataSource: resolver.resolve(ImageRemoteDataSource.self)!)
+        }.inObjectScope(.container)
+        
+        container.register(WhiteListRepository.self) { resolver in
+            WhiteListRepositoryImpl(
+                whiteListApi: resolver.resolve(WhiteListApi.self)!
+            )
         }.inObjectScope(.container)
         
         container.register(GenerateIdUseCase.self) { _ in

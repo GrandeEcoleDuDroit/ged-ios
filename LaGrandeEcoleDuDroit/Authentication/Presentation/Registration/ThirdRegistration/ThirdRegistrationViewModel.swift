@@ -1,6 +1,8 @@
 import SwiftUI
 import Combine
 
+private let minPasswordLength: Int = 8
+
 class ThirdRegistrationViewModel: ObservableObject {
     private let registerUseCase: RegisterUseCase
     
@@ -12,8 +14,12 @@ class ThirdRegistrationViewModel: ObservableObject {
     }
     
     func register(firstName: String, lastName: String, schoolLevel: SchoolLevel) {
-        uiState.email = uiState.email.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard (!validateInputs()) else { return }
+        let email = uiState.email.trimmingCharacters(in: .whitespacesAndNewlines)
+        let password = uiState.password
+        
+        guard (validateInputs(email: email, password: password)) else {
+            return
+        }
         uiState.loading = true
         
         Task {
@@ -30,8 +36,6 @@ class ThirdRegistrationViewModel: ObservableObject {
                     self?.uiState.loading = false
                     switch error {
                         case .noInternetConnection: self?.event = ErrorEvent(message: getString(.noInternetConectionError))
-                        case .tooManyRequests: self?.uiState.errorMessage = getString(.tooManyRequestsError)
-                        case .dupplicateData: self?.uiState.errorMessage = getString(.emailAlreadyAssociatedError)
                         default:
                             self?.uiState.errorMessage = self?.mapErrorMessage(error)
                             self?.uiState.password = ""
@@ -48,9 +52,9 @@ class ThirdRegistrationViewModel: ObservableObject {
         }
     }
     
-    func validateInputs() -> Bool {
-        uiState.emailError = validateEmail(email: uiState.email)
-        uiState.passwordError = validatePassword(password: uiState.password)
+    func validateInputs(email: String, password: String) -> Bool {
+        uiState.emailError = validateEmail(email: email)
+        uiState.passwordError = validatePassword(password: password)
         return uiState.emailError == nil && uiState.passwordError == nil
     }
     
@@ -67,7 +71,7 @@ class ThirdRegistrationViewModel: ObservableObject {
     private func validatePassword(password: String) -> String? {
         if password.isBlank {
             getString(.mandatoryFieldError)
-        } else if password.count >= 8 {
+        } else if password.count < minPasswordLength {
             getString(.passwordLengthError)
         } else {
             nil
@@ -78,10 +82,14 @@ class ThirdRegistrationViewModel: ObservableObject {
         mapNetworkErrorMessage(e) {
             if let authError = e as? AuthenticationError {
                  switch authError {
-                     case .userDisabled: getString(.userDisabled)
-                     case .invalidCredentials: getString(.invalidCredentials)
                      default: getString(.unknownError)
                  }
+            } else if let networkError = e as? NetworkError {
+                switch networkError {
+                    case .forbidden: getString(.unknownError)
+                    case .dupplicateData: getString(.emailAlreadyAssociatedError)
+                    default: getString(.unknownError)
+                }
             } else {
                  getString(.unknownError)
              }

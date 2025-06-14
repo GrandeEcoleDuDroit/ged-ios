@@ -63,7 +63,7 @@ class ConversationLocalDataSource {
 
                     inserted = resolve(objectIDs.inserted)
                     updated = resolve(objectIDs.updated)
-                    deleted = []
+                    deleted = resolve(objectIDs.deleted)
                 }
 
                 return CoreDataChange(inserted: inserted, updated: updated, deleted: deleted)

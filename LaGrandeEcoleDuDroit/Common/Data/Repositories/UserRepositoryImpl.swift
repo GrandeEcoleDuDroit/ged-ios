@@ -7,7 +7,9 @@ class UserRepositoryImpl: UserRepository {
     private let tag = String(describing: UserRepositoryImpl.self)
     private var userSubject = CurrentValueSubject<User?, Never>(nil)
     var user: AnyPublisher<User, Never> {
-        userSubject.compactMap{ $0 }.eraseToAnyPublisher()
+        userSubject
+            .compactMap{ $0 }
+            .eraseToAnyPublisher()
     }
     var currentUser: User? {
         userSubject.value

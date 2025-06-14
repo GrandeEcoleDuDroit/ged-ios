@@ -15,7 +15,7 @@ class MockConversationRepository: ConversationRepository {
         conversationFixture
     }
     
-    func fetchRemoteConversations(userId: String, offsetTime: Date?) -> AnyPublisher<Conversation, any Error> {
+    func fetchRemoteConversations(userId: String) -> AnyPublisher<Conversation, any Error> {
         Just(conversationFixture)
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
@@ -32,8 +32,4 @@ class MockConversationRepository: ConversationRepository {
     func deleteConversation(conversation: Conversation, userId: String) async throws {}
     
     func stopListenConversations() {}
-    
-    func getLastConversationDate() async -> Date? {
-        Date()
-    }
 }

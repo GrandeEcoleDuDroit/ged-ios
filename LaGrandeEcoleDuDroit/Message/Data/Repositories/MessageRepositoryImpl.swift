@@ -38,10 +38,6 @@ class MessageRepositoryImpl: MessageRepository {
         try? await messageLocalDataSource.getLastMessage(conversationId: conversationId)
     }
     
-    func getLastMessageDate(conversationId: String) async -> Date? {
-        try? await messageLocalDataSource.getLastMessage(conversationId: conversationId)?.date
-    }
-    
     func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Error> {
         messageRemoteDataSource.listenMessages(conversation: conversation, offsetTime: offsetTime)
     }

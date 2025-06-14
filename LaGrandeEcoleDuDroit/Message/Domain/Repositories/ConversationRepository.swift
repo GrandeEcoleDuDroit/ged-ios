@@ -8,7 +8,7 @@ protocol ConversationRepository {
     
     func getConversation(interlocutorId: String) async -> Conversation?
     
-    func fetchRemoteConversations(userId: String, notInConversationIds: [String]) -> AnyPublisher<Conversation, Error>
+    func fetchRemoteConversations(userId: String) -> AnyPublisher<Conversation, Error>
     
     func createConversation(conversation: Conversation, userId: String) async throws
     

@@ -13,19 +13,19 @@ class AuthenticationViewModel: ObservableObject {
     }
     
     func login() {
-        guard validateInputs() else { return }
+        let (email, password) = (uiState.email, uiState.password)
+        guard validateInputs(email: email, password: password) else { return }
         uiState.loading = true
         
         Task {
             do {
-                try await loginUseCase.execute(email: uiState.email, password: uiState.password)
+                try await loginUseCase.execute(email: email, password: password)
             }
             catch let error as NetworkError {
                 DispatchQueue.main.sync { [weak self] in
                     self?.uiState.loading = false
                     switch error {
                         case .noInternetConnection: self?.event = ErrorEvent(message: getString(.noInternetConectionError))
-                        case .tooManyRequests: self?.uiState.errorMessage = getString(.tooManyRequestsError)
                         default: self?.uiState.errorMessage = self?.mapErrorMessage(error)
                     }
                     self?.uiState.password = ""
@@ -40,9 +40,9 @@ class AuthenticationViewModel: ObservableObject {
         }
     }
     
-    private func validateInputs() -> Bool {
-        uiState.emailError = validateEmail(email: uiState.email)
-        uiState.passwordError = validatePassword(password: uiState.password)
+    private func validateInputs(email: String, password: String) -> Bool {
+        uiState.emailError = validateEmail(email: email)
+        uiState.passwordError = validatePassword(password: password)
         return uiState.emailError == nil && uiState.passwordError == nil
     }
     

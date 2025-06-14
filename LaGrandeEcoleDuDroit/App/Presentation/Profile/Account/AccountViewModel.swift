@@ -31,11 +31,15 @@ class AccountViewModel: ObservableObject {
             return event = ErrorEvent(message: "Image data is required.")
         }
         
+        guard let user = uiState.user else {
+            return
+        }
+        
         uiState.loading = true
         
         let task = Task {  [weak self] in
             do {
-                try await self?.updateProfilePictureUseCase.execute(imageData: imageData)
+                try await self?.updateProfilePictureUseCase.execute(user: user, imageData: imageData)
                 DispatchQueue.main.sync { [weak self] in
                     self?.resetValues()
                 }

@@ -5,7 +5,7 @@ class ListenRemoteMessagesUseCase {
     private let userRepository: UserRepository
     private let conversationRepository: ConversationRepository
     private let messageRepository: MessageRepository
-    private var fetchedConversations: [String: Conversation] = [:]
+    private var messageCancellables: [String: MessageCancellable] = [:]
     private var cancellables = Set<AnyCancellable>()
     private let tag = String(describing: ListenRemoteMessagesUseCase.self)
     
@@ -21,10 +21,8 @@ class ListenRemoteMessagesUseCase {
     
     func start() {
         listenConversationsPublisher()
-            .map(updateFetchedConversations)
-            .flatMap(messagePublisher)
-            .sink { [weak self] message in
-                Task { await self?.messageRepository.upsertLocalMessage(message: message) }
+            .sink { [weak self] conversations in
+                self?.handleConversationsUpdate(conversations)
             }
             .store(in: &cancellables)
     }
@@ -33,14 +31,15 @@ class ListenRemoteMessagesUseCase {
         messageRepository.stopListeningMessages()
         cancellables.forEach { $0.cancel() }
         cancellables.removeAll()
-        fetchedConversations.removeAll()
+        messageCancellables.values.forEach { $0.cancellable.cancel() }
+        messageCancellables.removeAll()
     }
     
     private func listenConversationsPublisher() -> AnyPublisher<[Conversation], Never> {
         let initial = getCurrentConversations()
         let updates = conversationRepository.conversationChanges.map { change in
             change.inserted + change.updated.filter { conversation in
-                self.fetchedConversations[conversation.id] != conversation
+                self.messageCancellables[conversation.id]?.conversation != conversation
             }
         }
         
@@ -58,58 +57,69 @@ class ListenRemoteMessagesUseCase {
         }
     }
     
-    private func updateFetchedConversations(_ conversations: [Conversation]) -> [Conversation] {
-        conversations.forEach { conversation in
-            self.fetchedConversations[conversation.id] = conversation
+    private func handleConversationsUpdate(_ conversations: [Conversation]) {
+        for conversation in conversations {
+            messageCancellables[conversation.id]?.cancellable.cancel()
+
+            if let cancellable = subscribeToMessages(for: conversation) {
+                messageCancellables[conversation.id] = MessageCancellable(
+                    conversation: conversation,
+                    cancellable: cancellable
+                )
+            }
         }
-        return conversations
     }
     
-    private func messagePublisher(for conversations: [Conversation]) -> AnyPublisher<Message, Never> {
-        let publishers = conversations.map { conversation in
-            self.getLastMessageDate(for: conversation.id)
-                .map { messageDate in
-                    self.compareLatestDate(
-                        messageDate: messageDate,
-                        conversationDeleteTime: conversation.deleteTime
-                    )
+    private func subscribeToMessages(for conversation: Conversation) -> Cancellable? {
+        getLastMessage(for: conversation.id)
+            .map { [weak self] message in
+                self?.getOffsetTime(conversation: conversation, lastMessage: message)
+            }
+            .flatMap { [weak self] offsetTime in
+                self?.remoteMessagePublisher(conversation: conversation, offsetTime: offsetTime)
+                    ?? Empty().eraseToAnyPublisher()
+            }
+            .sink { [weak self] message in
+                Task {
+                    await self?.messageRepository.upsertLocalMessage(message: message)
                 }
-                .flatMap { offsetTime in
-                    self.remoteMessagePublisher(conversation: conversation, offsetTime: offsetTime)
-                }
-                .eraseToAnyPublisher()
-        }
-        
-        return Publishers.MergeMany(publishers)
-            .eraseToAnyPublisher()
+            }
     }
     
-    private func getLastMessageDate(for conversationId: String) -> Future<Date?, Never> {
-        Future<Date?, Never> { promise in
+    private func getLastMessage(for conversationId: String) -> Future<Message?, Never> {
+        Future<Message?, Never> { promise in
             Task {
-                let offset = await self.messageRepository.getLastMessageDate(conversationId: conversationId)
+                let offset = await self.messageRepository.getLastMessage(conversationId: conversationId)
                 promise(.success(offset))
             }
         }
     }
     
-    private func compareLatestDate(messageDate: Date?, conversationDeleteTime: Date?) -> Date? {
-        if let deleteTime = conversationDeleteTime,
-            let messageDate = messageDate,
+    private func getOffsetTime(conversation: Conversation, lastMessage: Message?) -> Date? {
+        if let deleteTime = conversation.deleteTime,
+           let messageDate = lastMessage?.date,
             deleteTime > messageDate
         {
             deleteTime
         } else {
-            messageDate
+            lastMessage?.date
         }
     }
         
         
-    private func remoteMessagePublisher(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Never> {
+    private func remoteMessagePublisher(
+        conversation: Conversation,
+        offsetTime: Date?
+    ) -> AnyPublisher<Message, Never> {
         messageRepository.fetchRemoteMessages(conversation: conversation, offsetTime: offsetTime)
             .catch { error -> Empty<Message, Never> in
                 e(self.tag, "Failed to fetch message: \(error)", error)
                 return Empty(completeImmediately: true)
             }.eraseToAnyPublisher()
+    }
+    
+    private struct MessageCancellable {
+        let conversation: Conversation
+        let cancellable: any Cancellable
     }
 }
