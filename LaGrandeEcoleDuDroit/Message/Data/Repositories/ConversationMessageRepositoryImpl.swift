@@ -39,7 +39,9 @@ class ConversationMessageRepositoryImpl: ConversationMessageRepository {
     private func conversationsPublisher() -> AnyPublisher<[Conversation], Never> {
         let initial = getCurrentConversations()
         let updates = conversationRepository.conversationChanges.map { change in
-            change.inserted + change.updated
+            (change.inserted + change.updated).filter { conversation in
+                change.deleted.contains(where: { $0.id == conversation.id }) == false
+            }
         }
         
         return Publishers.Merge(initial, updates)
@@ -91,14 +93,23 @@ class ConversationMessageRepositoryImpl: ConversationMessageRepository {
     private func listenLastMessageChanges(conversation: Conversation) -> AnyPublisher<ConversationMessage, Never> {
         messageRepository.messageChanges
             .compactMap { change in
-                change.inserted.first(where: { $0.conversationId == conversation.id }) ??
-                change.updated.first(where: { $0.conversationId == conversation.id })
+                let relevantMessages = (change.inserted + change.updated)
+                    .filter { $0.conversationId == conversation.id }
+
+                let nonDeletedMessages = relevantMessages.filter { message in
+                    !change.deleted.contains(where: { $0.id == message.id })
+                }
+                
+                let sortedMessages = nonDeletedMessages.sorted { $0.date > $1.date }
+
+                return sortedMessages.first
             }
             .map { message in
                 ConversationMessage(conversation: conversation, lastMessage: message)
             }
             .eraseToAnyPublisher()
     }
+
     
     deinit {
         messageCancellable?.cancel()

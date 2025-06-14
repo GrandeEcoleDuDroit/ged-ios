@@ -44,6 +44,8 @@ class CreateConversationViewModel: ObservableObject {
     
     private func fetchUsers() {
         guard let user = userRepository.currentUser else {
+            uiState.loading = false
+            updateEvent(ErrorEvent(message: getString(.userNotFound)))
             return
         }
         
@@ -51,19 +53,11 @@ class CreateConversationViewModel: ObservableObject {
         
         Task {
             let users = await userRepository.getUsers().filter { $0.id != user.id }
-            updateUiState(uiState.with({
-                $0.loading = false
-                $0.users = users
-            }))
             DispatchQueue.main.sync { [weak self] in
+                self?.uiState.loading = false
+                self?.uiState.users = users
                 self?.defaultUsers = users
             }
-        }
-    }
-    
-    private func updateUiState(_ uiState: CreateConversationUiState) {
-        DispatchQueue.main.sync { [weak self] in
-            self?.uiState = uiState
         }
     }
     

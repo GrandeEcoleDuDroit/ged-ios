@@ -127,6 +127,7 @@ class MessageInjection: DependencyInjectionContainer {
                 conversation: conversation,
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 messageRepository: resolver.resolve(MessageRepository.self)!,
+                conversationRepository: resolver.resolve(ConversationRepository.self)!,
                 sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!
             )
         }
@@ -211,6 +212,7 @@ class MessageInjection: DependencyInjectionContainer {
                 conversation: conversation,
                 userRepository: commonMockContainer.resolve(UserRepository.self)!,
                 messageRepository: resolver.resolve(MessageRepository.self)!,
+                conversationRepository: resolver.resolve(ConversationRepository.self)!,
                 sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!
             )
         }

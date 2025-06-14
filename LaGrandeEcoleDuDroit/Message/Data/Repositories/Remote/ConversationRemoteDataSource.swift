@@ -9,8 +9,8 @@ class ConversationRemoteDataSource {
         self.conversationApi = conversationApi
     }
     
-    func listenConversations(userId: String, notInConversationIds: [String]) -> AnyPublisher<RemoteConversation, Error> {
-        conversationApi.listenConversations(userId: userId, notInConversationIds: notInConversationIds)
+    func listenConversations(userId: String) -> AnyPublisher<RemoteConversation, Error> {
+        conversationApi.listenConversations(userId: userId)
     }
     
     func createConversation(conversation: Conversation, userId: String) async throws {

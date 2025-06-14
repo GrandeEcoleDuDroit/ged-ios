@@ -2,7 +2,7 @@ import Combine
 import FirebaseCore
 
 protocol ConversationApi {
-    func listenConversations(userId: String, notInConversationIds: [String]) -> AnyPublisher<RemoteConversation, Error>
+    func listenConversations(userId: String) -> AnyPublisher<RemoteConversation, Error>
     
     func createConversation(conversationId: String, data: [String: Any]) async throws
     

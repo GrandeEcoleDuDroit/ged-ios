@@ -23,8 +23,6 @@ protocol MessageRepository {
     func deleteLocalMessages(conversationId: String) async
     
     func deleteLocalMessages() async
-    
-    func getLastMessageDate(conversationId: String) async -> Date?
-    
+        
     func stopListeningMessages()
 }

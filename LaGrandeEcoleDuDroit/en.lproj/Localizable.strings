@@ -95,6 +95,7 @@
 "member" = "Member";
 "user_not_found" = "No user found";
 "delete_profile_picture_alert_message" = "Do you want to delete the profile picture ?";
+"user_not_white_listed" = "The registration is limited to authorized users.";
 
 // Profile errors
 "error_logout" = "An error occured while logging out.";

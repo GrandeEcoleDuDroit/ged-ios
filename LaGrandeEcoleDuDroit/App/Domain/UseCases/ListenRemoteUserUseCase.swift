@@ -19,16 +19,21 @@ class ListenRemoteUserUseCase {
             .first()
             .flatMap { user in
                 self.userRepository.getUserPublisher(userId: user.id)
-                    .map { Optional($0) }
+                    .filter { $0 != user }
+                    .map(\.self)
                     .catch { error -> AnyPublisher<User?, Never> in
                         e(self.tag, "Error fetching user: \(error)", error)
-                        return  Empty(completeImmediately: true)
+                        return Empty(completeImmediately: true)
                             .eraseToAnyPublisher()
                     }
             }
             .sink(receiveCompletion: { [weak self] completion in
                 if case let .failure(error) = completion {
-                    e(self?.tag ?? String(describing: ListenRemoteUserUseCase.self), "Sink failed with error: \(error)", error)
+                    e(
+                        self?.tag ?? String(describing: ListenRemoteUserUseCase.self),
+                        "Sink failed with error: \(error)",
+                        error
+                    )
                 }
             }, receiveValue: { [weak self] user in
                 if let user = user {

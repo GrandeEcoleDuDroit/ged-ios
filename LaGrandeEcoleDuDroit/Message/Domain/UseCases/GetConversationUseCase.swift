@@ -20,7 +20,7 @@ class GetConversationUseCase {
         if let user = userRepository.currentUser {
             return generateNewConversation(userId: user.id, interlocutor: interlocutor)
         } else {
-            throw NSError()
+            throw UserError.currentUserNotFound
         }
     }
 

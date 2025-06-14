@@ -24,6 +24,13 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
         initAuthentication()
     }
     
+    private func initAuthentication() {
+        authenticatedPublisher.send(
+            authenticationLocalDataSource.isAuthenticated() &&
+                firebaseAuthenticationRepository.isAuthenticated()
+        )
+    }
+    
     func loginWithEmailAndPassword(email: String, password: String) async throws {
         try await firebaseAuthenticationRepository.loginWithEmailAndPassword(email: email, password: password)
     }
@@ -44,12 +51,5 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     
     func resetPassword(email: String) async throws {
         try await firebaseAuthenticationRepository.resetPassword(email: email)
-    }
-    
-    private func initAuthentication() {
-        authenticatedPublisher.send(
-            authenticationLocalDataSource.isAuthenticated() &&
-                firebaseAuthenticationRepository.isAuthenticated()
-        )
     }
 }

@@ -37,6 +37,15 @@ class AuthenticationInjection: DependencyInjectionContainer {
             )
         }.inObjectScope(.container)
     
+        container.register(RegisterUseCase.self) { resolver in
+            RegisterUseCase(
+                authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
+                userRepository: CommonInjection.shared.resolve(UserRepository.self),
+                whiteListRepository: CommonInjection.shared.resolve(WhiteListRepository.self),
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+            )
+        }
+        
         container.register(FirstRegistrationViewModel.self) { resolver in
             FirstRegistrationViewModel()
         }

@@ -12,7 +12,7 @@ struct MessageNavigation: View {
                     path.append(.chat(conversation: conversation.toConversation()))
                 }
             )
-            .onAppear {tabBarVisibility.show = true }
+            .onAppear { tabBarVisibility.show = true }
             .background(Color.background)
             .navigationDestination(for: MessageRoute.self) { route in
                 switch route {

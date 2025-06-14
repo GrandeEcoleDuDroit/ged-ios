@@ -39,16 +39,15 @@ class MainInjection: DependencyInjectionContainer {
                 getUnreadConversationsCountUseCase: MessageInjection.shared.resolve(GetUnreadConversationsCountUseCase.self)
                 
             )
-        }
+        }.inObjectScope(.container)
         
         container.register(MainViewModel.self) { resolver in
             MainViewModel(
                 authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
-                userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!
             )
-        }
+        }.inObjectScope(.container)
         
         container.register(ProfileViewModel.self) { resolver in
             ProfileViewModel(
@@ -108,7 +107,6 @@ class MainInjection: DependencyInjectionContainer {
         mockContainer.register(MainViewModel.self) { resolver in
             MainViewModel(
                 authenticationRepository: authenticationMockContainer.resolve(AuthenticationRepository.self)!,
-                userRepository: mockContainer.resolve(UserRepository.self)!,
                 listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!
             )

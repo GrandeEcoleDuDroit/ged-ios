@@ -43,9 +43,9 @@ class ConversationRepositoryImpl: ConversationRepository {
          try? await conversationLocalDataSource.getConversation(interlocutorId: interlocutorId)
     }
     
-    func fetchRemoteConversations(userId: String, notInConversationIds: [String]) -> AnyPublisher<Conversation, Error> {
+    func fetchRemoteConversations(userId: String) -> AnyPublisher<Conversation, Error> {
         conversationRemoteDataSource
-            .listenConversations(userId: userId, notInConversationIds: notInConversationIds)
+            .listenConversations(userId: userId)
             .flatMap { remoteConversation in
                 guard let interlocutorId = remoteConversation.participants.first(where: { $0 != userId }) else {
                     return Empty<Conversation, Error>().eraseToAnyPublisher()
@@ -88,9 +88,7 @@ class ConversationRepositoryImpl: ConversationRepository {
     
     func deleteConversation(conversation: Conversation, userId: String) async throws {
         let deleteTime = Date()
-        try? await conversationLocalDataSource.updateConversation(
-            conversation: conversation.with(deleteTime: deleteTime)
-        )
+        try? await conversationLocalDataSource.deleteConversation(conversationId: conversation.id)
         try await handleNetworkException(
             block: {
                 try await conversationRemoteDataSource.updateConversationDeleteTime(

@@ -13,8 +13,8 @@ class FirstRegistrationViewModel: ObservableObject {
     }
     
     func validateInputs() -> Bool {
-        uiState.firstName = uiState.firstName.capitalizeWords
-        uiState.lastName = uiState.lastName.capitalizeWords
+        uiState.firstName = uiState.firstName.trimmedAndCapitalizedFirstLetter
+        uiState.lastName = uiState.lastName.trimmedAndCapitalizedFirstLetter
         uiState.firstNameError = uiState.firstName.isBlank ? getString(.mandatoryFieldError) : nil
         uiState.lastNameError = uiState.lastName.isBlank ? getString(.mandatoryFieldError) : nil
         
