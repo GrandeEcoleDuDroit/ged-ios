@@ -31,7 +31,7 @@
 "empty_inputs_error" = "Please fill out all fields.";
 "empty_input_error" = "Please fill out the field.";
 "time_out_error" = "The service took too long to respond. Please try again.";
-"not_connected_to_internet_error" = "No internet connection detected. Check your connection and try again.";
+"no_internet_connection_error" = "No internet connection.";
 "internal_server_error" = "An internal server error has occurred.";
 "unknown_network_error" = "A network error has occurred.";
 "unknown_error" = "An unknown error has occured.";

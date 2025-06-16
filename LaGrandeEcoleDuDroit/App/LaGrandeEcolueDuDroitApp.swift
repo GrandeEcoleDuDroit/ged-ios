@@ -1,5 +1,6 @@
 import SwiftUI
 import FirebaseCore
+import Firebase
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
@@ -7,7 +8,13 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
     ) -> Bool {
         FirebaseApp.configure()
-//        GedConfiguration.configureDebugFirebase()
+        
+        let db = Firestore.firestore()
+        let settings = FirestoreSettings()
+        
+        settings.cacheSettings = MemoryCacheSettings()
+        db.clearPersistence()
+        db.settings = settings
         return true
     }
 }
