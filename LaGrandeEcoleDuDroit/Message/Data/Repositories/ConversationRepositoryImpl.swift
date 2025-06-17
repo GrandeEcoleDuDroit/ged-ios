@@ -1,7 +1,6 @@
 import Combine
 import Foundation
 
-
 class ConversationRepositoryImpl: ConversationRepository {
     private let conversationLocalDataSource: ConversationLocalDataSource
     private let conversationRemoteDataSource: ConversationRemoteDataSource
@@ -106,8 +105,6 @@ class ConversationRepositoryImpl: ConversationRepository {
     
     func stopListenConversations() {
         conversationRemoteDataSource.stopListeningConversations()
-        cancellables.forEach { $0.cancel() }
-        cancellables.removeAll()
         fetchedInterlocutors.removeAll()
     }
 }
