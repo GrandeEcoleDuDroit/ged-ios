@@ -34,7 +34,7 @@ class MessageLocalDataSource {
                 
                 let inserted = extractIDs(NSInsertedObjectsKey)
                 let updated = extractIDs(NSUpdatedObjectsKey)
-                let deleted = extractIDs(NSDeletedObjectsKey)
+                let deleted = extractIDs(NSUpdatedObjectsKey)
                 
                 guard !inserted.isEmpty || !updated.isEmpty || !deleted.isEmpty else {
                     return nil
@@ -64,7 +64,7 @@ class MessageLocalDataSource {
 
                     inserted = resolve(objectIDs.inserted)
                     updated = resolve(objectIDs.updated)
-                    deleted = resolve(objectIDs.deleted)
+                    deleted = []
                 }
 
                 return CoreDataChange(inserted: inserted, updated: updated, deleted: deleted)

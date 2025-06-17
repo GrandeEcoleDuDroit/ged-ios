@@ -26,8 +26,9 @@ class ChatViewModel: ObservableObject {
         self.conversationRepository = conversationRepository
         self.sendMessageUseCase = sendMessageUseCase
         user = userRepository.currentUser
-        getMessages()
+        getMessages(offset: offset)
         listenMessages()
+        listenConversationChanges()
         seeMessages()
     }
     
@@ -39,20 +40,14 @@ class ChatViewModel: ObservableObject {
                     .filter { $0.conversationId == self?.conversation.id }
                     .forEach { message in
                         self?.addOrUpdateMessage(message)
-                        self?.seeMessage(message: message)
+                        self?.seeMessage(message)
                     }
                 
                 change.updated
                     .filter { $0.conversationId == self?.conversation.id }
                     .forEach { message in
                         self?.addOrUpdateMessage(message)
-                        self?.seeMessage(message: message)
-                    }
-                
-                change.deleted
-                    .filter { $0.conversationId == self?.conversation.id }
-                    .forEach {
-                        self?.removeMessage($0)
+                        self?.seeMessage(message)
                     }
             }.store(in: &cancellables)
     }
@@ -78,11 +73,11 @@ class ChatViewModel: ObservableObject {
     }
     
     func loadMoreMessages() {
-        getMessages()
         offset += 20
+        getMessages(offset: offset)
     }
     
-    private func getMessages() {
+    private func getMessages(offset: Int) {
         Task {
             await messageRepository.getMessages(
                 conversationId: conversation.id,
@@ -108,21 +103,17 @@ class ChatViewModel: ObservableObject {
         }
     }
     
-    private func addOrUpdateMessage(_ message: Message) {
-        uiState.messages[message.id] = message
-    }
-    
-    private func removeMessage(_ message: Message) {
-        uiState.messages[message.id] = nil
-    }
-    
-    private func seeMessage(message: Message) {
+    private func seeMessage(_ message: Message) {
         if !message.seen && message.senderId == conversation.interlocutor.id {
             Task { try? await messageRepository.updateSeenMessage(message: message) }
         }
     }
     
-    private func listenConversatinoChanges() {
+    private func addOrUpdateMessage(_ message: Message) {
+        uiState.messages[message.id] = message
+    }
+    
+    private func listenConversationChanges() {
         conversationRepository.conversationChanges.map { [weak self] in
             $0.updated.first { $0.id == self?.conversation.id }
         }

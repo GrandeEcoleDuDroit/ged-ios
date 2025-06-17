@@ -20,9 +20,9 @@ class ListenRemoteMessagesUseCase {
     }
     
     func start() {
-        listenConversationsPublisher()
+        listenConversations()
             .sink { [weak self] conversations in
-                self?.handleConversationsUpdate(conversations)
+                self?.listenMessages(conversations)
             }
             .store(in: &cancellables)
     }
@@ -35,7 +35,7 @@ class ListenRemoteMessagesUseCase {
         messageCancellables.removeAll()
     }
     
-    private func listenConversationsPublisher() -> AnyPublisher<[Conversation], Never> {
+    private func listenConversations() -> AnyPublisher<[Conversation], Never> {
         let initial = getCurrentConversations()
         let updates = conversationRepository.conversationChanges.map { change in
             change.inserted + change.updated.filter { conversation in
@@ -57,20 +57,20 @@ class ListenRemoteMessagesUseCase {
         }
     }
     
-    private func handleConversationsUpdate(_ conversations: [Conversation]) {
+    private func listenMessages(_ conversations: [Conversation]) {
         for conversation in conversations {
             messageCancellables[conversation.id]?.cancellable.cancel()
 
-            if let cancellable = subscribeToMessages(for: conversation) {
-                messageCancellables[conversation.id] = MessageCancellable(
-                    conversation: conversation,
-                    cancellable: cancellable
-                )
-            }
+            let cancellable = upsertMessagesFromRemote(for: conversation)
+            
+            messageCancellables[conversation.id] = MessageCancellable(
+                conversation: conversation,
+                cancellable: cancellable
+            )
         }
     }
     
-    private func subscribeToMessages(for conversation: Conversation) -> Cancellable? {
+    private func upsertMessagesFromRemote(for conversation: Conversation) -> Cancellable {
         getLastMessage(for: conversation.id)
             .map { [weak self] message in
                 self?.getOffsetTime(conversation: conversation, lastMessage: message)
