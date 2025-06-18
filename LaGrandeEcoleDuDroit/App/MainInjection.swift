@@ -29,7 +29,8 @@ class MainInjection: DependencyInjectionContainer {
             ClearDataUseCase(
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 conversationRepository: MessageInjection.shared.resolve(ConversationRepository.self),
-                messageRepository: MessageInjection.shared.resolve(MessageRepository.self)
+                messageRepository: MessageInjection.shared.resolve(MessageRepository.self),
+                conversationMessageRepository: MessageInjection.shared.resolve(ConversationMessageRepository.self)
             )
         }.inObjectScope(.container)
         

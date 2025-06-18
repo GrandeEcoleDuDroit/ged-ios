@@ -32,6 +32,11 @@ struct ThirdRegistrationDestination: View {
                 showErrorAlert = true
             }
         }
+        .alert(errorMessage, isPresented: $showErrorAlert) {
+            Button(getString(.ok), role: .cancel) {
+                showErrorAlert = false
+            }
+        }
     }
 }
 
