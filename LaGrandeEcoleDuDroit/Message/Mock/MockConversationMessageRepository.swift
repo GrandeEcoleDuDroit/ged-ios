@@ -5,4 +5,8 @@ class MockConversationMessageRepository: ConversationMessageRepository {
     var conversationsMessage: AnyPublisher<[String : ConversationMessage], Never> {
         conversationsMessageSubject.eraseToAnyPublisher()
     }
+    
+    func clear() {
+        conversationsMessageSubject.value.removeAll()
+    }
 }
