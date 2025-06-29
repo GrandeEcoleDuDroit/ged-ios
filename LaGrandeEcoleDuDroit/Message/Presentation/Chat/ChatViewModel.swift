@@ -79,7 +79,7 @@ class ChatViewModel: ObservableObject {
     
     private func getMessages(offset: Int) {
         Task {
-            await messageRepository.getMessages(
+            try? await messageRepository.getMessages(
                 conversationId: conversation.id,
                 offset: offset
             ).forEach { message in

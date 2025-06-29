@@ -41,6 +41,7 @@ class RegisterUseCase {
             isMember: false,
             profilePictureUrl: nil
         )
+        
         try await userRepository.createUser(user: user)
         authenticationRepository.setAuthenticated(true)
     }

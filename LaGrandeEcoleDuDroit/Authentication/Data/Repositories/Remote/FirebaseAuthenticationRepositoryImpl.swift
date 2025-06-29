@@ -15,7 +15,7 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
     }
     
     func loginWithEmailAndPassword(email: String, password: String) async throws {
-        try await handleNetworkException(
+        try await mapFirebaseException(
             block: { try await firebaseAuthApi.signIn(email: email, password: password) },
             tag: tag,
             message: "Failed to login with email and password",
@@ -24,7 +24,7 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
     }
     
     func registerWithEmailAndPassword(email: String, password: String) async throws -> String {
-        try await handleNetworkException(
+        try await mapFirebaseException(
             block: { try await firebaseAuthApi.signUp(email: email, password: password) },
             tag: tag,
             message: "Failed to register with email and password",
@@ -37,7 +37,7 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
     }
     
     func resetPassword(email: String) async throws {
-        try await handleNetworkException(
+        try await mapFirebaseException(
             block: { try await firebaseAuthApi.resetPassword(email: email) },
             tag: tag,
             message: "Failed to reset password",

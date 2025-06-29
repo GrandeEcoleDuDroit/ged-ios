@@ -4,15 +4,18 @@ import Foundation
 class ListenRemoteConversationsUseCase {
     private let userRepository: UserRepository
     private let conversationRepository: ConversationRepository
+    private let listenRemoteMessagesUseCase: ListenRemoteMessagesUseCase
     private var cancellables = Set<AnyCancellable>()
     private let tag = String(describing: ListenRemoteConversationsUseCase.self)
 
     init(
         userRepository: UserRepository,
-        conversationRepository: ConversationRepository
+        conversationRepository: ConversationRepository,
+        listenRemoteMessagesUseCase: ListenRemoteMessagesUseCase
     ) {
         self.userRepository = userRepository
         self.conversationRepository = conversationRepository
+        self.listenRemoteMessagesUseCase = listenRemoteMessagesUseCase
     }
     
     func start() {
@@ -28,13 +31,17 @@ class ListenRemoteConversationsUseCase {
             }
             .receive(on: DispatchQueue.global(qos: .background))
             .sink { [weak self] conversation in
-                Task { await self?.conversationRepository.upsertLocalConversation(conversation: conversation) }
+                Task {
+                    try? await self?.conversationRepository.upsertLocalConversation(conversation: conversation)
+                }
+                self?.listenRemoteMessagesUseCase.start(conversation: conversation)
             }.store(in: &cancellables)
                 
     }
     
     func stop() {
         conversationRepository.stopListenConversations()
+        listenRemoteMessagesUseCase.stop()
         cancellables.forEach { $0.cancel() }
         cancellables.removeAll()
     }

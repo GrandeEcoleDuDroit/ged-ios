@@ -17,38 +17,35 @@ class SendMessageUseCase {
     
     func execute(message: Message, conversation: Conversation, userId: String) {
         Task {
-            if (shouldCreateConversation(conversation: conversation)) {
-                await createConversation(conversation: conversation, userId: userId)
+            do {
+                try await createDataLocally(conversation: conversation, message: message)
+                try await createDataRemotely(conversation: conversation, message: message, userId: userId)
+            } catch {
+                if conversation.state == .draft {
+                    try await conversationRepository.updateLocalConversation(conversation: conversation.with(state: .error))
+                    try await messageRepository.upsertLocalMessage(message: message.with(state: .error))
+                }
             }
-            await createMessage(message: message)
         }
     }
     
-    private func createConversation(conversation: Conversation, userId: String) async {
-        do {
-            try await conversationRepository.createConversation(conversation:  conversation.with(state: .loading), userId: userId)
-            await conversationRepository.updateLocalConversation(conversation: conversation.with(state: .created))
-        } catch {
-            await conversationRepository.updateLocalConversation(conversation: conversation.with(state: .error))
+    private func createDataLocally(conversation: Conversation, message: Message) async throws {
+        if conversation.state == .draft {
+            try await conversationRepository.createLocalConversation(conversation: conversation.with(state: .creating))
+        }
+        
+        if message.state == .draft {
+            try await messageRepository.createLocalMessage(message: message.with(state: .loading))
         }
     }
     
-    private func createMessage(message: Message) async {
-        do {
-            try await messageRepository.createMessage(message: message.with(state: .loading))
-            await messageRepository.updateLocalMessage(message: message.with(state: .sent))
-        } catch {
-            await messageRepository.updateLocalMessage(message: message.with(state: .error))
+    private func createDataRemotely(conversation: Conversation, message: Message, userId: String) async throws {
+        if conversation.shouldBeCreated() {
+            try await conversationRepository.createRemoteConversation(
+                conversation: conversation.with(state: .creating),
+                userId: userId
+            )
         }
-    }
-    
-    private func shouldCreateConversation(conversation: Conversation) -> Bool {
-        conversation.state == .draft ||
-        conversation.state == .error ||
-        (
-            conversation.state == .loading &&
-            conversation.createdAt.timeIntervalSinceNow < -10 &&
-            networkMonitor.isConnected
-        )
+        try await messageRepository.createRemoteMessage(message: message)
     }
 }

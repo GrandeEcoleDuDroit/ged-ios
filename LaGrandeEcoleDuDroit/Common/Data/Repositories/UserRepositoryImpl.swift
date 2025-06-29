@@ -26,7 +26,7 @@ class UserRepositoryImpl: UserRepository {
     }
     
     func createUser(user: User) async throws {
-        try await handleNetworkException(
+        try await mapFirebaseException(
             block: { try await userRemoteDataSource.createUser(user: user) },
             tag: tag,
             message: "Failed to create user"
@@ -62,7 +62,7 @@ class UserRepositoryImpl: UserRepository {
     }
     
     func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {
-        try await handleNetworkException(
+        try await mapFirebaseException(
             block: { try await userRemoteDataSource.updateProfilePictureFileName(userId: userId, fileName: profilePictureFileName) },
             tag: tag,
             message: "Failed to update profile picture file name"
@@ -73,7 +73,7 @@ class UserRepositoryImpl: UserRepository {
     }
     
     func deleteProfilePictureFileName(userId: String) async throws {
-        try await handleNetworkException(
+        try await mapFirebaseException(
             block: { try await userRemoteDataSource.deleteProfilePictureFileName(userId: userId) },
             tag: tag,
             message: "Failed to delete profile picture file name"

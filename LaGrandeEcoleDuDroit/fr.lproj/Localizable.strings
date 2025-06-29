@@ -63,7 +63,7 @@
 "email_already_associated" = "Cette adresse e-mail est déjà utilisée.";
 "too_many_requests_error" = "Vous avez effectué trop de requêtes. Veuillez réessayer dans quelques minutes.";
 "user_not_connected" = "Vous n'êtes pas authentifié. Veuillez vous connecter avant de continuer.";
-"user_not_white_listed" = "L'inscription est actuellement limitée aux utilisateurs autorisés.";
+"user_not_white_listed_error" = "L'inscription est actuellement limitée aux utilisateurs autorisés.";
 
 // News
 "news" = "Actualités";

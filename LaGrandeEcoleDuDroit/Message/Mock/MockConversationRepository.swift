@@ -7,11 +7,11 @@ class MockConversationRepository: ConversationRepository {
         conversationsSubject.eraseToAnyPublisher()
     }
     
-    func getConversations() async -> [Conversation] {
+    func getConversations() async throws -> [Conversation] {
         conversationsFixture
     }
     
-    func getConversation(interlocutorId: String) async -> Conversation? {
+    func getConversation(interlocutorId: String) async throws -> Conversation? {
         conversationFixture
     }
     
@@ -21,15 +21,65 @@ class MockConversationRepository: ConversationRepository {
             .eraseToAnyPublisher()
     }
     
-    func createConversation(conversation: Conversation, userId: String) async throws {}
+    func createLocalConversation(conversation: Conversation) async throws {
+        conversationsSubject.send(
+            CoreDataChange(
+                inserted: [conversation],
+                updated: [],
+                deleted: []
+            )
+        )
+    }
     
-    func updateLocalConversation(conversation: Conversation) async {}
+    func createRemoteConversation(conversation: Conversation, userId: String) async throws {
+        conversationsSubject.send(
+            CoreDataChange(
+                inserted: [conversation],
+                updated: [],
+                deleted: []
+            )
+        )
+    }
     
-    func upsertLocalConversation(conversation: Conversation) async {}
+    func updateLocalConversation(conversation: Conversation) async throws {
+        conversationsSubject.send(
+            CoreDataChange(
+                inserted: [],
+                updated: [conversation],
+                deleted: []
+            )
+        )
+    }
     
-    func deleteLocalConversations() async {}
+    func upsertLocalConversation(conversation: Conversation) async throws {
+        conversationsSubject.send(
+            CoreDataChange(
+                inserted: [conversation],
+                updated: [],
+                deleted: []
+            )
+        )
+    }
     
-    func deleteConversation(conversation: Conversation, userId: String) async throws {}
+    func deleteLocalConversations() async throws {
+        conversationsSubject.send(
+            CoreDataChange(
+                inserted: [],
+                updated: [],
+                deleted: conversationsFixture
+            )
+        )
+    }
+    
+    func deleteConversation(conversation: Conversation, userId: String, deleteTime: Date) async throws {
+        conversationsSubject.send(
+            CoreDataChange(
+                inserted: [],
+                updated: [],
+                deleted: [conversation]
+            )
+        )
+    }
     
     func stopListenConversations() {}
 }

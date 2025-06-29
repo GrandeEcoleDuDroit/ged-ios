@@ -117,10 +117,10 @@ private struct EditAnnouncementView: View {
 
 #Preview {
     NavigationStack {
-        EditAnnouncementView(
+        EditAnnouncementView( 
             title: .constant(announcementFixture.title ?? ""),
             content: .constant(announcementFixture.content),
-            loading: true,
+            loading: false,
             editButtonEnable: true,
             onTitleChange: {_ in },
             onContentChange: {_ in },

@@ -2,47 +2,46 @@ import Foundation
 import Combine
 
 class MockMessageRepository: MessageRepository {
-    private let messagesSubject = CurrentValueSubject<[Message], Never>(messagesFixture)
+    private let messagesSubject = PassthroughSubject<Message, Never>()
     
     var messageChanges: AnyPublisher<CoreDataChange<Message>, Never> {
         Empty().eraseToAnyPublisher()
-    }
-    
-    func getMessages(conversationId: String) -> AnyPublisher<Message, Never> {
-        messagesSubject
-            .compactMap { $0.first }
-            .eraseToAnyPublisher()
     }
     
     func getMessages(conversationId: String) async throws -> [Message] {
         messagesFixture
     }
     
-    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Error> {
-        messagesSubject.map(\.first!)
+    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<[Message], Error> {
+        messagesSubject
+            .map { [$0] }
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
     
+    func createLocalMessage(message: Message) async throws {
+        
+    }
+    
     func upsertLocalMessage(message: Message) {
-        messagesSubject.send(messagesSubject.value)
+        messagesSubject.send(messageFixture)
     }
     
-    func deleteLocalMessages(conversationId: String) {
-        messagesSubject.send([])
+    func upsertLocalMessages(messages: [Message]) {
+        messages.forEach { message in
+            messagesSubject.send(message)
+        }
     }
     
-    func createMessage(message: Message) async throws {
-        messagesSubject.send(messagesSubject.value + [message])
-    }
+    func deleteLocalMessages(conversationId: String) {}
+    
+    func createRemoteMessage(message: Message) async throws {}
     
     func updateSeenMessages(conversationId: String, userId: String) async throws {}
     
     func updateSeenMessage(message: Message) async throws {}
         
-    func deleteLocalMessages() {
-        messagesSubject.send([])
-    }
+    func deleteLocalMessages() {}
     
     func stopListeningMessages() {}
     

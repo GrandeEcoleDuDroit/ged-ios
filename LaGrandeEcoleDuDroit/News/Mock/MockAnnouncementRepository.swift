@@ -14,12 +14,8 @@ class MockAnnouncementRepository: AnnouncementRepository {
     func getAnnouncementPublisher(announcementId: String) -> AnyPublisher<Announcement?, Never> {
         announcementsPublisher.map { $0.first { $0.id == announcementId } }.eraseToAnyPublisher()
     }
-    
-    func createLocalAnnouncement(announcement: Announcement) {
-        announcementsPublisher.value.append(announcement)
-    }
-    
-    func createRemoteAnnouncement(announcement: Announcement) async throws {
+
+    func createAnnouncement(announcement: Announcement) async throws {
         announcementsPublisher.value.append(announcement)
     }
     

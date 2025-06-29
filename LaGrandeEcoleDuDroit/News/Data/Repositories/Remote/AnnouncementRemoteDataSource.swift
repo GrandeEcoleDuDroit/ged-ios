@@ -14,19 +14,19 @@ class AnnouncementRemoteDataSource {
     }
     
     func createAnnouncement(announcement: Announcement) async throws {
-        try await handleRetrofitError(
+        try await mapRetrofitError(
             block: { try await announcementApi.createAnnouncement(remoteAnnouncement: announcement.toRemote()) }
         )
     }
     
     func updateAnnouncement(announcement: Announcement) async throws {
-        try await handleRetrofitError(
+        try await mapRetrofitError(
             block: { try await announcementApi.updateAnnouncement(remoteAnnouncement: announcement.toRemote()) }
         )
     }
     
     func deleteAnnouncement(announcementId: String) async throws {
-        try await handleRetrofitError(
+        try await mapRetrofitError(
             block: { try await announcementApi.deleteAnnouncement(remoteAnnouncementId: announcementId) }
         )
     }

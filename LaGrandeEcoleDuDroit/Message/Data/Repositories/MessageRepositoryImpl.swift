@@ -1,13 +1,12 @@
 import Combine
 import Foundation
 
-
 class MessageRepositoryImpl: MessageRepository {
+    private let tag = String(describing: MessageRepositoryImpl.self)
     private let messageLocalDataSource: MessageLocalDataSource
     private let messageRemoteDataSource: MessageRemoteDataSource
     private let messageChangesSubject = PassthroughSubject<CoreDataChange<Message>, Never>()
     private var cancellables = Set<AnyCancellable>()
-    private let tag = String(describing: MessageRepositoryImpl.self)
     var messageChanges: AnyPublisher<CoreDataChange<Message>, Never> {
         messageChangesSubject.eraseToAnyPublisher()
     }
@@ -29,38 +28,55 @@ class MessageRepositoryImpl: MessageRepository {
             }
             .store(in: &cancellables)
     }
-
-    func getMessages(conversationId: String, offset: Int) async -> [Message] {
-        (try? await messageLocalDataSource.getMessages(conversationId: conversationId, offset: offset)) ?? []
+ 
+    func getMessages(conversationId: String, offset: Int) async throws -> [Message] {
+        do {
+            return try await messageLocalDataSource.getMessages(conversationId: conversationId, offset: offset)
+        } catch {
+            e(tag, "Error to get messages for conversation \(conversationId) with offset \(offset): \(error)", error)
+            throw error
+        }
     }
     
-    func getLastMessage(conversationId: String) async -> Message? {
-        try? await messageLocalDataSource.getLastMessage(conversationId: conversationId)
+    func getLastMessage(conversationId: String) async throws -> Message? {
+        do {
+            return try await messageLocalDataSource.getLastMessage(conversationId: conversationId)
+        } catch {
+            e(tag, "Error to get last message for conversation \(conversationId): \(error)", error)
+            throw error
+        }
     }
     
-    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Error> {
+    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<[Message], Error> {
         messageRemoteDataSource.listenMessages(conversation: conversation, offsetTime: offsetTime)
     }
     
-    func createMessage(message: Message) async throws {
-        try await handleNetworkException(
-            block: {
-                try? await messageLocalDataSource.insertMessage(message: message)
-                try await messageRemoteDataSource.createMessage(message: message)
-            },
-            tag: tag,
-            message: "Failed to create message"
-        )
+    func createLocalMessage(message: Message) async throws {
+        do {
+            try await messageLocalDataSource.insertMessage(message: message)
+        } catch {
+            e(tag, "Failed to create local message: \(error)", error)
+            throw error
+        }
     }
     
-    func updateLocalMessage(message: Message) async {
-        try? await messageLocalDataSource.updateMessage(message: message)
+    func createRemoteMessage(message: Message) async throws {
+        try await messageRemoteDataSource.createMessage(message: message)
+    }
+    
+    func updateLocalMessage(message: Message) async throws {
+        do {
+            try await messageLocalDataSource.updateMessage(message: message)
+        } catch {
+            e(tag, "Failed to update local message: \(error)", error)
+            throw error
+        }
     }
         
     func updateSeenMessages(conversationId: String, userId: String) async throws {
         let unreadMessages = (try? await messageLocalDataSource.getUnreadMessagesByUser(conversationId: conversationId, userId: userId)) ?? []
-        try? await messageLocalDataSource.updateSeenMessages(conversationId: conversationId, userId: userId)
-        try await handleNetworkException(
+        try await messageLocalDataSource.updateSeenMessages(conversationId: conversationId, userId: userId)
+        try await mapFirebaseException(
             block: {
                 for message in unreadMessages {
                     try? await messageRemoteDataSource.updateSeenMessage(message: message.with(seen: true))
@@ -72,33 +88,51 @@ class MessageRepositoryImpl: MessageRepository {
     }
     
     func updateSeenMessage(message: Message) async throws {
-        try? await messageLocalDataSource.updateMessage(message: message.with(seen: true))
-        try await handleNetworkException(
+        try await messageLocalDataSource.updateMessage(message: message.with(seen: true))
+        try await mapFirebaseException(
             block: { try? await messageRemoteDataSource.updateSeenMessage(message: message.with(seen: true)) },
             tag: tag,
             message: "Failed to update seen messages"
         )
     }
     
-    func upsertLocalMessage(message: Message) async {
-        try? await messageLocalDataSource.upsertMessage(message: message)
+    func upsertLocalMessage(message: Message) async throws {
+        do {
+            try await messageLocalDataSource.upsertMessage(message: message)
+        } catch {
+            e(tag, "Failed to upsert local message: \(error)", error)
+            throw error
+        }
     }
     
-    func deleteLocalMessages(conversationId: String) async {
-        try? await messageLocalDataSource.deleteMessages(conversationId: conversationId)
+    func upsertLocalMessages(messages: [Message]) async throws {
+        do {
+            try await messageLocalDataSource.upsertMessages(messages: messages)
+        } catch {
+            e(tag, "Failed to upsert local messages: \(error)", error)
+            throw error
+        }
     }
     
-    func deleteLocalMessages() async {
-        try? await messageLocalDataSource.deleteMessages()
+    func deleteLocalMessages(conversationId: String) async throws {
+        do {
+            try await messageLocalDataSource.deleteMessages(conversationId: conversationId)
+        } catch {
+            e(tag, "Failed to delete local messages for conversation \(conversationId): \(error)", error)
+            throw error
+        }
+    }
+    
+    func deleteLocalMessages() async throws {
+        do {
+            try await messageLocalDataSource.deleteMessages()
+        } catch {
+            e(tag, "Failed to delete local messages: \(error)", error)
+            throw error
+        }
     }
     
     func stopListeningMessages() {
         messageRemoteDataSource.stopListeningMessages()
-    }
-    
-    deinit {
-        stopListeningMessages()
-        cancellables.forEach { $0.cancel() }
-        cancellables.removeAll()
     }
 }

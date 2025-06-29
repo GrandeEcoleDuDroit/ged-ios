@@ -51,7 +51,7 @@ private struct AccountView: View {
     @State private var isBottomSheetItemClicked: Bool = false
     @State private var navigationTitle = getString(.accountInfos)
     @State private var showDeleteAlert: Bool = false
-    @State private var bottomSheetItemSize: CGFloat = 1/10
+    @State private var bottomSheetItemSize: CGFloat = 1.2/10
 
     var body: some View {
         ZStack {
@@ -73,13 +73,7 @@ private struct AccountView: View {
                     
                     AccountInfoItems(user: user)
                 }
-                
-                if loading {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(.loadingBackground)
-                        .opacity(0.5)
-                }
+                .loading(loading)
             } else {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
@@ -94,7 +88,7 @@ private struct AccountView: View {
             }
         }
         .onChange(of: user?.profilePictureUrl) { newValue in
-            bottomSheetItemSize = newValue != nil ? 2/10 : 1/10
+            bottomSheetItemSize = newValue != nil ? 2.2/10 : 1.2/10
         }
         .onChange(of: bottomSheetItemSize) { _ in }
         .photosPicker(isPresented: $showPhotosPicker, selection: $selectedPhoto, matching: .images)

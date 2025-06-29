@@ -46,7 +46,6 @@ extension LocalAnnouncement {
               let userEmail = userEmail,
               let userSchoolLevel = userSchoolLevel,
               let announcementId = announcementId,
-              let announcementTitle = announcementTitle,
               let announcementContent = announcementContent,
               let announcementDate = announcementDate,
               let announcementState = AnnouncementState(rawValue: announcementState ?? "")

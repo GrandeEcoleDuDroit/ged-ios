@@ -7,15 +7,13 @@ protocol AnnouncementRepository {
         
     func refreshAnnouncements() async throws
     
-    func createLocalAnnouncement(announcement: Announcement)
-    
-    func createRemoteAnnouncement(announcement: Announcement) async throws
+    func createAnnouncement(announcement: Announcement) async throws
     
     func updateAnnouncement(announcement: Announcement) async throws
     
-    func updateLocalAnnouncement(announcement: Announcement)
+    func updateLocalAnnouncement(announcement: Announcement) async throws
         
     func deleteAnnouncement(announcementId: String) async throws
     
-    func deleteLocalAnnouncement(announcementId: String)
+    func deleteLocalAnnouncement(announcementId: String) async throws
 }

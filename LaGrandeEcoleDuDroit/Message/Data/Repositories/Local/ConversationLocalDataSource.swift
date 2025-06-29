@@ -13,14 +13,13 @@ class ConversationLocalDataSource {
         conversationActor = ConversationCoreDataActor(context: context)
     }
     
-    func listenDataChange() -> AnyPublisher<CoreDataChange<Conversation>, Never> {
+    func listenDataChanges() -> AnyPublisher<CoreDataChange<Conversation>, Never> {
         NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: context)
             .collect(.byTime(RunLoop.current, .milliseconds(100)))
             .compactMap {
                 notifications -> (
                     inserted: [NSManagedObjectID],
-                    updated: [NSManagedObjectID],
-                    deleted: [NSManagedObjectID]
+                    updated: [NSManagedObjectID]
                 )? in
                 
                 let extractIDs: (String) -> [NSManagedObjectID] = { key in
@@ -33,13 +32,12 @@ class ConversationLocalDataSource {
 
                 let inserted = extractIDs(NSInsertedObjectsKey)
                 let updated = extractIDs(NSUpdatedObjectsKey)
-                let deleted = extractIDs(NSDeletedObjectsKey)
                 
-                guard !inserted.isEmpty || !updated.isEmpty || !deleted.isEmpty else {
+                guard !inserted.isEmpty || !updated.isEmpty else {
                     return nil
                 }
 
-                return (inserted: inserted, updated: updated, deleted: deleted)
+                return (inserted: inserted, updated: updated)
             }
             .map { [weak self] objectIDs -> CoreDataChange<Conversation> in
                 guard let self = self else {
@@ -48,7 +46,6 @@ class ConversationLocalDataSource {
 
                 var inserted: [Conversation] = []
                 var updated: [Conversation] = []
-                var deleted: [Conversation] = []
 
                 self.context.performAndWait {
                     func resolve(_ ids: [NSManagedObjectID]) -> [Conversation] {
@@ -63,10 +60,9 @@ class ConversationLocalDataSource {
 
                     inserted = resolve(objectIDs.inserted)
                     updated = resolve(objectIDs.updated)
-                    deleted = []
                 }
 
-                return CoreDataChange(inserted: inserted, updated: updated, deleted: deleted)
+                return CoreDataChange(inserted: inserted, updated: updated, deleted: [])
             }
             .eraseToAnyPublisher()
     }
@@ -102,23 +98,23 @@ class ConversationLocalDataSource {
     }
     
     func upsertConversation(conversation: Conversation) async throws {
-        try await conversationActor.upsertConversation(conversation: conversation)
+        try await conversationActor.upsert(conversation: conversation)
     }
     
     func updateConversation(conversation: Conversation) async throws {
-        try await conversationActor.updateConversation(conversation: conversation)
+        try await conversationActor.update(conversation: conversation)
     }
     
     func deleteConversation(conversationId: String) async throws {
-        try await conversationActor.deleteConversation(conversationId: conversationId)
+        try await conversationActor.delete(conversationId: conversationId)
     }
     
     func deleteConversations() async throws {
-        try await conversationActor.deleteConversations()
+        try await conversationActor.deleteAll()
     }
 }
 
-actor ConversationCoreDataActor {
+private actor ConversationCoreDataActor {
     private let context: NSManagedObjectContext
     
     init(context: NSManagedObjectContext) {
@@ -134,7 +130,7 @@ actor ConversationCoreDataActor {
         }
     }
     
-    func upsertConversation(conversation: Conversation) async throws {
+    func upsert(conversation: Conversation) async throws {
         try await context.perform {
             let request = LocalConversation.fetchRequest()
             request.predicate = NSPredicate(
@@ -147,17 +143,17 @@ actor ConversationCoreDataActor {
                 return
             }
             if localConversation != nil {
-                localConversation!.modify(conversation: conversation)
+                localConversation?.modify(conversation: conversation)
             } else {
-                let localConversation = LocalConversation(context: self.context)
-                conversation.buildLocal(localConversation: localConversation)
+                let newLocalConversation = LocalConversation(context: self.context)
+                conversation.buildLocal(localConversation: newLocalConversation)
             }
             
             try self.context.save()
         }
     }
     
-    func updateConversation(conversation: Conversation) async throws {
+    func update(conversation: Conversation) async throws {
         try await context.perform {
             let request = LocalConversation.fetchRequest()
             request.predicate = NSPredicate(
@@ -172,7 +168,7 @@ actor ConversationCoreDataActor {
         }
     }
     
-    func deleteConversation(conversationId: String) async throws {
+    func delete(conversationId: String) async throws {
         try await context.perform {
             let request = LocalConversation.fetchRequest()
             request.predicate = NSPredicate(
@@ -188,7 +184,7 @@ actor ConversationCoreDataActor {
         }
     }
     
-    func deleteConversations() async throws {
+    func deleteAll() async throws {
         try await context.perform {
             let request = LocalConversation.fetchRequest()
             

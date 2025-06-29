@@ -3,3 +3,10 @@ struct CoreDataChange<T> {
     let updated: [T]
     let deleted: [T]
 }
+
+enum Change {
+    case inserted
+    case updated
+    case deleted
+}
+

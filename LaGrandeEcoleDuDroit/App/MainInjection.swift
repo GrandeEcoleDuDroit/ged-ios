@@ -19,7 +19,6 @@ class MainInjection: DependencyInjectionContainer {
         
         container.register(ListenDataUseCase.self) { resolver in
             ListenDataUseCase(
-                listenRemoteMessagesUseCase: MessageInjection.shared.resolve(ListenRemoteMessagesUseCase.self),
                 listenRemoteConversationsUseCase: MessageInjection.shared.resolve(ListenRemoteConversationsUseCase.self),
                 listenRemoteUserUseCase: resolver.resolve(ListenRemoteUserUseCase.self)!
             )

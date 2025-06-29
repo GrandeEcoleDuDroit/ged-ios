@@ -59,7 +59,8 @@ class MessageInjection: DependencyInjectionContainer {
         container.register(ListenRemoteConversationsUseCase.self) { resolver in
             ListenRemoteConversationsUseCase(
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
-                conversationRepository: resolver.resolve(ConversationRepository.self)!
+                conversationRepository: resolver.resolve(ConversationRepository.self)!,
+                listenRemoteMessagesUseCase: resolver.resolve(ListenRemoteMessagesUseCase.self)!
             )
         }.inObjectScope(.container)
         
@@ -94,7 +95,8 @@ class MessageInjection: DependencyInjectionContainer {
         container.register(DeleteConversationUseCase.self) { resolver in
             DeleteConversationUseCase(
                 conversationRepository: resolver.resolve(ConversationRepository.self)!,
-                messageRepository: resolver.resolve(MessageRepository.self)!
+                messageRepository: resolver.resolve(MessageRepository.self)!,
+                conversationMessageRepository: resolver.resolve(ConversationMessageRepository.self)!
             )
         }.inObjectScope(.container)
         

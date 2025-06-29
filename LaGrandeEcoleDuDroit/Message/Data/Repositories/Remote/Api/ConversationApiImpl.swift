@@ -13,7 +13,7 @@ class ConversationApiImpl: ConversationApi {
         
         let listener = conversationCollection
             .whereField(ConversationDataFields.participants, arrayContains: userId)
-            .addSnapshotListener { snapshot, error in
+            .addSnapshotListener(includeMetadataChanges: true) { snapshot, error in
                 if let error = error {
                     subject.send(completion: .failure(error))
                     return
