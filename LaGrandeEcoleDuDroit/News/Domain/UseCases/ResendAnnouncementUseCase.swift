@@ -17,11 +17,10 @@ class ResendAnnouncementUseCase {
         
         Task {
             do {
-                announcementRepository.updateLocalAnnouncement(announcement: announcement.with(state: .publishing))
-                try await announcementRepository.createRemoteAnnouncement(announcement: announcement)
-                announcementRepository.updateLocalAnnouncement(announcement: announcement.with(state: .published))
+                try await announcementRepository.createAnnouncement(announcement: announcement.with(state: .publishing))
+                try await announcementRepository.updateLocalAnnouncement(announcement: announcement.with(state: .published))
             } catch {
-                announcementRepository.updateLocalAnnouncement(announcement: announcement.with(state: .error))
+                try? await announcementRepository.updateLocalAnnouncement(announcement: announcement.with(state: .error))
             }
         }
     }

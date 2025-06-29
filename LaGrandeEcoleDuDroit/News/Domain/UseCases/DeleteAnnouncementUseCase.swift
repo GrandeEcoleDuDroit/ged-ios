@@ -18,7 +18,7 @@ class DeleteAnnouncementUseCase {
         if case announcement.state = .published {
             try await announcementRepository.deleteAnnouncement(announcementId: announcement.id)
         } else {
-            announcementRepository.deleteLocalAnnouncement(announcementId: announcement.id)
+            try await announcementRepository.deleteLocalAnnouncement(announcementId: announcement.id)
         }
     }
 }

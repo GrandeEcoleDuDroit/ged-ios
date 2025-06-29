@@ -37,7 +37,7 @@ struct ShortAnnouncementItem: View {
     
     var body: some View {
         switch (announcement.state) {
-            case .published:
+            case .published, .draft:
                 DefaultShortAnnouncementItem(announcement: announcement)
                     .onClick(isClicked: $isClicked, action: onClick)
                     .padding(.horizontal)

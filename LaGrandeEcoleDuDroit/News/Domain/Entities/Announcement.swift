@@ -32,6 +32,7 @@ struct Announcement: Identifiable, Hashable {
 }
 
 enum AnnouncementState: String, Hashable {
+    case draft = "draft"
     case publishing = "sending"
     case published = "published"
     case error = "error"

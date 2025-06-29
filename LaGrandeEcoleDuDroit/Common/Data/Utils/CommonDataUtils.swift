@@ -1,7 +1,7 @@
 import Foundation
 import FirebaseFirestore
 
-func handleNetworkException<T>(
+func mapFirebaseException<T>(
     block: () async throws -> T,
     tag: String = "Unknown tag",
     message: String? = nil,
@@ -38,7 +38,7 @@ func handleNetworkException<T>(
     }
 }
 
-func handleRetrofitError(
+func mapRetrofitError(
     block: () async throws -> (URLResponse, ServerResponse),
     specificHandle: ((URLResponse, ServerResponse) throws -> Void)? = nil
 ) async throws -> Void {

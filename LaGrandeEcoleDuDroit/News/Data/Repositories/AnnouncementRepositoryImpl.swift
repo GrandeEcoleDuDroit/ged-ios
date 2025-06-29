@@ -1,15 +1,14 @@
 import Combine
 import Foundation
 
-private let tag = String(describing: AnnouncementRepositoryImpl.self)
-
 class AnnouncementRepositoryImpl: AnnouncementRepository {
+    private let tag = String(describing: AnnouncementRepositoryImpl.self)
     private let announcementLocalDataSource: AnnouncementLocalDataSource
     private let announcementRemoteDataSource: AnnouncementRemoteDataSource
     private var cancellables: Set<AnyCancellable> = []
-    private var announcementsPublisher = CurrentValueSubject<[Announcement], Never>([])
+    private var announcementsSubject = CurrentValueSubject<[Announcement], Never>([])
     var announcements: AnyPublisher<[Announcement], Never> {
-        announcementsPublisher.eraseToAnyPublisher()
+        announcementsSubject.eraseToAnyPublisher()
     }
     
     init(
@@ -19,86 +18,91 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
         self.announcementLocalDataSource = announcementLocalDataSource
         self.announcementRemoteDataSource = announcementRemoteDataSource
         loadAnnouncements()
-        listen()
+        listenDataChanges()
     }
     
-    private func listen() {
+    private func listenDataChanges() {
         announcementLocalDataSource.listenDataChange()
+            .receive(on: DispatchQueue.global(qos: .background))
             .sink { [weak self] _ in
                 self?.loadAnnouncements()
             }.store(in: &cancellables)
     }
     
     private func loadAnnouncements() {
-        try? announcementsPublisher.send(announcementLocalDataSource.getAnnouncements())
+        Task {
+            do {
+                try await announcementsSubject.send(announcementLocalDataSource.getAnnouncements())
+            } catch {
+                e(tag, "Failed to load announcements from local data source: \(error)")
+            }
+        }
     }
     
     func getAnnouncementPublisher(announcementId: String) -> AnyPublisher<Announcement?, Never> {
-        announcementsPublisher.map { announcements in
+        announcementsSubject.map { announcements in
             announcements.first { $0.id == announcementId }
         }.eraseToAnyPublisher()
     }
     
     func refreshAnnouncements() async throws {
-        let remoteAnnouncements = try await handleNetworkException(
+        let remoteAnnouncements = try await mapFirebaseException(
             block: { try await announcementRemoteDataSource.getAnnouncements() },
             tag: tag,
             message: "Failed to fetch remote announcements"
         )
         
-        let announcementToDelete = announcementsPublisher.value
+        let announcementToDelete = announcementsSubject.value
             .filter { $0.state == .published }
             .filter { !remoteAnnouncements.contains($0) }
-        announcementToDelete.forEach {
-            try? announcementLocalDataSource.deleteAnnouncement(announcementId: $0.id)
+        for announcement in announcementToDelete {
+            try await announcementLocalDataSource.deleteAnnouncement(announcementId: announcement.id)
         }
         
         let announcementToUpsert = remoteAnnouncements
-            .filter { !announcementsPublisher.value.contains($0) }
-        announcementToUpsert.forEach {
-            try? announcementLocalDataSource.upsertAnnouncement(announcement: $0)
+            .filter { !announcementsSubject.value.contains($0) }
+        for announcement in announcementToUpsert {
+            try await announcementLocalDataSource.upsertAnnouncement(announcement: announcement)
         }
     }
     
-    func createLocalAnnouncement(announcement: Announcement) {
-        try? announcementLocalDataSource.insertAnnouncement(announcement: announcement)
-    }
     
-    func createRemoteAnnouncement(announcement: Announcement) async throws {
-        try await handleNetworkException(
-            block: { try await announcementRemoteDataSource.createAnnouncement(announcement: announcement) },
-            tag: tag,
-            message: "Failed to create remote announcement"
-        )
+    func createAnnouncement(announcement: Announcement) async throws {
+        try await announcementLocalDataSource.insertAnnouncement(announcement: announcement)
+//        try await mapFirebaseException(
+//            block: { try await announcementRemoteDataSource.createAnnouncement(announcement: announcement) },
+//            tag: tag,
+//            message: "Failed to create remote announcement"
+//        )
     }
     
     func updateAnnouncement(announcement: Announcement) async throws {
-        try await handleNetworkException(
+        try await mapFirebaseException(
             block: {
                 try await announcementRemoteDataSource.updateAnnouncement(announcement: announcement)
-                try? announcementLocalDataSource.updateAnnouncement(announcement: announcement)
+                try await announcementLocalDataSource.updateAnnouncement(announcement: announcement)
             },
             tag: tag,
             message: "Failed to update announcement"
         )
     }
     
-    func updateLocalAnnouncement(announcement: Announcement) {
-        try? announcementLocalDataSource.updateAnnouncement(announcement: announcement)
+    func updateLocalAnnouncement(announcement: Announcement) async throws {
+        try await announcementLocalDataSource.updateAnnouncement(announcement: announcement)
     }
     
     func deleteAnnouncement(announcementId: String) async throws {
-        try await handleNetworkException(
+        try await mapFirebaseException(
             block: {
                 try await announcementRemoteDataSource.deleteAnnouncement(announcementId: announcementId)
-                try? announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
+                try await announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
             },
             tag: tag,
             message: "Failed to delete announcement"
         )
     }
     
-    func deleteLocalAnnouncement(announcementId: String) {
-        try? announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
+    func deleteLocalAnnouncement(announcementId: String) async throws {
+        try await announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
     }
 }

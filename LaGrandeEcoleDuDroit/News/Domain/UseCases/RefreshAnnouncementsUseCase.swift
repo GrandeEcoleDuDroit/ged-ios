@@ -30,5 +30,9 @@ class RefreshAnnouncementsUseCase {
             lastRequestTime = currentTime
             try await announcementRepository.refreshAnnouncements()
         }
+        
+        if currentTime.timeIntervalSinceNow > -2 {
+            try? await Task.sleep(for: .seconds(1))
+        }
     }
 }

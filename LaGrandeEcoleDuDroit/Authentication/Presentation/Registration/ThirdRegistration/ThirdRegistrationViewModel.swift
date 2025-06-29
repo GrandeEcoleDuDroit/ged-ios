@@ -86,7 +86,7 @@ class ThirdRegistrationViewModel: ObservableObject {
                  }
             } else if let networkError = e as? NetworkError {
                 switch networkError {
-                    case .forbidden: getString(.unknownError)
+                    case .forbidden: getString(.userNotWhiteListedError)
                     case .dupplicateData: getString(.emailAlreadyAssociatedError)
                     default: getString(.unknownError)
                 }

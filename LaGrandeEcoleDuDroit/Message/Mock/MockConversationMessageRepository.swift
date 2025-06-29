@@ -6,7 +6,11 @@ class MockConversationMessageRepository: ConversationMessageRepository {
         conversationsMessageSubject.eraseToAnyPublisher()
     }
     
-    func clear() {
+    func deleteConversationMessage(conversationId: String) {
+        conversationsMessageSubject.value.removeValue(forKey: conversationId)
+    }
+    
+    func deleteAll() {
         conversationsMessageSubject.value.removeAll()
     }
 }

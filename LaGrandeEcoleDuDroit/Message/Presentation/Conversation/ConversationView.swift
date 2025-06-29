@@ -98,7 +98,7 @@ private struct ConversationView: View {
                         .font(.bodyLarge)
                         .foregroundStyle(.red)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .presentationDetents([.fraction(0.10)])
+                        .presentationDetents([.fraction(0.12)])
                     }
                 }
             } else {

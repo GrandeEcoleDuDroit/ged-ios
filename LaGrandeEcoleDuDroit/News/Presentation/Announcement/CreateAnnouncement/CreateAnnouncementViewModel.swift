@@ -35,7 +35,7 @@ class CreateAnnouncementViewModel: ObservableObject {
             content: uiState.content.trimmingCharacters(in: .whitespacesAndNewlines),
             date: Date(),
             author: user,
-            state: .publishing
+            state: .draft
         )
         
         createAnnouncementUseCase.execute(announcement: announcement)

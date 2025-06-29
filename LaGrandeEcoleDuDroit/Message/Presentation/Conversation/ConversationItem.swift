@@ -73,7 +73,7 @@ private struct SwitchConversationItem: View {
             onClick: onClick,
             onLongClick: onLongClick
         ) {
-            if conversationState == .loading {
+            if conversationState == .creating || conversationState == .deleting {
                 ReadConversationItemContent(
                     interlocutorName: interlocutor.fullName,
                     text: text,
@@ -266,7 +266,7 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String 
         
         SwitchConversationItem(
             interlocutor: userFixture,
-            conversationState: .loading,
+            conversationState: .creating,
             lastMessage: messageFixture,
             isUnread: false,
             text: messageFixture.content,

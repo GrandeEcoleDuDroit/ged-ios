@@ -104,12 +104,6 @@ class AccountViewModel: ObservableObject {
         var loading: Bool = false
         var screenState: AccountScreenState = .read
     }
-    
-    deinit {
-        tasks.forEach { $0.cancel() }
-        tasks.removeAll()
-        print("AccountViewModel deinitialized")
-    }
 }
 
 enum AccountScreenState {

@@ -25,7 +25,7 @@ private struct NewsView: View {
     let user: User?
     let announcements: [Announcement]?
     let refreshing: Bool
-    let onRefreshAnnouncement: () -> Void
+    let onRefreshAnnouncement: () async -> Void
     let onAnnouncementClick: (String) -> Void
     let onCreateAnnouncementClick: () -> Void
     let onResendAnnouncementClick: (Announcement) -> Void
@@ -61,7 +61,7 @@ private struct NewsView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .refreshable { onRefreshAnnouncement() }
+        .refreshable { await onRefreshAnnouncement() }
         .padding(.top, GedSpacing.medium)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

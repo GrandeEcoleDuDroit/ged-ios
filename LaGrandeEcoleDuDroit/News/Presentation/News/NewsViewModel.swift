@@ -27,25 +27,17 @@ class NewsViewModel: ObservableObject {
         self.recreateAnnouncementUseCase = recreateAnnouncementUseCase
         self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
         newsUiState()
-        refreshAnnouncements()
+        Task { await refreshAnnouncements() }
     }
     
-    func refreshAnnouncements() {
-        uiState.refreshing = true
-        Task {
-            do {
-                try await refreshAnnouncementsUseCase.execute()
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.refreshing = false
-                }
-            } catch {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.refreshing = false
-                }
-                updateEvent(ErrorEvent(message: mapErrorMessage(error)))
-            }
+    func refreshAnnouncements() async {
+        do {
+            try await refreshAnnouncementsUseCase.execute()
+        } catch {
+            updateEvent(ErrorEvent(message: mapErrorMessage(error)))
         }
     }
+
     
     func resendAnnouncement(announcement: Announcement) {
         do {

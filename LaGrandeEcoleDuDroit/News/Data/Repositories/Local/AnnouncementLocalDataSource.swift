@@ -6,87 +6,121 @@ import os
 class AnnouncementLocalDataSource {
     private let container: NSPersistentContainer
     private let context: NSManagedObjectContext
+    private let announcementActor :AnnouncementCoreDataActor
     
     init(gedDatabaseContainer: GedDatabaseContainer) {
         container = gedDatabaseContainer.container
         context = container.newBackgroundContext()
+        announcementActor = AnnouncementCoreDataActor(context: context)
     }
     
     func listenDataChange() -> AnyPublisher<Notification, Never> {
         NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: context)
-            .debounce(for: .milliseconds(100), scheduler: RunLoop.current)
             .eraseToAnyPublisher()
     }
     
-    func getAnnouncements() throws -> [Announcement] {
-        let fetchRequest = LocalAnnouncement.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(
-            key: AnnouncementField.announcementDate,
-            ascending: false
-        )]
-        
-        return try context.fetch(fetchRequest).compactMap { $0.toAnnouncement() }
-    }
-    
-    func insertAnnouncement(announcement: Announcement) throws {
-        try insert(announcement: announcement)
-    }
-    
-    func upsertAnnouncement(announcement: Announcement) throws {
-        let request = LocalAnnouncement.fetchRequest()
-        request.predicate = NSPredicate(
-            format: "\(AnnouncementField.announcementId) == %@",
-            announcement.id
-        )
-        
-        if let localAnnouncement = try? context.fetch(request).first {
-            try update(localAnnouncement: localAnnouncement, announcement: announcement)
-        } else {
-            try insert(announcement: announcement)
+    func getAnnouncements() async throws -> [Announcement] {
+        try await context.perform {
+            let fetchRequest = LocalAnnouncement.fetchRequest()
+            fetchRequest.sortDescriptors = [NSSortDescriptor(
+                key: AnnouncementField.announcementDate,
+                ascending: false
+            )]
+            
+            let announcements =  try self.context.fetch(fetchRequest)
+            return announcements.compactMap { $0.toAnnouncement() }
         }
     }
     
-    func updateAnnouncement(announcement: Announcement) throws {
-        try update(announcement: announcement)
+    func insertAnnouncement(announcement: Announcement) async throws {
+        try await announcementActor.insert(announcement: announcement)
     }
     
-    func deleteAnnouncement(announcementId: String) throws {
-        let request = LocalAnnouncement.fetchRequest()
-        request.predicate = NSPredicate(
-            format: "\(AnnouncementField.announcementId) == %@",
-            announcementId
-        )
-        
-        try context.fetch(request).first.map {
-            context.delete($0)
-            try context.save()
+    func upsertAnnouncement(announcement: Announcement) async throws {
+        try await announcementActor.upsert(announcement: announcement)
+    }
+    
+    func updateAnnouncement(announcement: Announcement) async throws {
+        try await announcementActor.update(announcement: announcement)
+    }
+    
+    func deleteAnnouncement(announcementId: String) async throws {
+        try await announcementActor.delete(announcementId: announcementId)
+    }
+}
+    
+private actor AnnouncementCoreDataActor {
+    private let context: NSManagedObjectContext
+    
+    init(context: NSManagedObjectContext) {
+        self.context = context
+    }
+    
+    func insert(announcement: Announcement) async throws {
+        try await context.perform {
+            let localAnnouncement = LocalAnnouncement(context: self.context)
+            announcement.buildLocal(localAnnouncement: localAnnouncement)
+            try self.context.save()
         }
     }
     
-    private func insert(announcement: Announcement) throws {
-        announcement.buildLocal(context: context)
-        try context.save()
+    func upsert(announcement: Announcement) async throws {
+        try await context.perform {
+            let request = LocalAnnouncement.fetchRequest()
+            request.predicate = NSPredicate(
+                format: "%K == %@",
+                AnnouncementField.announcementId, announcement.id
+            )
+            
+            let localAnnouncement = try self.context.fetch(request).first
+            guard localAnnouncement?.equals(announcement) != true else {
+                return
+            }
+            
+            if localAnnouncement != nil {
+                localAnnouncement?.modify(announcement: announcement)
+            } else {
+                let newLocalAnnouncement = LocalAnnouncement(context: self.context)
+                announcement.buildLocal(localAnnouncement: newLocalAnnouncement)
+            }
+            
+            try self.context.save()
+        }
     }
     
-    private func update(announcement: Announcement) throws {
-        let request = LocalAnnouncement.fetchRequest()
-        request.predicate = NSPredicate(
-            format: "\(AnnouncementField.announcementId) == %@",
-            announcement.id
-        )
-        try context.fetch(request).first?.modify(announcement: announcement)
-        try context.save()
+    func update(announcement: Announcement) async throws {
+        try await context.perform {
+            let request = LocalAnnouncement.fetchRequest()
+            request.predicate = NSPredicate(
+                format: "%K == %@",
+                AnnouncementField.announcementId, announcement.id
+            )
+            
+            try self.context.fetch(request).first?.modify(announcement: announcement)
+            
+            try self.context.save()
+        }
     }
     
-    private func update(localAnnouncement: LocalAnnouncement, announcement: Announcement) throws {
-        localAnnouncement.modify(announcement: announcement)
-        try context.save()
+    func delete(announcementId: String) async throws {
+        try await context.perform {
+            let request = LocalAnnouncement.fetchRequest()
+            request.predicate = NSPredicate(
+                format: "%K == %@",
+                AnnouncementField.announcementId, announcementId
+            )
+            
+            try self.context.fetch(request).first.map {
+                self.context.delete($0)
+            }
+            
+            try self.context.save()
+        }
     }
 }
 
 private extension Announcement {
-    func buildLocal(context: NSManagedObjectContext) {
-        let localAnnouncement = LocalAnnouncement(context: context)
+    func buildLocal(localAnnouncement: LocalAnnouncement) {
         localAnnouncement.announcementId = id
         localAnnouncement.announcementTitle = title
         localAnnouncement.announcementContent = content
@@ -115,5 +149,20 @@ private extension LocalAnnouncement {
         userSchoolLevel = announcement.author.schoolLevel.rawValue
         userIsMember = announcement.author.isMember
         userProfilePictureFileName = announcement.author.profilePictureUrl
+    }
+    
+    func equals(_ announcement: Announcement) -> Bool {
+        announcementId == announcement.id &&
+        announcementTitle == announcement.title &&
+        announcementContent == announcement.content &&
+        announcementDate == announcement.date &&
+        announcementState == announcement.state.rawValue &&
+        userId == announcement.author.id &&
+        userFirstName == announcement.author.firstName &&
+        userLastName == announcement.author.lastName &&
+        userEmail == announcement.author.email &&
+        userSchoolLevel == announcement.author.schoolLevel.rawValue &&
+        userIsMember == announcement.author.isMember &&
+        userProfilePictureFileName == UrlUtils.getFileNameFromUrl(url: announcement.author.profilePictureUrl)
     }
 }

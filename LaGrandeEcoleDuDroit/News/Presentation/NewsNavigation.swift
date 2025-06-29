@@ -37,6 +37,7 @@ struct NewsNavigation: View {
                         ).onAppear {
                             tabBarVisibility.show = false
                         }
+                        .background(Color.background)
                         
                     case .createAnnouncement:
                         CreateAnnouncementDestination(
