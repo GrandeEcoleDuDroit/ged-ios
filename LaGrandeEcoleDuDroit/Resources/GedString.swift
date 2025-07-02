@@ -106,6 +106,8 @@ enum GedString: String {
     case deleteConversationAlertMessage = "delete_conversation_alert_message"
     case seen = "seen"
     case newMessages = "new_messages"
+    case deleteMessageAlertTitle = "delete_message_alert_title"
+    case deleteMessageAlertContent = "delete_message_alert_content"
     
     // Message errors
     case errorGettingConversations = "error_getting_conversations"

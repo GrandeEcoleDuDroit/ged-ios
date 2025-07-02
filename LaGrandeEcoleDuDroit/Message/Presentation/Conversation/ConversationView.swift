@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 struct ConversationDestination: View {
     let onCreateConversationClick: () -> Void
@@ -10,7 +11,7 @@ struct ConversationDestination: View {
     
     var body: some View {
         ConversationView(
-            conversations: viewModel.uiState.conversations,
+            conversationsUi: viewModel.uiState.conversations,
             onCreateConversationClick: onCreateConversationClick,
             onConversationClick: onConversationClick,
             onDeleteConversationClick: viewModel.deleteConversation
@@ -43,7 +44,7 @@ struct ConversationDestination: View {
 }
 
 private struct ConversationView: View {
-    let conversations: [ConversationUi]?
+    let conversationsUi: [ConversationUi]?
     let onCreateConversationClick: () -> Void
     let onConversationClick: (ConversationUi) -> Void
     let onDeleteConversationClick: (Conversation) -> Void
@@ -55,7 +56,7 @@ private struct ConversationView: View {
     
     var body: some View {
         ZStack {
-            if let conversations = conversations {
+            if let conversations = conversationsUi {
                 if conversations.isEmpty {
                     VStack {
                         Text(getString(.noConversation))
@@ -88,17 +89,16 @@ private struct ConversationView: View {
                         }
                     }
                     .sheet(isPresented: $showBottomSheet) {
-                        ClickableItemWithIcon(
-                            icon: Image(systemName: "trash"),
-                            text: Text(getString(.delete))
-                        ) {
-                            showBottomSheet = false
-                            showDeleteAlert = true
+                        BottomSheetContainer(fraction: 0.125) {
+                            ClickableItemWithIcon(
+                                icon: Image(systemName: "trash"),
+                                text: Text(getString(.delete))
+                            ) {
+                                showBottomSheet = false
+                                showDeleteAlert = true
+                            }
+                            .foregroundStyle(.red)
                         }
-                        .font(.bodyLarge)
-                        .foregroundStyle(.red)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .presentationDetents([.fraction(0.12)])
                     }
                 }
             } else {
@@ -127,7 +127,7 @@ private struct ConversationView: View {
 #Preview {
     NavigationStack {
         ConversationView(
-            conversations: [],
+            conversationsUi: conversationsUiFixture,
             onCreateConversationClick: {},
             onConversationClick: {_ in},
             onDeleteConversationClick: {_ in}

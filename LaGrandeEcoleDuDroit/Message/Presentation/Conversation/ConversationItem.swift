@@ -21,7 +21,7 @@ struct ConversationItem: View {
         self.onLongClick = onLongClick
         self.lastMessage = conversation.lastMessage
         self.interlocutor = conversation.interlocutor
-        self.text = lastMessage.state == .sent ? lastMessage.content : getString(.sending)
+        self.text = lastMessage.state == .sending ? getString(.sending) : lastMessage.content
         self.isNotSender = lastMessage.senderId == interlocutor.id
     }
     

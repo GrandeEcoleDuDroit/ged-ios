@@ -69,11 +69,11 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
     
     func createAnnouncement(announcement: Announcement) async throws {
         try await announcementLocalDataSource.insertAnnouncement(announcement: announcement)
-//        try await mapFirebaseException(
-//            block: { try await announcementRemoteDataSource.createAnnouncement(announcement: announcement) },
-//            tag: tag,
-//            message: "Failed to create remote announcement"
-//        )
+        try await mapFirebaseException(
+            block: { try await announcementRemoteDataSource.createAnnouncement(announcement: announcement) },
+            tag: tag,
+            message: "Failed to create remote announcement"
+        )
     }
     
     func updateAnnouncement(announcement: Announcement) async throws {

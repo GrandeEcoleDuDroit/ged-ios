@@ -111,12 +111,15 @@ class ConversationRepositoryImpl: ConversationRepository {
             userId: userId,
             deleteTime: deleteTime
         )
-        try await conversationLocalDataSource.deleteConversation(conversationId: conversation.id)
+        if let deletedConversation = try await conversationLocalDataSource.deleteConversation(conversationId: conversation.id) {
+            conversationChangesSubject.send(.init(inserted: [], updated: [], deleted: [deletedConversation]))
+        }
     }
     
     func deleteLocalConversations() async throws {
         do {
-            try await conversationLocalDataSource.deleteConversations()
+            let deletedConversations = try await conversationLocalDataSource.deleteConversations()
+            conversationChangesSubject.send(.init(inserted: [], updated: [], deleted: deletedConversations))
         } catch {
             e(tag, "Failed to delete local conversations \(error)", error)
             throw error

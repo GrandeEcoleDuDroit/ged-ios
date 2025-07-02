@@ -98,19 +98,19 @@ class ConversationLocalDataSource {
     }
     
     func upsertConversation(conversation: Conversation) async throws {
-        try await conversationActor.upsert(conversation: conversation)
+        try await conversationActor.upsertConversation(conversation: conversation)
     }
     
     func updateConversation(conversation: Conversation) async throws {
-        try await conversationActor.update(conversation: conversation)
+        try await conversationActor.updateConversation(conversation: conversation)
     }
     
-    func deleteConversation(conversationId: String) async throws {
-        try await conversationActor.delete(conversationId: conversationId)
+    func deleteConversation(conversationId: String) async throws -> Conversation? {
+        try await conversationActor.deleteConversation(conversationId: conversationId)
     }
     
-    func deleteConversations() async throws {
-        try await conversationActor.deleteAll()
+    func deleteConversations() async throws -> [Conversation] {
+        try await conversationActor.deleteConversations()
     }
 }
 
@@ -130,7 +130,7 @@ private actor ConversationCoreDataActor {
         }
     }
     
-    func upsert(conversation: Conversation) async throws {
+    func upsertConversation(conversation: Conversation) async throws {
         try await context.perform {
             let request = LocalConversation.fetchRequest()
             request.predicate = NSPredicate(
@@ -153,7 +153,7 @@ private actor ConversationCoreDataActor {
         }
     }
     
-    func update(conversation: Conversation) async throws {
+    func updateConversation(conversation: Conversation) async throws {
         try await context.perform {
             let request = LocalConversation.fetchRequest()
             request.predicate = NSPredicate(
@@ -168,7 +168,7 @@ private actor ConversationCoreDataActor {
         }
     }
     
-    func delete(conversationId: String) async throws {
+    func deleteConversation(conversationId: String) async throws -> Conversation? {
         try await context.perform {
             let request = LocalConversation.fetchRequest()
             request.predicate = NSPredicate(
@@ -176,23 +176,29 @@ private actor ConversationCoreDataActor {
                 ConversationField.conversationId, conversationId
             )
             
-            try self.context.fetch(request).first.map {
-                self.context.delete($0)
+            guard let localConversation = try self.context.fetch(request).first else {
+                return nil
             }
-            
+            let conversation = localConversation.toConversation()
+            self.context.delete(localConversation)
             try self.context.save()
+            
+            return conversation
         }
     }
     
-    func deleteAll() async throws {
+    func deleteConversations() async throws -> [Conversation] {
         try await context.perform {
             let request = LocalConversation.fetchRequest()
             
-            try self.context.fetch(request).forEach {
+            let localConversations = try self.context.fetch(request)
+            let conversations = localConversations.compactMap { $0.toConversation() }
+            localConversations.forEach {
                 self.context.delete($0)
             }
-            
             try self.context.save()
+            
+            return conversations
         }
     }
 }

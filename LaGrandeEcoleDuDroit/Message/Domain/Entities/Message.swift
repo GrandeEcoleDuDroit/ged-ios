@@ -35,7 +35,7 @@ struct Message: Hashable {
 
 enum MessageState: String, Equatable, Codable {
     case draft = "draft"
-    case loading = "loading"
+    case sending = "sending"
     case sent = "sent"
     case error = "error"
 }

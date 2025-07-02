@@ -19,39 +19,53 @@ class ConversationMessageRepositoryImpl: ConversationMessageRepository {
         listen()
     }
     
-    func deleteConversationMessage(conversationId: String) {
-        conversationsMessageSubject.value.removeValue(forKey: conversationId)
-        messageCancellables[conversationId]?.cancel()
-        messageCancellables.removeValue(forKey: conversationId)
-    }
-    
-    func deleteAll() {
+    func clear() {
         conversationsMessageSubject.value.removeAll()
         messageCancellables.forEach { $0.value.cancel() }
         messageCancellables.removeAll()
     }
     
+    func updateLastMessage(conversation: Conversation, message: Message?) async {
+        if let message = message {
+            conversationsMessageSubject.value[conversation.id] = ConversationMessage(conversation: conversation, lastMessage: message)
+        } else {
+            conversationsMessageSubject.value[conversation.id] = nil
+        }
+    }
+    
     private func listen() {
-        listenConversations()
+        listenConversationValueChanges()
+        listenConversationDeleteChanges()
+    }
+    
+    private func listenConversationValueChanges() {
+        let initial = getConversations()
+        let updates = conversationRepository.conversationChanges.map { change in
+            change.inserted + change.updated
+        }
+        
+        Publishers.Merge(initial, updates)
             .sink { [weak self] conversations in
                 for conversation in conversations {
                     self?.messageCancellables[conversation.id]?.cancel()
                     
-                    let cancellable = self?.updateConversationMessage(for: conversation)
+                    let cancellable = self?.listenLastMessage(from: conversation)
                     
                     self?.messageCancellables[conversation.id] = cancellable
                 }
             }.store(in: &conversationCancellables)
     }
     
-    private func listenConversations() -> AnyPublisher<[Conversation], Never> {
-        let initial = getConversations()
-        let updates = conversationRepository.conversationChanges.map { change in
-            change.inserted + change.updated
-        }
-        
-        return Publishers.Merge(initial, updates)
-            .eraseToAnyPublisher()
+    private func listenConversationDeleteChanges()  {
+        conversationRepository.conversationChanges.map { change in
+            change.deleted
+        }.sink { [weak self] deletedConversations in
+            for conversation in deletedConversations {
+                self?.messageCancellables[conversation.id]?.cancel()
+                self?.messageCancellables[conversation.id] = nil
+                self?.conversationsMessageSubject.value[conversation.id] = nil
+            }
+        }.store(in: &conversationCancellables)
     }
     
     private func getConversations() -> Future<[Conversation], Never> {
@@ -63,22 +77,8 @@ class ConversationMessageRepositoryImpl: ConversationMessageRepository {
         }
     }
     
-    private func updateConversationMessage(for conversation: Conversation) -> AnyCancellable {
-        listenLastMessage(from: conversation)
-            .sink { [weak self] message in
-                guard let message = message else {
-                    self?.conversationsMessageSubject.value.removeValue(forKey: conversation.id)
-                    return
-                }
-                
-                self?.conversationsMessageSubject.value[conversation.id] =
-                    ConversationMessage(conversation: conversation, lastMessage: message)
-            }
-    }
-    
-    private func listenLastMessage(from conversation: Conversation) -> AnyPublisher<Message?, Never> {
+    private func listenLastMessage(from conversation: Conversation) -> AnyCancellable {
         let initial = getLastMessage(conversation: conversation)
-        
         let update = listenLastMessageChanges(conversation: conversation).flatMap { (message, change) in
             if change == .deleted {
                 return self.getLastMessage(conversation: conversation).eraseToAnyPublisher()
@@ -89,7 +89,15 @@ class ConversationMessageRepositoryImpl: ConversationMessageRepository {
         
         return initial
             .append(update)
-            .eraseToAnyPublisher()
+            .sink { [weak self] message in
+                guard let message = message else {
+                    self?.conversationsMessageSubject.value[conversation.id] = nil
+                    return
+                }
+                
+                self?.conversationsMessageSubject.value[conversation.id] =
+                    ConversationMessage(conversation: conversation, lastMessage: message)
+            }
     }
     
     private func getLastMessage(conversation: Conversation) -> Future<Message?, Never> {

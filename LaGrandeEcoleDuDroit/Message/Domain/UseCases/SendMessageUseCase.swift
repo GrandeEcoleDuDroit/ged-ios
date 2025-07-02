@@ -15,7 +15,7 @@ class SendMessageUseCase {
         self.networkMonitor = networkMonitor
     }
     
-    func execute(message: Message, conversation: Conversation, userId: String) {
+    func execute(conversation: Conversation, message: Message, userId: String) {
         Task {
             do {
                 try await createDataLocally(conversation: conversation, message: message)
@@ -35,7 +35,7 @@ class SendMessageUseCase {
         }
         
         if message.state == .draft {
-            try await messageRepository.createLocalMessage(message: message.with(state: .loading))
+            try await messageRepository.createLocalMessage(message: message.with(state: .sending))
         }
     }
     

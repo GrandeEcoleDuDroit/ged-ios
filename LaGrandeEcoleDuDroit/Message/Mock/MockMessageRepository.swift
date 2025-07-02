@@ -8,8 +8,12 @@ class MockMessageRepository: MessageRepository {
         Empty().eraseToAnyPublisher()
     }
     
-    func getMessages(conversationId: String) async throws -> [Message] {
+    func getMessages(conversationId: String, offset: Int) async throws -> [Message] {
         messagesFixture
+    }
+    
+    func getLastMessage(conversationId: String) -> Message? {
+        messageFixture
     }
     
     func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<[Message], Error> {
@@ -19,9 +23,15 @@ class MockMessageRepository: MessageRepository {
             .eraseToAnyPublisher()
     }
     
-    func createLocalMessage(message: Message) async throws {
-        
-    }
+    func createLocalMessage(message: Message) async throws {}
+    
+    func createRemoteMessage(message: Message) async throws {}
+
+    func updateLocalMessage(message: Message) {}
+    
+    func updateSeenMessages(conversationId: String, userId: String) async throws {}
+    
+    func updateSeenMessage(message: Message) async throws {}
     
     func upsertLocalMessage(message: Message) {
         messagesSubject.send(messageFixture)
@@ -35,31 +45,9 @@ class MockMessageRepository: MessageRepository {
     
     func deleteLocalMessages(conversationId: String) {}
     
-    func createRemoteMessage(message: Message) async throws {}
-    
-    func updateSeenMessages(conversationId: String, userId: String) async throws {}
-    
-    func updateSeenMessage(message: Message) async throws {}
-        
     func deleteLocalMessages() {}
     
+    func deleteLocalMessage(message: Message) async throws {}
+            
     func stopListeningMessages() {}
-    
-    func listen() -> AnyPublisher<CoreDataChange<Message>, Never> {
-        Empty().eraseToAnyPublisher()
-    }
-    
-    func getMessages(conversationId: String, offset: Int) -> [Message] {
-        messagesFixture
-    }
-    
-    func getLastMessage(conversationId: String) -> Message? {
-        messageFixture
-    }
-    
-    func getLastMessageDate(conversationId: String) async -> Date? {
-        Date()
-    }
-    
-    func updateLocalMessage(message: Message) {}
 }

@@ -114,9 +114,21 @@ class MessageRepositoryImpl: MessageRepository {
         }
     }
     
+    func deleteLocalMessage(message: Message) async throws {
+        do {
+            if let deletedMessage = try await messageLocalDataSource.deleteMessage(message: message) {
+                messageChangesSubject.send(.init(inserted: [], updated: [], deleted: [deletedMessage]))
+            }
+        } catch {
+            e(tag, "Failed to delete local message: \(error)", error)
+            throw error
+        }
+    }
+    
     func deleteLocalMessages(conversationId: String) async throws {
         do {
-            try await messageLocalDataSource.deleteMessages(conversationId: conversationId)
+            let deletedMessages = try await messageLocalDataSource.deleteMessages(conversationId: conversationId)
+            messageChangesSubject.send(.init(inserted: [], updated: [], deleted: deletedMessages))
         } catch {
             e(tag, "Failed to delete local messages for conversation \(conversationId): \(error)", error)
             throw error
@@ -125,7 +137,8 @@ class MessageRepositoryImpl: MessageRepository {
     
     func deleteLocalMessages() async throws {
         do {
-            try await messageLocalDataSource.deleteMessages()
+            let deletedMessages = try await messageLocalDataSource.deleteMessages()
+            messageChangesSubject.send(.init(inserted: [], updated: [], deleted: deletedMessages))
         } catch {
             e(tag, "Failed to delete local messages: \(error)", error)
             throw error

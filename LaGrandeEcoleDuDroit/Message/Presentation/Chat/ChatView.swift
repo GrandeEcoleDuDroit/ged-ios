@@ -7,6 +7,7 @@ struct ChatDestination: View {
     
     @StateObject private var viewModel: ChatViewModel
     @State private var showErrorAlert = false
+    @State private var errorMessage: String = ""
     
     init(
         conversation: Conversation,
@@ -26,8 +27,25 @@ struct ChatDestination: View {
             text: $viewModel.uiState.text,
             onSendMessagesClick: viewModel.sendMessage,
             onBackClick: onBackClick,
-            loadMoreMessages: viewModel.loadMoreMessages
+            loadMoreMessages: viewModel.loadMoreMessages,
+            onErrorMessageClick: viewModel.deleteErrorMessage,
+            onResendMessage: viewModel.resendErrorMessage
         )
+        .onReceive(viewModel.$event) { event in
+            if let errorEvent = event as? ErrorEvent {
+                errorMessage = errorEvent.message
+                showErrorAlert = true
+            }
+        }
+        .alert(
+            errorMessage,
+            isPresented: $showErrorAlert
+        ) {
+            Button(
+                getString(.ok),
+                action: { showErrorAlert = false }
+            )
+        }
         .navigationBarBackButtonHidden()
     }
 }
@@ -39,18 +57,29 @@ private struct ChatView: View {
     let onSendMessagesClick: () -> Void
     let onBackClick: () -> Void
     let loadMoreMessages: () -> Void
+    let onErrorMessageClick: (Message) -> Void
+    let onResendMessage: (Message) -> Void
     
+    @State private var showBottomSheet: Bool = false
     @State private var inputFocused: Bool = false
+    @State private var selectedMessage: Message?
+    @State private var showDeleteAnnouncementAlert: Bool = false
 
     var body: some View {
         VStack(spacing: GedSpacing.medium) {
             MessageFeed(
                 messages: messages,
                 conversation: conversation,
-                loadMoreMessages: loadMoreMessages
+                loadMoreMessages: loadMoreMessages,
+                onErrorMessageClick: {
+                    if $0.state == .error {
+                        selectedMessage = $0
+                        showBottomSheet = true
+                    }
+                }
             )
             
-            ChatInputField(
+            MessageInput(
                 text: $text,
                 inputFocused: $inputFocused,
                 onSendClick: onSendMessagesClick
@@ -61,6 +90,45 @@ private struct ChatView: View {
         .onTapGesture {
             inputFocused = false
         }
+        .sheet(isPresented: $showBottomSheet) {
+            BottomSheetContainer(fraction: 0.16) {
+                ClickableItemWithIcon(
+                    icon: Image(systemName: "paperplane"),
+                    text: Text(getString(.resend))
+                ) {
+                    showBottomSheet = false
+                    if let message = selectedMessage {
+                        onResendMessage(message)
+                    }
+                }
+                                
+                ClickableItemWithIcon(
+                    icon: Image(systemName: "trash"),
+                    text: Text(getString(.delete))
+                ) {
+                    showBottomSheet = false
+                    showDeleteAnnouncementAlert = true
+                }
+                .foregroundColor(.error)
+            }
+        }
+        .alert(
+            getString(.deleteMessageAlertTitle),
+            isPresented: $showDeleteAnnouncementAlert,
+            actions: {
+                Button(getString(.cancel), role: .cancel) {
+                    showDeleteAnnouncementAlert = false
+                }
+                
+                Button(getString(.delete), role: .destructive) {
+                    if let message = selectedMessage {
+                        onErrorMessageClick(message)
+                    }
+                    showDeleteAnnouncementAlert = false
+                }
+            },
+            message: { Text(getString(.deleteMessageAlertContent)) }
+        )
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 HStack {
@@ -91,7 +159,9 @@ private struct ChatView: View {
             text: .constant(""),
             onSendMessagesClick: {},
             onBackClick: {},
-            loadMoreMessages: {}
+            loadMoreMessages: {},
+            onErrorMessageClick: { _ in },
+            onResendMessage: { _ in }
         )
         .background(Color.background)
     }

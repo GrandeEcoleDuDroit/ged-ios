@@ -32,7 +32,9 @@ class EditAnnouncementViewModel: ObservableObject {
     }
     
     func updateAnnouncement() {
+        uiState.loading = true
         Task {
+            defer { uiState.loading = false }
             do {
                 let updatedAnnouncement = announcement.with(
                     title: uiState.title.trimmingCharacters(in: .whitespacesAndNewlines),

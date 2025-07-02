@@ -104,6 +104,8 @@
 "delete_conversation_alert_message" = "Voulez-vous supprimer cette conversation ?";
 "seen" = "Vu";
 "new_messages" = "Nouveau messages";
+"delete_message_alert_title" = "Supprimer le message";
+"delete_message_alert_content" = "Êtes-vous sûr de vouloir supprimer ce message ?";
 
 // Message errors
 "error_getting_conversations" = "Une erreur est survenue lors de la récupération des conversations.";

@@ -23,10 +23,12 @@ protocol MessageRepository {
     func upsertLocalMessage(message: Message) async throws
     
     func upsertLocalMessages(messages: [Message]) async throws
+    
+    func deleteLocalMessage(message: Message) async throws
         
     func deleteLocalMessages(conversationId: String) async throws
     
     func deleteLocalMessages() async throws
-        
+            
     func stopListeningMessages()
 }

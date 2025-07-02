@@ -41,7 +41,7 @@ struct ShortAnnouncementItem: View {
                 DefaultShortAnnouncementItem(announcement: announcement)
                     .onClick(isClicked: $isClicked, action: onClick)
                     .padding(.horizontal)
-                    .padding(.vertical, 5)
+                    .padding(.vertical, GedSpacing.small)
             case .publishing:
                 PublishingShortAnnouncementItem(announcement: announcement)
                     .onClick(isClicked: $isClicked, action: onClick)

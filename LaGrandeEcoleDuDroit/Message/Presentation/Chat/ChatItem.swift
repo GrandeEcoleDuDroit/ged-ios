@@ -3,6 +3,8 @@ import SwiftUI
 struct SendMessageItem: View {
     let message: Message
     let showSeen: Bool
+    var onErrorMessageClick: ((Message) -> Void) = { _ in }
+    let clickColor = Color(red: 93/255, green: 102/255, blue: 128/255)
     
     var body: some View {
         HStack(alignment: .bottom) {
@@ -12,7 +14,9 @@ struct SendMessageItem: View {
                     date: message.date,
                     backgroundColor: .gedPrimary,
                     textColor: .white,
-                    dateColor: Color(UIColor.lightText)
+                    dateColor: Color(UIColor.lightText),
+                    clickColor: clickColor,
+                    onClick: { onErrorMessageClick(message) }
                 )
                 
                 if showSeen {
@@ -25,7 +29,7 @@ struct SendMessageItem: View {
             .frame(maxWidth: .infinity, alignment: .trailing)
             
             switch message.state {
-                case .loading:
+                case .sending:
                     Image(systemName: "paperplane")
                         .resizable()
                         .foregroundColor(.gray)
@@ -78,6 +82,9 @@ private struct MessageText: View {
     let backgroundColor: Color
     let textColor: Color
     let dateColor: Color
+    var clickColor: Color = .click
+    var onClick: (() -> Void) = {}
+    @State private var isClicked: Bool = false
     
     var body: some View {
         HStack(alignment: .bottom) {
@@ -90,12 +97,14 @@ private struct MessageText: View {
         }
         .padding(.vertical, GedSpacing.small)
         .padding(.horizontal, GedSpacing.medium)
+        .onClick(isClicked: $isClicked, action: onClick, backgroundColor: clickColor)
         .background(backgroundColor)
         .clipShape(.rect(cornerRadius: 24))
+        
     }
 }
 
-struct ChatInputField: View {
+struct MessageInput: View {
     @Binding var text: String
     @Binding var inputFocused: Bool
     @FocusState var focusedField: Bool
@@ -196,7 +205,7 @@ struct NewMessageIndicator: View {
                 )
                 
                 SendMessageItem(
-                    message: messageFixture.with(state: .loading),
+                    message: messageFixture.with(state: .sending),
                     showSeen: false
                 )
                 
@@ -212,7 +221,7 @@ struct NewMessageIndicator: View {
             )
         }
 
-        ChatInputField(
+        MessageInput(
             text: .constant(""),
             inputFocused: .constant(false),
             onSendClick: {}
