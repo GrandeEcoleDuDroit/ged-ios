@@ -37,7 +37,7 @@ let messagesFixture = [
         content: "Hi, how are you ?",
         date: calendar.date(byAdding: .minute, value: -10, to: currentDate) ?? currentDate,
         seen: true,
-        state: .sent
+        state: .error
     ),
     Message(
         id: 3,

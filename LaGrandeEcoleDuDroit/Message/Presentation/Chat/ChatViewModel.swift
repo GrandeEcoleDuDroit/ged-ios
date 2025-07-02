@@ -12,6 +12,7 @@ class ChatViewModel: ObservableObject {
     private var offset: Int = 0
     
     @Published var uiState: ChatUiState = ChatUiState()
+    @Published var event: SingleUiEvent? = nil
     
     init(
         conversation: Conversation,
@@ -25,6 +26,7 @@ class ChatViewModel: ObservableObject {
         self.messageRepository = messageRepository
         self.conversationRepository = conversationRepository
         self.sendMessageUseCase = sendMessageUseCase
+        
         user = userRepository.currentUser
         getMessages(offset: offset)
         listenMessages()
@@ -49,6 +51,12 @@ class ChatViewModel: ObservableObject {
                         self?.addOrUpdateMessage(message)
                         self?.seeMessage(message)
                     }
+                
+                change.deleted
+                    .filter { $0.conversationId == self?.conversation.id }
+                    .forEach { message in
+                        self?.uiState.messages[message.id] = nil
+                    }
             }.store(in: &cancellables)
     }
     
@@ -68,13 +76,34 @@ class ChatViewModel: ObservableObject {
             state: .draft
         )
         
-        sendMessageUseCase.execute(message: message, conversation: conversation, userId: user.id)
+        sendMessageUseCase.execute(conversation: conversation, message: message, userId: user.id)
         uiState.text = ""
     }
     
     func loadMoreMessages() {
         offset += 20
         getMessages(offset: offset)
+    }
+    
+    func resendErrorMessage(_ message: Message) {
+        guard let user = user else {
+            return
+        }
+        
+        let updatedMessage = message.with(date: Date())
+        sendMessageUseCase.execute(conversation: conversation, message: updatedMessage, userId: user.id)
+    }
+    
+    func deleteErrorMessage(_ message: Message) {
+        Task {
+            do {
+                try await messageRepository.deleteLocalMessage(message: message)
+            } catch {
+                DispatchQueue.main.async { [weak self] in
+                    self?.event = ErrorEvent(message: getString(.unknownError))
+                }
+            }
+        }
     }
     
     private func getMessages(offset: Int) {

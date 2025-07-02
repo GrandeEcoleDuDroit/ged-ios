@@ -5,19 +5,19 @@ import Combine
 class NetworkMonitorImpl: NetworkMonitor {
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: "NetworkMonitorQueue")
-    private var connectedPublisher = CurrentValueSubject<Bool, Never>(false)
+    private var connectionStatusSubject = PassthroughSubject<Bool, Never>()
 
-    var connected: AnyPublisher<Bool, Never> {
-        connectedPublisher.eraseToAnyPublisher()
+    var connectionStatus: AnyPublisher<Bool, Never> {
+        connectionStatusSubject.eraseToAnyPublisher()
     }
 
     var isConnected: Bool {
-        connectedPublisher.value
+        monitor.currentPath.status == .satisfied
     }
 
     init() {
         monitor.pathUpdateHandler = { [weak self] path in
-            self?.connectedPublisher.send(path.status == .satisfied)
+            self?.connectionStatusSubject.send(path.status == .satisfied)
         }
         monitor.start(queue: queue)
     }

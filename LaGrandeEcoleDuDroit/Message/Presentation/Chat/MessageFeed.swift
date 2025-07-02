@@ -5,6 +5,7 @@ struct MessageFeed: View {
     let messages: [Message]
     let conversation: Conversation
     let loadMoreMessages: () -> Void
+    let onErrorMessageClick: (Message) -> Void
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -54,7 +55,8 @@ struct MessageFeed: View {
                                 interlocutorId: conversation.interlocutor.id,
                                 showSeen: showSeenMessage,
                                 displayProfilePicture: displayProfilePicture,
-                                profilePictureUrl: conversation.interlocutor.profilePictureUrl
+                                profilePictureUrl: conversation.interlocutor.profilePictureUrl,
+                                onErrorMessageClick: onErrorMessageClick
                             )
                             .messageItemPadding(
                                 sameSender: sameSender,
@@ -101,6 +103,7 @@ private struct GetMessageItem: View {
     let showSeen: Bool
     let displayProfilePicture: Bool
     let profilePictureUrl: String?
+    let onErrorMessageClick: (Message) -> Void
     
     var body: some View {
         if message.senderId == interlocutorId {
@@ -113,7 +116,8 @@ private struct GetMessageItem: View {
             VStack(alignment: .trailing) {
                 SendMessageItem(
                     message: message,
-                    showSeen: showSeen
+                    showSeen: showSeen,
+                    onErrorMessageClick: onErrorMessageClick
                 )
             }
         }

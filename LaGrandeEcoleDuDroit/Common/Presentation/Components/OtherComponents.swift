@@ -27,9 +27,28 @@ struct ClickableItemWithIcon: View {
                     text
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
+                .padding(.horizontal)
             }
         )
+    }
+}
+
+struct BottomSheetContainer<Content: View>: View {
+    let fraction: CGFloat
+    let content: Content
+    
+    init(fraction: CGFloat, @ViewBuilder content: () -> Content) {
+        self.fraction = fraction
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack(spacing: 28) {
+            content
+        }
+        .presentationDetents([.fraction(fraction)])
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+        .padding(.bottom)
     }
 }
 
@@ -37,5 +56,11 @@ struct ClickableItemWithIcon: View {
     ItemWithIcon(
         icon: Image(systemName: "star"),
         text: Text("Item with icon")
-    )
+    ).background(.red)
+    
+    ClickableItemWithIcon(
+        icon: Image(systemName: "star"),
+        text: Text("Item with icon"),
+        onClick: {}
+    ).background(.blue)
 }

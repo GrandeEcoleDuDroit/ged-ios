@@ -120,15 +120,15 @@ class MessageLocalDataSource {
     }
     
     func insertMessage(message: Message) async throws {
-        try await messageActor.insert(message: message)
+        try await messageActor.insertMessage(message: message)
     }
   
     func upsertMessage(message: Message) async throws {
-        try await messageActor.upsert(message: message)
+        try await messageActor.upsertMessage(message: message)
     }
     
     func upsertMessages(messages: [Message]) async throws {
-        try await messageActor.upsert(messages: messages)
+        try await messageActor.upsertMessages(messages: messages)
     }
     
     func updateMessage(message: Message) async throws {
@@ -139,11 +139,15 @@ class MessageLocalDataSource {
         try await messageActor.updateSeenMessages(conversationId: conversationId, userId: userId)
     }
     
-    func deleteMessages(conversationId: String) async throws {
+    func deleteMessage(message: Message) async throws -> Message? {
+        try await messageActor.deleteMessage(messageId: message.id)
+    }
+    
+    func deleteMessages(conversationId: String) async throws -> [Message] {
         try await messageActor.deleteMessages(conversationId: conversationId)
     }
     
-    func deleteMessages() async throws {
+    func deleteMessages() async throws -> [Message] {
        try await messageActor.deleteMessages()
     }
 }
@@ -155,7 +159,7 @@ actor MessageCoreDataActor {
         self.context = context
     }
     
-    func insert(message: Message) async throws {
+    func insertMessage(message: Message) async throws {
         try await context.perform {
             let localMessage = LocalMessage(context: self.context)
             message.buildLocal(localMessage: localMessage)
@@ -163,7 +167,7 @@ actor MessageCoreDataActor {
         }
     }
     
-    func upsert(message: Message) async throws {
+    func upsertMessage(message: Message) async throws {
         try await context.perform {
             let request = LocalMessage.fetchRequest()
             request.predicate = NSPredicate(
@@ -185,7 +189,7 @@ actor MessageCoreDataActor {
         }
     }
     
-    func upsert(messages: [Message]) async throws {
+    func upsertMessages(messages: [Message]) async throws {
         try await context.perform {
             messages.forEach { message in
                 let request = LocalMessage.fetchRequest()
@@ -242,7 +246,26 @@ actor MessageCoreDataActor {
         }
     }
     
-    func deleteMessages(conversationId: String) async throws {
+    func deleteMessage(messageId: Int64) async throws -> Message? {
+        try await context.perform {
+            let request = LocalMessage.fetchRequest()
+            request.predicate = NSPredicate(
+                format: "%K == %lld",
+                MessageField.messageId, messageId
+            )
+            
+            guard let localMessage = try self.context.fetch(request).first else {
+                return nil
+            }
+            let message = localMessage.toMessage()
+            self.context.delete(localMessage)
+            try self.context.save()
+            
+            return message
+        }
+    }
+    
+    func deleteMessages(conversationId: String) async throws -> [Message] {
         try await context.perform {
             let request = LocalMessage.fetchRequest()
             request.predicate = NSPredicate(
@@ -250,21 +273,28 @@ actor MessageCoreDataActor {
                 MessageField.conversationId, conversationId
             )
             
-            try self.context.fetch(request).forEach {
+            let localMessages = try self.context.fetch(request)
+            let messages = localMessages.compactMap { $0.toMessage() }
+            localMessages.forEach {
                 self.context.delete($0)
             }
             try self.context.save()
+            
+            return messages
         }
     }
     
-    func deleteMessages() async throws {
+    func deleteMessages() async throws -> [Message] {
         try await context.perform {
             let request = LocalMessage.fetchRequest()
-            try self.context.fetch(request).forEach {
+            
+            let localMessages = try self.context.fetch(request)
+            let messages = localMessages.compactMap { $0.toMessage() }
+            localMessages.forEach {
                 self.context.delete($0)
             }
-            
             try self.context.save()
+            return messages
         }
     }
 }

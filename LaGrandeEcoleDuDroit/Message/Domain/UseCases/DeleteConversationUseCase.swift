@@ -22,7 +22,6 @@ class DeleteConversationUseCase {
             try await conversationRepository.updateLocalConversation(conversation: updatedConversation.with(state: .deleting))
             try await conversationRepository.deleteConversation(conversation: updatedConversation, userId: userId, deleteTime: deleteTime)
             try await messageRepository.deleteLocalMessages(conversationId: updatedConversation.id)
-            conversationMessageRepository.deleteConversationMessage(conversationId: updatedConversation.id)
         }
     }
 }
