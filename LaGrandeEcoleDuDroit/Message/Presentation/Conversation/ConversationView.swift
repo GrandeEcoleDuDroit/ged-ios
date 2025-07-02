@@ -89,7 +89,7 @@ private struct ConversationView: View {
                         }
                     }
                     .sheet(isPresented: $showBottomSheet) {
-                        BottomSheetContainer(fraction: 0.125) {
+                        BottomSheetContainer(fraction: 0.10) {
                             ClickableItemWithIcon(
                                 icon: Image(systemName: "trash"),
                                 text: Text(getString(.delete))
