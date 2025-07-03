@@ -33,7 +33,7 @@ class MessageRepositoryImpl: MessageRepository {
         do {
             return try await messageLocalDataSource.getMessages(conversationId: conversationId, offset: offset)
         } catch {
-            e(tag, "Error to get messages for conversation \(conversationId) with offset \(offset): \(error)", error)
+            e(tag, "Error to get messages local for conversation \(conversationId) with offset \(offset): \(error.localizedDescription)", error)
             throw error
         }
     }
@@ -42,7 +42,16 @@ class MessageRepositoryImpl: MessageRepository {
         do {
             return try await messageLocalDataSource.getLastMessage(conversationId: conversationId)
         } catch {
-            e(tag, "Error to get last message for conversation \(conversationId): \(error)", error)
+            e(tag, "Error to get last local message for conversation \(conversationId): \(error.localizedDescription)", error)
+            throw error
+        }
+    }
+    
+    func getUnsentMessages() async throws -> [Message] {
+        do {
+            return try await messageLocalDataSource.getUnsentMessages()
+        } catch {
+            e(tag, "Error to get unsent local messages: \(error.localizedDescription)", error)
             throw error
         }
     }
@@ -55,7 +64,7 @@ class MessageRepositoryImpl: MessageRepository {
         do {
             try await messageLocalDataSource.insertMessage(message: message)
         } catch {
-            e(tag, "Failed to create local message: \(error)", error)
+            e(tag, "Failed to create local message: \(error.localizedDescription)", error)
             throw error
         }
     }
@@ -68,7 +77,7 @@ class MessageRepositoryImpl: MessageRepository {
         do {
             try await messageLocalDataSource.updateMessage(message: message)
         } catch {
-            e(tag, "Failed to update local message: \(error)", error)
+            e(tag, "Failed to update local message: \(error.localizedDescription)", error)
             throw error
         }
     }
@@ -100,7 +109,7 @@ class MessageRepositoryImpl: MessageRepository {
         do {
             try await messageLocalDataSource.upsertMessage(message: message)
         } catch {
-            e(tag, "Failed to upsert local message: \(error)", error)
+            e(tag, "Failed to upsert local message: \(error.localizedDescription)", error)
             throw error
         }
     }
@@ -109,7 +118,7 @@ class MessageRepositoryImpl: MessageRepository {
         do {
             try await messageLocalDataSource.upsertMessages(messages: messages)
         } catch {
-            e(tag, "Failed to upsert local messages: \(error)", error)
+            e(tag, "Failed to upsert local messages: \(error.localizedDescription)", error)
             throw error
         }
     }
@@ -120,7 +129,7 @@ class MessageRepositoryImpl: MessageRepository {
                 messageChangesSubject.send(.init(inserted: [], updated: [], deleted: [deletedMessage]))
             }
         } catch {
-            e(tag, "Failed to delete local message: \(error)", error)
+            e(tag, "Failed to delete local message: \(error.localizedDescription)", error)
             throw error
         }
     }
@@ -130,7 +139,7 @@ class MessageRepositoryImpl: MessageRepository {
             let deletedMessages = try await messageLocalDataSource.deleteMessages(conversationId: conversationId)
             messageChangesSubject.send(.init(inserted: [], updated: [], deleted: deletedMessages))
         } catch {
-            e(tag, "Failed to delete local messages for conversation \(conversationId): \(error)", error)
+            e(tag, "Failed to delete local messages for conversation \(conversationId): \(error.localizedDescription)", error)
             throw error
         }
     }
@@ -140,7 +149,7 @@ class MessageRepositoryImpl: MessageRepository {
             let deletedMessages = try await messageLocalDataSource.deleteMessages()
             messageChangesSubject.send(.init(inserted: [], updated: [], deleted: deletedMessages))
         } catch {
-            e(tag, "Failed to delete local messages: \(error)", error)
+            e(tag, "Failed to delete local messages: \(error.localizedDescription )", error)
             throw error
         }
     }

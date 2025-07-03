@@ -8,6 +8,8 @@ protocol MessageRepository {
     
     func getLastMessage(conversationId: String) async throws -> Message?
     
+    func getUnsentMessages() async throws -> [Message]
+    
     func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<[Message], Error>
     
     func createLocalMessage(message: Message) async throws

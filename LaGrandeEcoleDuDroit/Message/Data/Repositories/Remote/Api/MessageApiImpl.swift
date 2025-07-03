@@ -24,7 +24,7 @@ class MessageApiImpl: MessageApi {
                 }
                 
                 let messages = snapshot?.documents
-                    .filter { !$0.metadata.hasPendingWrites || !$0.metadata.isFromCache }
+                    .filter { !$0.metadata.hasPendingWrites && !$0.metadata.isFromCache }
                     .compactMap { try? $0.data(as: RemoteMessage.self) }
                 
                 subject.send(messages ?? [])

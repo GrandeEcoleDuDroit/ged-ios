@@ -119,6 +119,18 @@ class MessageLocalDataSource {
         }
     }
     
+    func getUnsentMessages() async throws -> [Message] {
+        try await context.perform {
+            let fetchRequest = LocalMessage.fetchRequest()
+            fetchRequest.predicate = NSPredicate(
+                format: "%K == %@",
+                MessageField.Local.state, MessageState.sending.rawValue
+            )
+            
+            return try self.context.fetch(fetchRequest).compactMap { $0.toMessage() }
+        }
+    }
+    
     func insertMessage(message: Message) async throws {
         try await messageActor.insertMessage(message: message)
     }

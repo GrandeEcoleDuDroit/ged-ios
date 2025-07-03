@@ -27,6 +27,9 @@ struct LaGrandeEcolueDuDroitApp: App {
     var body: some Scene {
         WindowGroup {
             Navigation()
+                .task {
+                    await MessageInjection.shared.resolve(MessageTaskLauncher.self).launch()
+                }
         }
     }
 }

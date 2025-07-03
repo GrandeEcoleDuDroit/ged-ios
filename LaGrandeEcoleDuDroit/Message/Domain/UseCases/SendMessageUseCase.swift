@@ -23,8 +23,8 @@ class SendMessageUseCase {
             } catch {
                 if conversation.state == .draft {
                     try await conversationRepository.updateLocalConversation(conversation: conversation.with(state: .error))
-                    try await messageRepository.upsertLocalMessage(message: message.with(state: .error))
                 }
+                try await messageRepository.upsertLocalMessage(message: message.with(state: .error))
             }
         }
     }
@@ -41,10 +41,7 @@ class SendMessageUseCase {
     
     private func createDataRemotely(conversation: Conversation, message: Message, userId: String) async throws {
         if conversation.shouldBeCreated() {
-            try await conversationRepository.createRemoteConversation(
-                conversation: conversation.with(state: .creating),
-                userId: userId
-            )
+            try await conversationRepository.createRemoteConversation(conversation: conversation,userId: userId)
         }
         try await messageRepository.createRemoteMessage(message: message)
     }

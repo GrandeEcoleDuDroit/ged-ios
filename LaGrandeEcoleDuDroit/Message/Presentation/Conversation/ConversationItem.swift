@@ -47,7 +47,8 @@ private struct SwitchConversationItem: View {
     let onClick: () -> Void
     let onLongClick: () -> Void
     @State private var elapsedTimeText: String
-    
+    @State private var loading: Bool
+
     init(
         interlocutor: User,
         conversationState: ConversationState,
@@ -65,6 +66,7 @@ private struct SwitchConversationItem: View {
         self.onClick = onClick
         self.onLongClick = onLongClick
         self.elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
+        self.loading = self.conversationState == .creating || self.conversationState == .deleting
     }
     
     var body: some View {
@@ -73,7 +75,7 @@ private struct SwitchConversationItem: View {
             onClick: onClick,
             onLongClick: onLongClick
         ) {
-            if conversationState == .creating || conversationState == .deleting {
+            if loading {
                 ReadConversationItemContent(
                     interlocutorName: interlocutor.fullName,
                     text: text,
@@ -95,11 +97,15 @@ private struct SwitchConversationItem: View {
                 }
             }
         }
+        .opacity(loading ? 0.5 : 1.0)
         .onAppear {
             elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
         }
         .onChange(of: lastMessage.date) { newDate in
             elapsedTimeText = updateElapsedTimeText(for: newDate)
+        }
+        .onChange(of: conversationState) { newState in
+            loading = newState == .creating || newState == .deleting
         }
     }
 }
