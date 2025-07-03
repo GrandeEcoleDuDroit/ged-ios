@@ -133,6 +133,28 @@ class MessageInjection: DependencyInjectionContainer {
                 sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!
             )
         }
+        
+        container.register(SynchronizeMessageTask.self) { resolver in
+            SynchronizeMessageTask(
+                messageRepository: resolver.resolve(MessageRepository.self)!
+            )
+        }
+        
+        container.register(SynchronizeConversationTask.self) { resolver in
+            SynchronizeConversationTask(
+                conversationRepository: resolver.resolve(ConversationRepository.self)!,
+                messageRepository: resolver.resolve(MessageRepository.self)!,
+                userRepository: CommonInjection.shared.resolve(UserRepository.self)
+            )
+        }
+        
+        container.register(MessageTaskLauncher.self) { resolver in
+            MessageTaskLauncher(
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self),
+                synchronizeMessagesTask: resolver.resolve(SynchronizeMessageTask.self)!,
+                synchronizeConversationsTask: resolver.resolve(SynchronizeConversationTask.self)!
+            )
+        }
     }
     
     func resolve<T>(_ type: T.Type) -> T {

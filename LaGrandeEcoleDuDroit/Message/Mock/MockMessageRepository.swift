@@ -16,6 +16,10 @@ class MockMessageRepository: MessageRepository {
         messageFixture
     }
     
+    func getUnsentMessages() async throws -> [Message] {
+        messagesFixture
+    }
+    
     func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<[Message], Error> {
         messagesSubject
             .map { [$0] }

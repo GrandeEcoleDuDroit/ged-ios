@@ -20,7 +20,7 @@ class ConversationApiImpl: ConversationApi {
                 }
                 
                 snapshot?.documents
-                    .filter { !$0.metadata.isFromCache || !$0.metadata.hasPendingWrites }
+                    .filter { !$0.metadata.isFromCache && !$0.metadata.hasPendingWrites }
                     .forEach { document in
                         if let remoteConversation = try? document.data(as: RemoteConversation.self) {
                             subject.send(remoteConversation)
