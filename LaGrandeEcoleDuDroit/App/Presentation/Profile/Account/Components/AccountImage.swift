@@ -1,25 +1,6 @@
 import SwiftUI
 
-struct AccountInfoItem: View {
-    var title: String
-    var value: String
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(title)
-                .font(.callout)
-                .bold()
-                .foregroundColor(.textPreview)
-            
-            Text(value)
-                .font(.body)
-                .foregroundColor(.primary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
-struct ProfilePictureEdit: View {
+struct AccountImage: View {
     var url: String?
     let onClick: () -> Void
     let scale: CGFloat
@@ -57,7 +38,7 @@ struct ProfilePictureEdit: View {
 
 #Preview {
     VStack(spacing: 10) {
-        ProfilePictureEdit(url: nil, onClick: {})
+        AccountImage(url: nil, onClick: {})
 
         AccountInfoItem(title: "Name", value: "John Doe")
     }.padding()

@@ -64,7 +64,7 @@ private struct AccountView: View {
                             scale: 1.6
                         )
                     } else {
-                        ProfilePictureEdit(
+                        AccountImage(
                             url: user.profilePictureUrl,
                             onClick: { showBottomSheet = true },
                             scale: 1.6
@@ -90,9 +90,18 @@ private struct AccountView: View {
         .onChange(of: user?.profilePictureUrl) { profilePictureUrl in
             bottomSheetItemSize = profilePictureUrl != nil ? 0.18 : 0.1
         }
+        .onChange(of: screenState) { newState in
+            if newState == .read {
+                profilePictureImage = nil
+                selectedPhoto = nil
+                navigationTitle = getString(.accountInfos)
+            } else {
+                navigationTitle = getString(.editProfile)
+            }
+        }
         .onChange(of: bottomSheetItemSize) { _ in }
         .photosPicker(isPresented: $showPhotosPicker, selection: $selectedPhoto, matching: .images)
-        .navigationTitle(screenState == .edit ? getString(.editProfile) : getString(.accountInfos))
+        .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(screenState == .edit)
         .sheet(isPresented: $showBottomSheet) {
