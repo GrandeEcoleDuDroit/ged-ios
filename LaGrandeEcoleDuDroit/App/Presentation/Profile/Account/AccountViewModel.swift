@@ -11,7 +11,6 @@ class AccountViewModel: ObservableObject {
     
     @Published var uiState: AccountUiState = AccountUiState()
     @Published var event: SingleUiEvent? = nil
-    private var tasks = Set<Task<Void, Never>>()
     
     init(
         updateProfilePictureUseCase: UpdateProfilePictureUseCase,
@@ -50,7 +49,6 @@ class AccountViewModel: ObservableObject {
                 }
             }
         }
-        tasks.insert(task)
     }
     
     func deleteProfilePicture() {
@@ -79,7 +77,6 @@ class AccountViewModel: ObservableObject {
                 }
             }
         }
-        tasks.insert(task)
     }
     
     func onScreenStateChange(_ state: AccountScreenState) {
