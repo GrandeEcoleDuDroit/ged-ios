@@ -22,6 +22,12 @@ class ListenRemoteMessagesUseCase {
         listenRemoteMessages(conversation)
     }
     
+    func stop() {
+        messageRepository.stopListeningMessages()
+        messageCancellables.values.forEach { $0.cancellable.cancel() }
+        messageCancellables.removeAll()
+    }
+    
     private func listenRemoteMessages(_ conversation: Conversation) {
         guard messageCancellables[conversation.id]?.conversation != conversation else {
             return
@@ -83,12 +89,6 @@ class ListenRemoteMessagesUseCase {
                 e(self.tag, "Failed to fetch message: \(error)", error)
                 return Empty(completeImmediately: true)
             }.eraseToAnyPublisher()
-    }
-    
-    func stop() {
-        messageRepository.stopListeningMessages()
-        messageCancellables.values.forEach { $0.cancellable.cancel() }
-        messageCancellables.removeAll()
     }
     
     private struct MessageCancellable {

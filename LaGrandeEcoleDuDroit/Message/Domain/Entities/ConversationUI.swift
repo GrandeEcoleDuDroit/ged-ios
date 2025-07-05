@@ -1,6 +1,6 @@
 import Foundation
 
-struct ConversationUi {
+struct ConversationUi: Equatable {
     let id: String
     let interlocutor: User
     let lastMessage: Message
