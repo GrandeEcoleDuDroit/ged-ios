@@ -1,13 +1,8 @@
 import SwiftUI
 
 struct ItemWithIcon: View {
-    private let icon: Image
-    private let text: Text
-    
-    init(icon: Image, text: Text) {
-        self.text = text
-        self.icon = icon
-    }
+    let icon: Image
+    let text: Text
     
     var body: some View {
         HStack(spacing: GedSpacing.smallMedium) {
@@ -18,29 +13,42 @@ struct ItemWithIcon: View {
 }
 
 struct ClickableItemWithIcon: View {
+    let icon: Image
+    let text: Text
+    let onClick: () -> Void
     @State private var isClicked = false
-    private let icon: Image
-    private let text: Text
-    private let onClick: () -> Void
     
-    init(
-        icon: Image,
-        text: Text,
-        onClick: @escaping () -> Void
-    ) {
-        self.text = text
-        self.icon = icon
-        self.onClick = onClick
+    var body: some View {
+        Button(
+            action: onClick,
+            label: {
+                HStack(spacing: GedSpacing.smallMedium) {
+                    icon
+                    text
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
+            }
+        )
+    }
+}
+
+struct BottomSheetContainer<Content: View>: View {
+    let fraction: CGFloat
+    let content: Content
+    
+    init(fraction: CGFloat, @ViewBuilder content: () -> Content) {
+        self.fraction = fraction
+        self.content = content()
     }
     
     var body: some View {
-        HStack(spacing: GedSpacing.smallMedium) {
-            icon
-            text
+        VStack(spacing: 30) {
+            content
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .onClick(isClicked: $isClicked, action: onClick)
+        .presentationDetents([.fraction(fraction)])
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+        .padding(.bottom)
     }
 }
 
@@ -48,5 +56,11 @@ struct ClickableItemWithIcon: View {
     ItemWithIcon(
         icon: Image(systemName: "star"),
         text: Text("Item with icon")
-    )
+    ).background(.red)
+    
+    ClickableItemWithIcon(
+        icon: Image(systemName: "star"),
+        text: Text("Item with icon"),
+        onClick: {}
+    ).background(.blue)
 }

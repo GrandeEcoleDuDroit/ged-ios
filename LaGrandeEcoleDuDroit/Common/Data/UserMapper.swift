@@ -1,71 +1,65 @@
-class UserMapper {
-    static func toFirestoreUser(user: User) -> FirestoreUser {
-        FirestoreUser(
-            userId: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            schoolLevel: user.schoolLevel,
-            isMember: user.isMember,
-            profilePictureFileName: getFileNameFromUrl(url: user.profilePictureUrl),
-            isOnline: false
+extension FirestoreUser {
+    func toUser() -> User {
+        User(
+            id: userId,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            schoolLevel: SchoolLevel(rawValue: schoolLevel) ?? .ged1,
+            isMember: isMember,
+            profilePictureUrl: UrlUtils.formatProfilePictureUrl(fileName: profilePictureFileName)
         )
     }
-    
-    static func toOracleUser(user: User) -> OracleUser {
+}
+
+extension User {
+    func toOracleUser() -> OracleUser {
         OracleUser(
-            userId: user.id,
-            userFirstName: user.firstName,
-            userLastName: user.lastName,
-            userEmail: user.email,
-            schoolLevel: user.schoolLevel,
-            userIsMember: user.isMember ? 1 : 0,
-            profilePictureFileName: getFileNameFromUrl(url: user.profilePictureUrl)
+            userId: id,
+            userFirstName: firstName,
+            userLastName: lastName,
+            userEmail: email,
+            schoolLevel: schoolLevel.rawValue,
+            userIsMember: isMember ? 1 : 0,
+            profilePictureFileName: UrlUtils.getFileNameFromUrl(url: profilePictureUrl)
         )
     }
     
-    static func toLocalUser(user: User) -> LocalUser {
+    func toFirestoreUser() -> FirestoreUser {
+        FirestoreUser(
+            userId: id,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            schoolLevel: schoolLevel.rawValue,
+            isMember: isMember,
+            profilePictureFileName: UrlUtils.getFileNameFromUrl(url: profilePictureUrl)
+        )
+    }
+    
+    func toLocal() -> LocalUser {
         LocalUser(
-            userId: user.id,
-            userFirstName: user.firstName,
-            userLastName: user.lastName,
-            userEmail: user.email,
-            userSchoolLevel: user.schoolLevel,
-            userIsMember: user.isMember,
-            profilePictureUrl: user.profilePictureUrl
+            userId: id,
+            userFirstName: firstName,
+            userLastName: lastName,
+            userEmail: email,
+            userSchoolLevel: schoolLevel.rawValue,
+            userIsMember: isMember,
+            profilePictureFileName: UrlUtils.getFileNameFromUrl(url: profilePictureUrl)
         )
     }
-    
-    static func toDomain(localUser: LocalUser) -> User {
+}
+
+extension LocalUser {
+    func toUser() -> User {
         User(
-            id: localUser.userId,
-            firstName: localUser.userFirstName,
-            lastName: localUser.userLastName,
-            email: localUser.userEmail,
-            schoolLevel: localUser.userSchoolLevel,
-            isMember: localUser.userIsMember,
-            profilePictureUrl: localUser.profilePictureUrl
+            id: userId,
+            firstName: userFirstName,
+            lastName: userLastName,
+            email: userEmail,
+            schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel)!,
+            isMember: userIsMember,
+            profilePictureUrl: UrlUtils.formatProfilePictureUrl(fileName: profilePictureFileName)
         )
-    }
-    
-    static func toDomain(firestoreUser: FirestoreUser) -> User {
-        User(
-            id: firestoreUser.userId,
-            firstName: firestoreUser.firstName,
-            lastName: firestoreUser.lastName,
-            email: firestoreUser.email,
-            schoolLevel: firestoreUser.schoolLevel,
-            isMember: firestoreUser.isMember,
-            profilePictureUrl: formatProfilePictureUrl(fileName: firestoreUser.profilePictureFileName)
-        )
-    }
-    
-    static func formatProfilePictureUrl(fileName: String?) -> String? {
-        guard let fileName = fileName else { return nil }
-        return "https://objectstorage.eu-paris-1.oraclecloud.com/n/ax5bfuffglob/b/bucket-gedoise/o/\(fileName)"
-    }
-    
-    static func getFileNameFromUrl(url: String?) -> String? {
-        url?.components(separatedBy: "/").last
     }
 }

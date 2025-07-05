@@ -1,19 +1,19 @@
 import Combine
 
 protocol AnnouncementRepository {
-    var announcements: CurrentValueSubject<[Announcement], Never> { get }
+    var announcements: AnyPublisher<[Announcement], Never> { get }
+            
+    func getAnnouncementPublisher(announcementId: String) -> AnyPublisher<Announcement?, Never>
         
-    func createAnnouncement(announcement: Announcement) async throws
+    func refreshAnnouncements() async throws
     
-    func createRemoteAnnouncement(announcement: Announcement) async throws
+    func createAnnouncement(announcement: Announcement) async throws
     
     func updateAnnouncement(announcement: Announcement) async throws
     
-    func updateAnnouncementState(announcementId: String, state: AnnouncementState) async
-    
+    func updateLocalAnnouncement(announcement: Announcement) async throws
+        
     func deleteAnnouncement(announcementId: String) async throws
     
-    func deleteLocalAnnouncement(announcementId: String) async
-    
-    func refreshAnnouncements() async
+    func deleteLocalAnnouncement(announcementId: String) async throws
 }

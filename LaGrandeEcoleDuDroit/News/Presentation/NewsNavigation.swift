@@ -1,51 +1,59 @@
 import SwiftUI
 
 struct NewsNavigation: View {
-    @StateObject private var newsNavigationCoordinator = NavigationCoordinator()
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
+    @State private var path: [NewsRoute] = []
     
     var body: some View {
-        NavigationStack(path: $newsNavigationCoordinator.path) {
-            NewsView()
-                .navigationDestination(for: NewsScreen.self) { screen in
-                    switch screen {
-                        case .readAnnouncement(let announcement):
-                            ReadAnnouncementView(announcement: announcement)
-                        case .editAnnouncement(let announcement):
-                            EditAnnouncementView(announcement: announcement)
-                        case .createAnnouncement:
-                            CreateAnnouncementView()
-                    }
+        NavigationStack(path: $path) {
+            NewsDestination(
+                onAnnouncementClick: { announcementId in
+                    path.append(.readAnnouncement(announcementId: announcementId))
+                },
+                onCreateAnnouncementClick: { path.append(.createAnnouncement) }
+            )
+            .onAppear {
+                tabBarVisibility.show = true
+            }
+            .background(Color.background)
+            .navigationDestination(for: NewsRoute.self) { route in
+                switch route {
+                    case let .readAnnouncement(announcementId):
+                        ReadAnnouncementDestination(
+                            announcementId: announcementId,
+                            onEditAnnouncementClick: { announcement in
+                                path.append(.editAnnouncement(announcement: announcement))
+                            },
+                            onBackClick: { path.removeLast() }
+                        ).onAppear {
+                            tabBarVisibility.show = false
+                        }
+                        .background(Color.background)
+
+                    case let .editAnnouncement(announcement):
+                        EditAnnouncementDestination(
+                            announcement: announcement,
+                            onBackClick: { path.removeLast() }
+                        ).onAppear {
+                            tabBarVisibility.show = false
+                        }
+                        .background(Color.background)
+                        
+                    case .createAnnouncement:
+                        CreateAnnouncementDestination(
+                            onBackClick: { path.removeLast() }
+                        ).onAppear {
+                            tabBarVisibility.show = false
+                        }
+                        .background(Color.background)
                 }
+            }
         }
-        .environmentObject(newsNavigationCoordinator)
-        .environmentObject(tabBarVisibility)
     }
 }
 
-#Preview {
-    struct NewsNavigation_Preview: View {
-        @StateObject var navigationCoordinator = NavigationCoordinator()
-        @StateObject var tabBarVisibility = TabBarVisibility()
-        
-        var body: some View {
-            NavigationStack(path: $navigationCoordinator.path) {
-                NewsView()
-                    .navigationDestination(for: NewsScreen.self) { screen in
-                        switch screen {
-                            case .readAnnouncement(let announcement):
-                                ReadAnnouncementView(announcement: announcement)
-                            case .editAnnouncement(let announcement):
-                                EditAnnouncementView(announcement: announcement)
-                            case .createAnnouncement:
-                                CreateAnnouncementView()
-                        }
-                    }
-            }
-            .environmentObject(navigationCoordinator)
-            .environmentObject(tabBarVisibility)
-        }
-    }
-    
-    return NewsNavigation_Preview()
+enum NewsRoute: Route {
+    case readAnnouncement(announcementId: String)
+    case editAnnouncement(announcement: Announcement)
+    case createAnnouncement
 }

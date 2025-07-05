@@ -13,6 +13,7 @@ struct SplashScreen: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            .background(Color.background)
     }
 }
 

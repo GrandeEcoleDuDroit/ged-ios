@@ -1,34 +1,17 @@
 import Combine
 
-class GetConversationsUIUseCase {
-    private let getConversationsUserUseCase: GetConversationsUserUseCase
-    private let getLastMessagesUseCase: GetLastMessagesUseCase
+class GetConversationsUiUseCase {
+    private let conversationMessageRepository: ConversationMessageRepository
     
-    init(
-        getConversationsUserUseCase: GetConversationsUserUseCase,
-        getLastMessagesUseCase: GetLastMessagesUseCase
-    ) {
-        self.getConversationsUserUseCase = getConversationsUserUseCase
-        self.getLastMessagesUseCase = getLastMessagesUseCase
+    init(conversationMessageRepository: ConversationMessageRepository) {
+        self.conversationMessageRepository = conversationMessageRepository
     }
     
-    func execute() -> AnyPublisher<ConversationUI, ConversationError> {
-        getConversationsUserUseCase.execute()
-            .map { ConversationMapper.toConversationUI(conversationUser: $0) }
-            .flatMap { [weak self] conversationUI in
-                guard let self = self else {
-                    return Empty<ConversationUI, ConversationError>()
-                        .eraseToAnyPublisher()
-                }
-                
-                return self.getLastMessagesUseCase.execute(conversationId: conversationUI.id)
-                    .map { conversationUI.with(lastMessage: $0) }
-                    .eraseToAnyPublisher()
-            }.eraseToAnyPublisher()
-    }
-    
-    func stop() {
-        getConversationsUserUseCase.stop()
-        getLastMessagesUseCase.stop()
+    func execute() -> AnyPublisher<[ConversationUi], Never> {
+        conversationMessageRepository.conversationsMessage
+            .map { conversationMessages in
+                conversationMessages.values.map { $0.toConversationUi() }
+            }
+            .eraseToAnyPublisher()
     }
 }

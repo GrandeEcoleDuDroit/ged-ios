@@ -1,36 +1,43 @@
 import Combine
+import FirebaseCore
 
 class MessageRemoteDataSource {
+    private let tag = String(describing: MessageRemoteDataSource.self)
     private let messageApi: MessageApi
     
     init(messageApi: MessageApi) {
         self.messageApi = messageApi
     }
     
-    func listenMessages(conversationId: String) -> AnyPublisher<Message, Error> {
-        messageApi.listenMessages(conversationId: conversationId)
-            .compactMap { MessageMapper.toDomain(remoteMessage: $0) }
+    func listenMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<[Message], Error> {
+        let offsetTime: Timestamp? = offsetTime.map { Timestamp(date: $0) }
+        return messageApi.listenMessages(conversation: conversation, offsetTime: offsetTime)
+            .map { remoteMessges in
+                remoteMessges.map { $0.toMessage() }
+            }
             .eraseToAnyPublisher()
     }
     
-    func listenLastMessage(conversationId: String) -> AnyPublisher<Message?, ConversationError> {
-        messageApi.listenLastMessage(conversationId: conversationId)
-            .map { remoteMessage in
-                guard let remoteMessage else { return nil }
-                return MessageMapper.toDomain(remoteMessage: remoteMessage)
-            }.eraseToAnyPublisher()
+    func createMessage(message: Message) async throws {
+        try await mapFirebaseException(
+            block: {
+                let data = message.toRemote().toMap()
+                try await messageApi.createMessage(
+                    conversationId: message.conversationId,
+                    messageId: message.id.toString(),
+                    data: data
+                )
+            },
+            tag: tag,
+            message: "Failed to create message"
+        )
     }
     
-    func createMessage(message: Message) async throws {
-        let remoteMessage = MessageMapper.toRemote(message: message)
-        try await messageApi.createMessage(remoteMessage: remoteMessage)
+    func updateSeenMessage(message: Message) async throws {
+        try await messageApi.updateSeenMessage(remoteMessage: message.toRemote())
     }
     
     func stopListeningMessages() {
         messageApi.stopListeningMessages()
-    }
-    
-    func stopListeningLastMessages() {
-        messageApi.stopListeningLastMessages()
     }
 }

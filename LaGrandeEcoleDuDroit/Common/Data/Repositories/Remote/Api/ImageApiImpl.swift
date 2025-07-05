@@ -1,18 +1,18 @@
 import Foundation
 
-private let tag = String(describing: ImageApiImpl.self)
-
 class ImageApiImpl: ImageApi {
+    private let tag = String(describing: ImageApiImpl.self)
+
     private func baseUrl(endPoint: String) -> URL? {
         URL.oracleUrl(endpoint: "/image/" + endPoint)
     }
     
-    func uploadImage(imageData: Data, fileName: String) async throws {
+    func uploadImage(imageData: Data, fileName: String) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "upload") else {
-            throw RequestError.invalidURL("Invalid URL")
+            throw NetworkError.invalidURL("Invalid URL")
         }
-        let fileExtension = (fileName as NSString).pathExtension
         
+        let fileExtension = (fileName as NSString).pathExtension
         let boundary = "Boundary-\(UUID().uuidString)"
         
         var body = Data()
@@ -30,19 +30,22 @@ class ImageApiImpl: ImageApi {
         request.httpBody = body
         
         let session = RequestUtils.getUrlSession()
-        let (dataReceived, response) = try await session.data(for: request)
+        let (dataReceived, urlResponse) = try await session.data(for: request)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
         
-        if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
-                e(tag, serverResponse.message)
-            } else {
-                e(tag, serverResponse.error ?? "Error to upload image")
-                throw RequestError.invalidResponse(serverResponse.error)
-            }
-        } else {
-            e(tag, serverResponse.error ?? "Error to upload image")
-            throw RequestError.invalidResponse(serverResponse.error)
+        return (urlResponse, serverResponse)
+    }
+    
+    func deleteImage(fileName: String) async throws -> (URLResponse, ServerResponse) {
+        guard let url = baseUrl(endPoint: "/\(fileName)") else {
+            throw NetworkError.invalidURL("Invalid URL")
         }
+        
+        let sessions = RequestUtils.getUrlSession()
+        let deleteRequest = try RequestUtils.formatDeleteRequest(url: url)
+        
+        let (data, urlResponse) = try await sessions.data(for: deleteRequest)
+        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
+        return (urlResponse, serverResponse)
     }
 }

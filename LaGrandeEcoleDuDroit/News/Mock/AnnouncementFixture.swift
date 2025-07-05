@@ -1,7 +1,7 @@
 import Foundation
 
 private let calendar = Calendar.current
-private let currentDate = Date.now
+private let currentDate = Date()
 
 let announcementFixture = Announcement(
     id: "1",

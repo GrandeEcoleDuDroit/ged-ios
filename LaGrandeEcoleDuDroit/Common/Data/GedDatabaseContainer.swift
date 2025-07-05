@@ -14,5 +14,3 @@ open class GedDatabaseContainer {
         }
     }
 }
-
-

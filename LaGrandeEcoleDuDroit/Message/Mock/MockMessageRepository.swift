@@ -2,39 +2,56 @@ import Foundation
 import Combine
 
 class MockMessageRepository: MessageRepository {
-    private let _messages = CurrentValueSubject<[Message], any Error>(messagesFixture)
+    private let messagesSubject = PassthroughSubject<Message, Never>()
     
-    func getMessages(conversationId: String) -> AnyPublisher<Message, any Error> {
-        _messages
-            .flatMap { messages in
-                let filteredMessages = messages.filter { $0.conversationId == conversationId }
-                return Publishers.Sequence(sequence: filteredMessages)
-                    .setFailureType(to: Error.self)
-                    .eraseToAnyPublisher()
-            }
+    var messageChanges: AnyPublisher<CoreDataChange<Message>, Never> {
+        Empty().eraseToAnyPublisher()
+    }
+    
+    func getMessages(conversationId: String, offset: Int) async throws -> [Message] {
+        messagesFixture
+    }
+    
+    func getLastMessage(conversationId: String) -> Message? {
+        messageFixture
+    }
+    
+    func getUnsentMessages() async throws -> [Message] {
+        messagesFixture
+    }
+    
+    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<[Message], Error> {
+        messagesSubject
+            .map { [$0] }
+            .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
-        }
-        
-    func getLastMessage(conversationId: String) -> AnyPublisher<Message?, ConversationError> {
-        Publishers.Sequence(sequence: lastMessagesFixture.filter({ $0.conversationId == conversationId }))
-            .eraseToAnyPublisher()
     }
     
-    func createMessage(message: Message) async throws {
-        _messages.value.append(message)
-    }
+    func createLocalMessage(message: Message) async throws {}
     
-    func updateMessageState(messageId: String, messageState: MessageState) async throws {
-        var message = _messages.value.first { $0.id == messageId }!
-        message.state = messageState
-        _messages.value = _messages.value.map { $0.id == messageId ? message : $0 }
-    }
+    func createRemoteMessage(message: Message) async throws {}
 
-    func stopGettingMessages() {
-        // No implementation needed
+    func updateLocalMessage(message: Message) {}
+    
+    func updateSeenMessages(conversationId: String, userId: String) async throws {}
+    
+    func updateSeenMessage(message: Message) async throws {}
+    
+    func upsertLocalMessage(message: Message) {
+        messagesSubject.send(messageFixture)
     }
     
-    func stopGettingLastMessages() {
-        // No implementation needed
+    func upsertLocalMessages(messages: [Message]) {
+        messages.forEach { message in
+            messagesSubject.send(message)
+        }
     }
+    
+    func deleteLocalMessages(conversationId: String) {}
+    
+    func deleteLocalMessages() {}
+    
+    func deleteLocalMessage(message: Message) async throws {}
+            
+    func stopListeningMessages() {}
 }

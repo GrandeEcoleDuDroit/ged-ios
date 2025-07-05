@@ -2,21 +2,32 @@ import Combine
 import Foundation
 
 class MainViewModel: ObservableObject {
-    private let isUserAuthenticatedUseCase: IsUserAuthenticatedUseCase
-    @Published private(set) var authenticationState: AuthenticationState = .waiting
+    private let authenticationRepository: AuthenticationRepository
+    private let listenDataUseCase: ListenDataUseCase
+    private let clearDataUseCase: ClearDataUseCase
     private var cancellables: Set<AnyCancellable> = []
     
-    init(isUserAuthenticatedUseCase: IsUserAuthenticatedUseCase) {
-        self.isUserAuthenticatedUseCase = isUserAuthenticatedUseCase
-        listenAuthenticationState()
+    init(
+        authenticationRepository: AuthenticationRepository,
+        listenDataUseCase: ListenDataUseCase,
+        clearDataUseCase: ClearDataUseCase
+    ) {
+        self.authenticationRepository = authenticationRepository
+        self.listenDataUseCase = listenDataUseCase
+        self.clearDataUseCase = clearDataUseCase
+        updateDataListening()
     }
     
-    private func listenAuthenticationState() {
-        isUserAuthenticatedUseCase.execute()
-            .receive(on: RunLoop.main)
+    private func updateDataListening() {
+        authenticationRepository.authenticated
+            .receive(on: DispatchQueue.global(qos: .background))
             .sink { [weak self] isAuthenticated in
-                self?.authenticationState = isAuthenticated ? .authenticated : .unauthenticated
-            }
-            .store(in: &cancellables)
+                if isAuthenticated {
+                    self?.listenDataUseCase.start()
+                } else {
+                    self?.listenDataUseCase.stop()
+                    Task { await self?.clearDataUseCase.execute() }
+                }
+            }.store(in: &cancellables)
     }
 }

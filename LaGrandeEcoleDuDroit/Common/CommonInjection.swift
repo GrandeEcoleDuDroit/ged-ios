@@ -10,80 +10,79 @@ class CommonInjection: DependencyInjectionContainer {
     }
     
     private func registerDependencies() {        
-        container.register(UserFirestoreApi.self) { _ in UserFirestoreApiImpl() }
-            .inObjectScope(.container)
+        container.register(UserFirestoreApi.self) { _ in
+            UserFirestoreApiImpl()
+        }.inObjectScope(.container)
         
-        container.register(UserOracleApi.self) { _ in UserOracleApiImpl() }
-            .inObjectScope(.container)
+        container.register(UserOracleApi.self) { _ in
+            UserOracleApiImpl()
+        }.inObjectScope(.container)
         
-        container.register(ImageApi.self) { _ in ImageApiImpl() }
+        container.register(ImageApi.self) { _ in
+            ImageApiImpl()
+        }.inObjectScope(.container)
         
-        container.register(UserLocalDataSource.self) { _ in UserLocalDataSource() }
-            .inObjectScope(.container)
+        container.register(WhiteListApi.self) { _ in
+            WhiteListApiImpl()
+        }.inObjectScope(.container)
+        
+        container.register(UserLocalDataSource.self) { _ in
+            UserLocalDataSource()
+        }.inObjectScope(.container)
         
         container.register(UserRemoteDataSource.self) { resolver in
             UserRemoteDataSource(
                 userFirestoreApi: resolver.resolve(UserFirestoreApi.self)!,
                 userOracleApi: resolver.resolve(UserOracleApi.self)!
             )
-        }
-        .inObjectScope(.container)
+        }.inObjectScope(.container)
+        
+        container.register(NetworkMonitor.self) { _ in
+            NetworkMonitorImpl()
+        }.inObjectScope(.container)
         
         container.register(ImageRemoteDataSource.self) { resolver in
             ImageRemoteDataSource(imageApi: resolver.resolve(ImageApi.self)!)
-        }
+        }.inObjectScope(.container)
         
-        container.register(GedDatabaseContainer.self) { _ in GedDatabaseContainer() }
-            .inObjectScope(.container)
+        container.register(GedDatabaseContainer.self) { _ in
+            GedDatabaseContainer()
+        }.inObjectScope(.container)
         
         container.register(UserRepository.self) { resolver in
             UserRepositoryImpl(
                 userLocalDataSource: resolver.resolve(UserLocalDataSource.self)!,
                 userRemoteDataSource: resolver.resolve(UserRemoteDataSource.self)!
             )
-        }
-        .inObjectScope(.container)
+        }.inObjectScope(.container)
         
         container.register(ImageRepository.self) { resolver in
             ImageRepositoryImpl(imageRemoteDataSource: resolver.resolve(ImageRemoteDataSource.self)!)
-        }
+        }.inObjectScope(.container)
         
-        container.register(GenerateIdUseCase.self) { _ in GenerateIdUseCase() }
+        container.register(WhiteListRepository.self) { resolver in
+            WhiteListRepositoryImpl(
+                whiteListApi: resolver.resolve(WhiteListApi.self)!
+            )
+        }.inObjectScope(.container)
         
-        container.register(CreateUserUseCase.self) { resolver in
-            CreateUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        
-        container.register(GetCurrentUserUseCase.self) { resolver in
-            GetCurrentUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        
-        container.register(SetCurrentUserUseCase.self) { resolver in
-            SetCurrentUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        
-        container.register(GetUserUseCase.self) { resolver in
-            GetUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        
-        container.register(GetUsersUseCase.self) { resolver in
-            GetUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        
-        container.register(GetFilteredUsersUseCase.self) { resolver in
-            GetFilteredUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
+        container.register(GenerateIdUseCase.self) { _ in
+            GenerateIdUseCase()
+        }.inObjectScope(.container)
         
         container.register(UpdateProfilePictureUseCase.self) { resolver in
             UpdateProfilePictureUseCase(
                 userRepository: resolver.resolve(UserRepository.self)!,
                 imageRepository: resolver.resolve(ImageRepository.self)!
             )
-        }
+        }.inObjectScope(.container)
         
-        container.register(IsUserExistUseCase.self) { resolver in
-            IsUserExistUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
+        container.register(DeleteProfilePictureUseCase.self) { resolver in
+            DeleteProfilePictureUseCase(
+                userRepository: CommonInjection.shared.resolve(UserRepository.self),
+                imageRepository: CommonInjection.shared.resolve(ImageRepository.self)
+            )
+        }.inObjectScope(.container)
     }
     
     func resolve<T>(_ type: T.Type) -> T {
@@ -126,34 +125,12 @@ class CommonInjection: DependencyInjectionContainer {
         mockContainer.register(ImageRepository.self) { _ in MockImageRepository() }
         
         mockContainer.register(GenerateIdUseCase.self) { _ in GenerateIdUseCase() }
-        mockContainer.register(CreateUserUseCase.self) { resolver in
-            CreateUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        mockContainer.register(GetCurrentUserUseCase.self) { resolver in
-            GetCurrentUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        mockContainer.register(SetCurrentUserUseCase.self) { resolver in
-            SetCurrentUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        mockContainer.register(GetUserUseCase.self) { resolver in
-            GetUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        mockContainer.register(GetUsersUseCase.self) { resolver in
-            GetUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
-        mockContainer.register(GetFilteredUsersUseCase.self) { resolver in
-            GetFilteredUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
         
         mockContainer.register(UpdateProfilePictureUseCase.self) { resolver in
             UpdateProfilePictureUseCase(
                 userRepository: resolver.resolve(UserRepository.self)!,
                 imageRepository: resolver.resolve(ImageRepository.self)!
             )
-        }
-        
-        mockContainer.register(IsUserExistUseCase.self) { resolver in
-            IsUserExistUseCase(userRepository: resolver.resolve(UserRepository.self)!)
         }
         
         return mockContainer

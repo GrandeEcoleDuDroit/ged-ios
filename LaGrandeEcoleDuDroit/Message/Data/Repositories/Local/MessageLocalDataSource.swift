@@ -3,90 +3,341 @@ import Combine
 import CoreData
 import os
 
-private let messageEntityName = "LocalMessage"
-private let logger = Logger(subsystem: "com.upsaclay.gedoise", category: "MessageLocalDataSource")
-
 class MessageLocalDataSource {
-    private let tag = String(describing: MessageLocalDataSource.self)
-    private let gedDatabaseContainer: GedDatabaseContainer
-    private let request = NSFetchRequest<LocalMessage>(entityName: messageEntityName)
+    private let container: NSPersistentContainer
     private let context: NSManagedObjectContext
-    let messageSubject = PassthroughSubject<Message, Error>()
-    
+    private let messageActor: MessageCoreDataActor
+
     init(gedDatabaseContainer: GedDatabaseContainer) {
-        self.gedDatabaseContainer = gedDatabaseContainer
-        context = gedDatabaseContainer.container.viewContext
+        container = gedDatabaseContainer.container
+        context = container.newBackgroundContext()
+        messageActor = MessageCoreDataActor(context: context)
     }
     
-    private func getMessages(conversationId: String, offeset: Int, limit: Int) {
-        do {
-            request.predicate = NSPredicate(format: "conversationId == %@", conversationId)
-            request.fetchLimit = limit
-            request.fetchOffset = offeset
-            let localMessages = try context.fetch(request)
-            localMessages.forEach { localMessage in
-                if let message = MessageMapper.toDomain(localMessage: localMessage) {
-                    messageSubject.send(message)
+    func listenDataChange() -> AnyPublisher<CoreDataChange<Message>, Never> {
+        NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: context)
+            .collect(.byTime(RunLoop.current, .milliseconds(100)))
+            .compactMap {
+                notifications -> (
+                    inserted: [NSManagedObjectID],
+                    updated: [NSManagedObjectID]
+                )? in
+                
+                let extractIDs: (String) -> [NSManagedObjectID] = { key in
+                    notifications.flatMap {
+                        ($0.userInfo?[key] as? Set<NSManagedObject>)?
+                            .compactMap { $0 as? LocalMessage }
+                            .map(\.objectID) ?? []
+                    }
+                }
+                
+                let inserted = extractIDs(NSInsertedObjectsKey)
+                let updated = extractIDs(NSUpdatedObjectsKey)
+                
+                guard !inserted.isEmpty || !updated.isEmpty else {
+                    return nil
+                }
+                
+                return (inserted: inserted, updated: updated)
+            }
+            .map { [weak self] objectIDs -> CoreDataChange<Message> in
+                guard let self = self else {
+                    return CoreDataChange(inserted: [], updated: [], deleted: [])
+                }
+
+                var inserted: [Message] = []
+                var updated: [Message] = []
+
+                self.context.performAndWait {
+                    func resolve(_ ids: [NSManagedObjectID]) -> [Message] {
+                        ids.compactMap {
+                            guard let object = try? self.context.existingObject(with: $0),
+                                  let local = object as? LocalMessage else {
+                                return nil
+                            }
+                            return local.toMessage()
+                        }
+                    }
+
+                    inserted = resolve(objectIDs.inserted)
+                    updated = resolve(objectIDs.updated)
+                }
+
+                return CoreDataChange(inserted: inserted, updated: updated, deleted: [])
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func getMessages(conversationId: String, offset: Int) async throws -> [Message] {
+        try await context.perform {
+            let fetchRequest = LocalMessage.fetchRequest()
+            fetchRequest.predicate = NSPredicate(
+                format: "%K == %@",
+                MessageField.conversationId, conversationId
+            )
+            fetchRequest.sortDescriptors = [NSSortDescriptor(
+                key: MessageField.timestamp,
+                ascending: false
+            )]
+            
+            fetchRequest.fetchOffset = offset
+            fetchRequest.fetchLimit = 20
+            
+            return try self.context.fetch(fetchRequest).compactMap { $0.toMessage() }
+        }
+    }
+    
+    func getLastMessage(conversationId: String) async throws -> Message? {
+        try await context.perform {
+            let fetchRequest = LocalMessage.fetchRequest()
+            fetchRequest.predicate = NSPredicate(
+                format: "%K == %@",
+                MessageField.conversationId, conversationId
+            )
+            fetchRequest.sortDescriptors = [NSSortDescriptor(
+                key: MessageField.timestamp,
+                ascending: false
+            )]
+            fetchRequest.fetchLimit = 1
+            
+            let result = try self.context.fetch(fetchRequest)
+            return result.compactMap { $0.toMessage() }.first
+        }
+    }
+    
+    func getUnreadMessagesByUser(conversationId: String, userId: String) async throws -> [Message] {
+        try await context.perform {
+            let fetchRequest = LocalMessage.fetchRequest()
+            fetchRequest.predicate = NSPredicate(
+                format: "%K == %@ AND %K == %@ AND %K == %@",
+                MessageField.conversationId, conversationId,
+                MessageField.seen, NSNumber(value: false),
+                MessageField.recipientId, userId
+            )
+            let unreadMessages = try self.context.fetch(fetchRequest)
+            return unreadMessages.compactMap { $0.toMessage() }
+        }
+    }
+    
+    func getUnsentMessages() async throws -> [Message] {
+        try await context.perform {
+            let fetchRequest = LocalMessage.fetchRequest()
+            fetchRequest.predicate = NSPredicate(
+                format: "%K == %@",
+                MessageField.Local.state, MessageState.sending.rawValue
+            )
+            
+            return try self.context.fetch(fetchRequest).compactMap { $0.toMessage() }
+        }
+    }
+    
+    func insertMessage(message: Message) async throws {
+        try await messageActor.insertMessage(message: message)
+    }
+  
+    func upsertMessage(message: Message) async throws {
+        try await messageActor.upsertMessage(message: message)
+    }
+    
+    func upsertMessages(messages: [Message]) async throws {
+        try await messageActor.upsertMessages(messages: messages)
+    }
+    
+    func updateMessage(message: Message) async throws {
+        try await messageActor.updateMessage(message: message)
+    }
+    
+    func updateSeenMessages(conversationId: String, userId: String) async throws {
+        try await messageActor.updateSeenMessages(conversationId: conversationId, userId: userId)
+    }
+    
+    func deleteMessage(message: Message) async throws -> Message? {
+        try await messageActor.deleteMessage(messageId: message.id)
+    }
+    
+    func deleteMessages(conversationId: String) async throws -> [Message] {
+        try await messageActor.deleteMessages(conversationId: conversationId)
+    }
+    
+    func deleteMessages() async throws -> [Message] {
+       try await messageActor.deleteMessages()
+    }
+}
+
+actor MessageCoreDataActor {
+    private let context: NSManagedObjectContext
+    
+    init(context: NSManagedObjectContext) {
+        self.context = context
+    }
+    
+    func insertMessage(message: Message) async throws {
+        try await context.perform {
+            let localMessage = LocalMessage(context: self.context)
+            message.buildLocal(localMessage: localMessage)
+            try self.context.save()
+        }
+    }
+    
+    func upsertMessage(message: Message) async throws {
+        try await context.perform {
+            let request = LocalMessage.fetchRequest()
+            request.predicate = NSPredicate(
+                format: "%K == %lld",
+                MessageField.messageId, message.id
+            )
+            let localMessages = try self.context.fetch(request)
+            let localMessage = localMessages.first
+            
+            guard localMessage?.equals(message) != true else { return }
+            
+            if let localMessage = localMessage {
+                localMessage.modify(message: message)
+            } else {
+                let newLocalMessage = LocalMessage(context: self.context)
+                message.buildLocal(localMessage: newLocalMessage)
+            }
+            try self.context.save()
+        }
+    }
+    
+    func upsertMessages(messages: [Message]) async throws {
+        try await context.perform {
+            messages.forEach { message in
+                let request = LocalMessage.fetchRequest()
+                request.predicate = NSPredicate(
+                    format: "%K == %lld",
+                    MessageField.messageId, message.id
+                )
+                let localMessages = try? self.context.fetch(request)
+                let localMessage = localMessages?.first
+                
+                if let localMessage = localMessage {
+                    localMessage.modify(message: message)
+                } else {
+                    let newLocalMessage = LocalMessage(context: self.context)
+                    message.buildLocal(localMessage: newLocalMessage)
                 }
             }
-        } catch {
-            e(tag, "Failed to get messages: \(error)")
-            messageSubject.send(completion: .failure(MessageError.notFoundError))
+            
+            try self.context.save()
         }
     }
     
-    func insertMessage(message: Message) throws {
-        do {
-            MessageMapper.toLocal(message: message, context: context)
-            try context.save()
-            messageSubject.send(message)
-        } catch {
-            e(tag, "Failed to insert message: \(error)")
-            throw MessageError.createMessageError
+    func updateMessage(message: Message) async throws {
+        try await context.perform {
+            let request = LocalMessage.fetchRequest()
+            request.predicate = NSPredicate(
+                format: "%K == %lld",
+                MessageField.messageId, message.id
+            )
+            
+            try self.context.fetch(request).first?.modify(message: message)
+            try self.context.save()
         }
     }
     
-    func upsertMessage(message: Message) throws {
-        request.predicate = NSPredicate(format: "messageId == %@", message.id)
-        
-        do {
-            let localMessages = try context.fetch(request)
-            
-            if let localMessage = localMessages.first {
-                localMessage.state = message.state.rawValue
-                localMessage.isRead = message.isRead
-            } else {
-                MessageMapper.toLocal(message: message, context: context)
+    func updateSeenMessages(conversationId: String, userId: String) async throws {
+        try await context.perform {
+            let request = LocalMessage.fetchRequest()
+            request.predicate = NSPredicate(
+                format: "%K == %@ AND %K == %@ AND %K == %@",
+                MessageField.conversationId, conversationId,
+                MessageField.seen, NSNumber(value: false),
+                MessageField.recipientId, userId
+            )
+            let unreadMessages = try self.context.fetch(request)
+            guard !unreadMessages.isEmpty else {
+                return
             }
             
-            try context.save()
-            messageSubject.send(message)
-        } catch {
-            e(tag, "Failed to upsert message: \(error)")
-            throw MessageError.upsertMessageError
+            unreadMessages.forEach {
+                $0.seen = true
+            }
+            try self.context.save()
         }
     }
     
-    func updateMessageState(messageId: String, state: MessageState) async throws {
-        request.predicate = NSPredicate(format: "messageId == %@", messageId)
-        
-        do {
-            let localMessages = try context.fetch(request)
+    func deleteMessage(messageId: Int64) async throws -> Message? {
+        try await context.perform {
+            let request = LocalMessage.fetchRequest()
+            request.predicate = NSPredicate(
+                format: "%K == %lld",
+                MessageField.messageId, messageId
+            )
             
-            guard let localMessage = localMessages.first else {
-                e(tag, "Message not found")
-                throw MessageError.notFoundError
+            guard let localMessage = try self.context.fetch(request).first else {
+                return nil
             }
+            let message = localMessage.toMessage()
+            self.context.delete(localMessage)
+            try self.context.save()
             
-            localMessage.state = state.rawValue
-            try context.save()
-            
-            if let message = MessageMapper.toDomain(localMessage: localMessage) {
-                messageSubject.send(message)
-            }
-        } catch {
-            e(tag, "Failed to update message status: \(error)")
-            throw MessageError.updateMessageError
+            return message
         }
+    }
+    
+    func deleteMessages(conversationId: String) async throws -> [Message] {
+        try await context.perform {
+            let request = LocalMessage.fetchRequest()
+            request.predicate = NSPredicate(
+                format: "%K == %@",
+                MessageField.conversationId, conversationId
+            )
+            
+            let localMessages = try self.context.fetch(request)
+            let messages = localMessages.compactMap { $0.toMessage() }
+            localMessages.forEach {
+                self.context.delete($0)
+            }
+            try self.context.save()
+            
+            return messages
+        }
+    }
+    
+    func deleteMessages() async throws -> [Message] {
+        try await context.perform {
+            let request = LocalMessage.fetchRequest()
+            
+            let localMessages = try self.context.fetch(request)
+            let messages = localMessages.compactMap { $0.toMessage() }
+            localMessages.forEach {
+                self.context.delete($0)
+            }
+            try self.context.save()
+            return messages
+        }
+    }
+}
+
+private extension Message {
+    func buildLocal(localMessage: LocalMessage) {
+        localMessage.messageId = Int64(id)
+        localMessage.conversationId = conversationId
+        localMessage.senderId = senderId
+        localMessage.recipientId = recipientId
+        localMessage.content = content
+        localMessage.timestamp = date
+        localMessage.seen = seen
+        localMessage.state = state.rawValue
+    }
+}
+
+private extension LocalMessage {
+    func modify(message: Message) {
+        state = message.state.rawValue
+        seen = message.seen
+    }
+    
+    func equals(_ message: Message) -> Bool {
+        messageId == message.id &&
+        senderId == message.senderId &&
+        recipientId == message.recipientId &&
+        conversationId == message.conversationId &&
+        content == message.content &&
+        timestamp == message.date &&
+        seen == message.seen &&
+        state == message.state.rawValue
     }
 }
