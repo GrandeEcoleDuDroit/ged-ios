@@ -7,7 +7,7 @@ class NewsViewModel: ObservableObject {
     private let userRepository: UserRepository
     private let announcementRepository: AnnouncementRepository
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
-    private let recreateAnnouncementUseCase: ResendAnnouncementUseCase
+    private let resendAnnouncementUseCase: ResendAnnouncementUseCase
     private let refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
     private var cancellables: Set<AnyCancellable> = []
     
@@ -18,13 +18,13 @@ class NewsViewModel: ObservableObject {
         userRepository: UserRepository,
         announcementRepository: AnnouncementRepository,
         deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
-        recreateAnnouncementUseCase: ResendAnnouncementUseCase,
+        resendAnnouncementUseCase: ResendAnnouncementUseCase,
         refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
     ) {
         self.userRepository = userRepository
         self.announcementRepository = announcementRepository
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
-        self.recreateAnnouncementUseCase = recreateAnnouncementUseCase
+        self.resendAnnouncementUseCase = resendAnnouncementUseCase
         self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
         newsUiState()
         Task { await refreshAnnouncements() }
@@ -41,7 +41,7 @@ class NewsViewModel: ObservableObject {
     
     func resendAnnouncement(announcement: Announcement) {
         do {
-            try recreateAnnouncementUseCase.execute(announcement: announcement)
+            try resendAnnouncementUseCase.execute(announcement: announcement)
         } catch {
             updateEvent(ErrorEvent(message: mapErrorMessage(error)))
         }

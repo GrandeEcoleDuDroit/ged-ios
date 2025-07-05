@@ -88,7 +88,7 @@ private struct NewsView: View {
             }
         }
         .sheet(isPresented: $showBottomSheet) {
-            VStack {
+            BottomSheetContainer(fraction: 0.16) {
                 ClickableItemWithIcon(
                     icon: Image(systemName: "paperplane"),
                     text: Text(getString(.resend))
@@ -98,7 +98,7 @@ private struct NewsView: View {
                         onResendAnnouncementClick(announcement)
                     }
                 }
-                
+                                
                 ClickableItemWithIcon(
                     icon: Image(systemName: "trash"),
                     text: Text(getString(.delete))
@@ -108,20 +108,6 @@ private struct NewsView: View {
                 }
                 .foregroundColor(.error)
             }
-            .presentationDetents([.fraction(0.18)])
-        }
-        .sheet(isPresented: $showDeleteBottomSheet) {
-            VStack {
-                ClickableItemWithIcon(
-                    icon: Image(systemName: "trash"),
-                    text: Text(getString(.delete))
-                ) {
-                    showBottomSheet = false
-                    showDeleteAnnouncementAlert = true
-                }
-                .foregroundColor(.error)
-            }
-            .presentationDetents([.fraction(0.2)])
         }
         .alert(
             getString(.deleteAnnouncementAlertTitle),
