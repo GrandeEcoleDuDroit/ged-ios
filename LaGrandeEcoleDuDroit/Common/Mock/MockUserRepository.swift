@@ -2,56 +2,33 @@ import Foundation
 import Combine
 
 class MockUserRepository: UserRepository {
-    private var users = usersFixture
-    private let userSubject = CurrentValueSubject<User?, Never>(userFixture)
-    
     var user: AnyPublisher<User, Never> {
-        userSubject.compactMap{$0}.eraseToAnyPublisher()
+        Empty().eraseToAnyPublisher()
     }
     
-    var currentUser: User? {
-        userSubject.value
-    }
+    var currentUser: User? { nil }
     
     func storeUser(_ user: User) {}
     
-    func deleteCurrentUser() {
-        userSubject.send(nil)
-    }
+    func deleteCurrentUser() {}
     
-    func createUser(user: User) async throws {
-        users.append(user)
-    }
+    func createUser(user: User) async throws {}
     
-    func getUser(userId: String) async -> User? {
-        users.first { $0.id == userId }
-    }
+    func getUser(userId: String) async -> User? { nil }
     
-    func getUserWithEmail(email: String) async -> User? {
-        usersFixture.first { $0.email == email }
-    }
+    func getUserWithEmail(email: String) async -> User? { nil }
     
     func getUserPublisher(userId: String) -> AnyPublisher<User, Error> {
-        Just(users.first { $0.id == userId }!)
+        Empty()
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
     
-    func getUsers() async -> [User] {
-        users
-    }
+    func getUsers() async -> [User] { [] }
     
-    func getFilteredUsers(filter: String) async -> [User] {
-        usersFixture.filter { $0.fullName.contains(filter) }
-    }
+    func getFilteredUsers(filter: String) async -> [User] { [] }
     
-    func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {
-        userSubject.value = userSubject.value?.with(
-            profilePictureUrl: UrlUtils.formatProfilePictureUrl(fileName: profilePictureFileName)
-        )
-    }
+    func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {}
     
-    func deleteProfilePictureFileName(userId: String) async throws {
-        userSubject.value = userSubject.value?.with(profilePictureUrl: nil)
-    }
+    func deleteProfilePictureFileName(userId: String) async throws {}
 }

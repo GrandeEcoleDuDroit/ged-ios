@@ -1,4 +1,4 @@
-enum NetworkError: Error {
+enum NetworkError: Error, Equatable {
     case internalServer(String?)
     case tooManyRequests
     case dupplicateData
