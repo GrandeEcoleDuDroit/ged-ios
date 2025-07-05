@@ -1,7 +1,7 @@
 import Foundation
 
 class MockImageRepository: ImageRepository {
-    func uploadImage(imageData: Data, fileName: String) async throws {
-        // Do nothing
-    }
+    func uploadImage(imageData: Data, fileName: String) async throws {}
+    
+    func deleteImage(fileName: String) async throws {}
 }

@@ -17,22 +17,18 @@ enum GedString: String {
     case hoursAgoShort = "hours_ago_short"
     case daysAgoShort = "days_ago_short"
     case weeksAgoShort = "weeks_ago_short"
-    case minutesAgoLong = "minutes_ago_long"
-    case hoursAgoLong = "hours_ago_long"
-    case daysAgoLong = "days_ago_long"
-    case weeksAgoLong = "weeks_ago_long"
     case today = "today"
     case yesterday = "yesterday"
     case home = "home"
-
+    case sending = "sending"
+    
     // Common errors
+    case mandatoryFieldError = "mandatory_field_error"
     case emptyInputsError = "empty_inputs_error"
     case emptyInputError = "empty_input_error"
-    case timedOutError = "timed_out_error"
-    case notConnectedToInternetError = "not_connected_to_internet_error"
+    case timeOutError = "time_out_error"
+    case noInternetConectionError = "no_internet_connection_error"
     case internalServerError = "internal_server_error"
-    case networkConnectionLostError = "network_connection_lost_error"
-    case cannotFindHostError = "cannot_find_host_error"
     case unknownError = "unknown_error"
     case unknownNetworkError = "unknown_network_error"
     case userNotFoundError = "user_not_found_error"
@@ -56,15 +52,9 @@ enum GedString: String {
     case level = "level"
     case enterNames = "enter_names"
     case enterEmailPassword = "enter_email_password"
-    case emailVerificationTitle = "email_verification_title"
-    case emailVerificationExplanationBegining = "email_verification_explanation_begining"
-    case emailVerificationExplanationEnd = "email_verification_explanation_end"
-    case sendEmailVerificationCaption = "send_email_verification_caption"
-    case emailNotVerified = "email_not_verified"
-    case emailNotVerifiedDialogMessage = "email_not_verified_dialog_message"
-    case verifyEmail = "verify_email"
     case logoutAlertTitle = "logout_alert_title"
     case forgotPasswordSuccess = "forgot_password_success"
+    case userNotWhiteListedError = "user_not_white_listed_error"
     
     // Authentication errors
     case invalidEmailError = "invalid_email_error"
@@ -73,13 +63,13 @@ enum GedString: String {
     case userDisabled = "user_disabled"
     case authUserNotFound = "auth_user_not_found"
     case userNotExist = "user_not_exist"
-    case emailNotVerifiedError = "email_not_verified_error"
-    case accountAlreadyInUseError = "account_already_in_use_error"
+    case emailAlreadyAssociatedError = "email_already_associated_error"
     case tooManyRequestsError = "too_many_requests_error"
     case userNotConnected = "user_not_connected"
     
     // News
     case news = "news"
+    case announcement = "announcement"
     case recentAnnouncements = "recent_announcements"
     case newAnnouncement = "new_announcement"
     case editAnnouncement = "edit_announcement"
@@ -91,8 +81,7 @@ enum GedString: String {
     case deleteAnnouncementAlertTitle = "delete_announcement_alert_title"
     
     // News errors
-    case errorCreatingAnnouncement = "error_creating_announcement"
-    case errorDeletingAnnouncement = "error_deleting_announcement"
+    case announcement_refresh_error = "announcement_refresh_error"
     
     // Profile
     case profile = "profile"
@@ -101,7 +90,10 @@ enum GedString: String {
     case editProfile = "edit_profile"
     case newProfilePicture = "new_profile_picture"
     case profilePictureUpdated = "profile_picture_updated"
-    
+    case member = "member"
+    case userNotFound = "user_not_found"
+    case deleteProfilePictureAlertMessage = "delete_profile_picture_alert_message"
+
     // Profile errors
     case errorLogout = "error_logout"
     
@@ -113,6 +105,9 @@ enum GedString: String {
     case noConversation = "no_conversation"
     case deleteConversationAlertMessage = "delete_conversation_alert_message"
     case seen = "seen"
+    case newMessages = "new_messages"
+    case deleteMessageAlertTitle = "delete_message_alert_title"
+    case deleteMessageAlertContent = "delete_message_alert_content"
     
     // Message errors
     case errorGettingConversations = "error_getting_conversations"

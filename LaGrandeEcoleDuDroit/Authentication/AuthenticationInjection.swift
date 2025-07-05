@@ -10,8 +10,9 @@ class AuthenticationInjection: DependencyInjectionContainer {
     }
     
     private func registerDependencies() {
-        container.register(FirebaseAuthApi.self) { _ in FirebaseAuthApiImpl() }
-            .inObjectScope(.container)
+        container.register(FirebaseAuthApi.self) { _ in
+            FirebaseAuthApiImpl()
+        }.inObjectScope(.container)
         
         container.register(FirebaseAuthenticationRepository.self) { resolver in
             FirebaseAuthenticationRepositoryImpl(firebaseAuthApi: resolver.resolve(FirebaseAuthApi.self)!)
@@ -28,67 +29,45 @@ class AuthenticationInjection: DependencyInjectionContainer {
             )
         }.inObjectScope(.container)
         
-        container.register(SendEmailVerificationUseCase.self) { resolver in
-            SendEmailVerificationUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
-        }
-        
-        container.register(IsEmailVerifiedUseCase.self) { resolver in
-            IsEmailVerifiedUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
-        }
-        
-        container.register(IsUserAuthenticatedUseCase.self) { resolver in
-            IsUserAuthenticatedUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
-        }
-        
         container.register(LoginUseCase.self) { resolver in
-            LoginUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
-        }
-        
-        container.register(LogoutUseCase.self) { resolver in
-            LogoutUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
-        }
-        
+            LoginUseCase(
+                authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
+                userRepository: CommonInjection.shared.resolve(UserRepository.self),
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+            )
+        }.inObjectScope(.container)
+    
         container.register(RegisterUseCase.self) { resolver in
-            RegisterUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
+            RegisterUseCase(
+                authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
+                userRepository: CommonInjection.shared.resolve(UserRepository.self),
+                whiteListRepository: CommonInjection.shared.resolve(WhiteListRepository.self),
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+            )
         }
         
-        container.register(SetUserAuthenticatedUseCase.self) { resolver in
-            SetUserAuthenticatedUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
+        container.register(FirstRegistrationViewModel.self) { resolver in
+            FirstRegistrationViewModel()
         }
         
-        container.register(ResetPasswordUseCase.self) { resolver in
-            ResetPasswordUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
+        container.register(SecondRegistrationViewModel.self) { resolver in
+            SecondRegistrationViewModel()
         }
         
         container.register(AuthenticationViewModel.self) { resolver in
             AuthenticationViewModel(
-                loginUseCase: resolver.resolve(LoginUseCase.self)!,
-                isEmailVerifiedUseCase: resolver.resolve(IsEmailVerifiedUseCase.self)!,
-                isAuthenticatedUseCase: resolver.resolve(IsUserAuthenticatedUseCase.self)!,
-                getUserUseCase: CommonInjection.shared.resolve(GetUserUseCase.self),
-                setCurrentUserUseCase: CommonInjection.shared.resolve(SetCurrentUserUseCase.self),
-                setUserAuthenticatedUseCase: resolver.resolve(SetUserAuthenticatedUseCase.self)!
+                loginUseCase: resolver.resolve(LoginUseCase.self)!
             )
-        }.inObjectScope(.weak)
+        }
         
-        container.register(RegistrationViewModel.self) { resolver in
-            RegistrationViewModel(
-                registerUseCase: resolver.resolve(RegisterUseCase.self)!,
-                createUserUseCase: CommonInjection.shared.resolve(CreateUserUseCase.self),
-                isUserExistUseCase: CommonInjection.shared.resolve(IsUserExistUseCase.self)
+        container.register(FirstRegistrationViewModel.self) { resolver in
+            FirstRegistrationViewModel()
+        }
+        
+        container.register(ThirdRegistrationViewModel.self) { resolver in
+            ThirdRegistrationViewModel(
+                registerUseCase: resolver.resolve(RegisterUseCase.self)!
             )
-        }.inObjectScope(.weak)
-        
-        container.register(EmailVerificationViewModel.self) { resolver in
-            EmailVerificationViewModel(
-                sendVerificationEmailUseCase: resolver.resolve(SendEmailVerificationUseCase.self)!,
-                isEmailVerifiedUseCase: resolver.resolve(IsEmailVerifiedUseCase.self)!,
-                setUserAuthenticatedUseCase: resolver.resolve(SetUserAuthenticatedUseCase.self)!
-            )
-        }.inObjectScope(.weak)
-        
-        container.register(ForgotPasswordViewModel.self) { resolver in
-            ForgotPasswordViewModel(resetPasswordUseCase: resolver.resolve(ResetPasswordUseCase.self)!)
         }
     }
     
@@ -126,66 +105,19 @@ class AuthenticationInjection: DependencyInjectionContainer {
     
     func resolveWithMock() -> Container {
         let mockContainer = Container()
-        let commonMockContainer = CommonInjection.shared.resolveWithMock()
         
         mockContainer.register(AuthenticationRepository.self) { _ in MockAuthenticationRepository() }
-        
-        mockContainer.register(SendEmailVerificationUseCase.self) { resolver in
-            SendEmailVerificationUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
-        }
-        mockContainer.register(IsEmailVerifiedUseCase.self) { resolver in
-            IsEmailVerifiedUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
-        }
-        mockContainer.register(IsUserAuthenticatedUseCase.self) { resolver in
-            IsUserAuthenticatedUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
-        }
-        mockContainer.register(LoginUseCase.self) { resolver in
-            LoginUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
-        }
-        mockContainer.register(LogoutUseCase.self) { resolver in
-            LogoutUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
-        }
-        mockContainer.register(RegisterUseCase.self) { resolver in
-            RegisterUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
-        }
-        
-        mockContainer.register(SetUserAuthenticatedUseCase.self) { resolver in
-            SetUserAuthenticatedUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
-        }
-        
-        mockContainer.register(ResetPasswordUseCase.self) { resolver in
-            ResetPasswordUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
-        }
-        
+
         mockContainer.register(AuthenticationViewModel.self) { resolver in
             AuthenticationViewModel(
-                loginUseCase: resolver.resolve(LoginUseCase.self)!,
-                isEmailVerifiedUseCase: resolver.resolve(IsEmailVerifiedUseCase.self)!,
-                isAuthenticatedUseCase: resolver.resolve(IsUserAuthenticatedUseCase.self)!,
-                getUserUseCase: commonMockContainer.resolve(GetUserUseCase.self)!,
-                setCurrentUserUseCase: commonMockContainer.resolve(SetCurrentUserUseCase.self)!,
-                setUserAuthenticatedUseCase: commonMockContainer.resolve(SetUserAuthenticatedUseCase.self)!
+                loginUseCase: resolver.resolve(LoginUseCase.self)!
             )
         }
         
-        mockContainer.register(RegistrationViewModel.self) { resolver in
-            RegistrationViewModel(
-                registerUseCase: resolver.resolve(RegisterUseCase.self)!,
-                createUserUseCase: commonMockContainer.resolve(CreateUserUseCase.self)!,
-                isUserExistUseCase: commonMockContainer.resolve(IsUserExistUseCase.self)!
+        mockContainer.register(ThirdRegistrationViewModel.self) { resolver in
+            ThirdRegistrationViewModel(
+                registerUseCase: resolver.resolve(RegisterUseCase.self)!
             )
-        }
-        
-        mockContainer.register(EmailVerificationViewModel.self) { resolver in
-            EmailVerificationViewModel(
-                sendVerificationEmailUseCase: resolver.resolve(SendEmailVerificationUseCase.self)!,
-                isEmailVerifiedUseCase: resolver.resolve(IsEmailVerifiedUseCase.self)!,
-                setUserAuthenticatedUseCase: resolver.resolve(SetUserAuthenticatedUseCase.self)!
-            )
-        }
-        
-        mockContainer.register(ForgotPasswordViewModel.self) { resolver in
-            ForgotPasswordViewModel(resetPasswordUseCase: resolver.resolve(ResetPasswordUseCase.self)!)
         }
         
         return mockContainer

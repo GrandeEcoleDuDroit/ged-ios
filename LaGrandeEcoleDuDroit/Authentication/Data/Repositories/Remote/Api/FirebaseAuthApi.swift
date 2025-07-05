@@ -1,17 +1,13 @@
 import FirebaseAuth
 
 protocol FirebaseAuthApi {
-    func createUserWithEmail(email: String, password: String) async throws
-    
-    func sendEmailVerification() async throws
-    
-    func isEmailVerified() async throws -> Bool
-    
+    func isAuthenticated() -> Bool
+
     func signIn(email: String, password: String) async throws
-    
-    func signOut() async throws
+
+    func signUp(email: String, password: String) async throws -> String
+        
+    func signOut()
     
     func resetPassword(email: String) async throws
-    
-    func isAuthenticated() -> Bool
 }

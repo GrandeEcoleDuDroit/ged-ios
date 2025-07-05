@@ -1,14 +1,14 @@
-struct User: Codable, Hashable, Identifiable {
-    var id: String
-    var firstName: String
-    var lastName: String
-    var email: String
-    var schoolLevel: String
-    var isMember: Bool
-    var profilePictureUrl: String?
+struct User: Decodable, Hashable, Identifiable {
+    let id: String
+    let firstName: String
+    let lastName: String
+    let email: String
+    let schoolLevel: SchoolLevel
+    let isMember: Bool
+    let profilePictureUrl: String?
     
     var fullName: String {
-        (firstName + " " + lastName).capitalized
+        firstName + " " + lastName
     }
     
     func with(
@@ -16,7 +16,7 @@ struct User: Codable, Hashable, Identifiable {
         firstName: String? = nil,
         lastName: String? = nil,
         email: String? = nil,
-        schoolLevel: String? = nil,
+        schoolLevel: SchoolLevel? = nil,
         isMember: Bool? = nil,
         profilePictureUrl: String? = nil
     ) -> User {
@@ -30,4 +30,13 @@ struct User: Codable, Hashable, Identifiable {
             profilePictureUrl: profilePictureUrl ?? self.profilePictureUrl
         )
     }
+}
+
+enum SchoolLevel: String, CaseIterable, Identifiable, Decodable {
+    case ged1 = "GED 1"
+    case ged2 = "GED 2"
+    case ged3 = "GED 3"
+    case ged4 = "GED 4"
+    
+    var id: String { self.rawValue }
 }

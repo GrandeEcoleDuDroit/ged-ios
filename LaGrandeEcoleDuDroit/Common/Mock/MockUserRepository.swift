@@ -2,42 +2,33 @@ import Foundation
 import Combine
 
 class MockUserRepository: UserRepository {
-    private var users = usersFixture
-    var currentUser = CurrentValueSubject<User?, Never>(userFixture)
-    
-    func setCurrentUser(user: User) {
-        currentUser.send(user)
+    var user: AnyPublisher<User, Never> {
+        Empty().eraseToAnyPublisher()
     }
     
-    func removeCurrentUser() {
-        currentUser.send(nil)
+    var currentUser: User? { nil }
+    
+    func storeUser(_ user: User) {}
+    
+    func deleteCurrentUser() {}
+    
+    func createUser(user: User) async throws {}
+    
+    func getUser(userId: String) async -> User? { nil }
+    
+    func getUserWithEmail(email: String) async -> User? { nil }
+    
+    func getUserPublisher(userId: String) -> AnyPublisher<User, Error> {
+        Empty()
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
     }
     
-    func createUser(user: User) async throws {
-        users.append(user)
-    }
+    func getUsers() async -> [User] { [] }
     
-    func getUser(userId: String) async -> User? {
-        users.first { $0.id == userId }
-    }
+    func getFilteredUsers(filter: String) async -> [User] { [] }
     
-    func getUserWithEmail(email: String) async -> User? {
-        usersFixture.first { $0.email == email }
-    }
+    func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {}
     
-    func getUserPublisher(userId: String) -> AnyPublisher<User, Never> {
-        Just(users.first { $0.id == userId }!).eraseToAnyPublisher()
-    }
-    
-    func getUsers() async throws -> [User] {
-        users
-    }
-    
-    func getFilteredUsers(filter: String) async -> [User] {
-        usersFixture.filter { $0.fullName.contains(filter) }
-    }
-    
-    func updateProfilePictureUrl(userId: String, profilePictureFileName: String) async throws {
-        currentUser.value?.profilePictureUrl = profilePictureFileName
-    }
+    func deleteProfilePictureFileName(userId: String) async throws {}
 }

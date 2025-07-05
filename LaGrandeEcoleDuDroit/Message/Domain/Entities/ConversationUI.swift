@@ -1,15 +1,11 @@
 import Foundation
 
-struct ConversationUI: Identifiable, Hashable {
-    var id: String
-    var interlocutor: User
-    var lastMessage: Message? = nil
-    var createdAt: Date = Date.now
-    var state: ConversationState
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
+struct ConversationUi: Equatable {
+    let id: String
+    let interlocutor: User
+    let lastMessage: Message
+    let createdAt: Date
+    let state: ConversationState
     
     func with(
         id: String? = nil,
@@ -17,8 +13,8 @@ struct ConversationUI: Identifiable, Hashable {
         lastMessage: Message? = nil,
         createdAt: Date? = nil,
         state: ConversationState? = nil
-    ) -> ConversationUI {
-        ConversationUI(
+    ) -> ConversationUi {
+        ConversationUi(
             id: id ?? self.id,
             interlocutor: interlocutor ?? self.interlocutor,
             lastMessage: lastMessage ?? self.lastMessage,

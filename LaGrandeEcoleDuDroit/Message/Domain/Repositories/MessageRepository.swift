@@ -1,15 +1,36 @@
 import Combine
+import Foundation
 
 protocol MessageRepository {
-    func getMessages(conversationId: String) -> AnyPublisher<Message, Error>
+    var messageChanges: AnyPublisher<CoreDataChange<Message>, Never> { get }
+
+    func getMessages(conversationId: String, offset: Int) async throws -> [Message]
     
-    func getLastMessage(conversationId: String) -> AnyPublisher<Message?, ConversationError>
+    func getLastMessage(conversationId: String) async throws -> Message?
     
-    func createMessage(message: Message) async throws
+    func getUnsentMessages() async throws -> [Message]
     
-    func updateMessageState(messageId: String, messageState: MessageState) async throws
+    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<[Message], Error>
     
-    func stopGettingLastMessages()
+    func createLocalMessage(message: Message) async throws
+        
+    func createRemoteMessage(message: Message) async throws
     
-    func stopGettingMessages()
+    func updateLocalMessage(message: Message) async throws
+    
+    func updateSeenMessages(conversationId: String, userId: String) async throws
+    
+    func updateSeenMessage(message: Message) async throws
+        
+    func upsertLocalMessage(message: Message) async throws
+    
+    func upsertLocalMessages(messages: [Message]) async throws
+    
+    func deleteLocalMessage(message: Message) async throws
+        
+    func deleteLocalMessages(conversationId: String) async throws
+    
+    func deleteLocalMessages() async throws
+            
+    func stopListeningMessages()
 }

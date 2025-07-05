@@ -33,7 +33,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		5EB5784D2CB3CCD3004524AD /* La Grande Ecole Du Droit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "La Grande Ecole Du Droit.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5EB5784D2CB3CCD3004524AD /* GrandeEcoleDuDroit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GrandeEcoleDuDroit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EB5785D2CB3CCD4004524AD /* LaGrandeEcoleDuDroitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LaGrandeEcoleDuDroitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EB578672CB3CCD4004524AD /* LaGrandeEcoleDuDroitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LaGrandeEcoleDuDroitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -100,7 +100,7 @@
 		5EB5784E2CB3CCD3004524AD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5EB5784D2CB3CCD3004524AD /* La Grande Ecole Du Droit.app */,
+				5EB5784D2CB3CCD3004524AD /* GrandeEcoleDuDroit.app */,
 				5EB5785D2CB3CCD4004524AD /* LaGrandeEcoleDuDroitTests.xctest */,
 				5EB578672CB3CCD4004524AD /* LaGrandeEcoleDuDroitUITests.xctest */,
 			);
@@ -135,7 +135,7 @@
 				5EE765C72D2A1B2600EC8447 /* Swinject */,
 			);
 			productName = gedoise;
-			productReference = 5EB5784D2CB3CCD3004524AD /* La Grande Ecole Du Droit.app */;
+			productReference = 5EB5784D2CB3CCD3004524AD /* GrandeEcoleDuDroit.app */;
 			productType = "com.apple.product-type.application";
 		};
 		5EB5785C2CB3CCD4004524AD /* LaGrandeEcoleDuDroitTests */ = {
@@ -427,7 +427,7 @@
 				DEVELOPMENT_TEAM = R8SRMT4A39;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "La Grande Ecole Du Droit";
+				INFOPLIST_KEY_CFBundleDisplayName = "Grande Ecole Du Droit";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -441,7 +441,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.upsaclay.gedoise;
-				PRODUCT_NAME = "La Grande Ecole Du Droit";
+				PRODUCT_NAME = GrandeEcoleDuDroit;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -459,7 +459,7 @@
 				DEVELOPMENT_TEAM = R8SRMT4A39;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "La Grande Ecole Du Droit";
+				INFOPLIST_KEY_CFBundleDisplayName = "Grande Ecole Du Droit";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -473,7 +473,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.upsaclay.gedoise;
-				PRODUCT_NAME = "La Grande Ecole Du Droit";
+				PRODUCT_NAME = GrandeEcoleDuDroit;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -494,7 +494,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/La Grande Ecole Du Droit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/La Grande Ecole Du Droit";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GrandeEcoleDuDroit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GrandeEcoleDuDroit";
 			};
 			name = Debug;
 		};
@@ -512,7 +512,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/La Grande Ecole Du Droit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/La Grande Ecole Du Droit";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GrandeEcoleDuDroit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GrandeEcoleDuDroit";
 			};
 			name = Release;
 		};

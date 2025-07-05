@@ -2,7 +2,7 @@ struct RemoteAnnouncement: Codable {
     var announcementId: String
     var announcementTitle: String?
     var announcementContent: String
-    var announcementDate: Int
+    var announcementDate: Int64
     var userId: String
     
     enum CodingKeys: String, CodingKey {
@@ -18,7 +18,7 @@ struct RemoteAnnouncementWithUser: Codable {
     var announcementId: String
     var announcementTitle: String?
     var announcementContent: String
-    var announcementDate: Int
+    var announcementDate: Int64
     var userId: String
     var userFirstName: String
     var userLastName: String

@@ -1,47 +1,44 @@
 import SwiftUI
 
 struct MessageNavigation: View {
-    @StateObject private var messageNavigationCoordinator = NavigationCoordinator()
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
+    @State private var path: [MessageRoute] = []
     
     var body: some View {
-        NavigationStack(path: $messageNavigationCoordinator.path) {
-            ConversationView()
-                .navigationDestination(for: MessageScreen.self) { screen in
-                    switch screen {
-                        case .chat(let conversation):
-                            ChatView(conversation: conversation)
-                        case .createConversation:
-                            CreateConversationView()
-                    }
+        NavigationStack(path: $path) {
+            ConversationDestination(
+                onCreateConversationClick: { path.append(.createConversation) },
+                onConversationClick: { conversation in
+                    path.append(.chat(conversation: conversation.toConversation()))
                 }
+            )
+            .onAppear { tabBarVisibility.show = true }
+            .background(Color.background)
+            .navigationDestination(for: MessageRoute.self) { route in
+                switch route {
+                    case .chat(let conversation):
+                        ChatDestination(
+                            conversation: conversation,
+                            onBackClick: { path.removeAll() }
+                        )
+                        .onAppear { tabBarVisibility.show = false }
+                        .background(Color.background)
+                        
+                    case .createConversation:
+                        CreateConversationDestination(
+                            onCreateConversationClick: { conversation in
+                                path.append(.chat(conversation: conversation)) 
+                            }
+                        )
+                        .onAppear { tabBarVisibility.show = false }
+                        .background(Color.background)
+                }
+            }
         }
-        .environmentObject(messageNavigationCoordinator)
-        .environmentObject(tabBarVisibility)
     }
 }
 
-#Preview {
-    struct MessageNavigation_Preview: View {
-        @StateObject var navigationCoordinator = NavigationCoordinator()
-        @StateObject var tabBarVisibility = TabBarVisibility()
-        
-        var body: some View {
-            NavigationStack(path: $navigationCoordinator.path) {
-                ConversationView()
-                    .navigationDestination(for: MessageScreen.self) { screen in
-                        switch screen {
-                        case .chat(let conversation):
-                            ChatView(conversation: conversation)
-                        case .createConversation:
-                            CreateConversationView()
-                        }
-                    }
-            }
-            .environmentObject(tabBarVisibility)
-            .environmentObject(navigationCoordinator)
-        }
-    }
-    
-    return MessageNavigation_Preview()
+private enum MessageRoute: Hashable {
+    case chat(conversation: Conversation)
+    case createConversation
 }

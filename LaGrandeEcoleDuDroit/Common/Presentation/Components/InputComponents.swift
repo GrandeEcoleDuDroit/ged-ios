@@ -1,94 +1,192 @@
 import SwiftUI
 
-struct FillTextField: View {
-    let title: String
+struct OutlineTextField: View {
+    let label: String
     @Binding var text: String
     @Binding var inputFieldFocused: InputField?
     let inputField: InputField
     let isDisabled: Bool
+    let errorMessage: String?
     @FocusState private var focusedField: InputField?
     
+    private var borderColor: Color {
+        if errorMessage != nil {
+            .error
+        } else if isDisabled {
+            .disableBorder
+        } else {
+            .outline
+        }
+    }
+    
+    private var borderWeight: CGFloat {
+        if focusedField == inputField {
+            4
+        } else {
+            2
+        }
+    }
+    
+    private var labelColor: Color {
+        if isDisabled {
+            .disableText
+        } else {
+            .outline
+        }
+    }
+    
+    private var textColor: Color {
+        if isDisabled {
+            .disableText
+        } else {
+            .primary
+        }
+    }
+    
     init(
-        title: String,
+        label: String,
         text: Binding<String>,
         inputField: InputField,
         inputFieldFocused: Binding<InputField?>,
-        isDisable: Bool = false
+        isDisable: Bool = false,
+        errorMessage: String? = nil
     ) {
-        self.title = title
+        self.label = label
         self._text = text
         self.inputField = inputField
         self._inputFieldFocused = inputFieldFocused
         self.isDisabled = isDisable
+        self.errorMessage = errorMessage
     }
     
     var body: some View {
-        TextField(
-            "",
-            text: $text,
-            prompt: Text(title).foregroundColor(.secondary)
-        )
-        .focused($focusedField, equals: inputField)
-        .padding()
-        .background(.inputBackground)
-        .cornerRadius(10)
-        .onChange(of: inputFieldFocused) { newValue in
-            focusedField = newValue
+        VStack(alignment: .leading) {
+            TextField(
+                "",
+                text: $text,
+                prompt: Text(label).foregroundColor(labelColor)
+            )
+            .foregroundStyle(textColor)
+            .focused($focusedField, equals: inputField)
+            .padding()
+            .overlay(
+                RoundedRectangle(cornerRadius: 5)
+                    .stroke(borderColor, lineWidth: 2)
+            )
+            .cornerRadius(5)
+            .onChange(of: inputFieldFocused) { newValue in
+                focusedField = newValue
+            }
+            .disabled(isDisabled)
+            .simultaneousGesture(TapGesture().onEnded({
+                inputFieldFocused = self.inputField
+            }))
+            
+            if errorMessage != nil {
+                Text(errorMessage!)
+                    .padding(.leading, GedSpacing.medium)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
         }
-        .disabled(isDisabled)
-        .simultaneousGesture(TapGesture().onEnded({
-            inputFieldFocused = self.inputField
-        }))
     }
 }
 
-struct FillPasswordTextField: View {
-    let title: String
+struct OutlinePasswordTextField: View {
+    let label: String
     @Binding var text: String
     @Binding var inputFieldFocused: InputField?
     let inputField: InputField
     let isDisabled: Bool
     @State private var showPassword = false
     @FocusState private var focusedField: InputField?
+    let errorMessage: String?
+
+    private var borderColor: Color {
+        if errorMessage != nil {
+            .error
+        } else if isDisabled {
+            .disableBorder
+        } else {
+            .outline
+        }
+    }
+    
+    private var borderWeight: CGFloat {
+        if focusedField == inputField {
+            2
+        } else {
+            1
+        }
+    }
+    
+    private var verticalPadding: CGFloat {
+        showPassword ? 15.5 : 16
+    }
+    
+    private var labelColor: Color {
+        if isDisabled {
+            .disableText
+        } else {
+            .outline
+        }
+    }
+    
+    private var textColor: Color {
+        if isDisabled {
+            .gray
+        } else {
+            .primary
+        }
+    }
     
     init(
-        title: String,
+        label: String,
         text: Binding<String>,
         inputField: InputField,
         inputFieldFocused: Binding<InputField?>,
-        isDisable: Bool = false
+        isDisable: Bool = false,
+        errorMessage: String? = nil
     ) {
-        self.title = title
+        self.label = label
         self._text = text
         self.inputField = inputField
         self._inputFieldFocused = inputFieldFocused
         self.isDisabled = isDisable
+        self.errorMessage = errorMessage
     }
     
     var body: some View {
-        HStack {
-            if(!showPassword) {
-                SecureField(
-                    "",
-                    text: $text,
-                    prompt: Text(title).foregroundColor(.secondary)
-                )
-                .textInputAutocapitalization(.never)
-                .focused($focusedField, equals: inputField)
-                .onChange(of: inputFieldFocused) { newValue in
-                    focusedField = newValue
-                }
-                .simultaneousGesture(TapGesture().onEnded({
-                    inputFieldFocused = self.inputField
-                }))
-                
-                Image(systemName: "eye.slash")
-                    .foregroundColor(.iconInput)
-                    .onTapGesture {
-                        showPassword = true
+        VStack(alignment: .leading) {
+            HStack {
+                if(!showPassword) {
+                    SecureField(
+                        "",
+                        text: $text,
+                        prompt: Text(label).foregroundColor(labelColor)
+                    )
+                    .foregroundColor(textColor)
+                    .textInputAutocapitalization(.never)
+                    .focused($focusedField, equals: inputField)
+                    .onChange(of: inputFieldFocused) { newValue in
+                        focusedField = newValue
                     }
-            } else {
-                TextField(title, text: $text, prompt: Text(title).foregroundColor(.secondary))
+                    .simultaneousGesture(TapGesture().onEnded({
+                        inputFieldFocused = self.inputField
+                    }))
+                    
+                    Image(systemName: "eye.slash")
+                        .foregroundColor(.iconInput)
+                        .onTapGesture {
+                            showPassword = true
+                        }
+                } else {
+                    TextField(
+                        "",
+                        text: $text,
+                        prompt: Text(label).foregroundColor(labelColor)
+                    )
+                    .foregroundColor(textColor)
                     .textInputAutocapitalization(.never)
                     .focused($focusedField, equals: inputField)
                     .onChange(of: inputFieldFocused) { newValue in
@@ -98,36 +196,50 @@ struct FillPasswordTextField: View {
                         inputFieldFocused = self.inputField
                     }))
                 
-                Image(systemName: "eye")
-                    .foregroundColor(.iconInput)
-                    .onTapGesture {
-                        showPassword = false
-                    }
+                    Image(systemName: "eye")
+                        .foregroundColor(.iconInput)
+                        .onTapGesture {
+                            showPassword = false
+                        }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, verticalPadding)
+            .cornerRadius(5)
+            .overlay(
+                RoundedRectangle(cornerRadius: 5)
+                    .stroke(borderColor, lineWidth: 1)
+            )
+            .disabled(isDisabled)
+            
+            if errorMessage != nil {
+                Text(errorMessage!)
+                    .padding(.leading, GedSpacing.medium)
+                    .font(.caption)
+                    .foregroundColor(.red)
             }
         }
-        .padding(16)
-        .background(.inputBackground)
-        .cornerRadius(10)
-        .disabled(isDisabled)
     }
 }
 
 #Preview {
     VStack(spacing: GedSpacing.large) {
-        FillTextField(
-            title: "Email",
+        OutlineTextField(
+            label: "Email",
             text: .constant(""),
             inputField: InputField.email,
             inputFieldFocused: .constant(InputField.email),
-            isDisable: false
+            isDisable: false,
+            errorMessage: nil
         )
         
-        FillPasswordTextField(
-            title: "Password",
+        OutlinePasswordTextField(
+            label: "Password",
             text: .constant(""),
             inputField: InputField.password,
             inputFieldFocused: .constant(InputField.password),
-            isDisable: false
+            isDisable: false,
+            errorMessage: nil
         )
     }.padding()
 }

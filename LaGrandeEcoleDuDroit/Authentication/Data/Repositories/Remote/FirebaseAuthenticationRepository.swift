@@ -1,15 +1,11 @@
 protocol FirebaseAuthenticationRepository {
+    func isAuthenticated() -> Bool
+
     func loginWithEmailAndPassword(email: String, password: String) async throws
     
-    func registerWithEmailAndPassword(email: String, password: String) async throws
+    func registerWithEmailAndPassword(email: String, password: String) async throws -> String
     
-    func logout() async throws
-    
-    func sendEmailVerification() async throws
-    
-    func isEmailVerified() async throws -> Bool
+    func logout()
     
     func resetPassword(email: String) async throws
-    
-    func isAuthenticated() -> Bool
 }

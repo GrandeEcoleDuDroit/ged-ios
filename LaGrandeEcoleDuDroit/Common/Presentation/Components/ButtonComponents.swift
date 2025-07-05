@@ -60,7 +60,7 @@ struct LoadingButton: View {
 }
 
 #Preview {
-    VStack(spacing: GedSpacing.veryLarge) {
+    VStack(spacing: GedSpacing.extraLarge) {
         LoadingButton(
             label: "Loading button",
             onClick: {},

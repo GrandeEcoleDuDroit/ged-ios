@@ -26,7 +26,11 @@ extension Font {
     }
     
     static var bodyMedium: Font {
-        .gedFont(size: 15, style: .body)
+        .gedFont(size: 16, style: .body)
+    }
+    
+    static var bodySmall: Font {
+        .gedFont(size: 14, style: .body)
     }
 }
 

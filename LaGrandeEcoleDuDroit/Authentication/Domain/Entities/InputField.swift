@@ -5,5 +5,4 @@ enum InputField: Hashable {
     case password
     case title
     case content
-    case chat
 }

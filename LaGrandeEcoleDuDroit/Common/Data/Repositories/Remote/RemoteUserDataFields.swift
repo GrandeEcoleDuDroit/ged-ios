@@ -1,12 +1,12 @@
 struct FirestoreUserDataFields {
-    static let userId = "user_id"
-    static let firstName = "first_name"
-    static let lastName = "last_name"
+    static let userId = "userId"
+    static let firstName = "firstName"
+    static let lastName = "lastName"
     static let email = "email"
-    static let schoolLevel = "school_level"
-    static let isMember = "is_member"
-    static let profilePictureFileName = "profile_picture_file_name"
-    static let isOnline = "is_online"
+    static let schoolLevel = "schoolLevel"
+    static let isMember = "isMember"
+    static let profilePictureFileName = "profilePictureFileName"
+    static let isOnline = "isOnline"
 }
 
 struct OracleUserDataFields {

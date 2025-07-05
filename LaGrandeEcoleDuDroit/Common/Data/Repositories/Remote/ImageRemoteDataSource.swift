@@ -7,11 +7,11 @@ class ImageRemoteDataSource {
         self.imageApi = imageApi
     }
     
-    func uploadImage(imageData: Data, fileName: String) async throws {
+    func uploadImage(imageData: Data, fileName: String) async throws -> (URLResponse, ServerResponse) {
         try await imageApi.uploadImage(imageData: imageData, fileName: fileName)
     }
     
-    private func formatProfilePictureUrl(fileName: String) -> String {
-        "https://objectstorage.eu-paris-1.oraclecloud.com/n/ax5bfuffglob/b/bucket-gedoise/o/\(fileName)"
+    func deleteImage(fileName: String) async throws -> (URLResponse, ServerResponse) {
+        try await imageApi.deleteImage(fileName: fileName)
     }
 }

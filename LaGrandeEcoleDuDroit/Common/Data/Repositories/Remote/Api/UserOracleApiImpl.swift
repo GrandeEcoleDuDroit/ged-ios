@@ -1,15 +1,15 @@
 import Foundation
 
-private let tag = String(describing: UserOracleApiImpl.self)
-
 class UserOracleApiImpl: UserOracleApi {
+    private let tag = String(describing: UserOracleApiImpl.self)
+    
     private func baseUrl(endPoint: String) -> URL? {
         URL.oracleUrl(endpoint: "/users/" + endPoint)
     }
     
-    func createUser(user: OracleUser) async throws {
+    func createUser(user: OracleUser) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "create") else {
-            throw RequestError.invalidURL("Invalid URL")
+            throw NetworkError.invalidURL("Invalid URL")
         }
         
         let request = try RequestUtils.formatPostRequest(dataToSend: user, url: url)
@@ -17,17 +17,12 @@ class UserOracleApiImpl: UserOracleApi {
         
         let (dataReceived, response) = try await session.data(for: request)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
-        
-        if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode >= 400 {
-                throw RequestError.invalidResponse(serverResponse.error)
-            }
-        }
+        return (response, serverResponse)
     }
     
-    func updateProfilePictureFileName(userId: String, fileName: String) async throws {
+    func updateProfilePictureFileName(userId: String, fileName: String) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "profile-picture-file-name") else {
-            throw RequestError.invalidURL("Invalid URL")
+            throw NetworkError.invalidURL("Invalid URL")
         }
         
         let dataToSend: [String: String] = [
@@ -40,17 +35,19 @@ class UserOracleApiImpl: UserOracleApi {
         
         let (dataReceived, response) = try await session.data(for: request)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
-        
-        if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 {
-                e(tag, serverResponse.message)
-            } else {
-                e(tag, serverResponse.error ?? "Error to update user profile picture file name")
-                throw RequestError.invalidResponse(serverResponse.error)
-            }
-        } else {
-            e(tag, serverResponse.error ?? "Error to update user profile picture file name")
-            throw RequestError.invalidResponse(serverResponse.error)
+        return (response, serverResponse)
+    }
+    
+    func deleteProfilePictureFileName(userId: String) async throws -> (URLResponse, ServerResponse) {
+        guard let url = baseUrl(endPoint: "profile-picture-file-name/\(userId)") else {
+            throw NetworkError.invalidURL("Invalid URL")
         }
+        
+        let request = try RequestUtils.formatDeleteRequest(url: url)
+        let session = RequestUtils.getUrlSession()
+        
+        let (dataReceived, response) = try await session.data(for: request)
+        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
+        return (response, serverResponse)
     }
 }
