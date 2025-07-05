@@ -32,10 +32,6 @@ class AnnouncementLocalDataSource {
         }
     }
     
-    func insertAnnouncement(announcement: Announcement) async throws {
-        try await announcementActor.insert(announcement: announcement)
-    }
-    
     func upsertAnnouncement(announcement: Announcement) async throws {
         try await announcementActor.upsert(announcement: announcement)
     }
@@ -55,15 +51,7 @@ private actor AnnouncementCoreDataActor {
     init(context: NSManagedObjectContext) {
         self.context = context
     }
-    
-    func insert(announcement: Announcement) async throws {
-        try await context.perform {
-            let localAnnouncement = LocalAnnouncement(context: self.context)
-            announcement.buildLocal(localAnnouncement: localAnnouncement)
-            try self.context.save()
-        }
-    }
-    
+  
     func upsert(announcement: Announcement) async throws {
         try await context.perform {
             let request = LocalAnnouncement.fetchRequest()
