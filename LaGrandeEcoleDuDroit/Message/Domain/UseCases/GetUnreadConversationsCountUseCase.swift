@@ -13,13 +13,15 @@ class GetUnreadConversationsCountUseCase {
     }
     
     func execute() -> AnyPublisher<Int, Never> {
-        userRepository.user.flatMap { user in
+        userRepository.user.map { user in
             self.conversationMessageRepository.conversationsMessage
                 .map { conversationMessages in
                     conversationMessages.values.count {
                         $0.lastMessage.senderId != user.id && !$0.lastMessage.seen
                     }
                 }
-        }.eraseToAnyPublisher()
+        }
+        .switchToLatest()
+        .eraseToAnyPublisher()
     }
 }
