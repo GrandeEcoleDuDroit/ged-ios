@@ -25,14 +25,6 @@ class ConversationMessageRepositoryImpl: ConversationMessageRepository {
         messageCancellables.removeAll()
     }
     
-    func updateLastMessage(conversation: Conversation, message: Message?) async {
-        if let message = message {
-            conversationsMessageSubject.value[conversation.id] = ConversationMessage(conversation: conversation, lastMessage: message)
-        } else {
-            conversationsMessageSubject.value[conversation.id] = nil
-        }
-    }
-    
     private func listen() {
         listenConversationValueChanges()
         listenConversationDeleteChanges()
