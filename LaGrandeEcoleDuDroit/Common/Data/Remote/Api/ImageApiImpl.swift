@@ -1,7 +1,11 @@
 import Foundation
 
 class ImageApiImpl: ImageApi {
-    private let tag = String(describing: ImageApiImpl.self)
+    private let tokenProvider: TokenProvider
+    
+    init(tokenProvider: TokenProvider) {
+        self.tokenProvider = tokenProvider
+    }
 
     private func baseUrl(endPoint: String) -> URL? {
         URL.oracleUrl(endpoint: "/image/" + endPoint)
@@ -28,6 +32,9 @@ class ImageApiImpl: ImageApi {
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.setValue("\(body.count)", forHTTPHeaderField: "Content-Length")
         request.httpBody = body
+        if let authIdToken = tokenProvider.getAuthIdToken() {
+            request.setValue("Bearer \(authIdToken)", forHTTPHeaderField: "Authorization")
+        }
         
         let session = RequestUtils.getUrlSession()
         let (dataReceived, urlResponse) = try await session.data(for: request)
@@ -42,7 +49,7 @@ class ImageApiImpl: ImageApi {
         }
         
         let sessions = RequestUtils.getUrlSession()
-        let deleteRequest = try RequestUtils.formatDeleteRequest(url: url)
+        let deleteRequest = try RequestUtils.formatDeleteRequest(url: url, authToken: tokenProvider.getAuthIdToken())
         
         let (data, urlResponse) = try await sessions.data(for: deleteRequest)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)

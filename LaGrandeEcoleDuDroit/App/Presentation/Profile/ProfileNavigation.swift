@@ -9,14 +9,12 @@ struct ProfileNavigation: View {
             ProfileDestination(
                 onAccountInfosClick: { path.append(.accountInfos) }
             )
-            .onAppear {
-                tabBarVisibility.show = true
-            }
+            .navigationModifier(route: ProfileMainRoute.profile, showTabBar: true)
             .navigationDestination(for: ProfileRoute.self) { route in
                 switch route {
                     case .accountInfos:
                         AccountDestination()
-                            .onAppear { tabBarVisibility.show = false }
+                            .navigationModifier(route: route, showTabBar: false)
                             .background(.listBackground)
                 }
             }
@@ -24,6 +22,10 @@ struct ProfileNavigation: View {
     }
 }
 
-private enum ProfileRoute {
+private enum ProfileRoute: Route {
     case accountInfos
+}
+
+private enum ProfileMainRoute: Route {
+    case profile
 }
