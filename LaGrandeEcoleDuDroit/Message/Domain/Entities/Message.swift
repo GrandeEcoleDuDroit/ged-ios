@@ -1,6 +1,6 @@
 import Foundation
 
-struct Message: Hashable {
+struct Message: Hashable, Codable {
     let id: Int64
     let senderId: String
     let recipientId: String

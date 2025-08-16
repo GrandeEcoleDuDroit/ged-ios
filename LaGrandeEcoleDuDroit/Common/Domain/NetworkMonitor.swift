@@ -1,6 +1,6 @@
 import Combine
 
 protocol NetworkMonitor {
-    var connectionStatus: AnyPublisher<Bool, Never> { get }
+    var connected: AnyPublisher<Bool, Never> { get }
     var isConnected: Bool { get }
 }

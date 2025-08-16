@@ -100,14 +100,22 @@ class MessageInjection: DependencyInjectionContainer {
             )
         }.inObjectScope(.container)
         
+        container.register(SendMessageNotificationUseCase.self) { resolver in
+            SendMessageNotificationUseCase(
+                notificationApi: CommonInjection.shared.resolve(NotificationApi.self),
+                userRepository: CommonInjection.shared.resolve(UserRepository.self)
+            )
+        }
+        
         container.register(SendMessageUseCase.self) { resolver in
             SendMessageUseCase(
                 messageRepository: resolver.resolve(MessageRepository.self)!,
                 conversationRepository: resolver.resolve(ConversationRepository.self)!,
-                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self),
+                sendMessageNotificationUseCase: resolver.resolve(SendMessageNotificationUseCase.self)!
             )
         }.inObjectScope(.container)
-
+                
         container.register(ConversationViewModel.self) { resolver in
             ConversationViewModel(
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
@@ -151,10 +159,16 @@ class MessageInjection: DependencyInjectionContainer {
         container.register(MessageTaskLauncher.self) { resolver in
             MessageTaskLauncher(
                 networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self),
-                synchronizeMessagesTask: resolver.resolve(SynchronizeMessageTask.self)!,
-                synchronizeConversationsTask: resolver.resolve(SynchronizeConversationTask.self)!
+                synchronizeMessageTask: resolver.resolve(SynchronizeMessageTask.self)!,
+                synchronizeConversationTask: resolver.resolve(SynchronizeConversationTask.self)!
             )
         }
+        container.register(NotificationMessageManager.self) { resolver in
+            NotificationMessageManager(
+                navigationRequestUseCase: CommonInjection.shared.resolve(NavigationRequestUseCase.self),
+                routeRepository: CommonInjection.shared.resolve(RouteRepository.self)
+            )
+        }.inObjectScope(.container)
     }
     
     func resolve<T>(_ type: T.Type) -> T {
@@ -205,7 +219,8 @@ class MessageInjection: DependencyInjectionContainer {
             SendMessageUseCase(
                 messageRepository: resolver.resolve(MessageRepository.self)!,
                 conversationRepository: resolver.resolve(ConversationRepository.self)!,
-                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!
+                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!,
+                sendMessageNotificationUseCase: resolver.resolve(SendMessageNotificationUseCase.self)!
             )
         }
         

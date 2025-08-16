@@ -1,13 +1,17 @@
 import Foundation
+import Combine
 import FirebaseAuth
 
 private let tag = String(describing: FirebaseAuthenticationRepositoryImpl.self)
 
 class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
     private let firebaseAuthApi: FirebaseAuthApi
-    
+    private var authIdTokenListener: AuthStateDidChangeListenerHandle?
+    var authIdToken: String?
+
     init(firebaseAuthApi: FirebaseAuthApi) {
         self.firebaseAuthApi = firebaseAuthApi
+        listenAuthIdTokenChanges()
     }
     
     func isAuthenticated() -> Bool {
@@ -45,6 +49,12 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
         )
     }
     
+    private func listenAuthIdTokenChanges() {
+        authIdTokenListener = firebaseAuthApi.listenTokenChanges { [weak self] token in
+            self?.authIdToken = token
+        }
+    }
+    
     private func mapAuthError(error: Error) -> Error {
         let nsError = error as NSError
         return if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
@@ -58,6 +68,12 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
             }
         } else {
             error
+        }
+    }
+    
+    deinit {
+        if let authIdTokenListener = authIdTokenListener {
+            firebaseAuthApi.removeTokenListener(listener: authIdTokenListener)
         }
     }
 }

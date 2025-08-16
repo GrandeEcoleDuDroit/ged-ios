@@ -5,7 +5,7 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
     func isAuthenticated() -> Bool {
         Auth.auth().currentUser != nil
     }
-    
+        
     func signIn(email: String, password: String) async throws {
         try await withCheckedThrowingContinuation { continuation in
             Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
@@ -44,5 +44,22 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
                 }
             }
         }
+    }
+    
+    func listenTokenChanges(completion: @escaping (String?) -> Void) -> AuthStateDidChangeListenerHandle {
+        Auth.auth().addStateDidChangeListener { auth, user in
+            guard let user = user else {
+                completion(nil)
+                return
+            }
+            
+            user.getIDTokenResult(forcingRefresh: false) { result, error in
+                completion(result?.token)
+            }
+        }
+    }
+    
+    func removeTokenListener(listener: AuthStateDidChangeListenerHandle) {
+        Auth.auth().removeStateDidChangeListener(listener)
     }
 }

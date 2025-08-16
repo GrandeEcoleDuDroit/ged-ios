@@ -2,7 +2,7 @@ import Combine
 import SwiftUI
 import Foundation
 
-struct Navigation: View {
+struct AppNavigation: View {
     @StateObject private var viewModel: NavigationViewModel = MainInjection.shared.resolve(NavigationViewModel.self)
    
     var body: some View {
@@ -22,7 +22,7 @@ struct MainNavigation: View {
     @EnvironmentObject var viewModel: NavigationViewModel
     @State var selectedTab: TopLevelDestination = .home
     @StateObject private var tabBarVisibility = TabBarVisibility()
-
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             ForEach(TopLevelDestination.allCases, id: \.self) { destination in

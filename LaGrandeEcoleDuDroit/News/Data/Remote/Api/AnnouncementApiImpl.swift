@@ -2,6 +2,12 @@ import Foundation
 import os
 
 class AnnouncementApiImpl: AnnouncementApi {
+    private let tokenProvider: TokenProvider
+    
+    init(tokenProvider: TokenProvider) {
+        self.tokenProvider = tokenProvider
+    }
+    
     private func baseUrl(endPoint: String) -> URL? {
         URL.oracleUrl(endpoint: "/announcements" + endPoint)
     }
@@ -11,7 +17,10 @@ class AnnouncementApiImpl: AnnouncementApi {
             throw NetworkError.invalidURL("Invalid URL")
         }
         
-        let (data, urlResponse) = try await RequestUtils.getUrlSession().data(for: URLRequest(url: url))
+        let session = RequestUtils.getUrlSession()
+        let getRequest = RequestUtils.formatGetRequest(url: url, authToken: tokenProvider.getAuthIdToken())
+        
+        let (data, urlResponse) = try await session.data(for: getRequest)
         let announcements = try JSONDecoder().decode([RemoteAnnouncementWithUser].self, from: data)
         return (urlResponse, announcements)
     }
@@ -22,7 +31,11 @@ class AnnouncementApiImpl: AnnouncementApi {
         }
         
         let session = RequestUtils.getUrlSession()
-        let postRequest = try RequestUtils.formatPostRequest(dataToSend: remoteAnnouncement, url: url)
+        let postRequest = try RequestUtils.formatPostRequest(
+            dataToSend: remoteAnnouncement,
+            url: url,
+            authToken: tokenProvider.getAuthIdToken()
+        )
         
         let (data, urlResponse) = try await session.data(for: postRequest)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
@@ -35,7 +48,7 @@ class AnnouncementApiImpl: AnnouncementApi {
         }
         
         let session = RequestUtils.getUrlSession()
-        let deleteRequest = try RequestUtils.formatDeleteRequest(url: url)
+        let deleteRequest = try RequestUtils.formatDeleteRequest(url: url, authToken: tokenProvider.getAuthIdToken())
         
         let (data, urlResponse) = try await session.data(for: deleteRequest)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
@@ -48,7 +61,11 @@ class AnnouncementApiImpl: AnnouncementApi {
         }
         
         let session = RequestUtils.getUrlSession()
-        let postRequest = try RequestUtils.formatPostRequest(dataToSend: remoteAnnouncement, url: url)
+        let postRequest = try RequestUtils.formatPostRequest(
+            dataToSend: remoteAnnouncement,
+            url: url,
+            authToken: tokenProvider.getAuthIdToken()
+        )
         
         let (data, urlResponse) = try await session.data(for: postRequest)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)

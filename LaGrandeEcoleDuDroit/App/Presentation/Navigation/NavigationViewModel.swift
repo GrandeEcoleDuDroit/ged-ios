@@ -34,11 +34,11 @@ class NavigationViewModel: ObservableObject {
     }
     
     struct NavigationUiState {
-        var startDestination: Route = .splash
+        var startDestination: AppRoute = .splash
         var badges: [TopLevelDestination: Int] = [:]
     }
     
-    enum Route {
+    enum AppRoute: Route {
         case authentication
         case home
         case splash
