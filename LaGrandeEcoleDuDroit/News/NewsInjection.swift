@@ -11,7 +11,7 @@ class NewsInjection: DependencyInjectionContainer {
     
     private func registerDependencies() {
         container.register(AnnouncementApi.self) { _ in
-            AnnouncementApiImpl()
+            AnnouncementApiImpl(tokenProvider: MainInjection.shared.resolve(TokenProvider.self))
         }.inObjectScope(.container)
         
         container.register(AnnouncementRemoteDataSource.self) { resolver in

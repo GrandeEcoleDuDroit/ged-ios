@@ -3,6 +3,7 @@ import SwiftUI
 struct MessageNavigation: View {
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
     @State private var path: [MessageRoute] = []
+    private let routeRepository = CommonInjection.shared.resolve(RouteRepository.self)
     
     var body: some View {
         NavigationStack(path: $path) {
@@ -12,7 +13,7 @@ struct MessageNavigation: View {
                     path.append(.chat(conversation: conversation.toConversation()))
                 }
             )
-            .onAppear { tabBarVisibility.show = true }
+            .navigationModifier(route: MessageMainRoute.conversation, showTabBar: true)
             .background(Color.background)
             .navigationDestination(for: MessageRoute.self) { route in
                 switch route {
@@ -21,7 +22,7 @@ struct MessageNavigation: View {
                             conversation: conversation,
                             onBackClick: { path.removeAll() }
                         )
-                        .onAppear { tabBarVisibility.show = false }
+                        .navigationModifier(route: route, showTabBar: false)
                         .background(Color.background)
                         
                     case .createConversation:
@@ -30,15 +31,22 @@ struct MessageNavigation: View {
                                 path.append(.chat(conversation: conversation)) 
                             }
                         )
-                        .onAppear { tabBarVisibility.show = false }
+                        .navigationModifier(route: route, showTabBar: false)
                         .background(Color.background)
+                        
+                    default: EmptyView()
                 }
             }
         }
     }
 }
 
-private enum MessageRoute: Hashable {
+enum MessageRoute: Route {
+    case conversation
     case chat(conversation: Conversation)
     case createConversation
+}
+
+private enum MessageMainRoute: Route {
+    case conversation
 }

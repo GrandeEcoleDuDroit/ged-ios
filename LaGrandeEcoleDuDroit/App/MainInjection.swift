@@ -10,6 +10,7 @@ class MainInjection: DependencyInjectionContainer {
     }
     
     private func registerDependencies() {
+        // Use cases
         container.register(ListenRemoteUserUseCase.self) { resolver in
             ListenRemoteUserUseCase(
                 authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
@@ -32,6 +33,17 @@ class MainInjection: DependencyInjectionContainer {
                 conversationMessageRepository: MessageInjection.shared.resolve(ConversationMessageRepository.self)
             )
         }.inObjectScope(.container)
+        
+        container.register(FcmTokenUseCase.self) { resolver in
+            FcmTokenUseCase(
+                userRepository: CommonInjection.shared.resolve(UserRepository.self),
+                authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
+                fcmTokenRepository: CommonInjection.shared.resolve(FcmTokenRepository.self),
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+            )
+        }
+        
+        // View models
         
         container.register(NavigationViewModel.self) { resolver in
             NavigationViewModel(
@@ -63,6 +75,20 @@ class MainInjection: DependencyInjectionContainer {
                 networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self),
                 userRepository: CommonInjection.shared.resolve(UserRepository.self)
             )
+        }
+        
+        container.register(NotificationMediator.self) { resolver in
+            NotificationMediatorImpl(
+                notificationMessageManager: MessageInjection.shared.resolve(NotificationMessageManager.self)
+            )
+        }.inObjectScope(.container)
+        
+        container.register(FcmManager.self) { resolver in
+            FcmManager()
+        }.inObjectScope(.container)
+        
+        container.register(TokenProvider.self) { resolver in
+            TokenProviderImpl(firebaseAuthenticationRepository: AuthenticationInjection.shared.resolve(FirebaseAuthenticationRepository.self))
         }
     }
     

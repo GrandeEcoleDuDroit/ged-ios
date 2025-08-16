@@ -1,7 +1,11 @@
 import Foundation
 
 class UserOracleApiImpl: UserOracleApi {
-    private let tag = String(describing: UserOracleApiImpl.self)
+    private let tokenProvider: TokenProvider
+    
+    init(tokenProvider: TokenProvider) {
+        self.tokenProvider = tokenProvider
+    }
     
     private func baseUrl(endPoint: String) -> URL? {
         URL.oracleUrl(endpoint: "/users/" + endPoint)
@@ -12,7 +16,11 @@ class UserOracleApiImpl: UserOracleApi {
             throw NetworkError.invalidURL("Invalid URL")
         }
         
-        let request = try RequestUtils.formatPostRequest(dataToSend: user, url: url)
+        let request = try RequestUtils.formatPostRequest(
+            dataToSend: user,
+            url: url,
+            authToken: tokenProvider.getAuthIdToken()
+        )
         let session = RequestUtils.getUrlSession()
         
         let (dataReceived, response) = try await session.data(for: request)
@@ -30,7 +38,11 @@ class UserOracleApiImpl: UserOracleApi {
             OracleUserDataFields.userProfilePictureFileName: fileName
         ]
         
-        let request = try RequestUtils.formatPutRequest(dataToSend: dataToSend, url: url)
+        let request = try RequestUtils.formatPutRequest(
+            dataToSend: dataToSend,
+            url: url,
+            authToken: tokenProvider.getAuthIdToken()
+        )
         let session = RequestUtils.getUrlSession()
         
         let (dataReceived, response) = try await session.data(for: request)
@@ -43,7 +55,7 @@ class UserOracleApiImpl: UserOracleApi {
             throw NetworkError.invalidURL("Invalid URL")
         }
         
-        let request = try RequestUtils.formatDeleteRequest(url: url)
+        let request = try RequestUtils.formatDeleteRequest(url: url, authToken: tokenProvider.getAuthIdToken())
         let session = RequestUtils.getUrlSession()
         
         let (dataReceived, response) = try await session.data(for: request)

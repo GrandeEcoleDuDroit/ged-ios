@@ -7,7 +7,7 @@ let conversationTableName = "conversations"
 class ConversationApiImpl: ConversationApi {
     private var listeners: [ListenerRegistration] = []
     private let conversationCollection: CollectionReference = Firestore.firestore().collection(conversationTableName)
-    
+        
     func listenConversations(userId: String) -> AnyPublisher<RemoteConversation, Error> {
         let subject = PassthroughSubject<RemoteConversation, Error>()
         
