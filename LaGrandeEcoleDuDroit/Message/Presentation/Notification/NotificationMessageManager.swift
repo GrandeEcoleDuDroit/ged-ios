@@ -18,24 +18,42 @@ class NotificationMessageManager: NotificationManager {
         completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
         var presentationOptions: UNNotificationPresentationOptions = [.banner, .sound, .badge]
-
-        if let valueString = userInfo["value"] as? String {
-            do {
-                let notificationMessage = try JSONDecoder().decode(NotificationMessage.self, from: valueString.data(using: .utf8)!)
-                
-                if isCurrentMessageView(conversationId: notificationMessage.conversation.id) {
-                    presentationOptions = []
-                }
-            } catch {
-                e(tag, "Error decoding message from userInfo", error)
+        if let notificationMessage = parseNotificationMessage(userInfo: userInfo) {
+            if isCurrentMessageView(conversationId: notificationMessage.conversation.id) {
+                presentationOptions = []
             }
         }
-
         completionHandler(presentationOptions)
     }
     
     func receiveNotification(userInfo: [AnyHashable : Any]) {
-        print("NotificationMessageManager receiveNotification: \(userInfo)")
+        guard let notificationMessage = parseNotificationMessage(userInfo: userInfo) else { return }
+        let routes = [
+            MessageRoute.conversation,
+            MessageRoute.chat(conversation: notificationMessage.conversation)
+        ]
+        navigationRequestUseCase.navigate(to: routes)
+    }
+    
+    func clearNotifications(conversationId: String) {
+        let center = UNUserNotificationCenter.current()
+        let prefix = NotificationMessageUtils.getNotificationIdPrefix(conversationId: conversationId)
+
+        center.getDeliveredNotifications { notifications in
+            let matchingIds = notifications
+                .map { $0.request.identifier }
+                .filter { $0.hasPrefix(prefix) }
+            
+            center.removeDeliveredNotifications(withIdentifiers: matchingIds)
+        }
+        
+        center.getPendingNotificationRequests { requests in
+            let matchingIds = requests
+                .map { $0.identifier }
+                .filter { $0.hasPrefix(prefix) }
+            
+            center.removeDeliveredNotifications(withIdentifiers: matchingIds)
+        }
     }
         
     private func isCurrentMessageView(conversationId: String) -> Bool {
@@ -45,5 +63,15 @@ class NotificationMessageManager: NotificationManager {
         } else {
             false
         }
+    }
+    
+    private func parseNotificationMessage(userInfo: [AnyHashable : Any]) -> NotificationMessage? {
+        guard let valueString = userInfo["value"] as? String else { return nil }
+        let notificationMessage = try? JSONDecoder().decode(
+            NotificationMessage.self,
+            from: valueString.data(using: .utf8)!
+        )
+        
+        return notificationMessage
     }
 }

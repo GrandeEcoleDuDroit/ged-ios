@@ -5,9 +5,14 @@ struct ApnsConfig: Codable {
 
 struct ApnsHeaders: Codable {
     let apnsPriority: String
+    let apnsCollapseId: String
     
-    init(apnsPriority: String = "10") {
+    init(
+        apnsPriority: String = "10",
+        apnsCollapseId: String
+    ) {
         self.apnsPriority = apnsPriority
+        self.apnsCollapseId = apnsCollapseId
     }
 }
 

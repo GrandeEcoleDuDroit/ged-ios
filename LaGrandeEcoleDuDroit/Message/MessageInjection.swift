@@ -10,6 +10,7 @@ class MessageInjection: DependencyInjectionContainer {
     }
     
     private func registerDependencies() {
+        // Api
         container.register(ConversationApi.self) { _ in
             ConversationApiImpl()
         }.inObjectScope(.container)
@@ -17,6 +18,8 @@ class MessageInjection: DependencyInjectionContainer {
         container.register(MessageApi.self) { _ in
             MessageApiImpl()
         }.inObjectScope(.container)
+        
+        // Data sources
         
         container.register(ConversationLocalDataSource.self) { resolver in
             ConversationLocalDataSource(gedDatabaseContainer: CommonInjection.shared.resolve(GedDatabaseContainer.self))
@@ -33,6 +36,8 @@ class MessageInjection: DependencyInjectionContainer {
         container.register(MessageRemoteDataSource.self) { resolver in
             MessageRemoteDataSource(messageApi: resolver.resolve(MessageApi.self)!)
         }.inObjectScope(.container)
+        
+        // Repositories
         
         container.register(ConversationRepository.self) { resolver in
             ConversationRepositoryImpl(
@@ -55,6 +60,8 @@ class MessageInjection: DependencyInjectionContainer {
                 messageRepository: resolver.resolve(MessageRepository.self)!
             )
         }.inObjectScope(.container)
+        
+        // Use cases
         
         container.register(ListenRemoteConversationsUseCase.self) { resolver in
             ListenRemoteConversationsUseCase(
@@ -115,6 +122,8 @@ class MessageInjection: DependencyInjectionContainer {
                 sendMessageNotificationUseCase: resolver.resolve(SendMessageNotificationUseCase.self)!
             )
         }.inObjectScope(.container)
+        
+        // View models
                 
         container.register(ConversationViewModel.self) { resolver in
             ConversationViewModel(
@@ -138,9 +147,16 @@ class MessageInjection: DependencyInjectionContainer {
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 messageRepository: resolver.resolve(MessageRepository.self)!,
                 conversationRepository: resolver.resolve(ConversationRepository.self)!,
-                sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!
+                sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!,
+                notificationMessageManager: resolver.resolve(NotificationMessageManager.self)!
             )
         }
+        
+        container.register(MessageNavigationViewModel.self) { resolver in
+            MessageNavigationViewModel(navigationRequestUseCase: CommonInjection.shared.resolve(NavigationRequestUseCase.self))
+        }
+        
+        // Others
         
         container.register(SynchronizeMessageTask.self) { resolver in
             SynchronizeMessageTask(
@@ -252,7 +268,8 @@ class MessageInjection: DependencyInjectionContainer {
                 userRepository: commonMockContainer.resolve(UserRepository.self)!,
                 messageRepository: resolver.resolve(MessageRepository.self)!,
                 conversationRepository: resolver.resolve(ConversationRepository.self)!,
-                sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!
+                sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!,
+                notificationMessageManager: resolver.resolve(NotificationMessageManager.self)!
             )
         }
         

@@ -14,7 +14,7 @@ class CommonInjection: DependencyInjectionContainer {
             GedDatabaseContainer()
         }.inObjectScope(.container)
         
-        // Apis
+        // Api
         
         container.register(UserFirestoreApi.self) { _ in
             UserFirestoreApiImpl()
