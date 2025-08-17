@@ -2,15 +2,14 @@ import Combine
 import SwiftUI
 import Foundation
 
-struct AppNavigation: View {
+struct Navigation: View {
     @StateObject private var viewModel: NavigationViewModel = MainInjection.shared.resolve(NavigationViewModel.self)
    
     var body: some View {
         ZStack {
             switch viewModel.uiState.startDestination {
                 case .authentication: AuthenticationNavigation()
-                case .home: MainNavigation()
-                        .environmentObject(viewModel)
+                case .app: MainNavigation().environmentObject(viewModel)
                 case .splash: SplashScreen()
             }
         }
@@ -27,6 +26,16 @@ struct MainNavigation: View {
         TabView(selection: $selectedTab) {
             ForEach(TopLevelDestination.allCases, id: \.self) { destination in
                 tabView(for: destination)
+            }
+        }.onReceive(viewModel.$uiState) { state in
+            state.routesToNavigate.forEach { route in
+                if let route = route as? MainRoute {
+                    switch route {
+                        case .home: selectedTab = .home
+                        case .message: selectedTab = .message
+                        case .profile: selectedTab = .profile
+                    }
+                }
             }
         }
     }
@@ -62,6 +71,12 @@ struct MainNavigation: View {
 
 class TabBarVisibility: ObservableObject {
     @Published var show: Bool = false
+}
+
+enum MainRoute: Route {
+    case home
+    case message
+    case profile
 }
 
 #Preview {

@@ -1,10 +1,11 @@
 import SwiftUI
 
 struct MessageNavigation: View {
+    private let routeRepository = CommonInjection.shared.resolve(RouteRepository.self)
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
     @State private var path: [MessageRoute] = []
-    private let routeRepository = CommonInjection.shared.resolve(RouteRepository.self)
-    
+    @StateObject private var viewModel = MessageInjection.shared.resolve(MessageNavigationViewModel.self)
+
     var body: some View {
         NavigationStack(path: $path) {
             ConversationDestination(
@@ -35,6 +36,13 @@ struct MessageNavigation: View {
                         .background(Color.background)
                         
                     default: EmptyView()
+                }
+            }
+            .onReceive(viewModel.$routesToNavigate) { routes in
+                routes.forEach {
+                    if let messageRoute = $0 as? MessageRoute {
+                        path.append(messageRoute)
+                    }
                 }
             }
         }

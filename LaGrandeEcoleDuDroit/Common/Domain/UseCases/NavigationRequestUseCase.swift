@@ -1,12 +1,12 @@
 import Combine
 
 class NavigationRequestUseCase {
-    private var routeToNavigateSubject = PassthroughSubject<any Route, Never>()
-    var routeToNavigate: AnyPublisher<any Route, Never> {
-        routeToNavigateSubject.eraseToAnyPublisher()
+    private var routesToNavigateSubject = PassthroughSubject<[any Route], Never>()
+    var routesToNavigate: AnyPublisher<[any Route], Never> {
+        routesToNavigateSubject.eraseToAnyPublisher()
     }
     
-    func navigate(to route: any Route) {
-        routeToNavigateSubject.send(route)
+    func navigate(to routes: [any Route]) {
+        routesToNavigateSubject.send(routes)
     }
 }
