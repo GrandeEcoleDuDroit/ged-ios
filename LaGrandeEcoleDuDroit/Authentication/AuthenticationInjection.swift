@@ -10,17 +10,24 @@ class AuthenticationInjection: DependencyInjectionContainer {
     }
     
     private func registerDependencies() {
+        // Api
         container.register(FirebaseAuthApi.self) { _ in
             FirebaseAuthApiImpl()
         }.inObjectScope(.container)
+        
+        // Repositories
         
         container.register(FirebaseAuthenticationRepository.self) { resolver in
             FirebaseAuthenticationRepositoryImpl(firebaseAuthApi: resolver.resolve(FirebaseAuthApi.self)!)
         }.inObjectScope(.container)
         
+        // Data sources
+        
         container.register(AuthenticationLocalDataSource.self) { _ in
             AuthenticationLocalDataSource()
         }.inObjectScope(.container)
+        
+        // Repositories
         
         container.register(AuthenticationRepository.self) { resolver in
             AuthenticationRepositoryImpl(
@@ -28,6 +35,8 @@ class AuthenticationInjection: DependencyInjectionContainer {
                 authenticationLocalDataSource: resolver.resolve(AuthenticationLocalDataSource.self)!
             )
         }.inObjectScope(.container)
+        
+        // Use cases
         
         container.register(LoginUseCase.self) { resolver in
             LoginUseCase(
@@ -45,6 +54,8 @@ class AuthenticationInjection: DependencyInjectionContainer {
                 networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
             )
         }
+        
+        // View models
         
         container.register(FirstRegistrationViewModel.self) { resolver in
             FirstRegistrationViewModel()

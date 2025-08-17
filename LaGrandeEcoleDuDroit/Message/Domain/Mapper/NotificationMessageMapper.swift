@@ -1,4 +1,4 @@
-let messageChannelNotificationId = "message_channel_notification_id"
+import Foundation
 
 extension NotificationMessage {
     func toFcm(user: User) -> FcmMessage<NotificationMessage> {
@@ -16,11 +16,13 @@ extension NotificationMessage {
             ),
             android: AndroidConfig(
                 notification: AndroidNotification(
-                    channelId: messageChannelNotificationId
+                    channelId: NotificationMessageUtils.getChannelId()
                 )
             ),
             apns: ApnsConfig(
-                headers: ApnsHeaders(),
+                headers: ApnsHeaders(
+                    apnsCollapseId: NotificationMessageUtils.formatNotificationId(conversationId: conversation.id)
+                ),
                 payload: ApnsPayload(
                     aps: Aps(
                         alert: Alert(

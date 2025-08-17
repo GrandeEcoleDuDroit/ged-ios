@@ -7,7 +7,7 @@ struct LaGrandeEcolueDuDroitApp: App {
 
     var body: some Scene {
         WindowGroup {
-            AppNavigation()
+            Navigation()
         }
     }
 }

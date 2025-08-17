@@ -10,9 +10,12 @@ class NewsInjection: DependencyInjectionContainer {
     }
     
     private func registerDependencies() {
+        // Api
         container.register(AnnouncementApi.self) { _ in
             AnnouncementApiImpl(tokenProvider: MainInjection.shared.resolve(TokenProvider.self))
         }.inObjectScope(.container)
+        
+        // Data sources
         
         container.register(AnnouncementRemoteDataSource.self) { resolver in
             AnnouncementRemoteDataSource(announcementApi: resolver.resolve(AnnouncementApi.self)!)
@@ -22,6 +25,8 @@ class NewsInjection: DependencyInjectionContainer {
             AnnouncementLocalDataSource(gedDatabaseContainer: CommonInjection.shared.resolve(GedDatabaseContainer.self))
         }.inObjectScope(.container)
         
+        // Repositories
+        
         container.register(AnnouncementRepository.self) { resolver in
             AnnouncementRepositoryImpl(
                 announcementLocalDataSource: resolver.resolve(AnnouncementLocalDataSource.self)!,
@@ -29,6 +34,7 @@ class NewsInjection: DependencyInjectionContainer {
             )
         }.inObjectScope(.container)
         
+        // Use cases
         
         container.register(CreateAnnouncementUseCase.self) { resolver in
             CreateAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
@@ -54,6 +60,8 @@ class NewsInjection: DependencyInjectionContainer {
                 networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
             )
         }.inObjectScope(.container)
+        
+        // View models
         
         container.register(NewsViewModel.self) { resolver in
             NewsViewModel(
