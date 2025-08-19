@@ -28,11 +28,11 @@ class NotificationMessageManager: NotificationManager {
     
     func receiveNotification(userInfo: [AnyHashable : Any]) {
         guard let notificationMessage = parseNotificationMessage(userInfo: userInfo) else { return }
-        let routes = [
-            MessageRoute.conversation,
-            MessageRoute.chat(conversation: notificationMessage.conversation)
-        ]
-        navigationRequestUseCase.navigate(to: routes)
+        let routeToNavigate = RouteToNavigate(
+            mainRoute: MessageMainRoute.conversation,
+            routes: [MessageRoute.chat(conversation: notificationMessage.conversation)]
+        )
+        navigationRequestUseCase.navigate(to: routeToNavigate)
     }
     
     func clearNotifications(conversationId: String) {

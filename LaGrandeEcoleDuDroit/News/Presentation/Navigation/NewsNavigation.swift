@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct NewsNavigation: View {
+    private let viewModel = NewsInjection.shared.resolve(NewsNavigationViewModel.self)
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
-    @State private var path: [NewsRoute] = []
-    private let routeRepository = CommonInjection.shared.resolve(RouteRepository.self)
+    @State var path: [NewsRoute] = []
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -13,7 +13,10 @@ struct NewsNavigation: View {
                 },
                 onCreateAnnouncementClick: { path.append(.createAnnouncement) }
             )
-            .navigationModifier(route: NewsMainRoute.news, showTabBar: true)
+            .onAppear {
+                tabBarVisibility.show = true
+                viewModel.setCurrentRoute(NewsMainRoute.news)
+            }
             .background(Color.background)
             .navigationDestination(for: NewsRoute.self) { route in
                 switch route {
@@ -25,7 +28,10 @@ struct NewsNavigation: View {
                             },
                             onBackClick: { path.removeLast() }
                         )
-                        .navigationModifier(route: route, showTabBar: false)
+                        .onAppear {
+                            tabBarVisibility.show = false
+                            viewModel.setCurrentRoute(route)
+                        }
                         .background(Color.background)
 
                     case let .editAnnouncement(announcement):
@@ -33,14 +39,20 @@ struct NewsNavigation: View {
                             announcement: announcement,
                             onBackClick: { path.removeLast() }
                         )
-                        .navigationModifier(route: route, showTabBar: false)
+                        .onAppear {
+                            tabBarVisibility.show = false
+                            viewModel.setCurrentRoute(route)
+                        }
                         .background(Color.background)
                         
                     case .createAnnouncement:
                         CreateAnnouncementDestination(
                             onBackClick: { path.removeLast() }
                         )
-                        .navigationModifier(route: route, showTabBar: false)
+                        .onAppear {
+                            tabBarVisibility.show = false
+                            viewModel.setCurrentRoute(route)
+                        }
                         .background(Color.background)
                 }
             }
@@ -54,6 +66,6 @@ enum NewsRoute: Route {
     case createAnnouncement
 }
 
-private enum NewsMainRoute: Route {
+enum NewsMainRoute: MainRoute {
     case news
 }
