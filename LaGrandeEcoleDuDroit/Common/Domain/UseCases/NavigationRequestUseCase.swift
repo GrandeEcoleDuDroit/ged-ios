@@ -1,12 +1,18 @@
 import Combine
 
 class NavigationRequestUseCase {
-    private var routesToNavigateSubject = PassthroughSubject<[any Route], Never>()
-    var routesToNavigate: AnyPublisher<[any Route], Never> {
-        routesToNavigateSubject.eraseToAnyPublisher()
+    private var routeToNavigateSubject = CurrentValueSubject<RouteToNavigate?, Never>(nil)
+    var routeToNavigate: AnyPublisher<RouteToNavigate, Never> {
+        routeToNavigateSubject
+            .compactMap { $0 }
+            .eraseToAnyPublisher()
     }
     
-    func navigate(to routes: [any Route]) {
-        routesToNavigateSubject.send(routes)
+    func navigate(to routeToNavigate: RouteToNavigate) {
+        routeToNavigateSubject.send(routeToNavigate)
+    }
+    
+    func resetRoute() {
+        routeToNavigateSubject.value = nil
     }
 }

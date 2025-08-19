@@ -46,20 +46,23 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
         }
     }
     
-    func listenTokenChanges(completion: @escaping (String?) -> Void) -> AuthStateDidChangeListenerHandle {
-        Auth.auth().addStateDidChangeListener { auth, user in
+    func listenTokenChanges(completion: @escaping (String?) -> Void) {
+        Auth.auth().addIDTokenDidChangeListener { auth, user in
             guard let user = user else {
                 completion(nil)
                 return
             }
             
             user.getIDTokenResult(forcingRefresh: false) { result, error in
-                completion(result?.token)
+                if let result = result, result.expirationDate > Date() {
+                    completion(result.token)
+                } else {
+                    user.getIDTokenResult(forcingRefresh: true) { refreshedResult, error in
+                        completion(refreshedResult?.token)
+                    }
+                }
             }
+
         }
-    }
-    
-    func removeTokenListener(listener: AuthStateDidChangeListenerHandle) {
-        Auth.auth().removeStateDidChangeListener(listener)
     }
 }

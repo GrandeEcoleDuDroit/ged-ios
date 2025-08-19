@@ -153,7 +153,10 @@ class MessageInjection: DependencyInjectionContainer {
         }
         
         container.register(MessageNavigationViewModel.self) { resolver in
-            MessageNavigationViewModel(navigationRequestUseCase: CommonInjection.shared.resolve(NavigationRequestUseCase.self))
+            MessageNavigationViewModel(
+                routeRepository: CommonInjection.shared.resolve(RouteRepository.self),
+                navigationRequestUseCase: CommonInjection.shared.resolve(NavigationRequestUseCase.self)
+            )
         }
         
         // Others

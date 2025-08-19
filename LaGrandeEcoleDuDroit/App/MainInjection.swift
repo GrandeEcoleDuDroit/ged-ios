@@ -11,6 +11,7 @@ class MainInjection: DependencyInjectionContainer {
     
     private func registerDependencies() {
         // Use cases
+        
         container.register(ListenRemoteUserUseCase.self) { resolver in
             ListenRemoteUserUseCase(
                 authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
@@ -45,13 +46,19 @@ class MainInjection: DependencyInjectionContainer {
         
         // View models
         
-        container.register(NavigationViewModel.self) { resolver in
-            NavigationViewModel(
-                authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
-                getUnreadConversationsCountUseCase: MessageInjection.shared.resolve(GetUnreadConversationsCountUseCase.self)
+        container.register(NavigationHostViewModel.self) { resolver in
+            NavigationHostViewModel(
+                authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self)
+            )
+        }
+        
+        container.register(AppNavigationViewModel.self) { resolver in
+            AppNavigationViewModel(
+                getUnreadConversationsCountUseCase: MessageInjection.shared.resolve(GetUnreadConversationsCountUseCase.self),
+                navigationRequestUseCase: CommonInjection.shared.resolve(NavigationRequestUseCase.self)
                 
             )
-        }.inObjectScope(.container)
+        }
         
         container.register(MainViewModel.self) { resolver in
             MainViewModel(
@@ -59,7 +66,7 @@ class MainInjection: DependencyInjectionContainer {
                 listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!
             )
-        }.inObjectScope(.container)
+        }
         
         container.register(ProfileViewModel.self) { resolver in
             ProfileViewModel(
@@ -76,6 +83,14 @@ class MainInjection: DependencyInjectionContainer {
                 userRepository: CommonInjection.shared.resolve(UserRepository.self)
             )
         }
+        
+        container.register(ProfileNavigationViewModel.self) { resolver in
+            ProfileNavigationViewModel(
+                routeRepository: CommonInjection.shared.resolve(RouteRepository.self)
+            )
+        }
+        
+        // Others
         
         container.register(NotificationMediator.self) { resolver in
             NotificationMediatorImpl(
@@ -138,10 +153,10 @@ class MainInjection: DependencyInjectionContainer {
             )
         }
         
-        mockContainer.register(NavigationViewModel.self) { resolver in
-            NavigationViewModel(
-                authenticationRepository: authenticationMockContainer.resolve(AuthenticationRepository.self)!,
-                getUnreadConversationsCountUseCase: messageMockContainer.resolve(GetUnreadConversationsCountUseCase.self)!
+        mockContainer.register(AppNavigationViewModel.self) { resolver in
+            AppNavigationViewModel(
+                getUnreadConversationsCountUseCase: messageMockContainer.resolve(GetUnreadConversationsCountUseCase.self)!,
+                navigationRequestUseCase: commonMockContainer.resolve(NavigationRequestUseCase.self)!
             )
         }
         

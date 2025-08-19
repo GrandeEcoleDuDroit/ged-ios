@@ -11,6 +11,7 @@ class NewsInjection: DependencyInjectionContainer {
     
     private func registerDependencies() {
         // Api
+        
         container.register(AnnouncementApi.self) { _ in
             AnnouncementApiImpl(tokenProvider: MainInjection.shared.resolve(TokenProvider.self))
         }.inObjectScope(.container)
@@ -95,6 +96,12 @@ class NewsInjection: DependencyInjectionContainer {
             return EditAnnouncementViewModel(
                 announcement: announcement,
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!
+            )
+        }
+        
+        container.register(NewsNavigationViewModel.self) { resolver in
+            NewsNavigationViewModel(
+                routeRepository: CommonInjection.shared.resolve(RouteRepository.self)
             )
         }
     }

@@ -2,7 +2,7 @@ enum TopLevelDestination: Hashable, CaseIterable {
     case home
     case message
     case profile
-
+    
     var label: String {
         switch self {
             case .home: getString(.home)
@@ -10,7 +10,7 @@ enum TopLevelDestination: Hashable, CaseIterable {
             case .profile: getString(.profile)
         }
     }
-
+    
     var filledIcon: String {
         switch self {
             case .home: "house.fill"
@@ -18,7 +18,7 @@ enum TopLevelDestination: Hashable, CaseIterable {
             case .profile: "person.fill"
         }
     }
-
+    
     var outlinedIcon: String {
         switch self {
             case .home: "house"
@@ -26,10 +26,4 @@ enum TopLevelDestination: Hashable, CaseIterable {
             case .profile: "person"
         }
     }
-}
-
-enum TabIdentifier: String, Hashable {
-    case home
-    case message
-    case profile
 }
