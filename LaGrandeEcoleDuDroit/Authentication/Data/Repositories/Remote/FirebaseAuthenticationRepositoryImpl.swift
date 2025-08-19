@@ -6,7 +6,6 @@ private let tag = String(describing: FirebaseAuthenticationRepositoryImpl.self)
 
 class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
     private let firebaseAuthApi: FirebaseAuthApi
-    private var authIdTokenListener: AuthStateDidChangeListenerHandle?
     var authIdToken: String?
 
     init(firebaseAuthApi: FirebaseAuthApi) {
@@ -50,7 +49,7 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
     }
     
     private func listenAuthIdTokenChanges() {
-        authIdTokenListener = firebaseAuthApi.listenTokenChanges { [weak self] token in
+        firebaseAuthApi.listenTokenChanges { [weak self] token in
             self?.authIdToken = token
         }
     }
@@ -68,12 +67,6 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
             }
         } else {
             error
-        }
-    }
-    
-    deinit {
-        if let authIdTokenListener = authIdTokenListener {
-            firebaseAuthApi.removeTokenListener(listener: authIdTokenListener)
         }
     }
 }

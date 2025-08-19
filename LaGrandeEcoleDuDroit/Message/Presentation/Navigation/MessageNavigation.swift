@@ -1,11 +1,10 @@
 import SwiftUI
 
 struct MessageNavigation: View {
-    private let routeRepository = CommonInjection.shared.resolve(RouteRepository.self)
-    @EnvironmentObject private var tabBarVisibility: TabBarVisibility
-    @State private var path: [MessageRoute] = []
     @StateObject private var viewModel = MessageInjection.shared.resolve(MessageNavigationViewModel.self)
-
+    @EnvironmentObject private var tabBarVisibility: TabBarVisibility
+    @State var path: [MessageRoute] = []
+    
     var body: some View {
         NavigationStack(path: $path) {
             ConversationDestination(
@@ -14,7 +13,10 @@ struct MessageNavigation: View {
                     path.append(.chat(conversation: conversation.toConversation()))
                 }
             )
-            .navigationModifier(route: MessageMainRoute.conversation, showTabBar: true)
+            .onAppear {
+                tabBarVisibility.show = true
+                viewModel.setCurrentRoute(MessageMainRoute.conversation)
+            }
             .background(Color.background)
             .navigationDestination(for: MessageRoute.self) { route in
                 switch route {
@@ -23,7 +25,10 @@ struct MessageNavigation: View {
                             conversation: conversation,
                             onBackClick: { path.removeAll() }
                         )
-                        .navigationModifier(route: route, showTabBar: false)
+                        .onAppear {
+                            tabBarVisibility.show = false
+                            viewModel.setCurrentRoute(route)
+                        }
                         .background(Color.background)
                         
                     case .createConversation:
@@ -32,29 +37,32 @@ struct MessageNavigation: View {
                                 path.append(.chat(conversation: conversation)) 
                             }
                         )
-                        .navigationModifier(route: route, showTabBar: false)
+                        .onAppear {
+                            tabBarVisibility.show = false
+                            viewModel.setCurrentRoute(route)
+                        }
                         .background(Color.background)
-                        
-                    default: EmptyView()
                 }
             }
-            .onReceive(viewModel.$routesToNavigate) { routes in
-                routes.forEach {
-                    if let messageRoute = $0 as? MessageRoute {
-                        path.append(messageRoute)
-                    }
+            .onReceive(viewModel.$routeToNavigate) { routeToNavigate in
+                guard let messageRoutes =
+                        routeToNavigate?.routes.compactMap({ $0 as? MessageRoute }),
+                        !messageRoutes.isEmpty
+                else {
+                    return
                 }
+                
+                path = messageRoutes
             }
         }
     }
 }
 
 enum MessageRoute: Route {
-    case conversation
     case chat(conversation: Conversation)
     case createConversation
 }
 
-private enum MessageMainRoute: Route {
+enum MessageMainRoute: MainRoute {
     case conversation
 }

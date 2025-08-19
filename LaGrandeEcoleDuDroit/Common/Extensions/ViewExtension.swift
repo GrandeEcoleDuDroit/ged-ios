@@ -90,23 +90,4 @@ extension View {
                 }
             }
     }
-    
-    func navigationModifier(route: any Route, showTabBar: Bool) -> some View {
-        self.modifier(NavigationModifier(route: route, showTabBar: showTabBar))
-    }
-}
-
-struct NavigationModifier: ViewModifier {
-    let route: any Route
-    let showTabBar: Bool
-    @EnvironmentObject var tabBarVisibility: TabBarVisibility
-    private let routeRepository = CommonInjection.shared.resolve(RouteRepository.self)
-
-    func body(content: Content) -> some View {
-        content
-            .onAppear {
-                tabBarVisibility.show = showTabBar
-                routeRepository.setCurrentRoute(route)
-            }
-    }
 }
