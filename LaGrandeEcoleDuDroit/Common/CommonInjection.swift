@@ -9,22 +9,38 @@ class CommonInjection: DependencyInjectionContainer {
         registerDependencies()
     }
     
-    private func registerDependencies() {        
+    private func registerDependencies() {
+        container.register(GedDatabaseContainer.self) { _ in
+            GedDatabaseContainer()
+        }.inObjectScope(.container)
+        
+        // Api
+        
         container.register(UserFirestoreApi.self) { _ in
             UserFirestoreApiImpl()
         }.inObjectScope(.container)
         
         container.register(UserOracleApi.self) { _ in
-            UserOracleApiImpl()
+            UserOracleApiImpl(tokenProvider: MainInjection.shared.resolve(TokenProvider.self))
         }.inObjectScope(.container)
         
         container.register(ImageApi.self) { _ in
-            ImageApiImpl()
+            ImageApiImpl(tokenProvider: MainInjection.shared.resolve(TokenProvider.self))
         }.inObjectScope(.container)
         
         container.register(WhiteListApi.self) { _ in
-            WhiteListApiImpl()
+            WhiteListApiImpl(tokenProvider: MainInjection.shared.resolve(TokenProvider.self))
         }.inObjectScope(.container)
+        
+        container.register(FcmApi.self) { resolver in
+            FcmApiImpl(tokenProvider: MainInjection.shared.resolve(TokenProvider.self))
+        }.inObjectScope(.container)
+        
+        container.register(NotificationApi.self) { resolver in
+            NotificationApiImpl(fcmApi: resolver.resolve(FcmApi.self)!)
+        }.inObjectScope(.container)
+        
+        // Data sources
         
         container.register(UserLocalDataSource.self) { _ in
             UserLocalDataSource()
@@ -45,9 +61,11 @@ class CommonInjection: DependencyInjectionContainer {
             ImageRemoteDataSource(imageApi: resolver.resolve(ImageApi.self)!)
         }.inObjectScope(.container)
         
-        container.register(GedDatabaseContainer.self) { _ in
-            GedDatabaseContainer()
+        container.register(FcmLocalDataSource.self) { _ in
+            FcmLocalDataSource()
         }.inObjectScope(.container)
+                
+        // Repositories
         
         container.register(UserRepository.self) { resolver in
             UserRepositoryImpl(
@@ -66,6 +84,19 @@ class CommonInjection: DependencyInjectionContainer {
             )
         }.inObjectScope(.container)
         
+        container.register(FcmTokenRepository.self) { resolver in
+            FcmTokenRepositoryImpl(
+                fcmLocalDataSource: resolver.resolve(FcmLocalDataSource.self)!,
+                fcmApi: resolver.resolve(FcmApi.self)!,
+            )
+        }
+        
+        container.register(RouteRepository.self) { resolver in
+            RouteRepositoryImpl()
+        }.inObjectScope(.container)
+        
+        // Use cases
+        
         container.register(GenerateIdUseCase.self) { _ in
             GenerateIdUseCase()
         }.inObjectScope(.container)
@@ -82,6 +113,10 @@ class CommonInjection: DependencyInjectionContainer {
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 imageRepository: CommonInjection.shared.resolve(ImageRepository.self)
             )
+        }.inObjectScope(.container)
+        
+        container.register(NavigationRequestUseCase.self) { resolver in
+            NavigationRequestUseCase()
         }.inObjectScope(.container)
     }
     

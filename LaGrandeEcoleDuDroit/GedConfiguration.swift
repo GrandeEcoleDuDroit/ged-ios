@@ -5,7 +5,7 @@ class GedConfiguration {
     private init() {}
     
     #if DEBUG
-    static let serverUrl = ""
+    static let serverUrl = "http://192.168.1.67:3000"
     #else
     static let serverUrl = "https://gedserver.dedyn.io:3000"
     #endif
