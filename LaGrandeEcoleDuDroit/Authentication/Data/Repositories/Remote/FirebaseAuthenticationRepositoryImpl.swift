@@ -1,13 +1,16 @@
 import Foundation
+import Combine
 import FirebaseAuth
 
 private let tag = String(describing: FirebaseAuthenticationRepositoryImpl.self)
 
 class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
     private let firebaseAuthApi: FirebaseAuthApi
-    
+    var authIdToken: String?
+
     init(firebaseAuthApi: FirebaseAuthApi) {
         self.firebaseAuthApi = firebaseAuthApi
+        listenAuthIdTokenChanges()
     }
     
     func isAuthenticated() -> Bool {
@@ -43,6 +46,12 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
             message: "Failed to reset password",
             handleSpecificException: mapAuthError
         )
+    }
+    
+    private func listenAuthIdTokenChanges() {
+        firebaseAuthApi.listenTokenChanges { [weak self] token in
+            self?.authIdToken = token
+        }
     }
     
     private func mapAuthError(error: Error) -> Error {

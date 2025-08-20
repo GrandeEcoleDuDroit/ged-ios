@@ -4,15 +4,18 @@ class SendMessageUseCase {
     private let messageRepository: MessageRepository
     private let conversationRepository: ConversationRepository
     private let networkMonitor: NetworkMonitor
+    private let sendMessageNotificationUseCase: SendMessageNotificationUseCase
     
     init(
         messageRepository: MessageRepository,
         conversationRepository: ConversationRepository,
-        networkMonitor: NetworkMonitor
+        networkMonitor: NetworkMonitor,
+        sendMessageNotificationUseCase: SendMessageNotificationUseCase
     ) {
         self.messageRepository = messageRepository
         self.conversationRepository = conversationRepository
         self.networkMonitor = networkMonitor
+        self.sendMessageNotificationUseCase = sendMessageNotificationUseCase
     }
     
     func execute(conversation: Conversation, message: Message, userId: String) {
@@ -20,6 +23,7 @@ class SendMessageUseCase {
             do {
                 try await createDataLocally(conversation: conversation, message: message)
                 try await createDataRemotely(conversation: conversation, message: message, userId: userId)
+                await sendMessageNotificationUseCase.execute(notification: NotificationMessage(conversation: conversation, message: message))
             } catch {
                 if conversation.state == .draft {
                     try await conversationRepository.updateLocalConversation(conversation: conversation.with(state: .error))

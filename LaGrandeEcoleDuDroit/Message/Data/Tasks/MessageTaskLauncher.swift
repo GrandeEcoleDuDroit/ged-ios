@@ -2,26 +2,26 @@ import Combine
 
 class MessageTaskLauncher {
     private let networkMonitor: NetworkMonitor
-    private let synchronizeMessagesTask: SynchronizeMessageTask
-    private let synchronizeConversationsTask: SynchronizeConversationTask
+    private let synchronizeMessageTask: SynchronizeMessageTask
+    private let synchronizeConversationTask: SynchronizeConversationTask
     private var cancellable: AnyCancellable?
     
     init(
         networkMonitor: NetworkMonitor,
-        synchronizeMessagesTask: SynchronizeMessageTask,
-        synchronizeConversationsTask: SynchronizeConversationTask
+        synchronizeMessageTask: SynchronizeMessageTask,
+        synchronizeConversationTask: SynchronizeConversationTask
     ) {
         self.networkMonitor = networkMonitor
-        self.synchronizeMessagesTask = synchronizeMessagesTask
-        self.synchronizeConversationsTask = synchronizeConversationsTask
+        self.synchronizeMessageTask = synchronizeMessageTask
+        self.synchronizeConversationTask = synchronizeConversationTask
     }
     
-    func launch() async {
-        for await status in networkMonitor.connectionStatus.values {
-            if status {
-                await synchronizeConversationsTask.start()
-                await synchronizeMessagesTask.start()
-                break
+    func launch() {
+        cancellable = networkMonitor.connected.sink { [weak self] status in
+            Task {
+                await self?.synchronizeConversationTask.start()
+                await self?.synchronizeMessageTask.start()
+                self?.cancellable?.cancel()
             }
         }
     }
