@@ -1,6 +1,6 @@
 import Foundation
 
-struct Conversation: Hashable {
+struct Conversation: Hashable, Codable {
     let id: String
     let interlocutor: User
     let createdAt: Date
@@ -29,7 +29,7 @@ struct Conversation: Hashable {
     }
 }
 
-enum ConversationState: String, Equatable, Hashable {
+enum ConversationState: String, Equatable, Hashable, Codable {
     case draft = "draft"
     case creating = "creating"
     case created = "created"

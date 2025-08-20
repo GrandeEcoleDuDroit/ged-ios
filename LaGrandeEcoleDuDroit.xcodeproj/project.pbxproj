@@ -12,6 +12,7 @@
 		5EC0EA482CC5644100632199 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 5EC0EA472CC5644100632199 /* FirebaseCore */; };
 		5EC0EA4A2CC5644100632199 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 5EC0EA492CC5644100632199 /* FirebaseCrashlytics */; };
 		5EC0EA4C2CC5644100632199 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 5EC0EA4B2CC5644100632199 /* FirebaseFirestore */; };
+		5EDC1C082E47A34B00A3C603 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 5EDC1C072E47A34B00A3C603 /* FirebaseMessaging */; };
 		5EE765C82D2A1B2600EC8447 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 5EE765C72D2A1B2600EC8447 /* Swinject */; };
 /* End PBXBuildFile section */
 
@@ -38,9 +39,22 @@
 		5EB578672CB3CCD4004524AD /* LaGrandeEcoleDuDroitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LaGrandeEcoleDuDroitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5EDC1C052E47A2D000A3C603 /* Exceptions for "LaGrandeEcoleDuDroit" folder in "LaGrandeEcoleDuDroit" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5EB5784C2CB3CCD3004524AD /* LaGrandeEcoleDuDroit */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		5EB5784F2CB3CCD3004524AD /* LaGrandeEcoleDuDroit */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5EDC1C052E47A2D000A3C603 /* Exceptions for "LaGrandeEcoleDuDroit" folder in "LaGrandeEcoleDuDroit" target */,
+			);
 			path = LaGrandeEcoleDuDroit;
 			sourceTree = "<group>";
 		};
@@ -63,6 +77,7 @@
 			files = (
 				5EC0EA442CC5644100632199 /* FirebaseAnalytics in Frameworks */,
 				5EC0EA4A2CC5644100632199 /* FirebaseCrashlytics in Frameworks */,
+				5EDC1C082E47A34B00A3C603 /* FirebaseMessaging in Frameworks */,
 				5EC0EA482CC5644100632199 /* FirebaseCore in Frameworks */,
 				5EC0EA4C2CC5644100632199 /* FirebaseFirestore in Frameworks */,
 				5EC0EA462CC5644100632199 /* FirebaseAuth in Frameworks */,
@@ -93,6 +108,7 @@
 				5EB5784F2CB3CCD3004524AD /* LaGrandeEcoleDuDroit */,
 				5EB578602CB3CCD4004524AD /* LaGrandeEcoleDuDroitTests */,
 				5EB5786A2CB3CCD4004524AD /* LaGrandeEcoleDuDroitUITests */,
+				5EDC1C062E47A34B00A3C603 /* Frameworks */,
 				5EB5784E2CB3CCD3004524AD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -105,6 +121,13 @@
 				5EB578672CB3CCD4004524AD /* LaGrandeEcoleDuDroitUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		5EDC1C062E47A34B00A3C603 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -133,6 +156,7 @@
 				5EC0EA492CC5644100632199 /* FirebaseCrashlytics */,
 				5EC0EA4B2CC5644100632199 /* FirebaseFirestore */,
 				5EE765C72D2A1B2600EC8447 /* Swinject */,
+				5EDC1C072E47A34B00A3C603 /* FirebaseMessaging */,
 			);
 			productName = gedoise;
 			productReference = 5EB5784D2CB3CCD3004524AD /* GrandeEcoleDuDroit.app */;
@@ -421,12 +445,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LaGrandeEcoleDuDroit/Preview Content\"";
 				DEVELOPMENT_TEAM = R8SRMT4A39;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LaGrandeEcoleDuDroit/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Grande Ecole Du Droit";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -453,12 +479,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LaGrandeEcoleDuDroit/Preview Content\"";
 				DEVELOPMENT_TEAM = R8SRMT4A39;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LaGrandeEcoleDuDroit/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Grande Ecole Du Droit";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -633,6 +661,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5EC0EA422CC5644100632199 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		5EDC1C072E47A34B00A3C603 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5EC0EA422CC5644100632199 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 		5EE765C72D2A1B2600EC8447 /* Swinject */ = {
 			isa = XCSwiftPackageProductDependency;

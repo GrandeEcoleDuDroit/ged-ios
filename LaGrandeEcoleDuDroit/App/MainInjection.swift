@@ -10,6 +10,8 @@ class MainInjection: DependencyInjectionContainer {
     }
     
     private func registerDependencies() {
+        // Use cases
+        
         container.register(ListenRemoteUserUseCase.self) { resolver in
             ListenRemoteUserUseCase(
                 authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
@@ -33,13 +35,30 @@ class MainInjection: DependencyInjectionContainer {
             )
         }.inObjectScope(.container)
         
-        container.register(NavigationViewModel.self) { resolver in
-            NavigationViewModel(
+        container.register(FcmTokenUseCase.self) { resolver in
+            FcmTokenUseCase(
+                userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
-                getUnreadConversationsCountUseCase: MessageInjection.shared.resolve(GetUnreadConversationsCountUseCase.self)
+                fcmTokenRepository: CommonInjection.shared.resolve(FcmTokenRepository.self),
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+            )
+        }
+        
+        // View models
+        
+        container.register(NavigationHostViewModel.self) { resolver in
+            NavigationHostViewModel(
+                authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self)
+            )
+        }
+        
+        container.register(AppNavigationViewModel.self) { resolver in
+            AppNavigationViewModel(
+                getUnreadConversationsCountUseCase: MessageInjection.shared.resolve(GetUnreadConversationsCountUseCase.self),
+                navigationRequestUseCase: CommonInjection.shared.resolve(NavigationRequestUseCase.self)
                 
             )
-        }.inObjectScope(.container)
+        }
         
         container.register(MainViewModel.self) { resolver in
             MainViewModel(
@@ -47,7 +66,7 @@ class MainInjection: DependencyInjectionContainer {
                 listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!
             )
-        }.inObjectScope(.container)
+        }
         
         container.register(ProfileViewModel.self) { resolver in
             ProfileViewModel(
@@ -63,6 +82,28 @@ class MainInjection: DependencyInjectionContainer {
                 networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self),
                 userRepository: CommonInjection.shared.resolve(UserRepository.self)
             )
+        }
+        
+        container.register(ProfileNavigationViewModel.self) { resolver in
+            ProfileNavigationViewModel(
+                routeRepository: CommonInjection.shared.resolve(RouteRepository.self)
+            )
+        }
+        
+        // Others
+        
+        container.register(NotificationMediator.self) { resolver in
+            NotificationMediatorImpl(
+                messageNotificationManager: MessageInjection.shared.resolve(MessageNotificationManager.self)
+            )
+        }.inObjectScope(.container)
+        
+        container.register(FcmManager.self) { resolver in
+            FcmManager()
+        }.inObjectScope(.container)
+        
+        container.register(TokenProvider.self) { resolver in
+            TokenProviderImpl(firebaseAuthenticationRepository: AuthenticationInjection.shared.resolve(FirebaseAuthenticationRepository.self))
         }
     }
     
@@ -112,10 +153,10 @@ class MainInjection: DependencyInjectionContainer {
             )
         }
         
-        mockContainer.register(NavigationViewModel.self) { resolver in
-            NavigationViewModel(
-                authenticationRepository: authenticationMockContainer.resolve(AuthenticationRepository.self)!,
-                getUnreadConversationsCountUseCase: messageMockContainer.resolve(GetUnreadConversationsCountUseCase.self)!
+        mockContainer.register(AppNavigationViewModel.self) { resolver in
+            AppNavigationViewModel(
+                getUnreadConversationsCountUseCase: messageMockContainer.resolve(GetUnreadConversationsCountUseCase.self)!,
+                navigationRequestUseCase: commonMockContainer.resolve(NavigationRequestUseCase.self)!
             )
         }
         

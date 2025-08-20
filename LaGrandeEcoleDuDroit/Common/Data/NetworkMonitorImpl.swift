@@ -7,7 +7,7 @@ class NetworkMonitorImpl: NetworkMonitor {
     private let queue = DispatchQueue(label: "NetworkMonitorQueue")
     private var connectionStatusSubject = CurrentValueSubject<Bool, Never>(false)
 
-    var connectionStatus: AnyPublisher<Bool, Never> {
+    var connected: AnyPublisher<Bool, Never> {
         connectionStatusSubject.eraseToAnyPublisher()
     }
 

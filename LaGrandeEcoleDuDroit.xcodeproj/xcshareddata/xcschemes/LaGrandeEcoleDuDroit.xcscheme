@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5EB5784C2CB3CCD3004524AD"
-               BuildableName = "Grande Ecole Du Droit.app"
+               BuildableName = "GrandeEcoleDuDroit.app"
                BlueprintName = "LaGrandeEcoleDuDroit"
                ReferencedContainer = "container:LaGrandeEcoleDuDroit.xcodeproj">
             </BuildableReference>
@@ -74,7 +74,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5EB5784C2CB3CCD3004524AD"
-            BuildableName = "Grande Ecole Du Droit.app"
+            BuildableName = "GrandeEcoleDuDroit.app"
             BlueprintName = "LaGrandeEcoleDuDroit"
             ReferencedContainer = "container:LaGrandeEcoleDuDroit.xcodeproj">
          </BuildableReference>
@@ -91,7 +91,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5EB5784C2CB3CCD3004524AD"
-            BuildableName = "Grande Ecole Du Droit.app"
+            BuildableName = "GrandeEcoleDuDroit.app"
             BlueprintName = "LaGrandeEcoleDuDroit"
             ReferencedContainer = "container:LaGrandeEcoleDuDroit.xcodeproj">
          </BuildableReference>
