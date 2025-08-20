@@ -7,7 +7,7 @@ class ChatViewModel: ObservableObject {
     private let messageRepository: MessageRepository
     private let conversationRepository: ConversationRepository
     private let sendMessageUseCase: SendMessageUseCase
-    private let notificationMessageManager: NotificationMessageManager
+    private let notificationMessageManager: MessageNotificationManager
     private var cancellables: Set<AnyCancellable> = []
     private let user: User?
     private var offset: Int = 0
@@ -21,7 +21,7 @@ class ChatViewModel: ObservableObject {
         messageRepository: MessageRepository,
         conversationRepository: ConversationRepository,
         sendMessageUseCase: SendMessageUseCase,
-        notificationMessageManager: NotificationMessageManager
+        notificationMessageManager: MessageNotificationManager
     ) {
         self.conversation = conversation
         self.userRepository = userRepository

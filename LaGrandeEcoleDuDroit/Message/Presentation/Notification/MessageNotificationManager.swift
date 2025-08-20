@@ -1,9 +1,9 @@
 import UserNotifications
 
-class NotificationMessageManager: NotificationManager {
+open class MessageNotificationManager: NotificationManager {
     private let navigationRequestUseCase: NavigationRequestUseCase
     private let routeRepository: RouteRepository
-    private let tag = String(describing: NotificationMessageManager.self)
+    private let tag = String(describing: MessageNotificationManager.self)
     
     init(
         navigationRequestUseCase: NavigationRequestUseCase,
@@ -57,11 +57,13 @@ class NotificationMessageManager: NotificationManager {
     }
         
     private func isCurrentMessageView(conversationId: String) -> Bool {
-        if let messageRoute = routeRepository.currentRoute as? MessageRoute,
-           case let .chat(conversation) = messageRoute {
-            conversation.id == conversationId
-        } else {
-            false
+        guard let messageRoute = routeRepository.currentRoute as? MessageRoute else {
+            return false
+        }
+           
+        return switch messageRoute {
+            case .chat(let conversation): conversation.id == conversationId
+            default: false
         }
     }
     

@@ -148,7 +148,7 @@ class MessageInjection: DependencyInjectionContainer {
                 messageRepository: resolver.resolve(MessageRepository.self)!,
                 conversationRepository: resolver.resolve(ConversationRepository.self)!,
                 sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!,
-                notificationMessageManager: resolver.resolve(NotificationMessageManager.self)!
+                notificationMessageManager: resolver.resolve(MessageNotificationManager.self)!
             )
         }
         
@@ -182,8 +182,8 @@ class MessageInjection: DependencyInjectionContainer {
                 synchronizeConversationTask: resolver.resolve(SynchronizeConversationTask.self)!
             )
         }
-        container.register(NotificationMessageManager.self) { resolver in
-            NotificationMessageManager(
+        container.register(MessageNotificationManager.self) { resolver in
+            MessageNotificationManager(
                 navigationRequestUseCase: CommonInjection.shared.resolve(NavigationRequestUseCase.self),
                 routeRepository: CommonInjection.shared.resolve(RouteRepository.self)
             )
@@ -272,7 +272,7 @@ class MessageInjection: DependencyInjectionContainer {
                 messageRepository: resolver.resolve(MessageRepository.self)!,
                 conversationRepository: resolver.resolve(ConversationRepository.self)!,
                 sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!,
-                notificationMessageManager: resolver.resolve(NotificationMessageManager.self)!
+                notificationMessageManager: resolver.resolve(MessageNotificationManager.self)!
             )
         }
         

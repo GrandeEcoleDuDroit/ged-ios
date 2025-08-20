@@ -1,6 +1,6 @@
 import Combine
 
-class NavigationRequestUseCase {
+open class NavigationRequestUseCase {
     private var routeToNavigateSubject = CurrentValueSubject<RouteToNavigate?, Never>(nil)
     var routeToNavigate: AnyPublisher<RouteToNavigate, Never> {
         routeToNavigateSubject
