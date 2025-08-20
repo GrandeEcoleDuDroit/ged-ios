@@ -94,7 +94,7 @@ class MainInjection: DependencyInjectionContainer {
         
         container.register(NotificationMediator.self) { resolver in
             NotificationMediatorImpl(
-                notificationMessageManager: MessageInjection.shared.resolve(NotificationMessageManager.self)
+                messageNotificationManager: MessageInjection.shared.resolve(MessageNotificationManager.self)
             )
         }.inObjectScope(.container)
         
