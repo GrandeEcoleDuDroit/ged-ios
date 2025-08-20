@@ -1,10 +1,10 @@
 import UserNotifications
 
 class NotificationMediatorImpl: NotificationMediator {
-    private let notificationMessageManager: NotificationMessageManager
+    private let messageNotificationManager: MessageNotificationManager
     
-    init(notificationMessageManager: NotificationMessageManager) {
-        self.notificationMessageManager = notificationMessageManager
+    init(messageNotificationManager: MessageNotificationManager) {
+        self.messageNotificationManager = messageNotificationManager
     }
     
     func presentNotification(userInfo: [AnyHashable : Any], completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
@@ -15,7 +15,7 @@ class NotificationMediatorImpl: NotificationMediator {
         }
         
         switch type {
-            case .message: notificationMessageManager.presentNotification(
+            case .message: messageNotificationManager.presentNotification(
                 userInfo: userInfo,
                 completionHandler: completionHandler
             )
@@ -29,7 +29,7 @@ class NotificationMediatorImpl: NotificationMediator {
         }
         
         switch type {
-            case .message: notificationMessageManager.receiveNotification(userInfo: userInfo)
+            case .message: messageNotificationManager.receiveNotification(userInfo: userInfo)
         }
     }
 }
