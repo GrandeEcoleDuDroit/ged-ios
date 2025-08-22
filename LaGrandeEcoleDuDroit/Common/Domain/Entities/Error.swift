@@ -11,3 +11,7 @@ enum NetworkError: Error, Equatable {
 enum UserError: Error {
     case currentUserNotFound
 }
+
+enum RequestError: Error {
+    case unknown(String?)
+}

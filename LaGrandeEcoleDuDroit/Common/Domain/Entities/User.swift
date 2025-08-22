@@ -40,3 +40,8 @@ enum SchoolLevel: String, CaseIterable, Identifiable, Codable {
     
     var id: String { self.rawValue }
 }
+
+struct UserWithImagePhase {
+    let user: User
+    let imagePhase: ImagePhase
+}
