@@ -6,9 +6,8 @@ struct ConversationItem: View {
     let conversation: ConversationUi
     let onClick: () -> Void
     let onLongClick: () -> Void
-    private let lastMessage: Message
-    private let interlocutor: User
-    private let text: String
+    
+    private let messageText: String
     private let isNotSender: Bool
     
     init(
@@ -19,19 +18,17 @@ struct ConversationItem: View {
         self.conversation = conversation
         self.onClick = onClick
         self.onLongClick = onLongClick
-        self.lastMessage = conversation.lastMessage
-        self.interlocutor = conversation.interlocutor
-        self.text = lastMessage.state == .sending ? getString(.sending) : lastMessage.content
-        self.isNotSender = lastMessage.senderId == interlocutor.id
+        self.messageText = conversation.lastMessage.state == .sending ? getString(.sending) : conversation.lastMessage.content
+        self.isNotSender = conversation.lastMessage.senderId == conversation.interlocutor.id
     }
     
     var body: some View {
         SwitchConversationItem(
-            interlocutor: interlocutor,
+            interlocutor: conversation.interlocutor,
             conversationState: conversation.state,
-            lastMessage: lastMessage,
-            isUnread: isNotSender && !lastMessage.seen,
-            text: text,
+            lastMessage: conversation.lastMessage,
+            isUnread: isNotSender && !conversation.lastMessage.seen,
+            messageText: messageText,
             onClick: onClick,
             onLongClick: onLongClick
         )
@@ -43,7 +40,7 @@ private struct SwitchConversationItem: View {
     let conversationState: ConversationState
     let lastMessage: Message
     let isUnread: Bool
-    let text: String
+    let messageText: String
     let onClick: () -> Void
     let onLongClick: () -> Void
     @State private var elapsedTimeText: String
@@ -54,7 +51,7 @@ private struct SwitchConversationItem: View {
         conversationState: ConversationState,
         lastMessage: Message,
         isUnread: Bool,
-        text: String,
+        messageText: String,
         onClick: @escaping () -> Void,
         onLongClick: @escaping () -> Void
     ) {
@@ -62,7 +59,7 @@ private struct SwitchConversationItem: View {
         self.conversationState = conversationState
         self.lastMessage = lastMessage
         self.isUnread = isUnread
-        self.text = text
+        self.messageText = messageText
         self.onClick = onClick
         self.onLongClick = onLongClick
         self.elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
@@ -78,20 +75,20 @@ private struct SwitchConversationItem: View {
             if loading {
                 ReadConversationItemContent(
                     interlocutorName: interlocutor.fullName,
-                    text: text,
+                    messageText: messageText,
                     elapsedTimeText: elapsedTimeText
                 ).opacity(0.5)
             } else {
                 if isUnread {
                     UnreadConversationItemContent(
                         interlocutorName: interlocutor.fullName,
-                        text: text,
+                        messageText: messageText,
                         elapsedTimeText: elapsedTimeText
                     )
                 } else {
                     ReadConversationItemContent(
                         interlocutorName: interlocutor.fullName,
-                        text: text,
+                        messageText: messageText,
                         elapsedTimeText: elapsedTimeText
                     )
                 }
@@ -131,7 +128,7 @@ private struct ConversationItemStructure<Content: View>: View {
     
     var body: some View {
         HStack(alignment: .center) {
-            ProfilePicture(url: interlocutor.profilePictureUrl, scale: 0.45)
+            ProfilePicture(imagePhase: interlocutor.imagePhase, scale: 0.45)
             content
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -145,13 +142,13 @@ private struct ConversationItemStructure<Content: View>: View {
 
 private struct ReadConversationItemContent: View {
     let interlocutorName: String
-    let text: String
+    let messageText: String
     let elapsedTimeText: String
     
     var body: some View {
         DefaultConversationItemContent(
             interlocutorName: interlocutorName,
-            text: text,
+            messageText: messageText,
             elapsedTimeText: elapsedTimeText
         )
     }
@@ -159,14 +156,14 @@ private struct ReadConversationItemContent: View {
 
 private struct UnreadConversationItemContent: View {
     let interlocutorName: String
-    let text: String
+    let messageText: String
     let elapsedTimeText: String
     
     var body: some View {
         HStack {
             DefaultConversationItemContent(
                 interlocutorName: interlocutorName,
-                text: text,
+                messageText: messageText,
                 elapsedTimeText: elapsedTimeText,
                 textColor: .primary,
                 fontWeight: .semibold
@@ -181,10 +178,9 @@ private struct UnreadConversationItemContent: View {
     }
 }
 
-
 private struct DefaultConversationItemContent: View {
     let interlocutorName: String
-    let text: String
+    let messageText: String
     let elapsedTimeText: String
     var textColor: Color = .textPreview
     var fontWeight: Font.Weight = .regular
@@ -201,7 +197,7 @@ private struct DefaultConversationItemContent: View {
                     .font(previewTextFont)
             }
             
-            Text(text)
+            Text(messageText)
                 .fontWeight(fontWeight)
                 .foregroundStyle(textColor)
                 .lineLimit(1)
@@ -233,18 +229,12 @@ private func updateElapsedTimeText(for date: Date) -> String {
 
 private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String {
     switch elapsedTime {
-        case .now(_):
-            getString(.now)
-        case.minute(let minutes):
-            getString(.minutesAgoShort, minutes)
-        case .hour(let hours):
-            getString(.hoursAgoShort, hours)
-        case .day(let days):
-            getString(.daysAgoShort, days)
-        case .week(let weeks):
-            getString(.weeksAgoShort, weeks)
-        default:
-            date.formatted(.dateTime.year().month().day())
+        case .now(_): getString(.now)
+        case.minute(let minutes): getString(.minutesAgoShort, minutes)
+        case .hour(let hours): getString(.hoursAgoShort, hours)
+        case .day(let days): getString(.daysAgoShort, days)
+        case .week(let weeks): getString(.weeksAgoShort, weeks)
+        default: date.formatted(.dateTime.year().month().day())
     }
 }
 
@@ -255,7 +245,7 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String 
             conversationState: .created,
             lastMessage: messageFixture,
             isUnread: false,
-            text: messageFixture.content,
+            messageText: messageFixture.content,
             onClick: {},
             onLongClick: {}
         )
@@ -265,7 +255,7 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String 
             conversationState: .created,
             lastMessage: messageFixture,
             isUnread: true,
-            text: messageFixture.content,
+            messageText: messageFixture.content,
             onClick: {},
             onLongClick: {}
         )
@@ -275,7 +265,7 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String 
             conversationState: .creating,
             lastMessage: messageFixture,
             isUnread: false,
-            text: messageFixture.content,
+            messageText: messageFixture.content,
             onClick: {},
             onLongClick: {}
         )

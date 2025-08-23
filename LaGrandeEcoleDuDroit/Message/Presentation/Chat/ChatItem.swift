@@ -50,16 +50,16 @@ struct SendMessageItem: View {
 
 struct ReceiveMessageItem: View {
     let message: Message
-    let profilePictureUrl: String?
+    let imagePhase: ImagePhase
     let displayProfilePicture: Bool
     
     var body: some View {
         HStack(alignment: .bottom) {
             if displayProfilePicture {
-                ProfilePicture(url: profilePictureUrl, scale: 0.3)
+                ProfilePicture(imagePhase: imagePhase, scale: 0.3)
             }
             else {
-                ProfilePicture(url: nil, scale: 0.3)
+                ProfilePicture(imagePhase: .empty, scale: 0.3)
                     .hidden()
             }
             
@@ -189,13 +189,13 @@ struct NewMessageIndicator: View {
             ScrollView {
                 ReceiveMessageItem(
                     message: messageFixture,
-                    profilePictureUrl: nil,
+                    imagePhase: .empty,
                     displayProfilePicture: true
                 )
                 
                 ReceiveMessageItem(
                     message: messageFixture2,
-                    profilePictureUrl: nil,
+                    imagePhase: .empty,
                     displayProfilePicture: true
                 )
                 

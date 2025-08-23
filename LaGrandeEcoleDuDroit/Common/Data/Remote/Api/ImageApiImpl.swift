@@ -16,6 +16,8 @@ class ImageApiImpl: ImageApi {
             throw NetworkError.invalidURL("Invalid URL")
         }
         let (data, response) = try await URLSession.shared.data(from: url)
+        print(data)
+        print(response)
         return data
     }
     

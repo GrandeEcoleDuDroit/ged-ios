@@ -5,14 +5,14 @@ struct AccountDestination: View {
     @StateObject private var viewModel = MainInjection.shared.resolve(AccountViewModel.self)
     @State private var errorMessage: String = ""
     @State private var showErrorAlert: Bool = false
-    @State private var profilePictureImage: UIImage? = nil
+    @State private var profilePictureData: Data? = nil
     
     var body: some View {
         AccountView(
             user: viewModel.uiState.user,
             loading: viewModel.uiState.loading,
             screenState: viewModel.uiState.screenState,
-            profilePictureImage: $profilePictureImage,
+            profilePictureData: $profilePictureData,
             onScreenStateChange: viewModel.onScreenStateChange,
             onSaveProfilePictureClick: viewModel.updateProfilePicture,
             onDeleteProfilePictureClick: viewModel.deleteProfilePicture
@@ -22,7 +22,7 @@ struct AccountDestination: View {
                 errorMessage = errorEvent.message
                 showErrorAlert = true
             } else if event is SuccessEvent {
-                profilePictureImage = nil
+                profilePictureData = nil
             }
         }
         .alert(
@@ -40,7 +40,7 @@ private struct AccountView: View {
     let user: User?
     let loading: Bool
     let screenState: AccountScreenState
-    @Binding var profilePictureImage: UIImage?
+    @Binding var profilePictureData: Data?
     let onScreenStateChange: (AccountScreenState) -> Void
     let onSaveProfilePictureClick: (Data?) -> Void
     let onDeleteProfilePictureClick: () -> Void
@@ -57,15 +57,15 @@ private struct AccountView: View {
         ZStack {
             if let user = user {
                 VStack {
-                    if let image = profilePictureImage {
+                    if let profilePictureData = profilePictureData {
                         ClickableProfilePictureImage(
-                            image: image,
+                            data: profilePictureData,
                             onClick: { showPhotosPicker = true },
                             scale: 1.6
                         )
                     } else {
                         AccountImage(
-                            url: user.profilePictureUrl,
+                            imagePhase: user.imagePhase,
                             onClick: { showBottomSheet = true },
                             scale: 1.6
                         )
@@ -81,10 +81,8 @@ private struct AccountView: View {
         }
         .task(id: selectedPhoto) {
             if let data = try? await selectedPhoto?.loadTransferable(type: Data.self) {
-                if let image = UIImage(data: data) {
-                    onScreenStateChange(.edit)
-                    profilePictureImage = image
-                }
+                onScreenStateChange(.edit)
+                profilePictureData = data
             }
         }
         .onChange(of: user?.profilePictureUrl) { profilePictureUrl in
@@ -92,7 +90,7 @@ private struct AccountView: View {
         }
         .onChange(of: screenState) { newState in
             if newState == .read {
-                profilePictureImage = nil
+                profilePictureData = nil
                 selectedPhoto = nil
                 navigationTitle = getString(.accountInfos)
             } else {
@@ -147,7 +145,7 @@ private struct AccountView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(getString(.cancel)) {
                         onScreenStateChange(.read)
-                        profilePictureImage = nil
+                        profilePictureData = nil
                         selectedPhoto = nil
                     }
                 }
@@ -155,14 +153,19 @@ private struct AccountView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(
                         action: {
-                            if let image = profilePictureImage {
-                                onSaveProfilePictureClick(image.jpegData(compressionQuality: 0.8))
+                            if let profilePictureData = profilePictureData {
+                                onSaveProfilePictureClick(profilePictureData)
                             }
                         },
                         label: {
-                            Text(getString(.save))
-                                .bold()
-                                .foregroundStyle(.gedPrimary)
+                            if loading {
+                                Text(getString(.save))
+                                    .fontWeight(.semibold)
+                            } else {
+                                Text(getString(.save))
+                                    .foregroundStyle(.gedPrimary)
+                                    .fontWeight(.semibold)
+                            }
                         }
                     )
                 }
@@ -212,7 +215,7 @@ private struct AccountInfoItems: View {
             user: userFixture,
             loading: false,
             screenState: .read,
-            profilePictureImage: .constant(nil),
+            profilePictureData: .constant(nil),
             onScreenStateChange: { _ in },
             onSaveProfilePictureClick: { _ in },
             onDeleteProfilePictureClick: {  }

@@ -1,6 +1,6 @@
 import Foundation
 
-enum ImagePhase {
+enum ImagePhase: Codable, Hashable {
     case empty
     case loading
     case success(Data)

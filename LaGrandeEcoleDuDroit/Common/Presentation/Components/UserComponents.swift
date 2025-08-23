@@ -12,7 +12,7 @@ struct UserItem: View {
     
     var body: some View {
         HStack(alignment: .center) {
-            ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
+            ProfilePicture(imagePhase: user.imagePhase, scale: 0.5)
             
             Text(user.fullName)
                 .fontWeight(.medium)

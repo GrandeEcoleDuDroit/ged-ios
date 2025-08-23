@@ -71,7 +71,8 @@ class MainInjection: DependencyInjectionContainer {
         container.register(ProfileViewModel.self) { resolver in
             ProfileViewModel(
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
-                authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self)
+                authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
+                loadImageUseCase: CommonInjection.shared.resolve(LoadImageUseCase.self)
             )
         }
         
@@ -79,6 +80,7 @@ class MainInjection: DependencyInjectionContainer {
             AccountViewModel(
                 updateProfilePictureUseCase: CommonInjection.shared.resolve(UpdateProfilePictureUseCase.self),
                 deleteProfilePictureUseCase: CommonInjection.shared.resolve(DeleteProfilePictureUseCase.self),
+                loadImageUseCase: CommonInjection.shared.resolve(LoadImageUseCase.self),
                 networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self),
                 userRepository: CommonInjection.shared.resolve(UserRepository.self)
             )
@@ -163,7 +165,8 @@ class MainInjection: DependencyInjectionContainer {
         mockContainer.register(ProfileViewModel.self) { resolver in
             ProfileViewModel(
                 userRepository: commonMockContainer.resolve(UserRepository.self)!,
-                authenticationRepository: authenticationMockContainer.resolve(AuthenticationRepository.self)!
+                authenticationRepository: authenticationMockContainer.resolve(AuthenticationRepository.self)!,
+                loadImageUseCase: commonMockContainer.resolve(LoadImageUseCase.self)!
             )
         }
         
@@ -171,6 +174,7 @@ class MainInjection: DependencyInjectionContainer {
             AccountViewModel(
                 updateProfilePictureUseCase: commonMockContainer.resolve(UpdateProfilePictureUseCase.self)!,
                 deleteProfilePictureUseCase: commonMockContainer.resolve(DeleteProfilePictureUseCase.self)!,
+                loadImageUseCase: commonMockContainer.resolve(LoadImageUseCase.self)!,
                 networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!,
                 userRepository: commonMockContainer.resolve(UserRepository.self)!,
             )

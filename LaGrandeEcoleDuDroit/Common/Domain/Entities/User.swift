@@ -6,9 +6,30 @@ struct User: Codable, Hashable, Identifiable {
     let schoolLevel: SchoolLevel
     let isMember: Bool
     let profilePictureUrl: String?
+    let imagePhase: ImagePhase
     
     var fullName: String {
         firstName + " " + lastName
+    }
+    
+    init(
+        id: String,
+        firstName: String,
+        lastName: String,
+        email: String,
+        schoolLevel: SchoolLevel,
+        isMember: Bool = false,
+        profilePictureUrl: String? = nil,
+        imagePhase: ImagePhase = .empty
+    ) {
+        self.id = id
+        self.firstName = firstName
+        self.lastName = lastName
+        self.email = email
+        self.schoolLevel = schoolLevel
+        self.isMember = isMember
+        self.profilePictureUrl = profilePictureUrl
+        self.imagePhase = imagePhase
     }
     
     func with(
@@ -18,7 +39,8 @@ struct User: Codable, Hashable, Identifiable {
         email: String? = nil,
         schoolLevel: SchoolLevel? = nil,
         isMember: Bool? = nil,
-        profilePictureUrl: String? = nil
+        profilePictureUrl: String? = nil,
+        imagePhase: ImagePhase? = nil
     ) -> User {
         User(
             id: id ?? self.id,
@@ -27,7 +49,8 @@ struct User: Codable, Hashable, Identifiable {
             email: email ?? self.email,
             schoolLevel: schoolLevel ?? self.schoolLevel,
             isMember: isMember ?? self.isMember,
-            profilePictureUrl: profilePictureUrl ?? self.profilePictureUrl
+            profilePictureUrl: profilePictureUrl ?? self.profilePictureUrl,
+            imagePhase: imagePhase ?? self.imagePhase
         )
     }
 }
@@ -39,9 +62,4 @@ enum SchoolLevel: String, CaseIterable, Identifiable, Codable {
     case ged4 = "GED 4"
     
     var id: String { self.rawValue }
-}
-
-struct UserWithImagePhase {
-    let user: User
-    let imagePhase: ImagePhase
 }

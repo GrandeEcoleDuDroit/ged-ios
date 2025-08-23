@@ -125,6 +125,10 @@ class CommonInjection: DependencyInjectionContainer {
         container.register(NavigationRequestUseCase.self) { resolver in
             NavigationRequestUseCase()
         }.inObjectScope(.container)
+        
+        container.register(LoadImageUseCase.self) { resolver in
+            LoadImageUseCase(imageRepository: resolver.resolve(ImageRepository.self)!)
+        }
     }
     
     func resolve<T>(_ type: T.Type) -> T {
@@ -173,6 +177,10 @@ class CommonInjection: DependencyInjectionContainer {
                 userRepository: resolver.resolve(UserRepository.self)!,
                 imageRepository: resolver.resolve(ImageRepository.self)!
             )
+        }
+        
+        mockContainer.register(LoadImageUseCase.self) { resolver in
+            LoadImageUseCase(imageRepository: resolver.resolve(ImageRepository.self)!)
         }
         
         return mockContainer
