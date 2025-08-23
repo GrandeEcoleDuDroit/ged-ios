@@ -61,6 +61,10 @@ class CommonInjection: DependencyInjectionContainer {
             ImageRemoteDataSource(imageApi: resolver.resolve(ImageApi.self)!)
         }.inObjectScope(.container)
         
+        container.register(ImageLocalDataSource.self) { resolver in
+            ImageLocalDataSource()
+        }.inObjectScope(.container)
+        
         container.register(FcmLocalDataSource.self) { _ in
             FcmLocalDataSource()
         }.inObjectScope(.container)
@@ -75,7 +79,10 @@ class CommonInjection: DependencyInjectionContainer {
         }.inObjectScope(.container)
         
         container.register(ImageRepository.self) { resolver in
-            ImageRepositoryImpl(imageRemoteDataSource: resolver.resolve(ImageRemoteDataSource.self)!)
+            ImageRepositoryImpl(
+                imageLocalDataSource: resolver.resolve(ImageLocalDataSource.self)!,
+                imageRemoteDataSource: resolver.resolve(ImageRemoteDataSource.self)!
+            )
         }.inObjectScope(.container)
         
         container.register(WhiteListRepository.self) { resolver in
@@ -118,6 +125,10 @@ class CommonInjection: DependencyInjectionContainer {
         container.register(NavigationRequestUseCase.self) { resolver in
             NavigationRequestUseCase()
         }.inObjectScope(.container)
+        
+        container.register(LoadImageUseCase.self) { resolver in
+            LoadImageUseCase(imageRepository: resolver.resolve(ImageRepository.self)!)
+        }
     }
     
     func resolve<T>(_ type: T.Type) -> T {
@@ -166,6 +177,10 @@ class CommonInjection: DependencyInjectionContainer {
                 userRepository: resolver.resolve(UserRepository.self)!,
                 imageRepository: resolver.resolve(ImageRepository.self)!
             )
+        }
+        
+        mockContainer.register(LoadImageUseCase.self) { resolver in
+            LoadImageUseCase(imageRepository: resolver.resolve(ImageRepository.self)!)
         }
         
         return mockContainer

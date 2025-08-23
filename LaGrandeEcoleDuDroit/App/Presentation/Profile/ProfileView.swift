@@ -12,6 +12,9 @@ struct ProfileDestination: View {
             onLogoutClick: viewModel.logout
         )
         .background(.listBackground)
+        .onAppear {
+            viewModel.refreshUserImageIfNecessary()
+        }
     }
 }
 
@@ -30,7 +33,7 @@ private struct ProfileView: View {
                             action: onAccountInfosClick
                         ) {
                             HStack(spacing: GedSpacing.medium) {
-                                ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
+                                ProfilePicture(imagePhase: user.imagePhase, scale: 0.5)
                                 
                                 Text(user.fullName)
                                     .font(.title3)

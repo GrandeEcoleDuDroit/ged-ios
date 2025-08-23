@@ -3,7 +3,7 @@ import Foundation
 class RequestUtils {
     static func getUrlSession() -> URLSession {
         let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 10
+        config.timeoutIntervalForRequest = 30
         return URLSession(configuration: config)
     }
     

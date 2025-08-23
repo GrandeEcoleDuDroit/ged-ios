@@ -11,6 +11,16 @@ class ImageApiImpl: ImageApi {
         URL.oracleUrl(endpoint: "/image/" + endPoint)
     }
     
+    func downloadImage(url: String) async throws -> Data? {
+        guard let url = URL(string: url) else {
+            throw NetworkError.invalidURL("Invalid URL")
+        }
+        let (data, response) = try await URLSession.shared.data(from: url)
+        print(data)
+        print(response)
+        return data
+    }
+    
     func uploadImage(imageData: Data, fileName: String) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "upload") else {
             throw NetworkError.invalidURL("Invalid URL")

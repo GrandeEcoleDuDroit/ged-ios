@@ -4,6 +4,7 @@ import Foundation
 class UserRemoteDataSource {
     private let userFirestoreApi: UserFirestoreApi
     private let userOracleApi: UserOracleApi
+    private let tag = String(describing: UserRemoteDataSource.self)
     
     init(userFirestoreApi: UserFirestoreApi, userOracleApi: UserOracleApi) {
         self.userFirestoreApi = userFirestoreApi
@@ -38,20 +39,36 @@ class UserRemoteDataSource {
             try await userOracleApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
         }
         
-        userFirestoreApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
+        try await mapFirebaseException(
+            block: {
+                userFirestoreApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
+            },
+            tag: tag,
+            message: "Failed to update profile picture file name"
+        )
     }
     
     func deleteProfilePictureFileName(userId: String) async throws {
         try await mapRetrofitError {
             try await userOracleApi.deleteProfilePictureFileName(userId: userId)
         }
-        userFirestoreApi.deleteProfilePictureFileName(userId: userId)
+        try await mapFirebaseException(
+            block: {
+                userFirestoreApi.deleteProfilePictureFileName(userId: userId)
+            },
+            tag: tag,
+            message: "Failed to delete profile picture file name"
+        )
     }
     
     private func createUserWithFirestore(user: User) async throws {
-        try await mapFirebaseException {
-            try userFirestoreApi.createUser(firestoreUser: user.toFirestoreUser())
-        }
+        try await mapFirebaseException(
+            block: {
+                try userFirestoreApi.createUser(firestoreUser: user.toFirestoreUser())
+            },
+            tag: tag,
+            message: "Failed to create user"
+        )
     }
     
     private func createUserWithOracle(user: User) async throws {

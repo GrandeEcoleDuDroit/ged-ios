@@ -1,16 +1,16 @@
 import SwiftUI
 
 struct AccountImage: View {
-    var url: String?
+    var imagePhase: ImagePhase
     let onClick: () -> Void
     let scale: CGFloat
     
     init(
-        url: String?,
+        imagePhase: ImagePhase,
         onClick: @escaping () -> Void,
         scale: CGFloat = 1.0
     ) {
-        self.url = url
+        self.imagePhase = imagePhase
         self.onClick = onClick
         self.scale = scale
     }
@@ -18,7 +18,7 @@ struct AccountImage: View {
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            ClickableProfilePicture(url: url, scale: scale, onClick: onClick)
+            ClickableProfilePicture(imagePhase: imagePhase, scale: scale, onClick: onClick)
             
             ZStack {
                 Circle()
@@ -38,7 +38,7 @@ struct AccountImage: View {
 
 #Preview {
     VStack(spacing: 10) {
-        AccountImage(url: nil, onClick: {})
+        AccountImage(imagePhase: .empty, onClick: {})
 
         AccountInfoItem(title: "Name", value: "John Doe")
     }.padding()

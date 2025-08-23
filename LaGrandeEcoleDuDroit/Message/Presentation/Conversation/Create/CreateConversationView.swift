@@ -10,7 +10,9 @@ struct CreateConversationDestination: View {
     
     var body: some View {
         CreateConversationView(
-            users: viewModel.uiState.users,
+            users: viewModel.uiState.users
+                .map(\.value)
+                .sorted(by: { $0.fullName < $1.fullName }),
             loading: viewModel.uiState.loading,
             userQuery: viewModel.uiState.query,
             onQueryChange: viewModel.onQueryChange,

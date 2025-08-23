@@ -11,7 +11,7 @@ struct AnnouncementHeader: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
-            ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
+            ProfilePicture(imagePhase: announcement.author.imagePhase, scale: 0.4)
             
             Text(announcement.author.fullName)
                 .font(userNameFont)
@@ -42,9 +42,11 @@ struct ShortAnnouncementItem: View {
                     .onClick(isClicked: $isClicked, action: onClick)
                     .padding(.horizontal)
                     .padding(.vertical, GedSpacing.small)
+                
             case .publishing:
                 PublishingShortAnnouncementItem(announcement: announcement)
                     .onClick(isClicked: $isClicked, action: onClick)
+                
             case .error:
                 ErrorShortAnnouncementItem(announcement: announcement)
                     .onClick(isClicked: $isClicked, action: onClick)
@@ -59,7 +61,7 @@ private struct DefaultShortAnnouncementItem: View {
     
     var body: some View {
         HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
-            ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
+            ProfilePicture(imagePhase: announcement.author.imagePhase, scale: 0.4)
             
             VStack(alignment: .leading, spacing: GedSpacing.extraSmall) {
                 HStack {

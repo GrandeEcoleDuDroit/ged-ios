@@ -55,7 +55,7 @@ struct MessageFeed: View {
                                 interlocutorId: conversation.interlocutor.id,
                                 showSeen: showSeenMessage,
                                 displayProfilePicture: displayProfilePicture,
-                                profilePictureUrl: conversation.interlocutor.profilePictureUrl,
+                                imagePhase: conversation.interlocutor.imagePhase,
                                 onErrorMessageClick: onErrorMessageClick
                             )
                             .messageItemPadding(
@@ -102,14 +102,14 @@ private struct GetMessageItem: View {
     let interlocutorId: String
     let showSeen: Bool
     let displayProfilePicture: Bool
-    let profilePictureUrl: String?
+    let imagePhase: ImagePhase
     let onErrorMessageClick: (Message) -> Void
     
     var body: some View {
         if message.senderId == interlocutorId {
             ReceiveMessageItem(
                 message: message,
-                profilePictureUrl: profilePictureUrl,
+                imagePhase: imagePhase,
                 displayProfilePicture: displayProfilePicture
             )
         } else {

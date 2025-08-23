@@ -136,7 +136,8 @@ class MessageInjection: DependencyInjectionContainer {
         container.register(CreateConversationViewModel.self) { resolver in
             CreateConversationViewModel(
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
-                getLocalConversationUseCase: resolver.resolve(GetConversationUseCase.self)!
+                getLocalConversationUseCase: resolver.resolve(GetConversationUseCase.self)!,
+                loadImageUseCase: CommonInjection.shared.resolve(LoadImageUseCase.self)
             )
         }.inObjectScope(.weak)
         
@@ -261,7 +262,8 @@ class MessageInjection: DependencyInjectionContainer {
         mockContainer.register(CreateConversationViewModel.self) { resolver in
             CreateConversationViewModel(
                 userRepository: commonMockContainer.resolve(UserRepository.self)!,
-                getLocalConversationUseCase: resolver.resolve(GetConversationUseCase.self)!
+                getLocalConversationUseCase: resolver.resolve(GetConversationUseCase.self)!,
+                loadImageUseCase: commonMockContainer.resolve(LoadImageUseCase.self)!
             )
         }
         

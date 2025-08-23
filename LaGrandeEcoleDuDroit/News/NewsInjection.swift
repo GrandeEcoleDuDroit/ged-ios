@@ -80,7 +80,8 @@ class NewsInjection: DependencyInjectionContainer {
                 announcementId: announcementId,
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!
+                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
+                loadImageUseCase: CommonInjection.shared.resolve(LoadImageUseCase.self)
             )
         }
         
@@ -192,7 +193,8 @@ class NewsInjection: DependencyInjectionContainer {
                 announcementId: announcementId,
                 userRepository: commonMockContainer.resolve(UserRepository.self)!,
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!
+                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
+                loadImageUseCase: commonMockContainer.resolve(LoadImageUseCase.self)!
             )
         }
         
