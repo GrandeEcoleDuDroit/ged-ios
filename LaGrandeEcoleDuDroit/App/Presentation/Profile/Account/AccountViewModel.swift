@@ -9,6 +9,7 @@ class AccountViewModel: ObservableObject {
     private let networkMonitor: NetworkMonitor
     private let userRepository: UserRepository
     private var cancellables: Set<AnyCancellable> = []
+    private var loadImageTask: Task<Void, Never>? = nil
 
     @Published var uiState: AccountUiState = AccountUiState()
     @Published var event: SingleUiEvent? = nil
@@ -33,21 +34,26 @@ class AccountViewModel: ObservableObject {
         userRepository.user
             .receive(on: DispatchQueue.main)
             .sink { [weak self] user in
+                self?.loadImageTask?.cancel()
+                self?.loadImageTask = nil
+                
                 self?.uiState.user = user
+                
                 if let profilePictureUrl = user.profilePictureUrl {
-                    self?.loadUserImage(url: profilePictureUrl)
+                    self?.loadImageTask = self?.loadUserImage(url: profilePictureUrl)
                 } else {
-                    self?.uiState.user = self?.uiState.user?.with(imagePhase: .empty)
+                    self?.uiState.user?.imagePhase = .empty
                 }
             }.store(in: &cancellables)
     }
 
-    private func loadUserImage(url: String) {
-        uiState.user = uiState.user?.with(imagePhase: .loading)
-        Task {
+    private func loadUserImage(url: String) -> Task<Void, Never> {
+        uiState.user?.imagePhase = .loading
+
+        return Task {
             let phase = await loadImageUseCase.execute(url: url)
             DispatchQueue.main.sync { [weak self] in
-                self?.uiState.user = self?.uiState.user?.with(imagePhase: phase)
+                self?.uiState.user?.imagePhase = phase
             }
         }
     }

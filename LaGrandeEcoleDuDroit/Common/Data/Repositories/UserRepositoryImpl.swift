@@ -4,7 +4,7 @@ import Combine
 class UserRepositoryImpl: UserRepository {
     private let userLocalDataSource: UserLocalDataSource
     private let userRemoteDataSource: UserRemoteDataSource
-    private var userSubject = CurrentValueSubject<User?, Never>(nil)
+    private let userSubject = CurrentValueSubject<User?, Never>(nil)
     var user: AnyPublisher<User, Never> {
         userSubject
             .compactMap{ $0 }
@@ -21,7 +21,8 @@ class UserRepositoryImpl: UserRepository {
     }
     
     private func initUser() {
-        userSubject.send(userLocalDataSource.getUser())
+        let localUser = userLocalDataSource.getUser()
+        userSubject.send(localUser)
     }
     
     func createUser(user: User) async throws {
@@ -60,12 +61,16 @@ class UserRepositoryImpl: UserRepository {
         try await userRemoteDataSource.updateProfilePictureFileName(userId: userId, fileName: profilePictureFileName)
 
         try? userLocalDataSource.updateProfilePictureFileName(fileName: profilePictureFileName)
-        userSubject.value = userSubject.value?.with(profilePictureUrl: UrlUtils.formatProfilePictureUrl(fileName: profilePictureFileName))
+        var updatedUser = userSubject.value
+        updatedUser?.profilePictureUrl = UrlUtils.formatProfilePictureUrl(fileName: profilePictureFileName)
+        userSubject.send(updatedUser)
     }
     
     func deleteProfilePictureFileName(userId: String) async throws {
         try await userRemoteDataSource.deleteProfilePictureFileName(userId: userId)
         try? userLocalDataSource.updateProfilePictureFileName(fileName: nil)
-        userSubject.value = userSubject.value?.with(profilePictureUrl: nil)
+        var updatedUser = userSubject.value
+        updatedUser?.profilePictureUrl = nil
+        userSubject.send(updatedUser)
     }
 }

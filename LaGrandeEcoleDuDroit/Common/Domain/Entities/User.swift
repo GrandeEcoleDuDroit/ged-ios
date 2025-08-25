@@ -5,8 +5,8 @@ struct User: Codable, Hashable, Identifiable {
     let email: String
     let schoolLevel: SchoolLevel
     let isMember: Bool
-    let profilePictureUrl: String?
-    let imagePhase: ImagePhase
+    var profilePictureUrl: String?
+    var imagePhase: ImagePhase
     
     var fullName: String {
         firstName + " " + lastName
