@@ -17,6 +17,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         registerForPushNotifications(application: application)
         launchTasks()
         listenEvents()
+        UIApplication.shared.applicationIconBadgeNumber = 0
         return true
     }
     
