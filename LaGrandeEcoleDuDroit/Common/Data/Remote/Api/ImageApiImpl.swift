@@ -23,7 +23,7 @@ class ImageApiImpl: ImageApi {
     
     func uploadImage(imageData: Data, fileName: String) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "upload") else {
-            throw RequestError.invalidURL("Invalid URL")
+            throw NetworkError.invalidURL("Invalid URL")
         }
         
         let fileExtension = (fileName as NSString).pathExtension
@@ -42,7 +42,7 @@ class ImageApiImpl: ImageApi {
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.setValue("\(body.count)", forHTTPHeaderField: "Content-Length")
         request.httpBody = body
-        if let authIdToken = await tokenProvider.getAuthIdToken() {
+        if let authIdToken = tokenProvider.getAuthIdToken() {
             request.setValue("Bearer \(authIdToken)", forHTTPHeaderField: "Authorization")
         }
         
@@ -55,12 +55,11 @@ class ImageApiImpl: ImageApi {
     
     func deleteImage(fileName: String) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "/\(fileName)") else {
-            throw RequestError.invalidURL("Invalid URL")
+            throw NetworkError.invalidURL("Invalid URL")
         }
-        let authIdToken = await tokenProvider.getAuthIdToken()
         
         let sessions = RequestUtils.getUrlSession()
-        let deleteRequest = try RequestUtils.formatDeleteRequest(url: url, authToken: authIdToken)
+        let deleteRequest = try RequestUtils.formatDeleteRequest(url: url, authToken: tokenProvider.getAuthIdToken())
         
         let (data, urlResponse) = try await sessions.data(for: deleteRequest)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)

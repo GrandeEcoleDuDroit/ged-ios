@@ -16,7 +16,7 @@ class RefreshAnnouncementsUseCase {
     
     func execute() async throws {
         guard networkMonitor.isConnected else {
-            throw RequestError.noInternetConnection
+            throw NetworkError.noInternetConnection
         }
         
         let currentTime = Date()

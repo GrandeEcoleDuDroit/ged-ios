@@ -68,7 +68,7 @@
 "email_not_verified_error" = "Please validate your email address before to continue.";
 "email_already_associated_error" = "This email address is already used.";
 "too_many_requests_error" = "You have made too many requests. Please try again in a few minutes.";
-"user_not_white_listed_error" = "The registration is limited to authorized users.";
+"user_not_white_listed_error" = "The registration is currently limited to authorized users.";
 
 // News
 "news" = "News";

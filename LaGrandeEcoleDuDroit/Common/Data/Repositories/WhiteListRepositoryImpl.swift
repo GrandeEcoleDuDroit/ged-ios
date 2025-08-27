@@ -6,7 +6,7 @@ class WhiteListRepositoryImpl: WhiteListRepository {
     }
     
     func isUserWhitelisted(email: String) async throws -> Bool {
-        try await handleServerError(
+        try await handleRetrofitError(
             block: { try await whiteListApi.isUserWhiteListed(email: email) }
         )
     }

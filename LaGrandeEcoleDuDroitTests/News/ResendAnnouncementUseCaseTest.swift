@@ -12,11 +12,11 @@ class ResendAnnouncementUseCaseTest {
         )
         
         // When
-        let result = await #expect(throws: RequestError.noInternetConnection) {
+        let result = await #expect(throws: NetworkError.noInternetConnection) {
             try await useCase.execute(announcement: announcementFixture)
         }
         
         // Then
-        #expect(result == RequestError.noInternetConnection)
+        #expect(result == NetworkError.noInternetConnection)
     }
 }

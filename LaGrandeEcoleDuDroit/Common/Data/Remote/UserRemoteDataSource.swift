@@ -35,7 +35,7 @@ class UserRemoteDataSource {
     }
     
     func updateProfilePictureFileName(userId: String, fileName: String) async throws {
-        try await mapServerError {
+        try await mapRetrofitError {
             try await userOracleApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
         }
         
@@ -49,7 +49,7 @@ class UserRemoteDataSource {
     }
     
     func deleteProfilePictureFileName(userId: String) async throws {
-        try await mapServerError {
+        try await mapRetrofitError {
             try await userOracleApi.deleteProfilePictureFileName(userId: userId)
         }
         try await mapFirebaseException(
@@ -72,12 +72,12 @@ class UserRemoteDataSource {
     }
     
     private func createUserWithOracle(user: User) async throws {
-        try await mapServerError(
+        try await mapRetrofitError(
             block: { try await userOracleApi.createUser(user: user.toOracleUser()) },
             specificHandle: { urlResponse, serverResponse in
                 if let httpResponse = urlResponse as? HTTPURLResponse {
                     if httpResponse.statusCode == 403 {
-                        throw RequestError.forbidden
+                        throw NetworkError.forbidden
                     }
                     throw parseOracleError(code: serverResponse.code, message: serverResponse.message)
                 }

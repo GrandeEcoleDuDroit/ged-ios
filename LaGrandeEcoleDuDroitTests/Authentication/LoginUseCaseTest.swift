@@ -16,12 +16,12 @@ class LoginUseCaseTest {
         )
         
         // When
-        let error = await #expect(throws: RequestError.noInternetConnection.self) {
+        let error = await #expect(throws: NetworkError.noInternetConnection.self) {
             try await useCase.execute(email: self.email, password: self.password)
         }
         
         // Then
-        #expect(error == RequestError.noInternetConnection)
+        #expect(error == NetworkError.noInternetConnection)
     }
     
     @Test

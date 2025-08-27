@@ -6,8 +6,8 @@ private let tag = String(describing: FirebaseAuthenticationRepositoryImpl.self)
 
 class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
     private let firebaseAuthApi: FirebaseAuthApi
-    private var authIdToken: String? = nil
-    
+    var authIdToken: String?
+
     init(firebaseAuthApi: FirebaseAuthApi) {
         self.firebaseAuthApi = firebaseAuthApi
         listenAuthIdTokenChanges()
@@ -15,14 +15,6 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
     
     func isAuthenticated() -> Bool {
         firebaseAuthApi.isAuthenticated()
-    }
-    
-    func getAuthIdToken() async throws -> String? {
-        if let authIdToken = authIdToken {
-            authIdToken
-        } else {
-            try await firebaseAuthApi.getAuthToken()
-        }
     }
     
     func loginWithEmailAndPassword(email: String, password: String) async throws {
@@ -67,10 +59,10 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
         return if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
             switch authErrorCode {
                 case .wrongPassword, .userNotFound, .invalidCredential: AuthenticationError.invalidCredentials
-                case .emailAlreadyInUse: RequestError.dupplicateData
+                case .emailAlreadyInUse: NetworkError.dupplicateData
                 case .userDisabled: AuthenticationError.userDisabled
-                case .networkError: RequestError.noInternetConnection
-                case .tooManyRequests: RequestError.tooManyRequests
+                case .networkError: NetworkError.noInternetConnection
+                case .tooManyRequests: NetworkError.tooManyRequests
                 default: error
             }
         } else {

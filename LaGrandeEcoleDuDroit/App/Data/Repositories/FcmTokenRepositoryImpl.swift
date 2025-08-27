@@ -21,7 +21,7 @@ class FcmTokenRepositoryImpl: FcmTokenRepository {
             throw NSError()
         }
         
-        try await mapServerError {
+        try await mapRetrofitError {
             try await fcmApi.addToken(userId: userId, value: token.value)
         }
     }

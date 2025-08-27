@@ -21,7 +21,7 @@ class AuthenticationViewModel: ObservableObject {
             do {
                 try await loginUseCase.execute(email: email, password: password)
             }
-            catch let error as RequestError {
+            catch let error as NetworkError {
                 DispatchQueue.main.sync { [weak self] in
                     self?.uiState.loading = false
                     switch error {

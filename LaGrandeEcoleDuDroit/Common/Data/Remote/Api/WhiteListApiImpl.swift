@@ -1,13 +1,19 @@
 import Foundation
 
-class WhiteListApiImpl: WhiteListApi {    
+class WhiteListApiImpl: WhiteListApi {
+    private let tokenProvider: TokenProvider
+    
+    init(tokenProvider: TokenProvider) {
+        self.tokenProvider = tokenProvider
+    }
+    
     private func baseUrl(endPoint: String) -> URL? {
         URL.oracleUrl(endpoint: "/white-list" + endPoint)
     }
     
     func isUserWhiteListed(email: String) async throws -> (URLResponse, Bool) {
         guard let url = baseUrl(endPoint: "/user") else {
-            throw RequestError.invalidURL("Invalid URL")
+            throw NetworkError.invalidURL("Invalid URL")
         }
         
         let dataToSend: [String: String] = [
@@ -16,7 +22,8 @@ class WhiteListApiImpl: WhiteListApi {
         
         let request = try RequestUtils.formatPostRequest(
             dataToSend: dataToSend,
-            url: url
+            url: url,
+            authToken: tokenProvider.getAuthIdToken()
         )
         let session = RequestUtils.getUrlSession()
         

@@ -24,11 +24,11 @@ class RegisterUseCase {
         schoolLevel: SchoolLevel
     ) async throws {
         guard networkMonitor.isConnected else {
-            throw RequestError.noInternetConnection
+            throw NetworkError.noInternetConnection
         }
         
         guard try await whiteListRepository.isUserWhitelisted(email: email) else {
-            throw RequestError.forbidden
+            throw NetworkError.forbidden
         }
         
         let userId = try await authenticationRepository.registerWithEmailAndPassword(email: email, password: password)

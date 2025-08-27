@@ -14,19 +14,18 @@ class FcmApiImpl: FcmApi {
     
     func addToken(userId: String, value: String) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "add-token") else {
-            throw RequestError.invalidURL("Invalid URL")
+            throw NetworkError.invalidURL("Invalid URL")
         }
         
         let dataToSend: [String: String] = [
             "userId": userId,
             "token": value
         ]
-        let authIdToken = await tokenProvider.getAuthIdToken()
         
         let request = try RequestUtils.formatPostRequest(
             dataToSend: dataToSend,
             url: url,
-            authToken: authIdToken
+            authToken: tokenProvider.getAuthIdToken()
         )
         let session = RequestUtils.getUrlSession()
         
@@ -37,19 +36,18 @@ class FcmApiImpl: FcmApi {
     
     func sendNotification(recipientId: String, fcmMessage: String) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "send-notification") else {
-            throw RequestError.invalidURL("Invalid URL")
+            throw NetworkError.invalidURL("Invalid URL")
         }
         
         let dataToSend: [String: String] = [
             "recipientId": recipientId,
             "fcmMessage": fcmMessage
         ]
-        let authIdToken = await tokenProvider.getAuthIdToken()
-
+        
         let request = try RequestUtils.formatPostRequest(
             dataToSend: dataToSend,
             url: url,
-            authToken: authIdToken
+            authToken: tokenProvider.getAuthIdToken()
         )
         let session = RequestUtils.getUrlSession()
         

@@ -12,7 +12,7 @@ class ResendAnnouncementUseCase {
     
     func execute(announcement: Announcement) throws {
         guard networkMonitor.isConnected else {
-            throw RequestError.noInternetConnection
+            throw NetworkError.noInternetConnection
         }
         
         Task {

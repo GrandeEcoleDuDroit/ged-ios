@@ -13,7 +13,7 @@ func mapFirebaseException<T>(
     catch let error as URLError {
         e(tag, error.localizedDescription, error)
         switch error.code {
-            case .notConnectedToInternet, .cannotFindHost: throw RequestError.noInternetConnection
+            case .notConnectedToInternet, .cannotFindHost: throw NetworkError.noInternetConnection
             default : throw error
         }
     }
@@ -23,7 +23,7 @@ func mapFirebaseException<T>(
         if let errorCode = FirestoreErrorCode.Code(rawValue: error.code) {
             switch errorCode {
                 case .resourceExhausted:
-                    throw RequestError.tooManyRequests
+                    throw NetworkError.tooManyRequests
                 default:
                     throw handleSpecificException(error)
             }
@@ -38,7 +38,7 @@ func mapFirebaseException<T>(
     }
 }
 
-func mapServerError(
+func mapRetrofitError(
     block: () async throws -> (URLResponse, ServerResponse),
     specificHandle: ((URLResponse, ServerResponse) throws -> Void)? = nil
 ) async throws -> Void {
@@ -50,39 +50,29 @@ func mapServerError(
                 return try specificHandle!(urlResponse, serverResponse)
             }
             
-            throw RequestError.internalServer(serverResponse.error)
+            throw NetworkError.internalServer(serverResponse.error)
         }
     }
 }
 
-func handleServerError<T>(
-    tag: String = "Unknown tag",
-    message: String? = nil,
+func handleRetrofitError<T>(
     block: () async throws -> (URLResponse, T),
     specificHandle: ((URLResponse, T) -> T)? = nil
 ) async throws -> T {
     let (urlResponse, data) = try await block()
-
+    
     if let httpResponse = urlResponse as? HTTPURLResponse {
         if httpResponse.statusCode >= 400 {
-            if let specificHandle = specificHandle {
-                return specificHandle(urlResponse, data)
+            guard specificHandle == nil else {
+                return specificHandle!(urlResponse, data)
             }
-
-            let errorMessage: String? = {
-                if let data = data as? Data {
-                    return String(data: data, encoding: .utf8)
-                } else {
-                    return nil
-                }
-            }()
-
-            let error: RequestError = switch httpResponse.statusCode {
-                case 401: .unauthorized
-                default: .internalServer(errorMessage)
+            
+            if let data = data as? Data {
+                let errorBody = String(data: data, encoding: .utf8)
+                throw NetworkError.internalServer(errorBody)
+            } else {
+                throw NetworkError.internalServer(nil)
             }
-            e(tag, message ?? "HTTP Error \(httpResponse.statusCode)")
-            throw error
         } else {
             return data
         }
@@ -90,3 +80,4 @@ func handleServerError<T>(
         return data
     }
 }
+
