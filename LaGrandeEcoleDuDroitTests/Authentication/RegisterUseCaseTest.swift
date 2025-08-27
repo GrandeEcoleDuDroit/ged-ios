@@ -19,7 +19,7 @@ class RegisterUseCaseTest {
         )
         
         // When
-        let error = await #expect(throws: NetworkError.noInternetConnection.self) {
+        let error = await #expect(throws: RequestError.noInternetConnection.self) {
             try await useCase.execute(
                 email: self.email,
                 password: self.password,
@@ -30,7 +30,7 @@ class RegisterUseCaseTest {
         }
         
         // Then
-        #expect(error == NetworkError.noInternetConnection)
+        #expect(error == RequestError.noInternetConnection)
     }
     
     @Test
@@ -43,7 +43,7 @@ class RegisterUseCaseTest {
         )
         
         // When
-        let error = await #expect(throws: NetworkError.forbidden.self) {
+        let error = await #expect(throws: RequestError.forbidden.self) {
             try await useCase.execute(
                 email: self.email,
                 password: self.password,
@@ -54,7 +54,7 @@ class RegisterUseCaseTest {
         }
         
         // Then
-        #expect(error == NetworkError.forbidden)
+        #expect(error == RequestError.forbidden)
     }
 }
 

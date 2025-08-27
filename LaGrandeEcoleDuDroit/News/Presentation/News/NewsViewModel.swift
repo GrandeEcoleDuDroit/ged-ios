@@ -92,7 +92,7 @@ class NewsViewModel: ObservableObject {
     }
     
     private func mapErrorMessage(_ error: Error) -> String {
-        if let error = error as? NetworkError {
+        if let error = error as? RequestError {
             switch error {
                 case .noInternetConnection: getString(.noInternetConectionError)
                 default: getString(.announcement_refresh_error)

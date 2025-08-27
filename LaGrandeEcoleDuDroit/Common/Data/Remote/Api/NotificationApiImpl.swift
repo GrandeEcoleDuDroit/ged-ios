@@ -15,7 +15,7 @@ class NotificationApiImpl: NotificationApi {
                 throw NSError()
             }
             
-            try await mapRetrofitError {
+            try await mapServerError {
                 try await fcmApi.sendNotification(recipientId: recipientId, fcmMessage: fcmMessageString)
             }
         } catch {

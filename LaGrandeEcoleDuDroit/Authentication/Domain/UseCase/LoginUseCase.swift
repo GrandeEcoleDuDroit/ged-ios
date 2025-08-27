@@ -15,7 +15,7 @@ class LoginUseCase {
     
     func execute(email: String, password: String) async throws {
         guard networkMonitor.isConnected else {
-            throw NetworkError.noInternetConnection
+            throw RequestError.noInternetConnection
         }
         
         try await withTimeout(10000) {

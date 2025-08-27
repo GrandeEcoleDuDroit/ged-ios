@@ -31,7 +31,7 @@ class ThirdRegistrationViewModel: ObservableObject {
                     lastName: lastName,
                     schoolLevel: schoolLevel
                 )
-            } catch let error as NetworkError {
+            } catch let error as RequestError {
                 DispatchQueue.main.sync { [weak self] in
                     self?.uiState.loading = false
                     switch error {
@@ -84,7 +84,7 @@ class ThirdRegistrationViewModel: ObservableObject {
                  switch authError {
                      default: getString(.unknownError)
                  }
-            } else if let networkError = e as? NetworkError {
+            } else if let networkError = e as? RequestError {
                 switch networkError {
                     case .forbidden: getString(.userNotWhiteListedError)
                     case .dupplicateData: getString(.emailAlreadyAssociatedError)

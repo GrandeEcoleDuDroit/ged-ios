@@ -12,7 +12,7 @@ func mapNetworkErrorMessage(
             case .timedOut: getString(.timeOutError)
             default: specificMap()
         }
-    } else if let networkError = error as? NetworkError {
+    } else if let networkError = error as? RequestError {
         switch networkError {
             case .internalServer: getString(.internalServerError)
             case .timeout: getString(.timeOutError)
