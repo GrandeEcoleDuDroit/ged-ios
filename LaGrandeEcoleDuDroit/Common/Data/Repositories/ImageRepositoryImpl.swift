@@ -31,7 +31,7 @@ class ImageRepositoryImpl: ImageRepository {
     }
     
     func uploadImage(imageData: Data, fileName: String) async throws {
-        try await mapRetrofitError {
+        try await mapServerError {
             try await imageRemoteDataSource.uploadImage(
                 imageData: imageData,
                 fileName: fileName
@@ -41,7 +41,7 @@ class ImageRepositoryImpl: ImageRepository {
     }
     
     func deleteImage(fileName: String) async throws {
-        try await mapRetrofitError {
+        try await mapServerError {
             try await imageRemoteDataSource.deleteImage(fileName: fileName)
         }
         imageLocalDataSource.removeImage(forKey: fileName)

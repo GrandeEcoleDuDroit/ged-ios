@@ -13,13 +13,14 @@ class UserOracleApiImpl: UserOracleApi {
     
     func createUser(user: OracleUser) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "create") else {
-            throw NetworkError.invalidURL("Invalid URL")
+            throw RequestError.invalidURL("Invalid URL")
         }
+        let authIdToken = await tokenProvider.getAuthIdToken()
         
         let request = try RequestUtils.formatPostRequest(
             dataToSend: user,
             url: url,
-            authToken: tokenProvider.getAuthIdToken()
+            authToken: authIdToken
         )
         let session = RequestUtils.getUrlSession()
         
@@ -30,18 +31,19 @@ class UserOracleApiImpl: UserOracleApi {
     
     func updateProfilePictureFileName(userId: String, fileName: String) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "profile-picture-file-name") else {
-            throw NetworkError.invalidURL("Invalid URL")
+            throw RequestError.invalidURL("Invalid URL")
         }
         
         let dataToSend: [String: String] = [
             OracleUserDataFields.userId: userId,
             OracleUserDataFields.userProfilePictureFileName: fileName
         ]
+        let authIdToken = await tokenProvider.getAuthIdToken()
         
         let request = try RequestUtils.formatPutRequest(
             dataToSend: dataToSend,
             url: url,
-            authToken: tokenProvider.getAuthIdToken()
+            authToken: authIdToken
         )
         let session = RequestUtils.getUrlSession()
         
@@ -52,10 +54,11 @@ class UserOracleApiImpl: UserOracleApi {
     
     func deleteProfilePictureFileName(userId: String) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "profile-picture-file-name/\(userId)") else {
-            throw NetworkError.invalidURL("Invalid URL")
+            throw RequestError.invalidURL("Invalid URL")
         }
-        
-        let request = try RequestUtils.formatDeleteRequest(url: url, authToken: tokenProvider.getAuthIdToken())
+        let authIdToken = await tokenProvider.getAuthIdToken()
+
+        let request = try RequestUtils.formatDeleteRequest(url: url, authToken: authIdToken)
         let session = RequestUtils.getUrlSession()
         
         let (dataReceived, response) = try await session.data(for: request)

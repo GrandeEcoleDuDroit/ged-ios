@@ -12,7 +12,7 @@ class DeleteAnnouncementUseCase {
     
     func execute(announcement: Announcement) async throws {
         guard networkMonitor.isConnected else {
-            throw NetworkError.noInternetConnection
+            throw RequestError.noInternetConnection
         }
         
         if case announcement.state = .published {

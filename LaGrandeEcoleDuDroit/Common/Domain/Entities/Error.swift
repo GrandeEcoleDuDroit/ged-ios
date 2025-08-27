@@ -1,4 +1,4 @@
-enum NetworkError: Error, Equatable {
+enum RequestError: Error, Equatable {
     case internalServer(String?)
     case tooManyRequests
     case dupplicateData
@@ -6,6 +6,7 @@ enum NetworkError: Error, Equatable {
     case noInternetConnection
     case timeout
     case invalidURL(String)
+    case unauthorized
 }
 
 enum UserError: Error {

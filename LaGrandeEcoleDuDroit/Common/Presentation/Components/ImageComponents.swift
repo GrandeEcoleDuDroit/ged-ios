@@ -5,6 +5,7 @@ struct ProfilePicture: View {
     var scale: CGFloat = 1.0
 
     var body: some View {
+<<<<<<< Updated upstream
         switch imagePhase {
             case .empty: DefaultProfilePicture(scale: scale)
 
@@ -22,6 +23,30 @@ struct ProfilePicture: View {
                     Image(uiImage: uIImage).fitCircle(scale: scale)
                 } else {
                     ProfilePictureError(scale: scale)
+=======
+        if let url = url {
+            AsyncImage(url: URL(string: url)) { phase in
+                switch phase {
+                    case .empty:
+                        ProgressView()
+                            .frame(
+                                width: GedNumber.defaultImageSize * scale,
+                                height: GedNumber.defaultImageSize * scale
+                            )
+                            .background(.profilePictureLoading)
+                            .clipShape(Circle())
+                        
+                    case .success(let image):
+                        image
+                            .fitCircle(scale: scale)
+                            .background(.clear)
+                        
+                    case .failure:
+                        ProfilePictureError(scale: scale)
+                        
+                    @unknown default:
+                        DefaultProfilePicture(scale: scale)
+>>>>>>> Stashed changes
                 }
 
             case .failure: ProfilePictureError(scale: scale)
