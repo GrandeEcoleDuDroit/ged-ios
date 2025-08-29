@@ -16,12 +16,13 @@ class UserOracleApiImpl: UserOracleApi {
             throw NetworkError.invalidURL("Invalid URL")
         }
         
+        let session = RequestUtils.getUrlSession()
+        let authIdToken = await tokenProvider.getAuthIdToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: user,
             url: url,
-            authToken: tokenProvider.getAuthIdToken()
+            authToken: authIdToken
         )
-        let session = RequestUtils.getUrlSession()
         
         let (dataReceived, response) = try await session.data(for: request)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
@@ -38,12 +39,13 @@ class UserOracleApiImpl: UserOracleApi {
             OracleUserDataFields.userProfilePictureFileName: fileName
         ]
         
+        let session = RequestUtils.getUrlSession()
+        let authIdToken = await tokenProvider.getAuthIdToken()
         let request = try RequestUtils.formatPutRequest(
             dataToSend: dataToSend,
             url: url,
-            authToken: tokenProvider.getAuthIdToken()
+            authToken: authIdToken
         )
-        let session = RequestUtils.getUrlSession()
         
         let (dataReceived, response) = try await session.data(for: request)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
@@ -55,8 +57,12 @@ class UserOracleApiImpl: UserOracleApi {
             throw NetworkError.invalidURL("Invalid URL")
         }
         
-        let request = try RequestUtils.formatDeleteRequest(url: url, authToken: tokenProvider.getAuthIdToken())
         let session = RequestUtils.getUrlSession()
+        let authIdToken = await tokenProvider.getAuthIdToken()
+        let request = RequestUtils.formatDeleteRequest(
+            url: url,
+            authToken: authIdToken
+        )
         
         let (dataReceived, response) = try await session.data(for: request)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)

@@ -4,6 +4,8 @@ import Combine
 protocol FirebaseAuthApi {
     func isAuthenticated() -> Bool
     
+    func getAuthToken() async throws -> String?
+    
     func listenTokenChanges(completion: @escaping (String?) -> Void)
         
     func signIn(email: String, password: String) async throws

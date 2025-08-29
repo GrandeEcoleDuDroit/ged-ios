@@ -22,12 +22,13 @@ class FcmApiImpl: FcmApi {
             "token": value
         ]
         
+        let session = RequestUtils.getUrlSession()
+        let authIdToken = await tokenProvider.getAuthIdToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: dataToSend,
             url: url,
-            authToken: tokenProvider.getAuthIdToken()
+            authToken: authIdToken
         )
-        let session = RequestUtils.getUrlSession()
         
         let (dataReceived, response) = try await session.data(for: request)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
@@ -43,13 +44,13 @@ class FcmApiImpl: FcmApi {
             "recipientId": recipientId,
             "fcmMessage": fcmMessage
         ]
-        
+        let session = RequestUtils.getUrlSession()
+        let authIdToken = await tokenProvider.getAuthIdToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: dataToSend,
             url: url,
-            authToken: tokenProvider.getAuthIdToken()
+            authToken: authIdToken
         )
-        let session = RequestUtils.getUrlSession()
         
         let (dataReceived, response) = try await session.data(for: request)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)

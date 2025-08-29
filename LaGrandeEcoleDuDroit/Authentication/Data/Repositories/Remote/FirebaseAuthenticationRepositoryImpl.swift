@@ -17,6 +17,14 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
         firebaseAuthApi.isAuthenticated()
     }
     
+    func getAuthIdToken() async throws -> String? {
+        if let authIdToken = authIdToken {
+            authIdToken
+        } else {
+            try await firebaseAuthApi.getAuthToken()
+        }
+    }
+    
     func loginWithEmailAndPassword(email: String, password: String) async throws {
         try await mapFirebaseException(
             block: { try await firebaseAuthApi.signIn(email: email, password: password) },
