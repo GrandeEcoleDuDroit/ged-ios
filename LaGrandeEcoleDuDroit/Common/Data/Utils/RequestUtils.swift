@@ -49,7 +49,7 @@ class RequestUtils {
         return request
     }
     
-    static func formatDeleteRequest(url: URL, authToken: String? = nil) throws -> URLRequest {
+    static func formatDeleteRequest(url: URL, authToken: String? = nil) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
         if let authToken = authToken {

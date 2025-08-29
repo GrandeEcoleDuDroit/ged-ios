@@ -15,8 +15,11 @@ class AnnouncementLocalDataSource {
     }
     
     func listenDataChange() -> AnyPublisher<Notification, Never> {
-        NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: context)
-            .eraseToAnyPublisher()
+        NotificationCenter.default.publisher(
+            for: .NSManagedObjectContextDidSave,
+            object: context
+        )
+        .eraseToAnyPublisher()
     }
     
     func getAnnouncements() async throws -> [Announcement] {
@@ -136,7 +139,7 @@ private extension LocalAnnouncement {
         userEmail = announcement.author.email
         userSchoolLevel = announcement.author.schoolLevel.rawValue
         userIsMember = announcement.author.isMember
-        userProfilePictureFileName = announcement.author.profilePictureUrl
+        userProfilePictureFileName = UrlUtils.getFileNameFromUrl(url: announcement.author.profilePictureUrl)
     }
     
     func equals(_ announcement: Announcement) -> Bool {

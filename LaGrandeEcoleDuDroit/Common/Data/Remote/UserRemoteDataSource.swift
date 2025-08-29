@@ -17,11 +17,15 @@ class UserRemoteDataSource {
     }
     
     func getUser(userId: String) async throws -> User? {
-        try await userFirestoreApi.getUser(userId: userId)?.toUser()
+        try await mapFirebaseException {
+            try await userFirestoreApi.getUser(userId: userId)?.toUser()
+        }
     }
     
     func getUserWithEmail(email: String) async throws -> User? {
-        try await userFirestoreApi.getUserWithEmail(email: email)?.toUser()
+        try await mapFirebaseException {
+            try await userFirestoreApi.getUserWithEmail(email: email)?.toUser()
+        }
     }
     
     func getUsers() async -> [User] {
@@ -34,18 +38,23 @@ class UserRemoteDataSource {
     }
     
     func updateProfilePictureFileName(userId: String, fileName: String) async throws {
-        try await mapRetrofitError {
+        try await mapServerError {
             try await userOracleApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
         }
         
-        userFirestoreApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
+        try await mapFirebaseException {
+            userFirestoreApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
+        }
     }
     
     func deleteProfilePictureFileName(userId: String) async throws {
-        try await mapRetrofitError {
+        try await mapServerError {
             try await userOracleApi.deleteProfilePictureFileName(userId: userId)
         }
-        userFirestoreApi.deleteProfilePictureFileName(userId: userId)
+        
+        try await mapFirebaseException {
+            userFirestoreApi.deleteProfilePictureFileName(userId: userId)
+        }
     }
     
     private func createUserWithFirestore(user: User) async throws {
@@ -55,7 +64,7 @@ class UserRemoteDataSource {
     }
     
     private func createUserWithOracle(user: User) async throws {
-        try await mapRetrofitError(
+        try await mapServerError(
             block: { try await userOracleApi.createUser(user: user.toOracleUser()) },
             specificHandle: { urlResponse, serverResponse in
                 if let httpResponse = urlResponse as? HTTPURLResponse {

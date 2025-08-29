@@ -16,3 +16,9 @@ extension String {
         return firstLetter + remainingText
     }
 }
+
+extension String? {
+    func toString() -> String {
+        self ?? ""
+    }
+}

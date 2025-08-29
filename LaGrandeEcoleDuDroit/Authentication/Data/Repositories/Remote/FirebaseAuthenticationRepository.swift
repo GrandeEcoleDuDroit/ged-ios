@@ -1,9 +1,9 @@
 import Combine
 
 protocol FirebaseAuthenticationRepository {
-    var authIdToken: String?{ get }
-    
     func isAuthenticated() -> Bool
+    
+    func getAuthIdToken() async throws -> String?
     
     func loginWithEmailAndPassword(email: String, password: String) async throws
     

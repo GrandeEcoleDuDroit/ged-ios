@@ -31,11 +31,10 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
     
     private func loadAnnouncements() {
         Task {
-            do {
-                try await announcementsSubject.send(announcementLocalDataSource.getAnnouncements())
-            } catch {
-                e(tag, "Failed to load announcements from local data source: \(error)")
+            guard let announcements = try? await announcementLocalDataSource.getAnnouncements() else {
+                return
             }
+            announcementsSubject.send(announcements)
         }
     }
     
@@ -46,11 +45,7 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
     }
     
     func refreshAnnouncements() async throws {
-        let remoteAnnouncements = try await mapFirebaseException(
-            block: { try await announcementRemoteDataSource.getAnnouncements() },
-            tag: tag,
-            message: "Failed to fetch remote announcements"
-        )
+        let remoteAnnouncements = try await announcementRemoteDataSource.getAnnouncements()
         
         let announcementToDelete = announcementsSubject.value
             .filter { $0.state == .published }
@@ -68,22 +63,12 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
     
     func createAnnouncement(announcement: Announcement) async throws {
         try await announcementLocalDataSource.upsertAnnouncement(announcement: announcement)
-        try await mapFirebaseException(
-            block: { try await announcementRemoteDataSource.createAnnouncement(announcement: announcement) },
-            tag: tag,
-            message: "Failed to create remote announcement"
-        )
+        try await announcementRemoteDataSource.createAnnouncement(announcement: announcement)
     }
     
     func updateAnnouncement(announcement: Announcement) async throws {
-        try await mapFirebaseException(
-            block: {
-                try await announcementRemoteDataSource.updateAnnouncement(announcement: announcement)
-                try await announcementLocalDataSource.updateAnnouncement(announcement: announcement)
-            },
-            tag: tag,
-            message: "Failed to update announcement"
-        )
+        try await announcementRemoteDataSource.updateAnnouncement(announcement: announcement)
+        try await announcementLocalDataSource.updateAnnouncement(announcement: announcement)
     }
     
     func updateLocalAnnouncement(announcement: Announcement) async throws {
@@ -91,14 +76,8 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
     }
     
     func deleteAnnouncement(announcementId: String) async throws {
-        try await mapFirebaseException(
-            block: {
-                try await announcementRemoteDataSource.deleteAnnouncement(announcementId: announcementId)
-                try await announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
-            },
-            tag: tag,
-            message: "Failed to delete announcement"
-        )
+        try await announcementRemoteDataSource.deleteAnnouncement(announcementId: announcementId)
+        try await announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
     }
     
     func deleteLocalAnnouncement(announcementId: String) async throws {

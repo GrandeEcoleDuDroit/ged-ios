@@ -20,12 +20,13 @@ class WhiteListApiImpl: WhiteListApi {
             OracleUserDataFields.userEmail: email
         ]
         
+        let session = RequestUtils.getUrlSession()
+        let authIdToken = await tokenProvider.getAuthIdToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: dataToSend,
             url: url,
-            authToken: tokenProvider.getAuthIdToken()
+            authToken: authIdToken
         )
-        let session = RequestUtils.getUrlSession()
         
         let (dataReceived, urlResponse) = try await session.data(for: request)
         
