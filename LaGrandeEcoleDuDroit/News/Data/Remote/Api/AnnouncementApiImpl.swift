@@ -18,9 +18,13 @@ class AnnouncementApiImpl: AnnouncementApi {
         }
         
         let session = RequestUtils.getUrlSession()
-        let getRequest = RequestUtils.formatGetRequest(url: url, authToken: tokenProvider.getAuthIdToken())
+        let authIdToken = await tokenProvider.getAuthIdToken()
+        let request = RequestUtils.formatGetRequest(
+            url: url,
+            authToken: authIdToken
+        )
         
-        let (data, urlResponse) = try await session.data(for: getRequest)
+        let (data, urlResponse) = try await session.data(for: request)
         let announcements = try JSONDecoder().decode([RemoteAnnouncementWithUser].self, from: data)
         return (urlResponse, announcements)
     }
@@ -31,13 +35,14 @@ class AnnouncementApiImpl: AnnouncementApi {
         }
         
         let session = RequestUtils.getUrlSession()
-        let postRequest = try RequestUtils.formatPostRequest(
+        let authIdToken = await tokenProvider.getAuthIdToken()
+        let request = try RequestUtils.formatPostRequest(
             dataToSend: remoteAnnouncement,
             url: url,
-            authToken: tokenProvider.getAuthIdToken()
+            authToken: authIdToken
         )
         
-        let (data, urlResponse) = try await session.data(for: postRequest)
+        let (data, urlResponse) = try await session.data(for: request)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
         return (urlResponse, serverResponse)
     }
@@ -48,9 +53,13 @@ class AnnouncementApiImpl: AnnouncementApi {
         }
         
         let session = RequestUtils.getUrlSession()
-        let deleteRequest = try RequestUtils.formatDeleteRequest(url: url, authToken: tokenProvider.getAuthIdToken())
+        let authIdToken = await tokenProvider.getAuthIdToken()
+        let request = RequestUtils.formatDeleteRequest(
+            url: url,
+            authToken: authIdToken
+        )
         
-        let (data, urlResponse) = try await session.data(for: deleteRequest)
+        let (data, urlResponse) = try await session.data(for: request)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
         return (urlResponse, serverResponse)
     }
@@ -61,13 +70,14 @@ class AnnouncementApiImpl: AnnouncementApi {
         }
         
         let session = RequestUtils.getUrlSession()
-        let postRequest = try RequestUtils.formatPostRequest(
+        let authIdToken = await tokenProvider.getAuthIdToken()
+        let request = try RequestUtils.formatPostRequest(
             dataToSend: remoteAnnouncement,
             url: url,
-            authToken: tokenProvider.getAuthIdToken()
+            authToken: authIdToken
         )
         
-        let (data, urlResponse) = try await session.data(for: postRequest)
+        let (data, urlResponse) = try await session.data(for: request)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
         return (urlResponse, serverResponse)
     }

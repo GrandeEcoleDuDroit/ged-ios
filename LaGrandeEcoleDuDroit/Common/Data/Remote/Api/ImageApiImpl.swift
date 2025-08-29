@@ -32,7 +32,7 @@ class ImageApiImpl: ImageApi {
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.setValue("\(body.count)", forHTTPHeaderField: "Content-Length")
         request.httpBody = body
-        if let authIdToken = tokenProvider.getAuthIdToken() {
+        if let authIdToken = await tokenProvider.getAuthIdToken() {
             request.setValue("Bearer \(authIdToken)", forHTTPHeaderField: "Authorization")
         }
         
@@ -49,9 +49,13 @@ class ImageApiImpl: ImageApi {
         }
         
         let sessions = RequestUtils.getUrlSession()
-        let deleteRequest = try RequestUtils.formatDeleteRequest(url: url, authToken: tokenProvider.getAuthIdToken())
+        let authIdToken = await tokenProvider.getAuthIdToken()
+        let request = RequestUtils.formatDeleteRequest(
+            url: url,
+            authToken: authIdToken
+        )
         
-        let (data, urlResponse) = try await sessions.data(for: deleteRequest)
+        let (data, urlResponse) = try await sessions.data(for: request)
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
         return (urlResponse, serverResponse)
     }

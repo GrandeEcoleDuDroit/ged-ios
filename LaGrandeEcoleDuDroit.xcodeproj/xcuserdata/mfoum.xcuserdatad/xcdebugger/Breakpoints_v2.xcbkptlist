@@ -3,4 +3,452 @@
    uuid = "7568335E-A45D-4C0F-BBD4-02C995B29080"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A1635310-1C5A-4318-BD7B-62686BE9F5F8"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Presentation/Announcement/EditAnnouncement/EditAnnouncementViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "38"
+            endingLineNumber = "38"
+            landmarkName = "updateAnnouncement()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F8468707-F1EB-47D4-AE97-EC824C86AF61"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Presentation/Announcement/EditAnnouncement/EditAnnouncementViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
+            landmarkName = "updateAnnouncement()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9965E562-2B3C-487B-BA61-DF5510339190"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Presentation/Announcement/EditAnnouncement/EditAnnouncementViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "updateAnnouncement()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "ADA292D5-54ED-4958-A56E-E1BF13D80C52"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Presentation/Announcement/ReadAnnouncement/ReadAnnouncementViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "35"
+            endingLineNumber = "35"
+            landmarkName = "initUiState()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "82EB9C0E-DF09-4142-B108-93F9F589262E"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Data/Repositories/AnnouncementRepositoryImpl.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "70"
+            endingLineNumber = "70"
+            landmarkName = "updateAnnouncement(announcement:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "82EB9C0E-DF09-4142-B108-93F9F589262E - b587d6f46f5f1b25"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for GrandeEcoleDuDroit.AnnouncementRepositoryImpl.updateAnnouncement(announcement: GrandeEcoleDuDroit.Announcement) async throws -&gt; ()"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Repositories/AnnouncementRepositoryImpl.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "70"
+                  endingLineNumber = "70">
+               </Location>
+               <Location
+                  uuid = "82EB9C0E-DF09-4142-B108-93F9F589262E - c70c39c858a9321"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for GrandeEcoleDuDroit.AnnouncementRepositoryImpl.updateAnnouncement(announcement: GrandeEcoleDuDroit.Announcement) async throws -&gt; ()"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Repositories/AnnouncementRepositoryImpl.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "70"
+                  endingLineNumber = "70">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3944904E-E6B6-4587-8BCB-6AF075B93678"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Data/Repositories/AnnouncementRepositoryImpl.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "71"
+            endingLineNumber = "71"
+            landmarkName = "updateAnnouncement(announcement:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "3944904E-E6B6-4587-8BCB-6AF075B93678 - f84e5d6890605702"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for GrandeEcoleDuDroit.AnnouncementRepositoryImpl.updateAnnouncement(announcement: GrandeEcoleDuDroit.Announcement) async throws -&gt; ()"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Repositories/AnnouncementRepositoryImpl.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "71"
+                  endingLineNumber = "71">
+               </Location>
+               <Location
+                  uuid = "3944904E-E6B6-4587-8BCB-6AF075B93678 - ea140eda80060d01"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) suspend resume partial function for GrandeEcoleDuDroit.AnnouncementRepositoryImpl.updateAnnouncement(announcement: GrandeEcoleDuDroit.Announcement) async throws -&gt; ()"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Repositories/AnnouncementRepositoryImpl.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "71"
+                  endingLineNumber = "71">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2AB55A8E-57F2-4F55-9BF2-A1DBEE35DF1E"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Data/Remote/AnnouncementRemoteDataSource.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "updateAnnouncement(announcement:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "2AB55A8E-57F2-4F55-9BF2-A1DBEE35DF1E - 6cf7f6e69e936e44"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for GrandeEcoleDuDroit.AnnouncementRemoteDataSource.updateAnnouncement(announcement: GrandeEcoleDuDroit.Announcement) async throws -&gt; ()"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Remote/AnnouncementRemoteDataSource.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "29"
+                  endingLineNumber = "29">
+               </Location>
+               <Location
+                  uuid = "2AB55A8E-57F2-4F55-9BF2-A1DBEE35DF1E - ce13c70d55f7b024"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () async throws -&gt; (__C.NSURLResponse, GrandeEcoleDuDroit.ServerResponse) in GrandeEcoleDuDroit.AnnouncementRemoteDataSource.updateAnnouncement(announcement: GrandeEcoleDuDroit.Announcement) async throws -&gt; ()"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Remote/AnnouncementRemoteDataSource.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "29"
+                  endingLineNumber = "29">
+               </Location>
+               <Location
+                  uuid = "2AB55A8E-57F2-4F55-9BF2-A1DBEE35DF1E - f95ce782f41380e2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for closure #1 () async throws -&gt; (__C.NSURLResponse, GrandeEcoleDuDroit.ServerResponse) in GrandeEcoleDuDroit.AnnouncementRemoteDataSource.updateAnnouncement(announcement: GrandeEcoleDuDroit.Announcement) async throws -&gt; ()"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Remote/AnnouncementRemoteDataSource.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "29"
+                  endingLineNumber = "29">
+               </Location>
+               <Location
+                  uuid = "2AB55A8E-57F2-4F55-9BF2-A1DBEE35DF1E - 8a73a1edf8810480"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 () async throws -&gt; (__C.NSURLResponse, GrandeEcoleDuDroit.ServerResponse) in GrandeEcoleDuDroit.AnnouncementRemoteDataSource.updateAnnouncement(announcement: GrandeEcoleDuDroit.Announcement) async throws -&gt; ()"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Remote/AnnouncementRemoteDataSource.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "29"
+                  endingLineNumber = "29">
+               </Location>
+               <Location
+                  uuid = "2AB55A8E-57F2-4F55-9BF2-A1DBEE35DF1E - fc07c1187afe46b1"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for closure #1 () async throws -&gt; (__C.NSURLResponse, GrandeEcoleDuDroit.ServerResponse) in GrandeEcoleDuDroit.AnnouncementRemoteDataSource.updateAnnouncement(announcement: GrandeEcoleDuDroit.Announcement) async throws -&gt; ()"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Remote/AnnouncementRemoteDataSource.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "29"
+                  endingLineNumber = "29">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DC359123-A160-4B10-8A82-C09556214937"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Data/Repositories/AnnouncementRepositoryImpl.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
+            landmarkName = "listenDataChanges()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "22CE9524-9167-4204-9CC6-0A43D6412655"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Data/Repositories/AnnouncementRepositoryImpl.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "37"
+            endingLineNumber = "37"
+            landmarkName = "loadAnnouncements()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "22CE9524-9167-4204-9CC6-0A43D6412655 - 2cae1d60a4a86fdb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 () async -&gt; () in GrandeEcoleDuDroit.AnnouncementRepositoryImpl.loadAnnouncements() -&gt; ()"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Repositories/AnnouncementRepositoryImpl.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "37"
+                  endingLineNumber = "37">
+               </Location>
+               <Location
+                  uuid = "22CE9524-9167-4204-9CC6-0A43D6412655 - 40a4b443db9d1dd4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for closure #1 () async -&gt; () in GrandeEcoleDuDroit.AnnouncementRepositoryImpl.loadAnnouncements() -&gt; ()"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Repositories/AnnouncementRepositoryImpl.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "37"
+                  endingLineNumber = "37">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "EE8CF8FB-C1F4-4853-AE30-13A5391802D3"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Data/Repositories/AnnouncementRepositoryImpl.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
+            landmarkName = "getAnnouncementPublisher(announcementId:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "EE8CF8FB-C1F4-4853-AE30-13A5391802D3 - 2624eca30b5acbf6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Array&lt;GrandeEcoleDuDroit.Announcement&gt;) -&gt; Swift.Optional&lt;GrandeEcoleDuDroit.Announcement&gt; in GrandeEcoleDuDroit.AnnouncementRepositoryImpl.getAnnouncementPublisher(announcementId: Swift.String) -&gt; Combine.AnyPublisher&lt;Swift.Optional&lt;GrandeEcoleDuDroit.Announcement&gt;, Swift.Never&gt;"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Repositories/AnnouncementRepositoryImpl.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "43"
+                  endingLineNumber = "43">
+               </Location>
+               <Location
+                  uuid = "EE8CF8FB-C1F4-4853-AE30-13A5391802D3 - f0a76cc2740913c9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (GrandeEcoleDuDroit.Announcement) -&gt; Swift.Bool in closure #1 (Swift.Array&lt;GrandeEcoleDuDroit.Announcement&gt;) -&gt; Swift.Optional&lt;GrandeEcoleDuDroit.Announcement&gt; in GrandeEcoleDuDroit.AnnouncementRepositoryImpl.getAnnouncementPublisher(announcementId: Swift.String) -&gt; Combine.AnyPublisher&lt;Swift.Optional&lt;GrandeEcoleDuDroit.Announcement&gt;, Swift.Never&gt;"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Repositories/AnnouncementRepositoryImpl.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "43"
+                  endingLineNumber = "43">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7E25B155-985B-4294-B03F-8738D6966AC5"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Data/Remote/Api/AnnouncementApiImpl.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "75"
+            endingLineNumber = "75"
+            landmarkName = "updateAnnouncement(remoteAnnouncement:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A97F1334-866B-40DA-97C4-E4A7B6135FAB"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Data/Local/AnnouncementLocalDataSource.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
+            landmarkName = "updateAnnouncement(announcement:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "A97F1334-866B-40DA-97C4-E4A7B6135FAB - 886fc98a5545fdf"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for GrandeEcoleDuDroit.AnnouncementLocalDataSource.updateAnnouncement(announcement: GrandeEcoleDuDroit.Announcement) async throws -&gt; ()"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Local/AnnouncementLocalDataSource.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "43"
+                  endingLineNumber = "43">
+               </Location>
+               <Location
+                  uuid = "A97F1334-866B-40DA-97C4-E4A7B6135FAB - 78bc97e4355f03d9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for GrandeEcoleDuDroit.AnnouncementLocalDataSource.updateAnnouncement(announcement: GrandeEcoleDuDroit.Announcement) async throws -&gt; ()"
+                  moduleName = "GrandeEcoleDuDroit.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mfoum/Desktop/LaGrandeEcoleDuDroit/LaGrandeEcoleDuDroit/News/Data/Local/AnnouncementLocalDataSource.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "43"
+                  endingLineNumber = "43">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "219EFB7F-9395-4F8C-8F2B-4FF0325FDDE6"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Data/Local/AnnouncementLocalDataSource.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
+            landmarkName = "update(announcement:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8714A286-A47F-4108-BF16-4E28E610A89A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LaGrandeEcoleDuDroit/News/Data/Local/AnnouncementLocalDataSource.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "142"
+            endingLineNumber = "142"
+            landmarkName = "modify(announcement:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

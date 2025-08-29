@@ -34,7 +34,6 @@ class EditAnnouncementViewModel: ObservableObject {
     func updateAnnouncement() {
         uiState.loading = true
         Task {
-            defer { uiState.loading = false }
             do {
                 let updatedAnnouncement = announcement.with(
                     title: uiState.title.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -42,8 +41,14 @@ class EditAnnouncementViewModel: ObservableObject {
                 )
                 try await announcementRepository.updateAnnouncement(announcement: updatedAnnouncement)
                 updateEvent(SuccessEvent())
+                DispatchQueue.main.sync { [weak self] in
+                    self?.uiState.loading = false
+                }
             } catch {
                 updateEvent(ErrorEvent(message: mapNetworkErrorMessage(error)))
+                DispatchQueue.main.sync { [weak self] in
+                    self?.uiState.loading = false
+                }
             }
         }
     }
