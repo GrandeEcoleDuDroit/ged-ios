@@ -37,7 +37,7 @@ open class MessageNotificationManager: NotificationManager {
     
     func clearNotifications(conversationId: String) {
         let center = UNUserNotificationCenter.current()
-        let prefix = NotificationMessageUtils.getNotificationIdPrefix(conversationId: conversationId)
+        let prefix = NotificationMessageUtils.formatNotificationIdPrefix(conversationId: conversationId)
 
         center.getDeliveredNotifications { notifications in
             let matchingIds = notifications
