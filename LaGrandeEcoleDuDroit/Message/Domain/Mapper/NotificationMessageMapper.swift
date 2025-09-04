@@ -16,7 +16,7 @@ extension NotificationMessage {
             ),
             android: AndroidConfig(
                 notification: AndroidNotification(
-                    channelId: NotificationMessageUtils.getChannelId()
+                    channelId: NotificationMessageUtils.channelId
                 )
             ),
             apns: ApnsConfig(
