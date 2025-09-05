@@ -2,7 +2,7 @@ import Foundation
 
 class GenerateIdUseCase {
     static func stringId() -> String {
-        let timestamp = Int64(Date().timeIntervalSince1970 * 1000)
+        let timestamp = Date().toEpochMilli()
         let uniqueID = "\(timestamp)-\(UUID().uuidString)"
         return uniqueID
     }

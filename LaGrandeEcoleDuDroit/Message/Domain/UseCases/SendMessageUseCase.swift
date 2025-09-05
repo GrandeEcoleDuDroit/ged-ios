@@ -23,7 +23,15 @@ class SendMessageUseCase {
             do {
                 try await createDataLocally(conversation: conversation, message: message)
                 try await createDataRemotely(conversation: conversation, message: message, userId: userId)
-                await sendMessageNotificationUseCase.execute(notification: NotificationMessage(conversation: conversation, message: message))
+                await sendMessageNotificationUseCase.execute(
+                    notification: NotificationMessage(
+                        conversation: conversation,
+                        message: NotificationMessage.MessageContent(
+                            content: message.content,
+                            date: message.date.toEpochMilli()
+                        )
+                    )
+                )
             } catch {
                 if conversation.state == .draft {
                     try await conversationRepository.updateLocalConversation(conversation: conversation.with(state: .error))
