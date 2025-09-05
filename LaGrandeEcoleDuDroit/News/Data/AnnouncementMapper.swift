@@ -19,7 +19,7 @@ extension RemoteAnnouncementWithUser {
             id: announcementId,
             title: announcementTitle ?? "",
             content: announcementContent,
-            date: Date(timeIntervalSince1970: TimeInterval(announcementDate) / 1000),
+            date: announcementDate.toDate(),
             author: user,
             state: .published
         )
@@ -32,7 +32,7 @@ extension Announcement {
             announcementId: id,
             announcementTitle: title,
             announcementContent: content,
-            announcementDate: Int64(date.timeIntervalSince1970 * 1000),
+            announcementDate: date.toEpochMilli(),
             userId: author.id
         )
     }

@@ -17,7 +17,7 @@ class SendMessageNotificationUseCase {
             return
         }
         
-        let fcmMessage = notification.toFcm(user: currentUser)
+        let fcmMessage = notification.toRemote(currentUser: currentUser).toFcm()
         await notificationApi.sendNotification(
             recipientId: notification.conversation.interlocutor.id,
             fcmMessage: fcmMessage

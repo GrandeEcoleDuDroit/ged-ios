@@ -26,7 +26,7 @@ class UpdateProfilePictureUseCase {
     }
     
     private func getFileName(userId: String) -> String {
-        let currentTime = Int64(Date().timeIntervalSince1970 * 1000)
+        let currentTime = Date().toEpochMilli()
         return "\(userId)-profile-picture-\(currentTime)"
     }
 }
