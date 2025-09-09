@@ -55,7 +55,7 @@ func e(_ tag: String, _ message: String, _ error: Error? = nil) {
     #else
     crashlytics.log("\(date) \(tag)\t\(subsystem)\t E \(message)")
     if let error = error {
-        crashlytics.recordError(error)
+        crashlytics.record(error: error)
     }
     #endif
 }
