@@ -215,7 +215,7 @@ private extension Conversation {
         localConversation.interlocutorEmail = interlocutor.email
         localConversation.interlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
         localConversation.interlocutorIsMember = interlocutor.isMember
-        localConversation.interlocutorProfilePictureFileName = UrlUtils.getFileNameFromUrl(
+        localConversation.interlocutorProfilePictureFileName = UrlUtils.extractFileName(
             url: interlocutor.profilePictureUrl
         )
     }
@@ -233,7 +233,7 @@ private extension LocalConversation {
         interlocutorEmail = conversation.interlocutor.email
         interlocutorSchoolLevel = conversation.interlocutor.schoolLevel.rawValue
         interlocutorIsMember = conversation.interlocutor.isMember
-        interlocutorProfilePictureFileName = UrlUtils.getFileNameFromUrl(url: conversation.interlocutor.profilePictureUrl)
+        interlocutorProfilePictureFileName = UrlUtils.extractFileName(url: conversation.interlocutor.profilePictureUrl)
     }
     
     func equals(_ conversation: Conversation) -> Bool {
@@ -247,6 +247,6 @@ private extension LocalConversation {
         interlocutorEmail == conversation.interlocutor.email &&
         interlocutorSchoolLevel == conversation.interlocutor.schoolLevel.rawValue &&
         interlocutorIsMember == conversation.interlocutor.isMember &&
-        interlocutorProfilePictureFileName == UrlUtils.getFileNameFromUrl(url: conversation.interlocutor.profilePictureUrl)
+        interlocutorProfilePictureFileName == UrlUtils.extractFileName(url: conversation.interlocutor.profilePictureUrl)
     }
 }
