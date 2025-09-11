@@ -69,7 +69,7 @@ class UserRepositoryImpl: UserRepository {
         )
 
         try? userLocalDataSource.updateProfilePictureFileName(fileName: profilePictureFileName)
-        userSubject.value = userSubject.value?.with(profilePictureUrl: UrlUtils.formatProfilePictureUrl(fileName: profilePictureFileName))
+        userSubject.value = userSubject.value?.with(profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName))
     }
     
     func deleteProfilePictureFileName(userId: String) async throws {

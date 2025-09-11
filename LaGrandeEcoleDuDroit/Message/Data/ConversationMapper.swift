@@ -34,7 +34,7 @@ extension Conversation {
         localConversation.interlocutorEmail = interlocutor.email
         localConversation.interlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
         localConversation.interlocutorIsMember = interlocutor.isMember
-        localConversation.interlocutorProfilePictureFileName = UrlUtils.getFileNameFromUrl(
+        localConversation.interlocutorProfilePictureFileName = UrlUtils.extractFileName(
             url: interlocutor.profilePictureUrl
         )
         localConversation.createdAt = createdAt
@@ -71,7 +71,7 @@ extension LocalConversation {
             email: interlocutorEmail,
             schoolLevel: SchoolLevel.init(rawValue: interlocutorSchoolLevel) ?? SchoolLevel.ged1,
             isMember: interlocutorIsMember,
-            profilePictureUrl: UrlUtils.formatProfilePictureUrl(
+            profilePictureUrl: UrlUtils.formatOracleBucketUrl(
                 fileName: interlocutorProfilePictureFileName
             )
         )
