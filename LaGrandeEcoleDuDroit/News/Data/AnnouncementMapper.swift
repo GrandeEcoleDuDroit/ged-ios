@@ -10,7 +10,7 @@ extension RemoteAnnouncementWithUser {
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel) ?? SchoolLevel.ged1,
             isMember: userIsMember == 1,
-            profilePictureUrl: UrlUtils.formatProfilePictureUrl(
+            profilePictureUrl: UrlUtils.formatOracleBucketUrl(
                 fileName: userProfilePictureFileName
             )
         )
@@ -58,7 +58,7 @@ extension LocalAnnouncement {
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel) ?? SchoolLevel.ged1,
             isMember: userIsMember,
-            profilePictureUrl: UrlUtils.formatProfilePictureUrl(fileName: userProfilePictureFileName)
+            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: userProfilePictureFileName)
         )
         
         return Announcement(

@@ -72,7 +72,7 @@ private actor AnnouncementCoreDataActor {
                 localAnnouncement?.modify(announcement: announcement)
             } else {
                 let newLocalAnnouncement = LocalAnnouncement(context: self.context)
-                announcement.buildLocal(localAnnouncement: newLocalAnnouncement)
+                newLocalAnnouncement.modify(announcement: announcement)
             }
             
             try self.context.save()
@@ -87,7 +87,10 @@ private actor AnnouncementCoreDataActor {
                 AnnouncementField.announcementId, announcement.id
             )
             
-            try self.context.fetch(request).first?.modify(announcement: announcement)
+            try self.context
+                .fetch(request)
+                .first?
+                .modify(announcement: announcement)
             
             try self.context.save()
         }
@@ -110,25 +113,9 @@ private actor AnnouncementCoreDataActor {
     }
 }
 
-private extension Announcement {
-    func buildLocal(localAnnouncement: LocalAnnouncement) {
-        localAnnouncement.announcementId = id
-        localAnnouncement.announcementTitle = title
-        localAnnouncement.announcementContent = content
-        localAnnouncement.announcementDate = date
-        localAnnouncement.announcementState = state.rawValue
-        localAnnouncement.userId = author.id
-        localAnnouncement.userFirstName = author.firstName
-        localAnnouncement.userLastName = author.lastName
-        localAnnouncement.userEmail = author.email
-        localAnnouncement.userSchoolLevel = author.schoolLevel.rawValue
-        localAnnouncement.userIsMember = author.isMember
-        localAnnouncement.userProfilePictureFileName = UrlUtils.getFileNameFromUrl(url: author.profilePictureUrl)
-    }
-}
-
 private extension LocalAnnouncement {
     func modify(announcement: Announcement) {
+        announcementId = announcement.id
         announcementTitle = announcement.title
         announcementContent = announcement.content
         announcementDate = announcement.date
@@ -139,7 +126,7 @@ private extension LocalAnnouncement {
         userEmail = announcement.author.email
         userSchoolLevel = announcement.author.schoolLevel.rawValue
         userIsMember = announcement.author.isMember
-        userProfilePictureFileName = UrlUtils.getFileNameFromUrl(url: announcement.author.profilePictureUrl)
+        userProfilePictureFileName = UrlUtils.extractFileName(url: announcement.author.profilePictureUrl)
     }
     
     func equals(_ announcement: Announcement) -> Bool {
@@ -154,6 +141,6 @@ private extension LocalAnnouncement {
         userEmail == announcement.author.email &&
         userSchoolLevel == announcement.author.schoolLevel.rawValue &&
         userIsMember == announcement.author.isMember &&
-        userProfilePictureFileName == UrlUtils.getFileNameFromUrl(url: announcement.author.profilePictureUrl)
+        userProfilePictureFileName == UrlUtils.extractFileName(url: announcement.author.profilePictureUrl)
     }
 }

@@ -7,7 +7,7 @@ extension FirestoreUser {
             email: email,
             schoolLevel: SchoolLevel(rawValue: schoolLevel) ?? .ged1,
             isMember: isMember,
-            profilePictureUrl: UrlUtils.formatProfilePictureUrl(fileName: profilePictureFileName)
+            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName)
         )
     }
 }
@@ -21,7 +21,7 @@ extension User {
             userEmail: email,
             schoolLevel: schoolLevel.rawValue,
             userIsMember: isMember ? 1 : 0,
-            profilePictureFileName: UrlUtils.getFileNameFromUrl(url: profilePictureUrl)
+            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl)
         )
     }
     
@@ -33,7 +33,7 @@ extension User {
             email: email,
             schoolLevel: schoolLevel.rawValue,
             isMember: isMember,
-            profilePictureFileName: UrlUtils.getFileNameFromUrl(url: profilePictureUrl)
+            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl)
         )
     }
     
@@ -45,7 +45,7 @@ extension User {
             userEmail: email,
             userSchoolLevel: schoolLevel.rawValue,
             userIsMember: isMember,
-            profilePictureFileName: UrlUtils.getFileNameFromUrl(url: profilePictureUrl)
+            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl)
         )
     }
 }
@@ -59,7 +59,7 @@ extension LocalUser {
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel)!,
             isMember: userIsMember,
-            profilePictureUrl: UrlUtils.formatProfilePictureUrl(fileName: profilePictureFileName)
+            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName)
         )
     }
 }
