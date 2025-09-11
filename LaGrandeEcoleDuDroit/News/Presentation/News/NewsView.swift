@@ -51,7 +51,7 @@ private struct NewsView: View {
                     .id(refreshing)
                     .frame(
                         minHeight: geometry.size.height / 8,
-                        maxHeight: geometry.size.height / 2.5,
+                        maxHeight: geometry.size.height / 2,
                         alignment: .top
                     )
                 } else {

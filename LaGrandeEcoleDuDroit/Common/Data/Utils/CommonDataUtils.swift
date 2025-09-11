@@ -44,17 +44,22 @@ func mapServerError(
     message: String? = nil,
     specificHandle: ((URLResponse, ServerResponse) throws -> Void)? = nil
 ) async throws -> Void {
-    let (urlResponse, serverResponse) = try await block()
-    
-    if let httpResponse = urlResponse as? HTTPURLResponse {
-        if httpResponse.statusCode >= 400 {
-            e(tag, "\(message.toString()): \(serverResponse.error.toString())")
-            guard specificHandle == nil else {
-                return try specificHandle!(urlResponse, serverResponse)
+    do {
+        let (urlResponse, serverResponse) = try await block()
+        
+        if let httpResponse = urlResponse as? HTTPURLResponse {
+            if httpResponse.statusCode >= 400 {
+                e(tag, "\(message.toString()): \(serverResponse.error.toString())")
+                guard specificHandle == nil else {
+                    return try specificHandle!(urlResponse, serverResponse)
+                }
+                
+                throw NetworkError.internalServer(serverResponse.error)
             }
-            
-            throw NetworkError.internalServer(serverResponse.error)
         }
+    } catch {
+        e(tag, "\(message.toString()): \(error.localizedDescription)", error)
+        throw error
     }
 }
 

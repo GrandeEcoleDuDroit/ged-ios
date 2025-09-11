@@ -26,7 +26,8 @@ class NewsViewModel: ObservableObject {
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
         self.resendAnnouncementUseCase = resendAnnouncementUseCase
         self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
-        newsUiState()
+        listenUser()
+        listenAnnouncements()
         Task { await refreshAnnouncements() }
     }
     
@@ -63,24 +64,25 @@ class NewsViewModel: ObservableObject {
         }
     }
     
-    private func newsUiState() {
-        Publishers.CombineLatest(
-            userRepository.user,
-            announcementRepository.announcements
-        )
-        .map { user, announcements in
-            let trimmedAnnouncements = announcements.map { self.transform($0) }
-            return NewsUiState(
-                user: user,
-                announcements: trimmedAnnouncements,
-                refreshing: self.uiState.refreshing
-            )
-        }
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] state in
-            self?.uiState = state
-        }
-        .store(in: &cancellables)
+    private func listenUser() {
+        userRepository.user
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] user in
+                self?.uiState.user = user
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func listenAnnouncements() {
+        announcementRepository.announcements
+            .map { announcements in
+                announcements.map { self.transform($0) }
+            }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] announcements in
+                self?.uiState.announcements = announcements
+            }
+            .store(in: &cancellables)
     }
     
     private func transform(_ announcement: Announcement) -> Announcement {
