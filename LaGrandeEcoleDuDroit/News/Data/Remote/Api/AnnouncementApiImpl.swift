@@ -9,7 +9,7 @@ class AnnouncementApiImpl: AnnouncementApi {
     }
     
     private func baseUrl(endPoint: String) -> URL? {
-        URL.oracleUrl(endpoint: "/announcements" + endPoint)
+        URL.oracleUrl(path: "/announcements" + endPoint)
     }
     
     func getAnnouncements() async throws -> (URLResponse, [RemoteAnnouncementWithUser]) {

@@ -8,9 +8,11 @@ class MockUserRepository: UserRepository {
     
     var currentUser: User? { nil }
     
+    func getCurrentUser() -> User? { nil }
+    
     func storeUser(_ user: User) {}
     
-    func deleteCurrentUser() {}
+    func deleteLocalCurrentUser() {}
     
     func createUser(user: User) async throws {}
     
@@ -29,6 +31,8 @@ class MockUserRepository: UserRepository {
     func getFilteredUsers(filter: String) async -> [User] { [] }
     
     func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {}
+    
+    func deleteCurrentUser() async throws {}
     
     func deleteProfilePictureFileName(userId: String) async throws {}
 }

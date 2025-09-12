@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProfileDestination: View {
     let onAccountInfosClick: () -> Void
+    let onAccountClick: () -> Void
     
     @StateObject private var viewModel = MainInjection.shared.resolve(ProfileViewModel.self)
     
@@ -9,15 +10,16 @@ struct ProfileDestination: View {
         ProfileView(
             user: viewModel.uiState.user,
             onAccountInfosClick: onAccountInfosClick,
+            onAccountClick: onAccountClick,
             onLogoutClick: viewModel.logout
         )
-        .background(.listBackground)
     }
 }
 
 private struct ProfileView: View {
     let user: User?
     let onAccountInfosClick: () -> Void
+    let onAccountClick: () -> Void
     let onLogoutClick: () -> Void
     @State private var showLogoutAlert: Bool = false
 
@@ -29,26 +31,37 @@ private struct ProfileView: View {
                         Button(
                             action: onAccountInfosClick
                         ) {
-                            HStack(spacing: GedSpacing.medium) {
+                            HStack(
+                                alignment: .center,
+                                spacing: GedSpacing.medium
+                            ) {
                                 ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
                                 
                                 Text(user.fullName)
                                     .font(.title3)
                                     .fontWeight(.semibold)
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                                    .foregroundStyle(.gray)
                             }
                         }
                     }
                     
                     Section {
-                        Button(
-                            action: { showLogoutAlert = true }
-                        ) {
-                            ItemWithIcon(
-                                icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
-                                text: Text(getString(.logout))
-                            )
-                            .foregroundStyle(.red)
-                        }
+                        MenuItem(
+                            icon: Image(systemName: "key"),
+                            title: getString(.account),
+                            onClick: onAccountClick
+                        )
+                        
+                        ClickableTextItem(
+                            icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
+                            text: Text(getString(.logout)),
+                            onClick: { showLogoutAlert = true }
+                        )
+                        .foregroundStyle(.red)
                     }
                 }
             } else {
@@ -71,6 +84,7 @@ private struct ProfileView: View {
             )
         }
         .scrollContentBackground(.hidden)
+        .background(.listBackground)
     }
 }
 
@@ -79,6 +93,7 @@ private struct ProfileView: View {
         ProfileView(
             user: userFixture,
             onAccountInfosClick: {},
+            onAccountClick: {},
             onLogoutClick: {}
         )
         .background(.listBackground)

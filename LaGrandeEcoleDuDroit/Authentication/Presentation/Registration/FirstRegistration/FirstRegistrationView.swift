@@ -4,7 +4,7 @@ struct FirstRegistrationDestination: View {
     let onNextClick: (String, String) -> Void
      
     @StateObject private var viewModel: FirstRegistrationViewModel = AuthenticationInjection.shared.resolve(FirstRegistrationViewModel.self)
-    @State private var inputFieldFocused: InputField?
+    @State private var focusedInputField: InputField?
     @State private var isValidNameInputs = false
     
     var body: some View {
@@ -32,7 +32,7 @@ private struct FirstRegistrationView: View {
     let onFirstNameChange: (String) -> Void
     let onLastNameChange: (String) -> Void
     let onNextClick: (String, String) -> Void
-    @State private var inputFieldFocused: InputField?
+    @State private var focusedInputField: InputField?
     @State private var firstNameInput: String = ""
     
     var body: some View {
@@ -44,7 +44,7 @@ private struct FirstRegistrationView: View {
                 label: getString(.firstName),
                 text: $firstName,
                 inputField: InputField.firstName,
-                inputFieldFocused: $inputFieldFocused,
+                focusedInputField: $focusedInputField,
                 errorMessage: firstNameError
             )
             
@@ -52,7 +52,7 @@ private struct FirstRegistrationView: View {
                 label: getString(.lastName),
                 text: $lastName,
                 inputField: InputField.lastName,
-                inputFieldFocused: $inputFieldFocused,
+                focusedInputField: $focusedInputField,
                 errorMessage: lastNameError
             )
         }
@@ -65,7 +65,7 @@ private struct FirstRegistrationView: View {
             onLastNameChange(newValue)
         }
         .contentShape(Rectangle())
-        .onTapGesture { inputFieldFocused = nil }
+        .onTapGesture { focusedInputField = nil }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {

@@ -21,10 +21,10 @@ class UserRepositoryImpl: UserRepository {
         initUser()
     }
     
-    private func initUser() {
-        userSubject.send(userLocalDataSource.getUser())
+    func getCurrentUser() -> User? {
+        userLocalDataSource.getUser()
     }
-    
+        
     func createUser(user: User) async throws {
         try await mapFirebaseException(
             block: { try await userRemoteDataSource.createUser(user: user) },
@@ -56,7 +56,17 @@ class UserRepositoryImpl: UserRepository {
         userSubject.send(user)
     }
     
-    func deleteCurrentUser() {
+    func deleteCurrentUser() async throws {
+        guard let currentUser = currentUser else {
+            throw UserError.currentUserNotFound
+        }
+        
+        try await userRemoteDataSource.deleteUser(user: currentUser)
+        userLocalDataSource.removeUser()
+        userSubject.send(nil)
+    }
+    
+    func deleteLocalCurrentUser() {
         userLocalDataSource.removeUser()
         userSubject.send(nil)
     }
@@ -80,5 +90,9 @@ class UserRepositoryImpl: UserRepository {
         )
         try? userLocalDataSource.updateProfilePictureFileName(fileName: nil)
         userSubject.value = userSubject.value?.with(profilePictureUrl: nil)
+    }
+    
+    private func initUser() {
+        userSubject.send(userLocalDataSource.getUser())
     }
 }

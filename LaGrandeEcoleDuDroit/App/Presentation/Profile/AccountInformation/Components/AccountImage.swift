@@ -40,6 +40,6 @@ struct AccountImage: View {
     VStack(spacing: 10) {
         AccountImage(url: nil, onClick: {})
 
-        AccountInfoItem(title: "Name", value: "John Doe")
+        AccountInformationFieldItem(title: "Name", value: "John Doe")
     }.padding()
 }

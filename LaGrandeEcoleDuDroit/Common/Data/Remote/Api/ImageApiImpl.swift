@@ -8,7 +8,7 @@ class ImageApiImpl: ImageApi {
     }
 
     private func baseUrl(endPoint: String) -> URL? {
-        URL.oracleUrl(endpoint: "/image/" + endPoint)
+        URL.oracleUrl(path: "/image/" + endPoint)
     }
     
     func uploadImage(imageData: Data, fileName: String) async throws -> (URLResponse, ServerResponse) {

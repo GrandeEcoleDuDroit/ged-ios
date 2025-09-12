@@ -39,13 +39,13 @@ private struct CreateAnnouncementView: View {
     let onTitleChange: (String) -> Void
     let onContentChange: (String) -> Void
     let onCreateClick: () -> Void
-    @State private var inputFieldFocused: InputField? = nil
+    @State private var focusedInputField: InputField? = nil
     
     var body: some View {
         AnnouncementInput(
             title: $title,
             content: $content,
-            inputFieldFocused: $inputFieldFocused,
+            focusedInputField: $focusedInputField,
             onTitleChange: onTitleChange,
             onContentChange: onContentChange
         )
@@ -73,12 +73,12 @@ private struct CreateAnnouncementView: View {
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                inputFieldFocused = InputField.title
+                focusedInputField = InputField.title
             }
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            inputFieldFocused = nil
+            focusedInputField = nil
         }
     }
 }

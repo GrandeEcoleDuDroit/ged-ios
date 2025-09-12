@@ -3,7 +3,7 @@ import SwiftUI
 struct AnnouncementInput: View {
     @Binding var title: String
     @Binding var content: String
-    @Binding var inputFieldFocused: InputField?
+    @Binding var focusedInputField: InputField?
     let onTitleChange: (String) -> Void
     let onContentChange: (String) -> Void
     
@@ -12,13 +12,13 @@ struct AnnouncementInput: View {
             AnnouncementTitleInput(
                 title: $title,
                 onTitleChange: onTitleChange,
-                inputFieldFocused: $inputFieldFocused
+                focusedInputField: $focusedInputField
             )
             
             AnnouncementContentInput(
                 content: $content,
                 onContentChange: onContentChange,
-                inputFieldFocused: $inputFieldFocused
+                focusedInputField: $focusedInputField
             )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -28,7 +28,7 @@ struct AnnouncementInput: View {
 private struct AnnouncementTitleInput: View {
     @Binding var title: String
     let onTitleChange: (String) -> Void
-    @Binding var inputFieldFocused: InputField?
+    @Binding var focusedInputField: InputField?
     @FocusState private var focusedField: InputField?
 
     var body: some View {
@@ -47,7 +47,7 @@ private struct AnnouncementTitleInput: View {
                 title = String(title.prefix(300))
             }
         }
-        .onChange(of: inputFieldFocused) { newValue in
+        .onChange(of: focusedInputField) { newValue in
             focusedField = newValue
         }
     }
@@ -56,7 +56,7 @@ private struct AnnouncementTitleInput: View {
 private struct AnnouncementContentInput: View {
     @Binding var content: String
     let onContentChange: (String) -> Void
-    @Binding var inputFieldFocused: InputField?
+    @Binding var focusedInputField: InputField?
     @FocusState private var focusedField: InputField?
     
     var body: some View {
@@ -73,7 +73,7 @@ private struct AnnouncementContentInput: View {
                 content = String(content.prefix(2000))
             }
         }
-        .onChange(of: inputFieldFocused) { newValue in
+        .onChange(of: focusedInputField) { newValue in
             focusedField = newValue
         }
     }
@@ -83,7 +83,7 @@ private struct AnnouncementContentInput: View {
     AnnouncementInput(
         title: .constant(""),
         content: .constant(""),
-        inputFieldFocused: .constant(nil),
+        focusedInputField: .constant(nil),
         onTitleChange: {_ in },
         onContentChange: {_ in }
     )
