@@ -9,7 +9,7 @@ class UserFirestoreApiImpl: UserFirestoreApi {
     private let usersCollection: CollectionReference = Firestore.firestore().collection(userTableName)
     private var listeners: [ListenerRegistration] = []
     
-    func listenCurrentUser(userId: String) -> AnyPublisher<FirestoreUser?, Error> {
+    func listenUser(userId: String) -> AnyPublisher<FirestoreUser?, Error> {
         let subject = CurrentValueSubject<FirestoreUser?, Error>(nil)
         
         let listener = usersCollection
@@ -62,6 +62,11 @@ class UserFirestoreApiImpl: UserFirestoreApi {
     func updateProfilePictureFileName(userId: String, fileName: String) {
         let userRef = usersCollection.document(userId)
         userRef.updateData([FirestoreUserDataFields.profilePictureFileName: fileName])
+    }
+    
+    func deleteUser(userId: String) async throws {
+        let userRef = usersCollection.document(userId)
+        try await userRef.delete()
     }
     
     func deleteProfilePictureFileName(userId: String) {

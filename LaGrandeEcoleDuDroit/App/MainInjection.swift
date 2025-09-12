@@ -24,7 +24,7 @@ class MainInjection: DependencyInjectionContainer {
                 listenRemoteConversationsUseCase: MessageInjection.shared.resolve(ListenRemoteConversationsUseCase.self),
                 listenRemoteUserUseCase: resolver.resolve(ListenRemoteUserUseCase.self)!
             )
-        }.inObjectScope(.container)
+        }
         
         container.register(ClearDataUseCase.self) { resolver in
             ClearDataUseCase(
@@ -33,7 +33,7 @@ class MainInjection: DependencyInjectionContainer {
                 messageRepository: MessageInjection.shared.resolve(MessageRepository.self),
                 conversationMessageRepository: MessageInjection.shared.resolve(ConversationMessageRepository.self)
             )
-        }.inObjectScope(.container)
+        }
         
         container.register(FcmTokenUseCase.self) { resolver in
             FcmTokenUseCase(
@@ -41,6 +41,13 @@ class MainInjection: DependencyInjectionContainer {
                 authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
                 fcmTokenRepository: CommonInjection.shared.resolve(FcmTokenRepository.self),
                 networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+            )
+        }.inObjectScope(.container)
+        
+        container.register(DeleteUserAccountUseCase.self) { resolver in
+            DeleteUserAccountUseCase(
+                userRepository: CommonInjection.shared.resolve(UserRepository.self),
+                authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self)
             )
         }
         
@@ -62,9 +69,16 @@ class MainInjection: DependencyInjectionContainer {
         
         container.register(MainViewModel.self) { resolver in
             MainViewModel(
+                userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
                 listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!
+            )
+        }
+        
+        container.register(ProfileNavigationViewModel.self) { resolver in
+            ProfileNavigationViewModel(
+                routeRepository: CommonInjection.shared.resolve(RouteRepository.self)
             )
         }
         
@@ -75,8 +89,8 @@ class MainInjection: DependencyInjectionContainer {
             )
         }
         
-        container.register(AccountViewModel.self) { resolver in
-            AccountViewModel(
+        container.register(AccountInformationViewModel.self) { resolver in
+            AccountInformationViewModel(
                 updateProfilePictureUseCase: CommonInjection.shared.resolve(UpdateProfilePictureUseCase.self),
                 deleteProfilePictureUseCase: CommonInjection.shared.resolve(DeleteProfilePictureUseCase.self),
                 networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self),
@@ -84,9 +98,10 @@ class MainInjection: DependencyInjectionContainer {
             )
         }
         
-        container.register(ProfileNavigationViewModel.self) { resolver in
-            ProfileNavigationViewModel(
-                routeRepository: CommonInjection.shared.resolve(RouteRepository.self)
+        container.register(DeleteAccountViewModel.self) { resolver in
+            DeleteAccountViewModel(
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self),
+                deleteUserAccountUseCase: resolver.resolve(DeleteUserAccountUseCase.self)!
             )
         }
         
@@ -147,6 +162,7 @@ class MainInjection: DependencyInjectionContainer {
         
         mockContainer.register(MainViewModel.self) { resolver in
             MainViewModel(
+                userRepository: commonMockContainer.resolve(UserRepository.self)!,
                 authenticationRepository: authenticationMockContainer.resolve(AuthenticationRepository.self)!,
                 listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!
@@ -167,8 +183,8 @@ class MainInjection: DependencyInjectionContainer {
             )
         }
         
-        mockContainer.register(AccountViewModel.self) { resolver in
-            AccountViewModel(
+        mockContainer.register(AccountInformationViewModel.self) { resolver in
+            AccountInformationViewModel(
                 updateProfilePictureUseCase: commonMockContainer.resolve(UpdateProfilePictureUseCase.self)!,
                 deleteProfilePictureUseCase: commonMockContainer.resolve(DeleteProfilePictureUseCase.self)!,
                 networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!,

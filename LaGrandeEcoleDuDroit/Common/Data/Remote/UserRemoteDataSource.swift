@@ -4,6 +4,7 @@ import Foundation
 class UserRemoteDataSource {
     private let userFirestoreApi: UserFirestoreApi
     private let userOracleApi: UserOracleApi
+    private let tag = String(describing: UserRemoteDataSource.self)
     
     init(userFirestoreApi: UserFirestoreApi, userOracleApi: UserOracleApi) {
         self.userFirestoreApi = userFirestoreApi
@@ -11,7 +12,7 @@ class UserRemoteDataSource {
     }
     
     func listenUser(userId: String) -> AnyPublisher<User, Error> {
-        userFirestoreApi.listenCurrentUser(userId: userId)
+        userFirestoreApi.listenUser(userId: userId)
             .compactMap { $0?.toUser() }
             .eraseToAnyPublisher()
     }
@@ -44,6 +45,16 @@ class UserRemoteDataSource {
         
         try await mapFirebaseException {
             userFirestoreApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
+        }
+    }
+    
+    func deleteUser(user: User) async throws {
+        try await mapServerError {
+            try await userOracleApi.deleteUser(userId: user.id)
+        }
+        
+        try await mapFirebaseException {
+            try await userFirestoreApi.deleteUser(userId: user.id)
         }
     }
     

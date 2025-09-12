@@ -89,7 +89,7 @@ private struct NewsView: View {
         }
         .sheet(isPresented: $showBottomSheet) {
             BottomSheetContainer(fraction: 0.16) {
-                ClickableItemWithIcon(
+                ClickableTextItem(
                     icon: Image(systemName: "paperplane"),
                     text: Text(getString(.resend))
                 ) {
@@ -99,7 +99,7 @@ private struct NewsView: View {
                     }
                 }
                                 
-                ClickableItemWithIcon(
+                ClickableTextItem(
                     icon: Image(systemName: "trash"),
                     text: Text(getString(.delete))
                 ) {

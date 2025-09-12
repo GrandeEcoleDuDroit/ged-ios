@@ -16,7 +16,9 @@ class ListenRemoteUserUseCase {
     
     func start() {
         userRepository.user
-            .first()
+            .removeDuplicates { old, new in
+                old.id == new.id
+            }
             .flatMap { user in
                 self.userRepository.getUserPublisher(userId: user.id)
                     .filter { $0 != user }
@@ -31,7 +33,7 @@ class ListenRemoteUserUseCase {
                 if case let .failure(error) = completion {
                     e(
                         self?.tag ?? String(describing: ListenRemoteUserUseCase.self),
-                        "Sink failed with error: \(error)",
+                        "Failed to listen remote user: \(error)",
                         error
                     )
                 }

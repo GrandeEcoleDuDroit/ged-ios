@@ -9,7 +9,7 @@ class FcmApiImpl: FcmApi {
     }
     
     private func baseUrl(endPoint: String) -> URL? {
-        URL.oracleUrl(endpoint: "/fcm/" + endPoint)
+        URL.oracleUrl(path: "/fcm/" + endPoint)
     }
     
     func addToken(userId: String, value: String) async throws -> (URLResponse, ServerResponse) {
