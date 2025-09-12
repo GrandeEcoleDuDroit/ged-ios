@@ -1,15 +1,14 @@
 import Foundation
-import SwiftUI
 import Combine
 
-class AccountViewModel: ObservableObject {
+class AccountInformationViewModel: ObservableObject {
     private let updateProfilePictureUseCase: UpdateProfilePictureUseCase
     private let deleteProfilePictureUseCase: DeleteProfilePictureUseCase
     private let networkMonitor: NetworkMonitor
     private let userRepository: UserRepository
     private var cancellables: Set<AnyCancellable> = []
     
-    @Published var uiState: AccountUiState = AccountUiState()
+    @Published var uiState: AccountInformationUiState = AccountInformationUiState()
     @Published var event: SingleUiEvent? = nil
     
     init(
@@ -36,7 +35,7 @@ class AccountViewModel: ObservableObject {
         
         uiState.loading = true
         
-        let task = Task {  [weak self] in
+        Task {  [weak self] in
             do {
                 try await self?.updateProfilePictureUseCase.execute(user: user, imageData: imageData)
                 DispatchQueue.main.sync { [weak self] in
@@ -62,7 +61,7 @@ class AccountViewModel: ObservableObject {
         
         uiState.loading = true
         
-        let task = Task { [weak self] in
+        Task { [weak self] in
             do {
                 if let url = user.profilePictureUrl {
                     try await self?.deleteProfilePictureUseCase.execute(userId: user.id, profilePictureUrl: url)
@@ -79,7 +78,7 @@ class AccountViewModel: ObservableObject {
         }
     }
     
-    func onScreenStateChange(_ state: AccountScreenState) {
+    func onScreenStateChange(_ state: ScreenState) {
         uiState.screenState = state
     }
     
@@ -96,13 +95,13 @@ class AccountViewModel: ObservableObject {
         uiState.loading = false
     }
     
-    struct AccountUiState: Withable {
+    struct AccountInformationUiState {
         var user: User? = nil
         var loading: Bool = false
-        var screenState: AccountScreenState = .read
+        var screenState: ScreenState = .read
     }
-}
-
-enum AccountScreenState {
-   case edit, read
+    
+    enum ScreenState {
+        case edit, read
+    }
 }
