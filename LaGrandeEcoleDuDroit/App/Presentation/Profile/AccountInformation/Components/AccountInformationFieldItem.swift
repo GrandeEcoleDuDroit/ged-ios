@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct AccountInfoItem: View {
+struct AccountInformationFieldItem: View {
     var title: String
     var value: String
     

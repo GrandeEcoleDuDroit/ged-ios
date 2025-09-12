@@ -56,6 +56,15 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
         )
     }
     
+    func deleteAuthUser() async throws {
+        try await mapFirebaseException(
+            block: { try await firebaseAuthApi.deleteAuthUser() },
+            tag: tag,
+            message: "Failed to delete auth user",
+            handleSpecificException: mapAuthError
+        )
+    }
+    
     private func listenAuthIdTokenChanges() {
         firebaseAuthApi.listenTokenChanges { [weak self] token in
             self?.authIdToken = token

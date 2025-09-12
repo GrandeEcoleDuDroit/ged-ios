@@ -92,7 +92,7 @@ private struct ChatView: View {
         }
         .sheet(isPresented: $showBottomSheet) {
             BottomSheetContainer(fraction: 0.16) {
-                ClickableItemWithIcon(
+                ClickableTextItem(
                     icon: Image(systemName: "paperplane"),
                     text: Text(getString(.resend))
                 ) {
@@ -102,7 +102,7 @@ private struct ChatView: View {
                     }
                 }
                                 
-                ClickableItemWithIcon(
+                ClickableTextItem(
                     icon: Image(systemName: "trash"),
                     text: Text(getString(.delete))
                 ) {

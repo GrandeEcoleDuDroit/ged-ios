@@ -5,5 +5,7 @@ protocol UserOracleApi {
     
     func updateProfilePictureFileName(userId: String, fileName: String) async throws -> (URLResponse, ServerResponse)
     
+    func deleteUser(userId: String) async throws -> (URLResponse, ServerResponse)
+    
     func deleteProfilePictureFileName(userId: String) async throws -> (URLResponse, ServerResponse)
 }

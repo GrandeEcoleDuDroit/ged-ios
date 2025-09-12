@@ -5,6 +5,8 @@ protocol UserRepository {
     
     var currentUser: User? { get }
     
+    func getCurrentUser() -> User?
+    
     func createUser(user: User) async throws
     
     func getUser(userId: String) async throws -> User?
@@ -17,7 +19,9 @@ protocol UserRepository {
         
     func storeUser(_ user: User)
     
-    func deleteCurrentUser()
+    func deleteCurrentUser() async throws
+    
+    func deleteLocalCurrentUser()
     
     func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws
     
