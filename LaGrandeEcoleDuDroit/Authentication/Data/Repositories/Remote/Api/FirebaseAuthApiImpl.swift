@@ -93,4 +93,21 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
 
         }
     }
+    
+    func deleteAuthUser() async throws {
+        try await withCheckedThrowingContinuation {  (continuation: CheckedContinuation<Void, Error>) in
+            guard let user = Auth.auth().currentUser else {
+                continuation.resume(throwing: UserError.currentUserNotFound)
+                return
+            }
+            
+            user.delete { error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
+            }
+        }
+    }
 }

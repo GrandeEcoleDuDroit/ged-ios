@@ -52,4 +52,9 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     func resetPassword(email: String) async throws {
         try await firebaseAuthenticationRepository.resetPassword(email: email)
     }
+    
+    func deleteAuthUser() async throws {
+        try await firebaseAuthenticationRepository.deleteAuthUser()
+        setAuthenticated(false)
+    }
 }

@@ -25,7 +25,6 @@ enum GedString: String {
     // Common errors
     case mandatoryFieldError = "mandatory_field_error"
     case emptyInputsError = "empty_inputs_error"
-    case emptyInputError = "empty_input_error"
     case timeOutError = "time_out_error"
     case noInternetConectionError = "no_internet_connection_error"
     case internalServerError = "internal_server_error"
@@ -85,6 +84,7 @@ enum GedString: String {
     
     // Profile
     case profile = "profile"
+    case account = "account"
     case accountInfos = "account_infos"
     case schoolLevel = "school_level"
     case editProfile = "edit_profile"
@@ -93,6 +93,8 @@ enum GedString: String {
     case member = "member"
     case userNotFound = "user_not_found"
     case deleteProfilePictureAlertMessage = "delete_profile_picture_alert_message"
+    case deleteAccountText = "delete_account_text"
+    case deleteAccount = "delete_account"
 
     // Profile errors
     case errorLogout = "error_logout"

@@ -30,6 +30,7 @@
 "unknown_error" = "Une erreur inconnue est survenue.";
 "timeout_error" = "Le serveur a mis trop de temps à répondre. Veuillez réessayer.";
 "server_connection_error" = "Impossible de se connecter au serveur.";
+"empty_inputs_error" = "Veuillez remplir tous les champs.";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";
@@ -91,6 +92,8 @@
 "member" = "Membre";
 "user_not_found" = "Aucun utilisateur trouvé";
 "delete_profile_picture_alert_message" = "Voulez-vous supprimer la photo de profil ?";
+"delete_account_text" = "Supprimer votre compte entraînera la suppression définitive de toutes vos données. Cette action est irréversible.";
+"delete_account" = "Supprimer le compte";
 
 // Profile errors
 "error_logout" = "Une erreur est survenue lors de la déconnexion.";
