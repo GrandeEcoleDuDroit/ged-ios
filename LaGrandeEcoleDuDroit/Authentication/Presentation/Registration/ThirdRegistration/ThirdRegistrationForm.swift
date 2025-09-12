@@ -7,7 +7,7 @@ struct ThirdRegistrationForm: View {
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
-    @Binding var inputFieldFocused: InputField?
+    @Binding var focusedInputField: InputField?
     
     
     var body: some View {
@@ -19,7 +19,7 @@ struct ThirdRegistrationForm: View {
                 label: getString(.email),
                 text: $email,
                 inputField: InputField.email,
-                inputFieldFocused: $inputFieldFocused,
+                focusedInputField: $focusedInputField,
                 isDisable: loading,
                 errorMessage: emailError
             )
@@ -29,7 +29,7 @@ struct ThirdRegistrationForm: View {
                 label: getString(.password),
                 text: $password,
                 inputField: InputField.password,
-                inputFieldFocused: $inputFieldFocused,
+                focusedInputField: $focusedInputField,
                 isDisable: loading,
                 errorMessage: passwordError
             )
@@ -53,6 +53,6 @@ struct ThirdRegistrationForm: View {
         emailError: nil,
         passwordError: nil,
         errorMessage: nil,
-        inputFieldFocused: .constant(nil),
+        focusedInputField: .constant(nil),
     )
 }

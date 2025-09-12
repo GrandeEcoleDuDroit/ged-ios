@@ -57,13 +57,13 @@ private struct EditAnnouncementView: View {
     let onUpdateAnnouncementClick: () -> Void
     let onBackClick: () -> Void
     
-    @State private var inputFieldFocused: InputField? = nil
+    @State private var focusedInputField: InputField? = nil
 
     var body: some View {
         AnnouncementInput(
             title: $title,
             content: $content,
-            inputFieldFocused: $inputFieldFocused,
+            focusedInputField: $focusedInputField,
             onTitleChange: onTitleChange,
             onContentChange: onContentChange
         )
@@ -99,17 +99,17 @@ private struct EditAnnouncementView: View {
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                inputFieldFocused = InputField.title
+                focusedInputField = InputField.title
             }
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            inputFieldFocused = nil
+            focusedInputField = nil
         }
         .disabled(loading)
         .onChange(of: loading) { isLoading in
             if isLoading {
-                inputFieldFocused = nil
+                focusedInputField = nil
             }
         }
     }

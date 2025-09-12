@@ -3,7 +3,7 @@ import SwiftUI
 struct OutlineTextField: View {
     let label: String
     @Binding var text: String
-    @Binding var inputFieldFocused: InputField?
+    @Binding var focusedInputField: InputField?
     let inputField: InputField
     let isDisabled: Bool
     let errorMessage: String?
@@ -47,14 +47,14 @@ struct OutlineTextField: View {
         label: String,
         text: Binding<String>,
         inputField: InputField,
-        inputFieldFocused: Binding<InputField?>,
+        focusedInputField: Binding<InputField?>,
         isDisable: Bool = false,
         errorMessage: String? = nil
     ) {
         self.label = label
         self._text = text
         self.inputField = inputField
-        self._inputFieldFocused = inputFieldFocused
+        self._focusedInputField = focusedInputField
         self.isDisabled = isDisable
         self.errorMessage = errorMessage
     }
@@ -74,12 +74,12 @@ struct OutlineTextField: View {
                     .stroke(borderColor, lineWidth: 2)
             )
             .cornerRadius(5)
-            .onChange(of: inputFieldFocused) { newValue in
+            .onChange(of: focusedInputField) { newValue in
                 focusedField = newValue
             }
             .disabled(isDisabled)
             .simultaneousGesture(TapGesture().onEnded({
-                inputFieldFocused = self.inputField
+                focusedInputField = self.inputField
             }))
             
             if errorMessage != nil {
@@ -95,7 +95,7 @@ struct OutlineTextField: View {
 struct OutlinePasswordTextField: View {
     let label: String
     @Binding var text: String
-    @Binding var inputFieldFocused: InputField?
+    @Binding var focusedInputField: InputField?
     let inputField: InputField
     let isDisabled: Bool
     @State private var showPassword = false
@@ -144,14 +144,14 @@ struct OutlinePasswordTextField: View {
         label: String,
         text: Binding<String>,
         inputField: InputField,
-        inputFieldFocused: Binding<InputField?>,
+        focusedInputField: Binding<InputField?>,
         isDisable: Bool = false,
         errorMessage: String? = nil
     ) {
         self.label = label
         self._text = text
         self.inputField = inputField
-        self._inputFieldFocused = inputFieldFocused
+        self._focusedInputField = focusedInputField
         self.isDisabled = isDisable
         self.errorMessage = errorMessage
     }
@@ -168,11 +168,11 @@ struct OutlinePasswordTextField: View {
                     .foregroundColor(textColor)
                     .textInputAutocapitalization(.never)
                     .focused($focusedField, equals: inputField)
-                    .onChange(of: inputFieldFocused) { newValue in
+                    .onChange(of: focusedInputField) { newValue in
                         focusedField = newValue
                     }
                     .simultaneousGesture(TapGesture().onEnded({
-                        inputFieldFocused = self.inputField
+                        focusedInputField = self.inputField
                     }))
                     
                     Image(systemName: "eye.slash")
@@ -189,11 +189,11 @@ struct OutlinePasswordTextField: View {
                     .foregroundColor(textColor)
                     .textInputAutocapitalization(.never)
                     .focused($focusedField, equals: inputField)
-                    .onChange(of: inputFieldFocused) { newValue in
+                    .onChange(of: focusedInputField) { newValue in
                         focusedField = newValue
                     }
                     .simultaneousGesture(TapGesture().onEnded({
-                        inputFieldFocused = self.inputField
+                        focusedInputField = self.inputField
                     }))
                 
                     Image(systemName: "eye")
@@ -228,7 +228,7 @@ struct OutlinePasswordTextField: View {
             label: "Email",
             text: .constant(""),
             inputField: InputField.email,
-            inputFieldFocused: .constant(InputField.email),
+            focusedInputField: .constant(InputField.email),
             isDisable: false,
             errorMessage: nil
         )
@@ -237,7 +237,7 @@ struct OutlinePasswordTextField: View {
             label: "Password",
             text: .constant(""),
             inputField: InputField.password,
-            inputFieldFocused: .constant(InputField.password),
+            focusedInputField: .constant(InputField.password),
             isDisable: false,
             errorMessage: nil
         )

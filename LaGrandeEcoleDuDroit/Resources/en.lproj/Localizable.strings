@@ -28,14 +28,13 @@
 
 // Common error
 "mandatory_field_error" = "Mandatory field";
-"empty_inputs_error" = "Please fill out all fields.";
-"empty_input_error" = "Please fill out the field.";
 "time_out_error" = "The service took too long to respond. Please try again.";
 "no_internet_connection_error" = "No internet connection.";
 "internal_server_error" = "An internal server error has occurred.";
 "unknown_network_error" = "A network error has occurred.";
 "unknown_error" = "An unknown error has occured.";
 "user_not_found_error" = "User not found. Please re-authenticate.";
+"empty_inputs_error" = "Please fill out all fields.";
 
 // Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";
@@ -97,6 +96,8 @@
 "user_not_found" = "No user found";
 "delete_profile_picture_alert_message" = "Do you want to delete the profile picture ?";
 "user_not_white_listed" = "The registration is limited to authorized users.";
+"delete_account" = "Delete account";
+"delete_account_text" = "Deleting your account will permanently delete all your data. This action is irreversible.";
 
 // Profile errors
 "error_logout" = "An error occured while logging out.";

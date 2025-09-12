@@ -35,15 +35,14 @@ struct AuthenticationDestination: View {
 private struct AuthenticationView: View {
     @Binding var email: String
     @Binding var password: String
+    @State private var focusedInputField: InputField?
     let loading: Bool
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
     let onLoginClick: () -> Void
     let onRegisterClick: () -> Void
-    
-    @State private var isInputsFocused: Bool = false
-    
+        
     var body: some View {
         VStack(spacing: GedSpacing.large) {
             HeaderSection()
@@ -55,8 +54,9 @@ private struct AuthenticationView: View {
                 emailError: emailError,
                 passwordError: passwordError,
                 errorMessage: errorMessage,
-                isInputsFocused: $isInputsFocused
-            ).padding(.top, GedSpacing.medium)
+                focusedInputField: $focusedInputField
+            )
+            .padding(.top, GedSpacing.medium)
             
             Buttons(
                 loading: loading,
@@ -67,7 +67,7 @@ private struct AuthenticationView: View {
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .contentShape(Rectangle())
-        .onTapGesture { isInputsFocused = false }
+        .onTapGesture { focusedInputField = nil }
     }
 }
 
@@ -103,8 +103,7 @@ private struct CredentialsInputs: View {
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
-    @Binding var isInputsFocused: Bool
-    @State private var inputFieldFocused: InputField?
+    @Binding var focusedInputField: InputField?
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
@@ -112,36 +111,25 @@ private struct CredentialsInputs: View {
                 label: getString(.email),
                 text: $email,
                 inputField: InputField.email,
-                inputFieldFocused: $inputFieldFocused,
+                focusedInputField: $focusedInputField,
                 isDisable: loading,
                 errorMessage: emailError
             )
             .textInputAutocapitalization(.never)
-            .simultaneousGesture(TapGesture().onEnded({
-                isInputsFocused = true
-            }))
             
             OutlinePasswordTextField(
                 label: getString(.password),
                 text: $password,
                 inputField: InputField.password,
-                inputFieldFocused: $inputFieldFocused,
+                focusedInputField: $focusedInputField,
                 isDisable: loading,
                 errorMessage: passwordError
             )
-            .simultaneousGesture(TapGesture().onEnded({
-                isInputsFocused = true
-            }))
             
             if let errorMessage = errorMessage {
                 Text(errorMessage)
                     .font(.callout)
                     .foregroundStyle(.error)
-            }
-        }
-        .onChange(of: isInputsFocused) { isFocused in
-            if !isFocused {
-                inputFieldFocused = nil
             }
         }
     }
@@ -184,7 +172,7 @@ private struct Buttons: View {
         loading: false,
         emailError: nil,
         passwordError: nil,
-        errorMessage: "This and error message",
+        errorMessage: "",
         onLoginClick: {},
         onRegisterClick: {}
     )

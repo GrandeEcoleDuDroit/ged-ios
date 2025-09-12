@@ -29,7 +29,7 @@ class CommonInjection: DependencyInjectionContainer {
         }.inObjectScope(.container)
         
         container.register(WhiteListApi.self) { _ in
-            WhiteListApiImpl(tokenProvider: MainInjection.shared.resolve(TokenProvider.self))
+            WhiteListApiImpl()
         }.inObjectScope(.container)
         
         container.register(FcmApi.self) { resolver in

@@ -1,7 +1,7 @@
 import Foundation
 
 extension URL {
-    static func oracleUrl(endpoint: String) -> URL? {
-        URL(string: endpoint, relativeTo: URL(string: GedConfiguration.serverUrl))
+    static func oracleUrl(path: String) -> URL? {
+        URL(string: path, relativeTo: URL(string: GedConfiguration.serverUrl))
     }
 }

@@ -1,7 +1,7 @@
 import Combine
 
 protocol UserFirestoreApi {
-    func listenCurrentUser(userId: String) -> AnyPublisher<FirestoreUser?, Error>
+    func listenUser(userId: String) -> AnyPublisher<FirestoreUser?, Error>
 
     func getUser(userId: String) async throws -> FirestoreUser?
     
@@ -12,6 +12,8 @@ protocol UserFirestoreApi {
     func createUser(firestoreUser: FirestoreUser) throws
         
     func updateProfilePictureFileName(userId: String, fileName: String)
+    
+    func deleteUser(userId: String) async throws
     
     func deleteProfilePictureFileName(userId: String)
     

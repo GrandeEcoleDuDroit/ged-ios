@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ThirdRegistrationDestination: View {
     @StateObject private var viewModel: ThirdRegistrationViewModel = AuthenticationInjection.shared.resolve(ThirdRegistrationViewModel.self)
-    @State private var inputFieldFocused: InputField? = nil
+    @State private var focusedInputField: InputField? = nil
     @State private var isLoading: Bool = false
     @State private var showErrorAlert = false
     @State private var errorMessage: String = ""
@@ -49,7 +49,7 @@ private struct ThirdRegistrationView: View {
     let errorMessage: String?
     let onRegisterClick: () -> Void
     
-    @State private var inputFieldFocused: InputField?
+    @State private var focusedInputField: InputField?
     
     var body: some View {
         ZStack {
@@ -60,7 +60,7 @@ private struct ThirdRegistrationView: View {
                 emailError: emailError,
                 passwordError: passwordError,
                 errorMessage: errorMessage,
-                inputFieldFocused: $inputFieldFocused
+                focusedInputField: $focusedInputField
             )
             
             if loading {
@@ -70,7 +70,7 @@ private struct ThirdRegistrationView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .contentShape(Rectangle())
-        .onTapGesture { inputFieldFocused = nil }
+        .onTapGesture { focusedInputField = nil }
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Text(getString(.registration))

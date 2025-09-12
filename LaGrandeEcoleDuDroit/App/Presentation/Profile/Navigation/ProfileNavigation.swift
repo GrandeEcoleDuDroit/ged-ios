@@ -8,7 +8,8 @@ struct ProfileNavigation: View {
     var body: some View {
         NavigationStack(path: $path) {
             ProfileDestination(
-                onAccountInfosClick: { path.append(.accountInfos) }
+                onAccountInfosClick: { path.append(.accountInfos) },
+                onAccountClick: { path.append(.account) }
             )
             .onAppear {
                 tabBarVisibility.show = true
@@ -17,7 +18,23 @@ struct ProfileNavigation: View {
             .navigationDestination(for: ProfileRoute.self) { route in
                 switch route {
                     case .accountInfos:
-                        AccountDestination()
+                        AccountInformationDestination()
+                            .onAppear {
+                                tabBarVisibility.show = false
+                                viewModel.setCurrentRoute(route)
+                            }
+                            .background(.listBackground)
+                        
+                    case .account:
+                        AccountDestination(onDeleteAccountClick: { path.append(.deleteAccount) })
+                            .onAppear {
+                                tabBarVisibility.show = false
+                                viewModel.setCurrentRoute(route)
+                            }
+                            .background(.listBackground)
+                        
+                    case .deleteAccount:
+                        DeleteAccountDestination()
                             .onAppear {
                                 tabBarVisibility.show = false
                                 viewModel.setCurrentRoute(route)
@@ -31,6 +48,8 @@ struct ProfileNavigation: View {
 
 enum ProfileRoute: Route {
     case accountInfos
+    case account
+    case deleteAccount
 }
 
 enum ProfileMainRoute: MainRoute {
