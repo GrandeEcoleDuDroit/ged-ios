@@ -40,4 +40,12 @@ class MessageRemoteDataSource {
     func stopListeningMessages() {
         messageApi.stopListeningMessages()
     }
+    
+    func reportMessage(report: MessageReport) async throws {
+        try await mapServerError(
+            block: { try await messageApi.reportMessage(report: report) },
+            tag: tag,
+            message: "Failed to report message"
+        )
+    }
 }
