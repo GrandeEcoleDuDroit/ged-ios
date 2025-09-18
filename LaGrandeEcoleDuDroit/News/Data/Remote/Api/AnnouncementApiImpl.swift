@@ -82,7 +82,7 @@ class AnnouncementApiImpl: AnnouncementApi {
         return (urlResponse, serverResponse)
     }
     
-    func reportAnnouncement(report: AnnouncementReport) async throws -> (URLResponse, ServerResponse) {
+    func reportAnnouncement(report: RemoteAnnouncementReport) async throws -> (URLResponse, ServerResponse) {
         guard let url = baseUrl(endPoint: "/report") else {
             throw NetworkError.invalidURL("Invalid URL")
         }
