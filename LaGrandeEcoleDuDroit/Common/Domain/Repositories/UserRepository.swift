@@ -26,4 +26,6 @@ protocol UserRepository {
     func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws
     
     func deleteProfilePictureFileName(userId: String) async throws
+    
+    func reportUser(report: UserReport) async throws
 }

@@ -23,7 +23,10 @@ struct MessageNavigation: View {
                     case .chat(let conversation):
                         ChatDestination(
                             conversation: conversation,
-                            onBackClick: { path.removeAll() }
+                            onBackClick: { path.removeAll() },
+                            onInterlocutorClick: { user in
+                                path.append(.interlocutor(user: user))
+                            }
                         )
                         .onAppear {
                             tabBarVisibility.show = false
@@ -42,6 +45,14 @@ struct MessageNavigation: View {
                             viewModel.setCurrentRoute(route)
                         }
                         .background(Color.background)
+                        
+                    case .interlocutor(let user):
+                        UserDestination(user: user)
+                            .onAppear {
+                                tabBarVisibility.show = false
+                                viewModel.setCurrentRoute(route)
+                            }
+                            .background(Color.background)
                 }
             }
             .onReceive(viewModel.$routeToNavigate) { routeToNavigate in
@@ -61,6 +72,7 @@ struct MessageNavigation: View {
 enum MessageRoute: Route {
     case chat(conversation: Conversation)
     case createConversation
+    case interlocutor(user: User)
 }
 
 enum MessageMainRoute: MainRoute {

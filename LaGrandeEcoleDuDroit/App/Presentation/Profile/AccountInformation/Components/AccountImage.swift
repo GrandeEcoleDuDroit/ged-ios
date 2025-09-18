@@ -37,9 +37,5 @@ struct AccountImage: View {
 
 
 #Preview {
-    VStack(spacing: 10) {
-        AccountImage(url: nil, onClick: {})
-
-        AccountInformationFieldItem(title: "Name", value: "John Doe")
-    }.padding()
+    AccountImage(url: nil, onClick: {})
 }

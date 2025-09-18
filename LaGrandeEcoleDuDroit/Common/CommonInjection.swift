@@ -16,12 +16,19 @@ class CommonInjection: DependencyInjectionContainer {
         
         // Api
         
-        container.register(UserFirestoreApi.self) { _ in
-            UserFirestoreApiImpl()
+        container.register(UserServerApi.self) { resolver in
+            UserServerApi(tokenProvider: MainInjection.shared.resolve(TokenProvider.self))
         }.inObjectScope(.container)
         
-        container.register(UserOracleApi.self) { _ in
-            UserOracleApiImpl(tokenProvider: MainInjection.shared.resolve(TokenProvider.self))
+        container.register(UserFirestoreApi.self) { resolver in
+            UserFirestoreApi()
+        }.inObjectScope(.container)
+        
+        container.register(UserApi.self) { resolver in
+            UserApiImpl(
+                userFirestoreApi: resolver.resolve(UserFirestoreApi.self)!,
+                userServerApi: resolver.resolve(UserServerApi.self)!
+            )
         }.inObjectScope(.container)
         
         container.register(ImageApi.self) { _ in
@@ -48,8 +55,7 @@ class CommonInjection: DependencyInjectionContainer {
         
         container.register(UserRemoteDataSource.self) { resolver in
             UserRemoteDataSource(
-                userFirestoreApi: resolver.resolve(UserFirestoreApi.self)!,
-                userOracleApi: resolver.resolve(UserOracleApi.self)!
+                userApi: resolver.resolve(UserApi.self)!
             )
         }.inObjectScope(.container)
         
@@ -118,6 +124,15 @@ class CommonInjection: DependencyInjectionContainer {
         container.register(NavigationRequestUseCase.self) { resolver in
             NavigationRequestUseCase()
         }.inObjectScope(.container)
+        
+        // View Models
+        
+        container.register(UserViewModel.self) { resolver in
+            UserViewModel(
+                userRepository: resolver.resolve(UserRepository.self)!,
+                networkMonitor: resolver.resolve(NetworkMonitor.self)!
+            )
+        }
     }
     
     func resolve<T>(_ type: T.Type) -> T {

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ReadAnnouncementDestination: View {
+    let onAuthorClick: (User) -> Void
     let onEditAnnouncementClick: (Announcement) -> Void
     let onBackClick: () -> Void
     
@@ -10,6 +11,7 @@ struct ReadAnnouncementDestination: View {
         
     init(
         announcementId: String,
+        onAuthorClick: @escaping (User) -> Void,
         onEditAnnouncementClick: @escaping (Announcement) -> Void,
         onBackClick: @escaping () -> Void
     ) {
@@ -19,6 +21,7 @@ struct ReadAnnouncementDestination: View {
                 arguments: announcementId
             )!
         )
+        self.onAuthorClick = onAuthorClick
         self.onEditAnnouncementClick = onEditAnnouncementClick
         self.onBackClick = onBackClick
     }
@@ -33,7 +36,8 @@ struct ReadAnnouncementDestination: View {
                     loading: viewModel.uiState.loading,
                     onEditAnnouncementClick: onEditAnnouncementClick,
                     onDeleteAnnouncementClick: viewModel.deleteAnnouncement,
-                    onReportAnnouncementClick: viewModel.reportAnnouncement
+                    onReportAnnouncementClick: viewModel.reportAnnouncement,
+                    onAuthorClick: onAuthorClick
                 )
             }
         }
@@ -63,6 +67,7 @@ private struct ReadAnnouncementView: View {
     let onEditAnnouncementClick: (Announcement) -> Void
     let onDeleteAnnouncementClick: () -> Void
     let onReportAnnouncementClick: (AnnouncementReport) -> Void
+    let onAuthorClick: (User) -> Void
     
     @State private var showDeleteAlert: Bool = false
     @State private var showBottomSheet: Bool = false
@@ -72,7 +77,8 @@ private struct ReadAnnouncementView: View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
             AnnouncementHeader(
                 announcement: announcement,
-                onOptionClick: { showBottomSheet = true }
+                onOptionClick: { showBottomSheet = true },
+                onAuthorClick: { onAuthorClick(announcement.author) }
             )
             
             ScrollView(showsIndicators: false) {
@@ -157,11 +163,13 @@ private struct ReadAnnouncementView: View {
     NavigationStack {
         ReadAnnouncementView(
             announcement: announcementFixture,
-            user: userFixture,
+            user: userFixture2,
             loading: false,
             onEditAnnouncementClick: { _ in },
             onDeleteAnnouncementClick: {},
-            onReportAnnouncementClick: { _ in }
+            onReportAnnouncementClick: { _ in },
+            onAuthorClick: { _ in }
         )
+        .background(Color.background)
     }
 }

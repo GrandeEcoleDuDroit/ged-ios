@@ -6,6 +6,7 @@ class ReadAnnouncementViewModel: ObservableObject {
     private let userRepository: UserRepository
     private let announcementRepository: AnnouncementRepository
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
+    private let networkMonitor: NetworkMonitor
     private var cancellables: Set<AnyCancellable> = []
     
     @Published var uiState: ReadAnnouncementUiState = ReadAnnouncementUiState()
@@ -15,19 +16,37 @@ class ReadAnnouncementViewModel: ObservableObject {
         announcementId: String,
         userRepository: UserRepository,
         announcementRepository: AnnouncementRepository,
-        deleteAnnouncementUseCase: DeleteAnnouncementUseCase
+        deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
+        networkMonitor: NetworkMonitor
     ) {
         self.announcementId = announcementId
         self.userRepository = userRepository
         self.announcementRepository = announcementRepository
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
+        self.networkMonitor = networkMonitor
         
         initUiState()
     }
     
     func reportAnnouncement(report: AnnouncementReport) {
+        guard networkMonitor.isConnected else {
+            return event = ErrorEvent(message: getString(.noInternetConectionError))
+        }
+        
+        uiState.loading = true
+        
         Task {
-            try? await announcementRepository.reportAnnouncement(report: report)
+            do {
+                try await announcementRepository.reportAnnouncement(report: report)
+                DispatchQueue.main.sync { [weak self] in
+                    self?.uiState.loading = false
+                }
+            } catch {
+                DispatchQueue.main.sync { [weak self] in
+                    self?.uiState.loading = false
+                    self?.updateEvent(ErrorEvent(message: mapNetworkErrorMessage(error)))
+                }
+            }
         }
     }
     

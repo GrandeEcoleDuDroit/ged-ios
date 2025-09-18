@@ -3,15 +3,18 @@ import SwiftUI
 struct AnnouncementHeader: View {
     let announcement: Announcement
     let onOptionClick: () -> Void
+    let onAuthorClick: () -> Void
     
     private let elapsedTimeText: String
     
     init(
         announcement: Announcement,
-        onOptionClick: @escaping () -> Void
+        onOptionClick: @escaping () -> Void,
+        onAuthorClick: @escaping () -> Void
     ) {
         self.announcement = announcement
         self.onOptionClick = onOptionClick
+        self.onAuthorClick = onAuthorClick
         
         elapsedTimeText = getElapsedTimeText(
             elapsedTime: GetElapsedTimeUseCase.execute(date: announcement.date),
@@ -20,15 +23,18 @@ struct AnnouncementHeader: View {
     }
 
     var body: some View {
-        HStack(alignment: .center, spacing: GedSpacing.small) {
-            ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
-            
-            Text(announcement.author.fullName)
-                .font(.titleSmall)
-
-            Text(elapsedTimeText)
-                .foregroundStyle(.textPreview)
-                .font(.bodySmall)
+        HStack(alignment: .center) {
+            HStack(alignment: .center, spacing: GedSpacing.small) {
+                ProfilePicture(url: announcement.author.profilePictureUrl, scale: 0.4)
+                
+                Text(announcement.author.fullName)
+                    .font(.titleSmall)
+                
+                Text(elapsedTimeText)
+                    .foregroundStyle(.textPreview)
+                    .font(.bodySmall)
+            }
+            .onTapGesture(perform: onAuthorClick)
             
             Spacer()
             
@@ -41,6 +47,7 @@ struct AnnouncementHeader: View {
 #Preview {
     AnnouncementHeader(
         announcement: announcementFixture,
-        onOptionClick: {}
+        onOptionClick: {},
+        onAuthorClick: {}
     ).padding(.horizontal)
 }
