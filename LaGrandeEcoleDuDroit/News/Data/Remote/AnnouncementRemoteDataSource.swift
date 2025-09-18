@@ -42,7 +42,7 @@ class AnnouncementRemoteDataSource {
     
     func reportAnnouncement(report: AnnouncementReport) async throws {
         try await mapServerError(
-            block: { try await announcementApi.reportAnnouncement(report: report) },
+            block: { try await announcementApi.reportAnnouncement(report: report.toRemote()) },
             tag: tag,
             message: "Failed to report remote announcement"
         )

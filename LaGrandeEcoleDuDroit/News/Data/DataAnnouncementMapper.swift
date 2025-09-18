@@ -71,3 +71,23 @@ extension LocalAnnouncement {
         )
     }
 }
+
+extension AnnouncementReport {
+    func toRemote() -> RemoteAnnouncementReport {
+        RemoteAnnouncementReport(
+            announcementId: announcementId,
+            authorInfo: authorInfo.toRemote(),
+            userInfo: userInfo.toRemote(),
+            reason: reason.rawValue
+        )
+    }
+}
+
+extension AnnouncementReport.UserInfo {
+    func toRemote() -> RemoteAnnouncementReport.RemoteUserInfo {
+        RemoteAnnouncementReport.RemoteUserInfo(
+            fullName: fullName,
+            email: email
+        )
+    }
+}

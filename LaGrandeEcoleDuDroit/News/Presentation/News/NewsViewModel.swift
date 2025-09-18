@@ -7,6 +7,7 @@ class NewsViewModel: ObservableObject {
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
     private let resendAnnouncementUseCase: ResendAnnouncementUseCase
     private let refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
+    private let networkMonitor: NetworkMonitor
     private var cancellables: Set<AnyCancellable> = []
     
     @Published var uiState: NewsUiState = NewsUiState()
@@ -17,13 +18,15 @@ class NewsViewModel: ObservableObject {
         announcementRepository: AnnouncementRepository,
         deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
         resendAnnouncementUseCase: ResendAnnouncementUseCase,
-        refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
+        refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase,
+        networkMonitor: NetworkMonitor
     ) {
         self.userRepository = userRepository
         self.announcementRepository = announcementRepository
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
         self.resendAnnouncementUseCase = resendAnnouncementUseCase
         self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
+        self.networkMonitor = networkMonitor
         
         listenUser()
         listenAnnouncements()
@@ -53,8 +56,24 @@ class NewsViewModel: ObservableObject {
     }
     
     func reportAnnouncement(report: AnnouncementReport) {
+        guard networkMonitor.isConnected else {
+            return event = ErrorEvent(message: getString(.noInternetConectionError))
+        }
+        
+        uiState.loading = true
+        
         Task {
-            try? await announcementRepository.reportAnnouncement(report: report)
+            do {
+                try await announcementRepository.reportAnnouncement(report: report)
+                DispatchQueue.main.sync { [weak self] in
+                    self?.uiState.loading = false
+                }
+            } catch {
+                DispatchQueue.main.sync { [weak self] in
+                    self?.uiState.loading = false
+                    self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
+                }
+            }
         }
     }
     

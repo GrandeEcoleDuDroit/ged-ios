@@ -35,4 +35,6 @@ class MockUserRepository: UserRepository {
     func deleteCurrentUser() async throws {}
     
     func deleteProfilePictureFileName(userId: String) async throws {}
+    
+    func reportUser(report: UserReport) async throws {}
 }

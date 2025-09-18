@@ -9,5 +9,5 @@ protocol AnnouncementApi {
     
     func deleteAnnouncement(remoteAnnouncementId: String) async throws -> (URLResponse, ServerResponse)
     
-    func reportAnnouncement(report: AnnouncementReport) async throws -> (URLResponse, ServerResponse)
+    func reportAnnouncement(report: RemoteAnnouncementReport) async throws -> (URLResponse, ServerResponse)
 }

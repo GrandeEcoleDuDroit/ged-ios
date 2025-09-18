@@ -42,7 +42,7 @@ struct ErrorAnnouncementBottomSheet: View {
                 text: Text(getString(.delete)),
                 onClick: onDeleteClick
             )
-            .foregroundColor(.error)
+            .foregroundColor(.red)
         }
     }
 }
@@ -63,7 +63,7 @@ private struct EditableAnnouncementBottomSheetContent: View {
             text: Text(getString(.delete)),
             onClick: onDeleteClick
         )
-        .foregroundColor(.error)
+        .foregroundColor(.red)
     }
 }
 
@@ -76,7 +76,7 @@ private struct NonEditableAnnouncementBottomSheetContent: View {
             text: Text(getString(.report)),
             onClick: onReportClick
         )
-        .foregroundColor(.error)
+        .foregroundColor(.red)
     }
 }
 
@@ -84,7 +84,7 @@ private struct NonEditableAnnouncementBottomSheetContent: View {
     ZStack {}
         .sheet(isPresented: .constant(true)) {
             AnnouncementBottomSheet(
-                isEditable: false,
+                isEditable: true,
                 onEditClick: {},
                 onDeleteClick: {},
                 onReportClick: {}
