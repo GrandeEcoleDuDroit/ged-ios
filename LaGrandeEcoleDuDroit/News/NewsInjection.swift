@@ -70,7 +70,7 @@ class NewsInjection: DependencyInjectionContainer {
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
                 deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
                 resendAnnouncementUseCase: resolver.resolve(ResendAnnouncementUseCase.self)!,
-                refreshAnnouncementsUseCase: resolver.resolve(RefreshAnnouncementsUseCase.self)!,
+                refreshAnnouncementsUseCase: resolver.resolve(RefreshAnnouncementsUseCase.self)!
             )
         }
         

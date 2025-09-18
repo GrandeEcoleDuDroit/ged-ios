@@ -1,8 +1,6 @@
 import Foundation
 import Combine
 
-private let tag = String(describing: NewsViewModel.self)
-
 class NewsViewModel: ObservableObject {
     private let userRepository: UserRepository
     private let announcementRepository: AnnouncementRepository
@@ -26,17 +24,13 @@ class NewsViewModel: ObservableObject {
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
         self.resendAnnouncementUseCase = resendAnnouncementUseCase
         self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
+        
         listenUser()
         listenAnnouncements()
-        Task { await refreshAnnouncements() }
     }
     
     func refreshAnnouncements() async {
-        do {
-            try await refreshAnnouncementsUseCase.execute()
-        } catch {
-            updateEvent(ErrorEvent(message: mapErrorMessage(error)))
-        }
+        try? await refreshAnnouncementsUseCase.execute()
     }
 
     
@@ -58,9 +52,9 @@ class NewsViewModel: ObservableObject {
         }
     }
     
-    private func updateEvent(_ event: SingleUiEvent) {
-        DispatchQueue.main.async { [weak self] in
-            self?.event = event
+    func reportAnnouncement(report: AnnouncementReport) {
+        Task {
+            try? await announcementRepository.reportAnnouncement(report: report)
         }
     }
     
@@ -104,9 +98,15 @@ class NewsViewModel: ObservableObject {
         }
     }
     
-    struct NewsUiState: Withable {
+    private func updateEvent(_ event: SingleUiEvent) {
+        DispatchQueue.main.sync { [weak self] in
+            self?.event = event
+        }
+    }
+    
+    struct NewsUiState {
         var user: User? = nil
         var announcements: [Announcement]? = nil
-        var refreshing: Bool = false
+        var loading: Bool = false
     }
 }

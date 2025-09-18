@@ -11,7 +11,10 @@ struct NewsNavigation: View {
                 onAnnouncementClick: { announcementId in
                     path.append(.readAnnouncement(announcementId: announcementId))
                 },
-                onCreateAnnouncementClick: { path.append(.createAnnouncement) }
+                onCreateAnnouncementClick: { path.append(.createAnnouncement) },
+                onEditAnnouncementClick: { announcement in
+                    path.append(.editAnnouncement(announcement: announcement))
+                }
             )
             .onAppear {
                 tabBarVisibility.show = true

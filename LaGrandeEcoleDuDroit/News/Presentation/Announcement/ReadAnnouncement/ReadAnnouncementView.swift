@@ -14,7 +14,10 @@ struct ReadAnnouncementDestination: View {
         onBackClick: @escaping () -> Void
     ) {
         _viewModel = StateObject(
-            wrappedValue: NewsInjection.shared.resolve(ReadAnnouncementViewModel.self, arguments: announcementId)!
+            wrappedValue: NewsInjection.shared.resolve(
+                ReadAnnouncementViewModel.self,
+                arguments: announcementId
+            )!
         )
         self.onEditAnnouncementClick = onEditAnnouncementClick
         self.onBackClick = onBackClick
@@ -29,12 +32,11 @@ struct ReadAnnouncementDestination: View {
                     user: user,
                     loading: viewModel.uiState.loading,
                     onEditAnnouncementClick: onEditAnnouncementClick,
-                    onDeleteAnnouncementClick: viewModel.deleteAnnouncement
+                    onDeleteAnnouncementClick: viewModel.deleteAnnouncement,
+                    onReportAnnouncementClick: viewModel.reportAnnouncement
                 )
             }
         }
-        .navigationTitle(getString(.announcement))
-        .navigationBarTitleDisplayMode(.inline)
         .onReceive(viewModel.$event) { event in
             if let errorEvent = event as? ErrorEvent {
                 errorMessage = errorEvent.message
@@ -60,35 +62,18 @@ private struct ReadAnnouncementView: View {
     let loading: Bool
     let onEditAnnouncementClick: (Announcement) -> Void
     let onDeleteAnnouncementClick: () -> Void
+    let onReportAnnouncementClick: (AnnouncementReport) -> Void
     
     @State private var showDeleteAlert: Bool = false
+    @State private var showBottomSheet: Bool = false
+    @State private var showReportBottomSheet: Bool = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            HStack {
-                AnnouncementHeader(announcement: announcement)
-                
-                if user.isMember && announcement.author.id == user.id {
-                    Menu {
-                        Button(
-                            action: { onEditAnnouncementClick(announcement) },
-                            label: {
-                                Label(getString(.edit), systemImage: "square.and.pencil")
-                            }
-                        )
-                        
-                        Button(
-                            role: .destructive,
-                            action: { showDeleteAlert = true },
-                            label: { Label(getString(.delete), systemImage: "trash") }
-                        )
-                    } label: {
-                        Image(systemName: "ellipsis")
-                            .imageScale(.large)
-                            .padding(5)
-                    }
-                }
-            }
+            AnnouncementHeader(
+                announcement: announcement,
+                onOptionClick: { showBottomSheet = true }
+            )
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: GedSpacing.medium) {
@@ -108,6 +93,49 @@ private struct ReadAnnouncementView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding(.horizontal)
         .loading(loading)
+        .navigationTitle(getString(.announcement))
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showBottomSheet) {
+            AnnouncementBottomSheet(
+                isEditable: user.isMember && announcement.author.id == user.id,
+                onEditClick: {
+                    showBottomSheet = false
+                    onEditAnnouncementClick(announcement)
+                },
+                onDeleteClick: {
+                    showBottomSheet = false
+                    showDeleteAlert = true
+                },
+                onReportClick: {
+                    showBottomSheet = false
+                    showReportBottomSheet = true
+                }
+            )
+        }
+        .sheet(isPresented: $showReportBottomSheet) {
+            ReportBottomSheet(
+                items: AnnouncementReport.Reason.allCases,
+                fraction: 0.45,
+                onReportClick: { reason in
+                    showReportBottomSheet = false
+                    
+                    onReportAnnouncementClick(
+                        AnnouncementReport(
+                            announcementId: announcement.id,
+                            authorInfo: AnnouncementReport.UserInfo(
+                                fullName: user.fullName,
+                                email: user.email
+                            ),
+                            userInfo: AnnouncementReport.UserInfo(
+                                fullName: announcement.author.fullName,
+                                email: announcement.author.email
+                            ),
+                            reason: reason
+                        )
+                    )
+                }
+            )
+        }
         .alert(
             getString(.deleteAnnouncementAlertTitle),
             isPresented: $showDeleteAlert
@@ -132,7 +160,8 @@ private struct ReadAnnouncementView: View {
             user: userFixture,
             loading: false,
             onEditAnnouncementClick: { _ in },
-            onDeleteAnnouncementClick: {}
+            onDeleteAnnouncementClick: {},
+            onReportAnnouncementClick: { _ in }
         )
     }
 }

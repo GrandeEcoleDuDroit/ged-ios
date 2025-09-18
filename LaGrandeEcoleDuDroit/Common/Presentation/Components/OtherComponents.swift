@@ -21,9 +21,12 @@ struct ClickableTextItem: View {
     let icon: Image?
     let text: Text
     let onClick: () -> Void
-    @State private var isClicked = false
     
-    init(icon: Image? = nil, text: Text, onClick: @escaping () -> Void) {
+    init(
+        icon: Image? = nil,
+        text: Text,
+        onClick: @escaping () -> Void
+    ) {
         self.icon = icon
         self.text = text
         self.onClick = onClick
@@ -48,7 +51,11 @@ struct MenuItem: View {
     let title: String
     let onClick: () -> Void
     
-    init(icon: Image? = nil, title: String, onClick: @escaping () -> Void) {
+    init(
+        icon: Image? = nil,
+        title: String,
+        onClick: @escaping () -> Void
+    ) {
         self.icon = icon
         self.title = title
         self.onClick = onClick
@@ -75,18 +82,19 @@ struct BottomSheetContainer<Content: View>: View {
     let fraction: CGFloat
     let content: Content
     
-    init(fraction: CGFloat, @ViewBuilder content: () -> Content) {
+    init(
+        fraction: CGFloat,
+        @ViewBuilder content: () -> Content
+    ) {
         self.fraction = fraction
         self.content = content()
     }
     
     var body: some View {
-        VStack(spacing: 30) {
+        VStack(alignment: .center, spacing: 30) {
             content
         }
         .presentationDetents([.fraction(fraction)])
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-        .padding(.bottom)
         .padding(.horizontal)
     }
 }
@@ -114,4 +122,9 @@ struct BottomSheetContainer<Content: View>: View {
         )
     }
     .padding(.horizontal)
+    .sheet(isPresented: .constant(true)) {
+        BottomSheetContainer(fraction: 0.16) {
+            Text("Bottom sheet content")
+        }
+    }
 }

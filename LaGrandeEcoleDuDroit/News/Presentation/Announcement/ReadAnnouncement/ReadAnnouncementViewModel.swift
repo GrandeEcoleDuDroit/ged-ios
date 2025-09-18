@@ -25,6 +25,12 @@ class ReadAnnouncementViewModel: ObservableObject {
         initUiState()
     }
     
+    func reportAnnouncement(report: AnnouncementReport) {
+        Task {
+            try? await announcementRepository.reportAnnouncement(report: report)
+        }
+    }
+    
     private func initUiState() {
         Publishers.CombineLatest(
             announcementRepository.getAnnouncementPublisher(announcementId: announcementId),

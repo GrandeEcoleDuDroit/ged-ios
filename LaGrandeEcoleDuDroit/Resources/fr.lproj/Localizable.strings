@@ -21,6 +21,7 @@
 "yester" = "Hier";
 "home" = "Accueil";
 "sending" = "Envoi...";
+"report" = "Signaler";
 
 // Common error
 "mandatory_field_error" = "Champs obligatoire.";

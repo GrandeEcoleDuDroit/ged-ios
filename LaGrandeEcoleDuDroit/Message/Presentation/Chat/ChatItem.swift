@@ -7,7 +7,7 @@ struct SendMessageItem: View {
     let clickColor = Color(red: 93/255, green: 102/255, blue: 128/255)
     
     var body: some View {
-        HStack(alignment: .bottom) {
+        HStack(alignment: .center) {
             VStack(alignment: .trailing) {
                 MessageText(
                     text: message.content,
@@ -84,23 +84,23 @@ private struct MessageText: View {
     let dateColor: Color
     var clickColor: Color = .click
     var onClick: (() -> Void) = {}
-    @State private var isClicked: Bool = false
     
     var body: some View {
-        HStack(alignment: .bottom) {
-            Text(text)
-                .foregroundStyle(textColor)
-            
-            Text(date, style: .time)
-                .foregroundStyle(dateColor)
-                .font(.caption)
+        Clickable(action: onClick, backgroundColor: clickColor) {
+            HStack(alignment: .bottom) {
+                Text(text)
+                    .foregroundStyle(textColor)
+                
+                Text(date, style: .time)
+                    .foregroundStyle(dateColor)
+                    .font(.caption)
+            }
+            .padding(.vertical, 10)
+            .padding(.horizontal, GedSpacing.medium)
+            .background(backgroundColor)
+            .clipShape(.rect(cornerRadius: 24))
         }
-        .padding(.vertical, GedSpacing.small)
-        .padding(.horizontal, GedSpacing.medium)
-        .onClick(isClicked: $isClicked, action: onClick, backgroundColor: clickColor)
-        .background(backgroundColor)
         .clipShape(.rect(cornerRadius: 24))
-        
     }
 }
 
@@ -165,21 +165,22 @@ struct MessageInput: View {
 }
 
 struct NewMessageIndicator: View {
-    @Binding var isClicked: Bool
     let onClick: () -> Void
+    
     var body: some View {
-        ZStack {
-            Text(getString(.newMessages))
-                .foregroundStyle(.black)
-                .font(.footnote)
-                .fontWeight(.medium)
-                .padding(.horizontal, GedSpacing.large)
-                .padding(.vertical, GedSpacing.smallMedium)
+        Clickable(action: onClick) {
+            ZStack {
+                Text(getString(.newMessages))
+                    .foregroundStyle(.black)
+                    .font(.footnote)
+                    .fontWeight(.medium)
+                    .padding(.horizontal, GedSpacing.large)
+                    .padding(.vertical, GedSpacing.smallMedium)
+            }
+            .background(.white)
+            .clipShape(.rect(cornerRadius: 8))
+            .shadow(radius: 10, x: 0, y: 0)
         }
-        .background(.white)
-        .clipShape(.rect(cornerRadius: 8))
-        .shadow(radius: 10, x: 0, y: 0)
-        .onClick(isClicked: $isClicked, action: onClick)
     }
 }
 
@@ -215,10 +216,7 @@ struct NewMessageIndicator: View {
                 )
             }
             
-            NewMessageIndicator(
-                isClicked: .constant(false),
-                onClick: {}
-            )
+            NewMessageIndicator(onClick: {})
         }
 
         MessageInput(

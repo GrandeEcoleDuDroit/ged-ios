@@ -1,26 +1,24 @@
 import SwiftUI
 
 struct UserItem: View {
-    private let user: User
-    private let onClick: () -> Void
-    @State private var isClicked: Bool = false
-    
-    init(user: User, onClick: @escaping () -> Void) {
-        self.user = user
-        self.onClick = onClick
-    }
+    let user: User
+    let onClick: () -> Void
     
     var body: some View {
-        HStack(alignment: .center) {
-            ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
-            
-            Text(user.fullName)
-                .fontWeight(.medium)
+        Clickable(action: onClick) {
+            HStack(alignment: .center) {
+                ProfilePicture(
+                    url: user.profilePictureUrl,
+                    scale: 0.5
+                )
+                
+                Text(user.fullName)
+                    .fontWeight(.medium)
+            }
+            .padding(.vertical, GedSpacing.small)
+            .padding(.horizontal)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.vertical, 5)
-        .padding(.horizontal)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .onClick(isClicked: $isClicked, action: onClick)
     }
 }
 

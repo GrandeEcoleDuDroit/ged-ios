@@ -59,8 +59,45 @@ struct LoadingButton: View {
     }
 }
 
+struct Clickable<Content: View>: View {
+    let action: () -> Void
+    let backgroundColor: Color
+    let content: () -> Content
+
+    init(
+        action: @escaping () -> Void,
+        backgroundColor: Color = .click,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.action = action
+        self.backgroundColor = backgroundColor
+        self.content = content
+    }
+
+    var body: some View {
+        Button(
+            action: action,
+            label: content
+        )
+        .buttonStyle(ClickStyle(backgroundColor: backgroundColor))
+    }
+}
+
+private struct ClickStyle: ButtonStyle {
+    var backgroundColor: Color = .click
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(
+                backgroundColor
+                    .opacity(configuration.isPressed ? 1 : 0)
+                    .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
+            )
+    }
+}
+
 #Preview {
-    VStack(spacing: GedSpacing.extraLarge) {
+    VStack {
         LoadingButton(
             label: "Loading button",
             onClick: {},

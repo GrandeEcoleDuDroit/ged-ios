@@ -39,4 +39,6 @@ class MockAnnouncementRepository: AnnouncementRepository {
     func refreshAnnouncements() async {
         announcementsPublisher.value = announcementsFixture
     }
+    
+    func reportAnnouncement(report: AnnouncementReport) async throws {}
 }
