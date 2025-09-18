@@ -66,3 +66,23 @@ extension LocalMessage {
         )
     }
 }
+
+extension MessageReport {
+    func toRemote() -> RemoteMessageReport {
+        RemoteMessageReport(
+            conversationId: conversationId,
+            messageId: messageId,
+            recipientInfo: recipientInfo.toRemote(),
+            reason: reason.rawValue
+        )
+    }
+}
+
+extension MessageReport.UserInfo {
+    func toRemote() -> RemoteMessageReport.RemoteUserInfo {
+        RemoteMessageReport.RemoteUserInfo(
+            fullName: fullName,
+            email: email
+        )
+    }
+}

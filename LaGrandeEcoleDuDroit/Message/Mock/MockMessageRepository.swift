@@ -54,4 +54,6 @@ class MockMessageRepository: MessageRepository {
     func deleteLocalMessage(message: Message) async throws {}
             
     func stopListeningMessages() {}
+    
+    func reportMessage(report: MessageReport) async throws {}
 }

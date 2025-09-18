@@ -8,6 +8,7 @@ class ChatViewModel: ObservableObject {
     private let conversationRepository: ConversationRepository
     private let sendMessageUseCase: SendMessageUseCase
     private let notificationMessageManager: MessageNotificationManager
+    private let networkMonitor: NetworkMonitor
     private var cancellables: Set<AnyCancellable> = []
     private let user: User?
     private var offset: Int = 0
@@ -21,7 +22,8 @@ class ChatViewModel: ObservableObject {
         messageRepository: MessageRepository,
         conversationRepository: ConversationRepository,
         sendMessageUseCase: SendMessageUseCase,
-        notificationMessageManager: MessageNotificationManager
+        notificationMessageManager: MessageNotificationManager,
+        networkMonitor: NetworkMonitor
     ) {
         self.conversation = conversation
         self.userRepository = userRepository
@@ -29,6 +31,7 @@ class ChatViewModel: ObservableObject {
         self.conversationRepository = conversationRepository
         self.sendMessageUseCase = sendMessageUseCase
         self.notificationMessageManager = notificationMessageManager
+        self.networkMonitor = networkMonitor
         
         user = userRepository.currentUser
         getMessages(offset: offset)
@@ -103,8 +106,30 @@ class ChatViewModel: ObservableObject {
             do {
                 try await messageRepository.deleteLocalMessage(message: message)
             } catch {
-                DispatchQueue.main.async { [weak self] in
+                DispatchQueue.main.sync { [weak self] in
                     self?.event = ErrorEvent(message: getString(.unknownError))
+                }
+            }
+        }
+    }
+    
+    func reportMessage(report: MessageReport) {
+        guard networkMonitor.isConnected else {
+            return event = ErrorEvent(message: getString(.noInternetConectionError))
+        }
+        
+        uiState.loading = true
+        
+        Task {
+            do {
+                try await messageRepository.reportMessage(report: report)
+                DispatchQueue.main.sync { [weak self] in
+                    self?.uiState.loading = false
+                }
+            } catch {
+                DispatchQueue.main.sync { [weak self] in
+                    self?.uiState.loading = false
+                    self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
                 }
             }
         }

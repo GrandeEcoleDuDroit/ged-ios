@@ -1,23 +1,23 @@
 import SwiftUI
 
-struct SendMessageItem: View {
+struct SentMessageItem: View {
     let message: Message
     let showSeen: Bool
-    var onErrorMessageClick: ((Message) -> Void) = { _ in }
-    let clickColor = Color(red: 93/255, green: 102/255, blue: 128/255)
-    
+    let onClick: () -> Void
+        
     var body: some View {
         HStack(alignment: .center) {
             VStack(alignment: .trailing) {
-                MessageText(
-                    text: message.content,
-                    date: message.date,
-                    backgroundColor: .gedPrimary,
-                    textColor: .white,
-                    dateColor: Color(UIColor.lightText),
-                    clickColor: clickColor,
-                    onClick: { onErrorMessageClick(message) }
-                )
+                Clickable(action: onClick) {
+                    MessageBubble(
+                        text: message.content,
+                        date: message.date,
+                        backgroundColor: .gedPrimary,
+                        textColor: .white,
+                        dateColor: Color(UIColor.lightText)
+                    )
+                }
+                .clipShape(.rect(cornerRadius: 24))
                 
                 if showSeen {
                     Text(getString(.seen))
@@ -34,11 +34,13 @@ struct SendMessageItem: View {
                         .resizable()
                         .foregroundColor(.gray)
                         .frame(width: 18, height: 18)
+                    
                 case .error:
                     Image(systemName: "exclamationmark.circle")
                         .resizable()
                         .frame(width: 18, height: 18)
                         .foregroundColor(.red)
+                    
                 default:
                     EmptyView()
             }
@@ -52,6 +54,7 @@ struct ReceiveMessageItem: View {
     let message: Message
     let profilePictureUrl: String?
     let displayProfilePicture: Bool
+    let onLongClick: () -> Void
     
     var body: some View {
         HStack(alignment: .bottom) {
@@ -63,43 +66,42 @@ struct ReceiveMessageItem: View {
                     .hidden()
             }
             
-            MessageText(
+            MessageBubble(
                 text: message.content,
                 date: message.date,
                 backgroundColor: .chatInputBackground,
                 textColor: .primary,
                 dateColor: .gray
-            )
+            ).onLongPressGesture {
+                let generator = UIImpactFeedbackGenerator(style: .medium)
+                generator.impactOccurred()
+                onLongClick()
+            }
         }
         .padding(.trailing, GedSpacing.veryExtraLarge)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
-private struct MessageText: View {
+private struct MessageBubble: View {
     let text: String
     let date: Date
     let backgroundColor: Color
     let textColor: Color
     let dateColor: Color
-    var clickColor: Color = .click
-    var onClick: (() -> Void) = {}
     
     var body: some View {
-        Clickable(action: onClick, backgroundColor: clickColor) {
-            HStack(alignment: .bottom) {
-                Text(text)
-                    .foregroundStyle(textColor)
-                
-                Text(date, style: .time)
-                    .foregroundStyle(dateColor)
-                    .font(.caption)
-            }
-            .padding(.vertical, 10)
-            .padding(.horizontal, GedSpacing.medium)
-            .background(backgroundColor)
-            .clipShape(.rect(cornerRadius: 24))
+        HStack(alignment: .bottom) {
+            Text(text)
+                .foregroundStyle(textColor)
+            
+            Text(date, style: .time)
+                .foregroundStyle(dateColor)
+                .font(.caption)
         }
+        .padding(.vertical, 10)
+        .padding(.horizontal, GedSpacing.medium)
+        .background(backgroundColor)
         .clipShape(.rect(cornerRadius: 24))
     }
 }
@@ -191,28 +193,33 @@ struct NewMessageIndicator: View {
                 ReceiveMessageItem(
                     message: messageFixture,
                     profilePictureUrl: nil,
-                    displayProfilePicture: true
+                    displayProfilePicture: true,
+                    onLongClick: {}
                 )
                 
                 ReceiveMessageItem(
                     message: messageFixture2,
                     profilePictureUrl: nil,
-                    displayProfilePicture: true
+                    displayProfilePicture: true,
+                    onLongClick: {}
                 )
                 
-                SendMessageItem(
+                SentMessageItem(
                     message: messageFixture.with(state: .error),
-                    showSeen: false
+                    showSeen: false,
+                    onClick: {}
                 )
                 
-                SendMessageItem(
+                SentMessageItem(
                     message: messageFixture.with(state: .sending),
-                    showSeen: false
+                    showSeen: false,
+                    onClick: {}
                 )
                 
-                SendMessageItem(
+                SentMessageItem(
                     message: messageFixture2,
-                    showSeen: true
+                    showSeen: true,
+                    onClick: {}
                 )
             }
             

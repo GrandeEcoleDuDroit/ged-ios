@@ -33,4 +33,6 @@ protocol MessageRepository {
     func deleteLocalMessages() async throws
             
     func stopListeningMessages()
+    
+    func reportMessage(report: MessageReport) async throws
 }

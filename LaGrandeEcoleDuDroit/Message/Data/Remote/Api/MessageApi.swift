@@ -10,4 +10,6 @@ protocol MessageApi {
     func updateSeenMessage(remoteMessage: RemoteMessage) async throws
     
     func stopListeningMessages()
+    
+    func reportMessage(report: MessageReport) async throws -> (URLResponse, ServerResponse)
 }

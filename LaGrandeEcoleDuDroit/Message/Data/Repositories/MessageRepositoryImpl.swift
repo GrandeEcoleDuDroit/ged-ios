@@ -157,4 +157,8 @@ class MessageRepositoryImpl: MessageRepository {
     func stopListeningMessages() {
         messageRemoteDataSource.stopListeningMessages()
     }
+    
+    func reportMessage(report: MessageReport) async throws {
+        try await messageRemoteDataSource.reportMessage(report: report)
+    }
 }
