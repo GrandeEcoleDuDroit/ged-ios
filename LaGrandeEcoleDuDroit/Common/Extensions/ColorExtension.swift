@@ -1,4 +1,4 @@
-import SwiftUICore
+import SwiftUI
 
 extension Color {
     init(_ hex: String) {
