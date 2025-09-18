@@ -23,7 +23,7 @@ struct MessageFeed: View {
                                 previousMessage: previousMessage
                             )
                             
-                            if condition.isFirstMessage() || !condition.sameDay() {
+                            if condition.isFirstMessage || !condition.sameDay {
                                 Text(formatDate(date: message.date))
                                     .foregroundStyle(.gray)
                                     .padding(.vertical, GedSpacing.large)
@@ -34,16 +34,16 @@ struct MessageFeed: View {
                             GetMessageItem(
                                 message: message,
                                 interlocutorId: conversation.interlocutor.id,
-                                showSeen: condition.showSeenMessage(),
-                                displayProfilePicture: condition.displayProfilePicture(),
+                                showSeen: condition.showSeenMessage,
+                                displayProfilePicture: condition.displayProfilePicture,
                                 profilePictureUrl: conversation.interlocutor.profilePictureUrl,
                                 onErrorMessageClick: onErrorMessageClick,
                                 onLongClick: { onReceivedMessageLongClick(message) }
                             )
                             .messageItemPadding(
-                                sameSender: condition.sameSender(),
-                                sameTime: condition.sameTime(),
-                                sameDay: condition.sameDay()
+                                sameSender: condition.sameSender,
+                                sameTime: condition.sameTime,
+                                sameDay: condition.sameDay
                             )
                         }
                     }
@@ -136,38 +136,42 @@ private func formatDate(date: Date) -> String {
 }
 
 private struct MessageCondition {
-    let message: Message
-    let interlocutor: User
-    let messagesSize: Int
-    let index: Int
-    let previousMessage: Message?
+    private let message: Message
+    private let interlocutor: User
+    private let messagesSize: Int
+    private let index: Int
+    private let previousMessage: Message?
     
-    func isSender() -> Bool {
-        message.senderId != interlocutor.id
-    }
+    let isSender: Bool
+    let isFirstMessage: Bool
+    let isLastMessage: Bool
+    let previousSenderId: String
+    let sameSender: Bool
+    let showSeenMessage: Bool
+    let sameTime: Bool
+    let sameDay: Bool
+    let displayProfilePicture: Bool
     
-    func isFirstMessage() -> Bool {
-        index == messagesSize - 1
-    }
-    
-    func isLastMessage() -> Bool {
-        index == 0
-    }
-    
-    func previousSenderId() -> String {
-        previousMessage?.senderId ?? ""
-    }
-    
-    func sameSender() -> Bool {
-        message.senderId == previousSenderId()
-    }
-    
-    func showSeenMessage() -> Bool {
-        isLastMessage() && isSender() && message.seen
-    }
-    
-    func sameTime() -> Bool {
-        if let previousMessage = previousMessage {
+    init(
+        message: Message,
+        interlocutor: User,
+        messagesSize: Int,
+        index: Int,
+        previousMessage: Message?
+    ) {
+        self.message = message
+        self.interlocutor = interlocutor
+        self.messagesSize = messagesSize
+        self.index = index
+        self.previousMessage = previousMessage
+        
+        isSender = message.senderId != interlocutor.id
+        isFirstMessage = index == 0
+        isLastMessage = index == messagesSize - 1
+        previousSenderId = previousMessage?.senderId ?? ""
+        sameSender = message.senderId == previousSenderId
+        showSeenMessage = isLastMessage && isSender && message.seen
+        sameTime = if let previousMessage = previousMessage {
             Calendar.current.isDate(
                 previousMessage.date,
                 equalTo: message.date,
@@ -176,10 +180,7 @@ private struct MessageCondition {
         } else {
             false
         }
-    }
-    
-    func sameDay() -> Bool {
-        if let previousMessage = previousMessage {
+        sameDay = if let previousMessage = previousMessage {
             Calendar.current.isDate(
                 previousMessage.date,
                 equalTo:  message.date,
@@ -188,9 +189,6 @@ private struct MessageCondition {
         } else {
             false
         }
-    }
-    
-    func displayProfilePicture() -> Bool {
-        !sameTime() || isFirstMessage() || !sameSender()
+        displayProfilePicture = !sameTime || isFirstMessage || !sameSender
     }
 }
