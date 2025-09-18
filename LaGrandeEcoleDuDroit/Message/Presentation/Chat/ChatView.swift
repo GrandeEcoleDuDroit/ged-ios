@@ -28,12 +28,14 @@ struct ChatDestination: View {
             conversation: conversation,
             messages: viewModel.uiState.messages.values.map(\.self).sorted { $0.date < $1.date },
             text: $viewModel.uiState.text,
+            loading: viewModel.uiState.loading,
             onSendMessagesClick: viewModel.sendMessage,
             onBackClick: onBackClick,
             loadMoreMessages: viewModel.loadMoreMessages,
             onErrorMessageClick: viewModel.deleteErrorMessage,
             onResendMessage: viewModel.resendErrorMessage,
-            onInterlocutorClick: onInterlocutorClick
+            onInterlocutorClick: onInterlocutorClick,
+            onReportMessageClick: viewModel.reportMessage
         )
         .onReceive(viewModel.$event) { event in
             if let errorEvent = event as? ErrorEvent {
@@ -58,16 +60,20 @@ private struct ChatView: View {
     let conversation: Conversation
     let messages: [Message]
     @Binding var text: String
+    let loading: Bool
     let onSendMessagesClick: () -> Void
     let onBackClick: () -> Void
     let loadMoreMessages: () -> Void
     let onErrorMessageClick: (Message) -> Void
     let onResendMessage: (Message) -> Void
     let onInterlocutorClick: (User) -> Void
+    let onReportMessageClick: (MessageReport) -> Void
     
-    @State private var showBottomSheet: Bool = false
+    @State private var showSentMessageBottomSheet: Bool = false
+    @State private var showReceivedMessageBottomSheet: Bool = false
+    @State private var showReportMessageBottomSheet: Bool = false
     @State private var inputFocused: Bool = false
-    @State private var selectedMessage: Message?
+    @State private var clickedMessage: Message?
     @State private var showDeleteAnnouncementAlert: Bool = false
 
     var body: some View {
@@ -78,9 +84,13 @@ private struct ChatView: View {
                 loadMoreMessages: loadMoreMessages,
                 onErrorMessageClick: {
                     if $0.state == .error {
-                        selectedMessage = $0
-                        showBottomSheet = true
+                        clickedMessage = $0
+                        showSentMessageBottomSheet = true
                     }
+                },
+                onReceivedMessageLongClick: {
+                    clickedMessage = $0
+                    showReceivedMessageBottomSheet = true
                 }
             )
             
@@ -95,27 +105,51 @@ private struct ChatView: View {
         .onTapGesture {
             inputFocused = false
         }
-        .sheet(isPresented: $showBottomSheet) {
-            BottomSheetContainer(fraction: 0.16) {
-                ClickableTextItem(
-                    icon: Image(systemName: "paperplane"),
-                    text: Text(getString(.resend))
-                ) {
-                    showBottomSheet = false
-                    if let message = selectedMessage {
+        .loading(loading)
+        .sheet(isPresented: $showSentMessageBottomSheet) {
+            SentMessageBottomSheet(
+                onResendMessage: {
+                    showSentMessageBottomSheet = false
+                    if let message = clickedMessage {
                         onResendMessage(message)
                     }
-                }
-                                
-                ClickableTextItem(
-                    icon: Image(systemName: "trash"),
-                    text: Text(getString(.delete))
-                ) {
-                    showBottomSheet = false
+                },
+                onDeleteMessage: {
+                    showSentMessageBottomSheet = false
                     showDeleteAnnouncementAlert = true
                 }
-                .foregroundColor(.error)
-            }
+            )
+        }
+        .sheet(isPresented: $showReceivedMessageBottomSheet) {
+            ReceivedMessageBottomSheet(
+                onReportClick: {
+                    showReceivedMessageBottomSheet = false
+                    showReportMessageBottomSheet = true
+                }
+            )
+        }
+        .sheet(isPresented: $showReportMessageBottomSheet) {
+            ReportBottomSheet(
+                items: MessageReport.Reason.allCases,
+                fraction: 0.5,
+                onReportClick: { reason in
+                    showReportMessageBottomSheet = false
+                    
+                    if let message = clickedMessage {
+                        onReportMessageClick(
+                            MessageReport(
+                                conversationId: conversation.id,
+                                messageId: message.id,
+                                recipientInfo: MessageReport.UserInfo(
+                                    fullName: conversation.interlocutor.fullName,
+                                    email: conversation.interlocutor.email
+                                ),
+                                reason: reason
+                            )
+                        )
+                    }
+                }
+            )
         }
         .alert(
             getString(.deleteMessageAlertTitle),
@@ -126,7 +160,7 @@ private struct ChatView: View {
                 }
                 
                 Button(getString(.delete), role: .destructive) {
-                    if let message = selectedMessage {
+                    if let message = clickedMessage {
                         onErrorMessageClick(message)
                     }
                     showDeleteAnnouncementAlert = false
@@ -146,10 +180,10 @@ private struct ChatView: View {
                         }
                     )
                     
-                    HStack {
+                    HStack(spacing: GedSpacing.smallMedium) {
                         ProfilePicture(
                             url: conversation.interlocutor.profilePictureUrl,
-                            scale: 0.4
+                            scale: 0.3
                         )
                         
                         Text(conversation.interlocutor.fullName)
@@ -164,18 +198,57 @@ private struct ChatView: View {
     }
 }
 
+private struct SentMessageBottomSheet: View {
+    let onResendMessage: () -> Void
+    let onDeleteMessage: () -> Void
+    
+    var body: some View {
+        BottomSheetContainer(fraction: 0.16) {
+            ClickableTextItem(
+                icon: Image(systemName: "paperplane"),
+                text: Text(getString(.resend)),
+                onClick: onResendMessage
+            )
+                            
+            ClickableTextItem(
+                icon: Image(systemName: "trash"),
+                text: Text(getString(.delete)),
+                onClick: onDeleteMessage
+            )
+            .foregroundColor(.red)
+        }
+    }
+}
+
+private struct ReceivedMessageBottomSheet: View {
+    let onReportClick: () -> Void
+    
+    var body: some View {
+        BottomSheetContainer(fraction: 0.1) {
+            ClickableTextItem(
+                icon: Image(systemName: "exclamationmark.bubble"),
+                text: Text(getString(.report)),
+                onClick: onReportClick
+            )
+            .foregroundColor(.red)
+        }
+    }
+}
+
 #Preview {
     NavigationStack {
         ChatView(
             conversation: conversationFixture,
             messages: messagesFixture,
             text: .constant(""),
+            loading: false,
             onSendMessagesClick: {},
             onBackClick: {},
             loadMoreMessages: {},
             onErrorMessageClick: { _ in },
             onResendMessage: { _ in },
-            onInterlocutorClick: { _ in }
+            onInterlocutorClick: { _ in },
+            onReportMessageClick: { _ in }
         )
         .background(Color.background)
     }

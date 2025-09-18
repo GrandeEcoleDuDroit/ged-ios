@@ -6,6 +6,7 @@ struct MessageFeed: View {
     let conversation: Conversation
     let loadMoreMessages: () -> Void
     let onErrorMessageClick: (Message) -> Void
+    let onReceivedMessageLongClick: (Message) -> Void
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -13,36 +14,16 @@ struct MessageFeed: View {
                 LazyVStack(spacing: 0) {
                     ForEach(messages, id: \.id) { message in
                         if let index = messages.firstIndex(where: { $0.id == message.id }) {
-                            let isSender = message.senderId != conversation.interlocutor.id
-                            let isFirstMessage = index == 0
-                            let isLastMessage = index == messages.count - 1
                             let previousMessage = (index > 0) ? messages[index - 1] : nil
+                            let condition = MessageCondition(
+                                message: message,
+                                interlocutor: conversation.interlocutor,
+                                messagesSize: messages.count,
+                                index: index,
+                                previousMessage: previousMessage
+                            )
                             
-                            let previousSenderId = previousMessage?.senderId ?? ""
-                            let sameSender = message.senderId == previousSenderId
-                            let showSeenMessage = isLastMessage && isSender && message.seen
-                            
-                            let sameTime = if let previousMessage = previousMessage {
-                                sameDateTime(
-                                    date1: previousMessage.date,
-                                    date2: messages[index].date
-                                )
-                            } else {
-                                false
-                            }
-                            
-                            let sameDay = if let previousMessage = previousMessage {
-                                sameDay(
-                                    date1: previousMessage.date,
-                                    date2: messages[index].date
-                                )
-                            } else {
-                                false
-                            }
-                            
-                            let displayProfilePicture = !sameTime || isFirstMessage || !sameSender
-                            
-                            if isFirstMessage || !sameDay {
+                            if condition.isFirstMessage() || !condition.sameDay() {
                                 Text(formatDate(date: message.date))
                                     .foregroundStyle(.gray)
                                     .padding(.vertical, GedSpacing.large)
@@ -53,15 +34,16 @@ struct MessageFeed: View {
                             GetMessageItem(
                                 message: message,
                                 interlocutorId: conversation.interlocutor.id,
-                                showSeen: showSeenMessage,
-                                displayProfilePicture: displayProfilePicture,
+                                showSeen: condition.showSeenMessage(),
+                                displayProfilePicture: condition.displayProfilePicture(),
                                 profilePictureUrl: conversation.interlocutor.profilePictureUrl,
-                                onErrorMessageClick: onErrorMessageClick
+                                onErrorMessageClick: onErrorMessageClick,
+                                onLongClick: { onReceivedMessageLongClick(message) }
                             )
                             .messageItemPadding(
-                                sameSender: sameSender,
-                                sameTime: sameTime,
-                                sameDay: sameDay
+                                sameSender: condition.sameSender(),
+                                sameTime: condition.sameTime(),
+                                sameDay: condition.sameDay()
                             )
                         }
                     }
@@ -89,7 +71,6 @@ struct MessageFeed: View {
     }
 }
 
-
 struct ScrollOffsetPreferenceKey: PreferenceKey {
     static var defaultValue: CGPoint = .zero
 
@@ -104,20 +85,22 @@ private struct GetMessageItem: View {
     let displayProfilePicture: Bool
     let profilePictureUrl: String?
     let onErrorMessageClick: (Message) -> Void
+    let onLongClick: () -> Void
     
     var body: some View {
         if message.senderId == interlocutorId {
             ReceiveMessageItem(
                 message: message,
                 profilePictureUrl: profilePictureUrl,
-                displayProfilePicture: displayProfilePicture
+                displayProfilePicture: displayProfilePicture,
+                onLongClick: onLongClick
             )
         } else {
             VStack(alignment: .trailing) {
-                SendMessageItem(
+                SentMessageItem(
                     message: message,
                     showSeen: showSeen,
-                    onErrorMessageClick: onErrorMessageClick
+                    onClick: { onErrorMessageClick(message) }
                 )
             }
         }
@@ -144,18 +127,70 @@ private extension View {
     }
 }
 
-private func sameDateTime(date1: Date, date2: Date) -> Bool {
-    Calendar.current.isDate(date1, equalTo: date2, toGranularity: .minute)
-}
-
-private func sameDay(date1: Date, date2: Date) -> Bool {
-    Calendar.current.isDate(date1, equalTo: date2, toGranularity: .day)
-}
-
 private func formatDate(date: Date) -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.locale = Locale.current
     dateFormatter.dateStyle = .long
     dateFormatter.timeStyle = .none
     return dateFormatter.string(from: date)
+}
+
+private struct MessageCondition {
+    let message: Message
+    let interlocutor: User
+    let messagesSize: Int
+    let index: Int
+    let previousMessage: Message?
+    
+    func isSender() -> Bool {
+        message.senderId != interlocutor.id
+    }
+    
+    func isFirstMessage() -> Bool {
+        index == messagesSize - 1
+    }
+    
+    func isLastMessage() -> Bool {
+        index == 0
+    }
+    
+    func previousSenderId() -> String {
+        previousMessage?.senderId ?? ""
+    }
+    
+    func sameSender() -> Bool {
+        message.senderId == previousSenderId()
+    }
+    
+    func showSeenMessage() -> Bool {
+        isLastMessage() && isSender() && message.seen
+    }
+    
+    func sameTime() -> Bool {
+        if let previousMessage = previousMessage {
+            Calendar.current.isDate(
+                previousMessage.date,
+                equalTo: message.date,
+                toGranularity: .minute
+            )
+        } else {
+            false
+        }
+    }
+    
+    func sameDay() -> Bool {
+        if let previousMessage = previousMessage {
+            Calendar.current.isDate(
+                previousMessage.date,
+                equalTo:  message.date,
+                toGranularity: .day
+            )
+        } else {
+            false
+        }
+    }
+    
+    func displayProfilePicture() -> Bool {
+        !sameTime() || isFirstMessage() || !sameSender()
+    }
 }
