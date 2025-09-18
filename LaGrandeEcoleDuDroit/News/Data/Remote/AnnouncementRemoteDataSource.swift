@@ -39,4 +39,12 @@ class AnnouncementRemoteDataSource {
             message: "Failed to delete remote announcement"
         )
     }
+    
+    func reportAnnouncement(report: AnnouncementReport) async throws {
+        try await mapServerError(
+            block: { try await announcementApi.reportAnnouncement(report: report) },
+            tag: tag,
+            message: "Failed to report remote announcement"
+        )
+    }
 }
