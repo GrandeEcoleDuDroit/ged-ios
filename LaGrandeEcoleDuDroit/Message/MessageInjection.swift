@@ -15,8 +15,12 @@ class MessageInjection: DependencyInjectionContainer {
             ConversationApiImpl()
         }.inObjectScope(.container)
         
-        container.register(MessageApi.self) { _ in
-            MessageApiImpl()
+        container.register(MessageServerApi.self) { resolver in
+            MessageServerApi(tokenProvider: MainInjection.shared.resolve(TokenProvider.self))
+        }.inObjectScope(.container)
+        
+        container.register(MessageApi.self) { resolver in
+            MessageApiImpl(messageServerApi: resolver.resolve(MessageServerApi.self)!)
         }.inObjectScope(.container)
         
         // Data sources
@@ -148,7 +152,8 @@ class MessageInjection: DependencyInjectionContainer {
                 messageRepository: resolver.resolve(MessageRepository.self)!,
                 conversationRepository: resolver.resolve(ConversationRepository.self)!,
                 sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!,
-                notificationMessageManager: resolver.resolve(MessageNotificationManager.self)!
+                notificationMessageManager: resolver.resolve(MessageNotificationManager.self)!,
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
             )
         }
         
@@ -272,7 +277,8 @@ class MessageInjection: DependencyInjectionContainer {
                 messageRepository: resolver.resolve(MessageRepository.self)!,
                 conversationRepository: resolver.resolve(ConversationRepository.self)!,
                 sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!,
-                notificationMessageManager: resolver.resolve(MessageNotificationManager.self)!
+                notificationMessageManager: resolver.resolve(MessageNotificationManager.self)!,
+                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!
             )
         }
         
