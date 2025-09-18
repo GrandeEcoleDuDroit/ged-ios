@@ -8,36 +8,41 @@ struct AccountInformationDestination: View {
     @State private var profilePictureImage: UIImage? = nil
     
     var body: some View {
-        AccountInformationView(
-            user: viewModel.uiState.user,
-            loading: viewModel.uiState.loading,
-            screenState: viewModel.uiState.screenState,
-            profilePictureImage: $profilePictureImage,
-            onScreenStateChange: viewModel.onScreenStateChange,
-            onSaveProfilePictureClick: viewModel.updateProfilePicture,
-            onDeleteProfilePictureClick: viewModel.deleteProfilePicture
-        )
-        .onReceive(viewModel.$event) { event in
-            if let errorEvent = event as? ErrorEvent {
-                errorMessage = errorEvent.message
-                showErrorAlert = true
-            } else if event is SuccessEvent {
-                profilePictureImage = nil
+        if let user = viewModel.uiState.user {
+            AccountInformationView(
+                user: user,
+                loading: viewModel.uiState.loading,
+                screenState: viewModel.uiState.screenState,
+                profilePictureImage: $profilePictureImage,
+                onScreenStateChange: viewModel.onScreenStateChange,
+                onSaveProfilePictureClick: viewModel.updateProfilePicture,
+                onDeleteProfilePictureClick: viewModel.deleteProfilePicture
+            )
+            .onReceive(viewModel.$event) { event in
+                if let errorEvent = event as? ErrorEvent {
+                    errorMessage = errorEvent.message
+                    showErrorAlert = true
+                } else if event is SuccessEvent {
+                    profilePictureImage = nil
+                }
             }
-        }
-        .alert(
-            errorMessage,
-            isPresented: $showErrorAlert
-        ) {
-            Button(getString(.ok)) {
-                showErrorAlert = false
+            .alert(
+                errorMessage,
+                isPresented: $showErrorAlert
+            ) {
+                Button(getString(.ok)) {
+                    showErrorAlert = false
+                }
             }
+        } else {
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
     }
 }
 
 private struct AccountInformationView: View {
-    let user: User?
+    let user: User
     let loading: Bool
     let screenState: AccountInformationViewModel.ScreenState
     @Binding var profilePictureImage: UIImage?
@@ -51,33 +56,48 @@ private struct AccountInformationView: View {
     @State private var isBottomSheetItemClicked: Bool = false
     @State private var navigationTitle = getString(.accountInfos)
     @State private var showDeleteAlert: Bool = false
-    @State private var bottomSheetItemSize: CGFloat = 0.1
+    @State private var bottomSheetItemSize: CGFloat
+    
+    init(
+        user: User,
+        loading: Bool,
+        screenState: AccountInformationViewModel.ScreenState,
+        profilePictureImage: Binding<UIImage?>,
+        onScreenStateChange: @escaping (AccountInformationViewModel.ScreenState) -> Void,
+        onSaveProfilePictureClick: @escaping (Data?) -> Void,
+        onDeleteProfilePictureClick: @escaping () -> Void
+    ) {
+        self.user = user
+        self.loading = loading
+        self.screenState = screenState
+        self._profilePictureImage = profilePictureImage
+        self.onScreenStateChange = onScreenStateChange
+        self.onSaveProfilePictureClick = onSaveProfilePictureClick
+        self.onDeleteProfilePictureClick = onDeleteProfilePictureClick
+        
+        self.bottomSheetItemSize = user.profilePictureUrl != nil ? 0.16 : 0.1
+    }
 
     var body: some View {
         ZStack {
-            if let user = user {
-                VStack {
-                    if let image = profilePictureImage {
-                        ClickableProfilePictureImage(
-                            image: image,
-                            onClick: { showPhotosPicker = true },
-                            scale: 1.6
-                        )
-                    } else {
-                        AccountImage(
-                            url: user.profilePictureUrl,
-                            onClick: { showBottomSheet = true },
-                            scale: 1.6
-                        )
-                    }
-                    
-                    AccountInfoItems(user: user)
+            VStack {
+                if let image = profilePictureImage {
+                    ClickableProfilePictureImage(
+                        image: image,
+                        onClick: { showPhotosPicker = true },
+                        scale: 1.6
+                    )
+                } else {
+                    AccountImage(
+                        url: user.profilePictureUrl,
+                        onClick: { showBottomSheet = true },
+                        scale: 1.6
+                    )
                 }
-                .loading(loading)
-            } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                
+                UserInformationItems(user: user)
             }
+            .loading(loading)
         }
         .task(id: selectedPhoto) {
             if let data = try? await selectedPhoto?.loadTransferable(type: Data.self) {
@@ -87,7 +107,7 @@ private struct AccountInformationView: View {
                 }
             }
         }
-        .onChange(of: user?.profilePictureUrl) { profilePictureUrl in
+        .onChange(of: user.profilePictureUrl) { profilePictureUrl in
             bottomSheetItemSize = profilePictureUrl != nil ? 0.18 : 0.1
         }
         .onChange(of: screenState) { newState in
@@ -99,7 +119,6 @@ private struct AccountInformationView: View {
                 navigationTitle = getString(.editProfile)
             }
         }
-        .onChange(of: bottomSheetItemSize) { _ in }
         .photosPicker(isPresented: $showPhotosPicker, selection: $selectedPhoto, matching: .images)
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
@@ -107,16 +126,14 @@ private struct AccountInformationView: View {
         .sheet(isPresented: $showBottomSheet) {
             BottomSheetContainer(fraction: bottomSheetItemSize) {
                 ClickableTextItem(
-                    icon: Image(systemName: "photo.fill"),
+                    icon: Image(systemName: "photo"),
                     text: Text(getString(.newProfilePicture))
                 ) {
                     showPhotosPicker = true
                     showBottomSheet = false
                 }
-                .font(.bodyLarge)
-                .frame(maxWidth: .infinity, alignment: .leading)
                 
-                if user?.profilePictureUrl != nil {
+                if user.profilePictureUrl != nil {
                     ClickableTextItem(
                         icon: Image(systemName: "trash"),
                         text: Text(getString(.delete))
@@ -124,9 +141,7 @@ private struct AccountInformationView: View {
                         showBottomSheet = false
                         showDeleteAlert = true
                     }
-                    .font(.bodyLarge)
                     .foregroundStyle(.red)
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
         }
@@ -170,39 +185,6 @@ private struct AccountInformationView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .disabled(loading)
-    }
-}
-
-private struct AccountInfoItems: View {
-    private var user: User
-    
-    init(user: User){
-        self.user = user
-    }
-    
-    var body: some View {
-        VStack(spacing: GedSpacing.medium) {
-            AccountInformationFieldItem(title: getString(.lastName), value: user.lastName)
-            AccountInformationFieldItem(title: getString(.firstName), value: user.firstName)
-            AccountInformationFieldItem(title: getString(.email), value: user.email)
-            AccountInformationFieldItem(title: getString(.schoolLevel), value: user.schoolLevel.rawValue)
-            
-            if user.isMember {
-                HStack {
-                    Text(getString(.member))
-                        .font(.callout)
-                        .bold()
-                        .foregroundColor(.textPreview)
-                    
-                    Image(systemName: "star.fill")
-                        .foregroundStyle(.gold)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .padding(.horizontal)
-        .padding(.top, GedSpacing.smallMedium)
     }
 }
 

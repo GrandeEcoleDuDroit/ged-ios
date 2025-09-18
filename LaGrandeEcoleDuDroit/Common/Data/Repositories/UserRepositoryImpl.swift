@@ -4,7 +4,6 @@ import Combine
 class UserRepositoryImpl: UserRepository {
     private let userLocalDataSource: UserLocalDataSource
     private let userRemoteDataSource: UserRemoteDataSource
-    private let tag = String(describing: UserRepositoryImpl.self)
     private var userSubject = CurrentValueSubject<User?, Never>(nil)
     var user: AnyPublisher<User, Never> {
         userSubject
@@ -26,11 +25,7 @@ class UserRepositoryImpl: UserRepository {
     }
         
     func createUser(user: User) async throws {
-        try await mapFirebaseException(
-            block: { try await userRemoteDataSource.createUser(user: user) },
-            tag: tag,
-            message: "Failed to create user"
-        )
+        try await userRemoteDataSource.createUser(user: user)
         try? userLocalDataSource.storeUser(user: user)
         userSubject.send(user)
     }
@@ -72,24 +67,21 @@ class UserRepositoryImpl: UserRepository {
     }
     
     func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {
-        try await mapFirebaseException(
-            block: { try await userRemoteDataSource.updateProfilePictureFileName(userId: userId, fileName: profilePictureFileName) },
-            tag: tag,
-            message: "Failed to update profile picture file name"
-        )
-
+        try await userRemoteDataSource.updateProfilePictureFileName(userId: userId, fileName: profilePictureFileName)
         try? userLocalDataSource.updateProfilePictureFileName(fileName: profilePictureFileName)
-        userSubject.value = userSubject.value?.with(profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName))
+        let user = userSubject.value?.with(profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName))
+        userSubject.send(user)
     }
     
     func deleteProfilePictureFileName(userId: String) async throws {
-        try await mapFirebaseException(
-            block: { try await userRemoteDataSource.deleteProfilePictureFileName(userId: userId) },
-            tag: tag,
-            message: "Failed to delete profile picture file name"
-        )
+        try await userRemoteDataSource.deleteProfilePictureFileName(userId: userId)
         try? userLocalDataSource.updateProfilePictureFileName(fileName: nil)
-        userSubject.value = userSubject.value?.with(profilePictureUrl: nil)
+        let user = userSubject.value?.with(profilePictureUrl: nil)
+        userSubject.send(user)
+    }
+    
+    func reportUser(report: UserReport) async throws {
+        try await userRemoteDataSource.reportUser(report: report)
     }
     
     private func initUser() {

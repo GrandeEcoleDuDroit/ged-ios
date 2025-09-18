@@ -91,7 +91,7 @@ struct BottomSheetContainer<Content: View>: View {
     }
     
     var body: some View {
-        VStack(alignment: .center, spacing: 30) {
+        VStack(spacing: 30) {
             content
         }
         .presentationDetents([.fraction(fraction)])

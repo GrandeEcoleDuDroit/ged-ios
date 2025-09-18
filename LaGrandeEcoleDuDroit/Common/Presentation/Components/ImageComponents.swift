@@ -54,17 +54,20 @@ struct ClickableProfilePicture: View {
                             .background(.profilePictureLoading)
                             .clipShape(Circle())
                         }
+                        .clipShape(Circle())
                         
                     case .success(let image):
                         Clickable(action: onClick) {
                             image.fitCircle(scale: scale)
                         }
+                        .clipShape(Circle())
                         
                     case .failure:
                         Clickable(action: onClick) {
                             ProfilePictureError(scale: scale)
                                 .clipShape(Circle())
                         }
+                        .clipShape(Circle())
                         
                     default: ClickableDefaultProfilePicture(onClick: onClick, scale: scale)
                 }
@@ -118,6 +121,7 @@ private struct ClickableDefaultProfilePicture: View {
             Image(ImageResource.defaultProfilePicture)
                 .fitCircle(scale: scale)
         }
+        .clipShape(Circle())
     }
 }
 
@@ -148,6 +152,10 @@ private struct ProfilePictureError: View {
             Text("Error picture")
                 .font(.caption)
             ProfilePictureError()
+            
+            Text("Clickable default profile picture")
+                .font(.caption)
+            ClickableDefaultProfilePicture(onClick: {})
         }
     }
 }

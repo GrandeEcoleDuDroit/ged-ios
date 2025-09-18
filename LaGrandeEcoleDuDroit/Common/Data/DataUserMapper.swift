@@ -63,3 +63,23 @@ extension LocalUser {
         )
     }
 }
+
+extension UserReport {
+    func toRemote() -> RemoteUserReport {
+        RemoteUserReport(
+            userId: userId,
+            userInfo: userInfo.toRemote(),
+            reporterInfo: reporterInfo.toRemote(),
+            reason: reason.rawValue
+        )
+    }
+}
+
+extension UserReport.UserInfo {
+    func toRemote() -> RemoteUserReport.RemoteUserInfo {
+        RemoteUserReport.RemoteUserInfo(
+            fullName: fullName,
+            email: email
+        )
+    }
+}

@@ -4,6 +4,7 @@ import Combine
 struct ChatDestination: View {
     let conversation: Conversation
     let onBackClick: () -> Void
+    let onInterlocutorClick: (User) -> Void
     
     @StateObject private var viewModel: ChatViewModel
     @State private var showErrorAlert = false
@@ -11,13 +12,15 @@ struct ChatDestination: View {
     
     init(
         conversation: Conversation,
-        onBackClick: @escaping () -> Void
+        onBackClick: @escaping () -> Void,
+        onInterlocutorClick: @escaping (User) -> Void
     ) {
         self.conversation = conversation
         _viewModel = StateObject(
             wrappedValue: MessageInjection.shared.resolve(ChatViewModel.self, arguments: conversation)!
         )
         self.onBackClick = onBackClick
+        self.onInterlocutorClick = onInterlocutorClick
     }
     
     var body: some View {
@@ -29,7 +32,8 @@ struct ChatDestination: View {
             onBackClick: onBackClick,
             loadMoreMessages: viewModel.loadMoreMessages,
             onErrorMessageClick: viewModel.deleteErrorMessage,
-            onResendMessage: viewModel.resendErrorMessage
+            onResendMessage: viewModel.resendErrorMessage,
+            onInterlocutorClick: onInterlocutorClick
         )
         .onReceive(viewModel.$event) { event in
             if let errorEvent = event as? ErrorEvent {
@@ -59,6 +63,7 @@ private struct ChatView: View {
     let loadMoreMessages: () -> Void
     let onErrorMessageClick: (Message) -> Void
     let onResendMessage: (Message) -> Void
+    let onInterlocutorClick: (User) -> Void
     
     @State private var showBottomSheet: Bool = false
     @State private var inputFocused: Bool = false
@@ -141,10 +146,18 @@ private struct ChatView: View {
                         }
                     )
                     
-                    ProfilePicture(url: conversation.interlocutor.profilePictureUrl, scale: 0.4)
-                    
-                    Text(conversation.interlocutor.fullName)
-                        .fontWeight(.medium)
+                    HStack {
+                        ProfilePicture(
+                            url: conversation.interlocutor.profilePictureUrl,
+                            scale: 0.4
+                        )
+                        
+                        Text(conversation.interlocutor.fullName)
+                            .fontWeight(.medium)
+                    }
+                    .onTapGesture {
+                        onInterlocutorClick(conversation.interlocutor)
+                    }
                 }
             }
         }
@@ -161,7 +174,8 @@ private struct ChatView: View {
             onBackClick: {},
             loadMoreMessages: {},
             onErrorMessageClick: { _ in },
-            onResendMessage: { _ in }
+            onResendMessage: { _ in },
+            onInterlocutorClick: { _ in }
         )
         .background(Color.background)
     }

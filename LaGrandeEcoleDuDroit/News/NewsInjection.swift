@@ -70,7 +70,8 @@ class NewsInjection: DependencyInjectionContainer {
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
                 deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
                 resendAnnouncementUseCase: resolver.resolve(ResendAnnouncementUseCase.self)!,
-                refreshAnnouncementsUseCase: resolver.resolve(RefreshAnnouncementsUseCase.self)!
+                refreshAnnouncementsUseCase: resolver.resolve(RefreshAnnouncementsUseCase.self)!,
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
             )
         }
         
@@ -80,7 +81,8 @@ class NewsInjection: DependencyInjectionContainer {
                 announcementId: announcementId,
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!
+                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
             )
         }
         
@@ -175,7 +177,8 @@ class NewsInjection: DependencyInjectionContainer {
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
                 deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
                 resendAnnouncementUseCase: resolver.resolve(ResendAnnouncementUseCase.self)!,
-                refreshAnnouncementsUseCase: resolver.resolve(RefreshAnnouncementsUseCase.self)!
+                refreshAnnouncementsUseCase: resolver.resolve(RefreshAnnouncementsUseCase.self)!,
+                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!
             )
         }
         
@@ -192,7 +195,8 @@ class NewsInjection: DependencyInjectionContainer {
                 announcementId: announcementId,
                 userRepository: commonMockContainer.resolve(UserRepository.self)!,
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!
+                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
+                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!
             )
         }
         
