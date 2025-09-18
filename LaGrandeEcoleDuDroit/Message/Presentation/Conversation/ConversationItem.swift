@@ -115,7 +115,6 @@ private struct ConversationItemStructure<Content: View>: View {
     let onClick: () -> Void
     let onLongClick: () -> Void
     let content: Content
-    @State private var isClicked: Bool = false
 
     init(
         interlocutor: User,
@@ -130,16 +129,19 @@ private struct ConversationItemStructure<Content: View>: View {
     }
     
     var body: some View {
-        HStack(alignment: .center) {
-            ProfilePicture(url: interlocutor.profilePictureUrl, scale: 0.45)
-            content
+        Clickable(action: onClick) {
+            HStack(alignment: .center) {
+                ProfilePicture(url: interlocutor.profilePictureUrl, scale: 0.45)
+                content
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal)
+            .padding(.vertical, GedSpacing.smallMedium)
+            .contentShape(Rectangle())
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal)
-        .padding(.vertical, GedSpacing.smallMedium)
-        .contentShape(Rectangle())
-        .onClick(isClicked: $isClicked, action: onClick)
-        .onLongClick(isClicked: $isClicked, action: onLongClick)
+        .onLongPressGesture {
+            onLongClick()
+        }
     }
 }
 

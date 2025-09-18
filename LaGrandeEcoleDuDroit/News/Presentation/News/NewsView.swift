@@ -3,38 +3,60 @@ import SwiftUI
 struct NewsDestination: View {
     let onAnnouncementClick: (String) -> Void
     let onCreateAnnouncementClick: () -> Void
+    let onEditAnnouncementClick: (Announcement) -> Void
     
     @StateObject private var viewModel = NewsInjection.shared.resolve(NewsViewModel.self)
-    @State private var isRefreshing: Bool = false
+    @State private var errorMessage: String = ""
+    @State private var showErrorAlert: Bool = false
     
     var body: some View {
-        NewsView(
-            user: viewModel.uiState.user,
-            announcements: viewModel.uiState.announcements,
-            refreshing: viewModel.uiState.refreshing,
-            onRefreshAnnouncement: viewModel.refreshAnnouncements,
-            onAnnouncementClick: onAnnouncementClick,
-            onCreateAnnouncementClick: onCreateAnnouncementClick,
-            onResendAnnouncementClick: viewModel.resendAnnouncement,
-            onDeleteAnnouncementClick: viewModel.deleteAnnouncement
-        )
+        if let user = viewModel.uiState.user {
+            NewsView(
+                user: user,
+                announcements: viewModel.uiState.announcements,
+                loading: viewModel.uiState.loading,
+                onRefreshAnnouncement: viewModel.refreshAnnouncements,
+                onAnnouncementClick: onAnnouncementClick,
+                onCreateAnnouncementClick: onCreateAnnouncementClick,
+                onEditAnnouncementClick: onEditAnnouncementClick,
+                onResendAnnouncementClick: viewModel.resendAnnouncement,
+                onDeleteAnnouncementClick: viewModel.deleteAnnouncement,
+                onReportAnnouncementClick: viewModel.reportAnnouncement
+            )
+            .onReceive(viewModel.$event) { event in
+                if let errorEvent = event as? ErrorEvent {
+                    errorMessage = errorEvent.message
+                    showErrorAlert = true
+                }
+            }
+            .alert(
+                errorMessage,
+                isPresented: $showErrorAlert
+            ) {
+                Button(getString(.ok)) {
+                    showErrorAlert = false
+                }
+            }
+        }
     }
 }
 
 private struct NewsView: View {
-    let user: User?
+    let user: User
     let announcements: [Announcement]?
-    let refreshing: Bool
+    let loading: Bool
     let onRefreshAnnouncement: () async -> Void
     let onAnnouncementClick: (String) -> Void
     let onCreateAnnouncementClick: () -> Void
+    let onEditAnnouncementClick: (Announcement) -> Void
     let onResendAnnouncementClick: (Announcement) -> Void
     let onDeleteAnnouncementClick: (Announcement) -> Void
+    let onReportAnnouncementClick: (AnnouncementReport) -> Void
     
-    @State private var showBottomSheet: Bool = false
-    @State private var showDeleteBottomSheet: Bool = false
+    @State private var showAnnouncementBottomSheet: Bool = false
+    @State private var showAnnouncementReportBottomSheet: Bool = false
     @State private var showDeleteAnnouncementAlert: Bool = false
-    @State private var selectedAnnouncement: Announcement?
+    @State private var clickedAnnouncement: Announcement?
     
     var body: some View {
         GeometryReader { geometry in
@@ -44,14 +66,18 @@ private struct NewsView: View {
                         announcements: announcements,
                         onAnnouncementClick: onAnnouncementClick,
                         onUncreatedAnnouncementClick: {
-                            selectedAnnouncement = $0
-                            showBottomSheet = true
+                            clickedAnnouncement = $0
+                            showAnnouncementBottomSheet = true
                         },
+                        onAnnouncementOptionClick: {
+                            clickedAnnouncement = $0
+                            showAnnouncementBottomSheet = true
+                            
+                        }
                     )
-                    .id(refreshing)
                     .frame(
                         minHeight: geometry.size.height / 8,
-                        maxHeight: geometry.size.height / 2,
+                        maxHeight: geometry.size.height / 2.2,
                         alignment: .top
                     )
                 } else {
@@ -63,6 +89,7 @@ private struct NewsView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .refreshable { await onRefreshAnnouncement() }
         .padding(.top, GedSpacing.medium)
+        .loading(loading)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -79,7 +106,7 @@ private struct NewsView: View {
             }
             
             ToolbarItem(placement: .topBarTrailing) {
-                if user?.isMember ?? false {
+                if user.isMember {
                     Button(
                         action: onCreateAnnouncementClick,
                         label: { Image(systemName: "plus") }
@@ -87,27 +114,50 @@ private struct NewsView: View {
                 }
             }
         }
-        .sheet(isPresented: $showBottomSheet) {
-            BottomSheetContainer(fraction: 0.16) {
-                ClickableTextItem(
-                    icon: Image(systemName: "paperplane"),
-                    text: Text(getString(.resend))
-                ) {
-                    showBottomSheet = false
-                    if let announcement = selectedAnnouncement {
-                        onResendAnnouncementClick(announcement)
+        .sheet(isPresented: $showAnnouncementBottomSheet) {
+            Sheet(
+                user: user,
+                clickedAnnouncement: $clickedAnnouncement,
+                onResendAnnouncementClick: onResendAnnouncementClick,
+                onDeleteAnnouncementClick: {
+                    showAnnouncementBottomSheet = false
+                    showDeleteAnnouncementAlert = true
+                },
+                onEditAnnouncementClick: {
+                    showAnnouncementBottomSheet = false
+                    onEditAnnouncementClick($0)
+                },
+                onReportAnnouncementClick: {
+                    showAnnouncementBottomSheet = false
+                    showAnnouncementReportBottomSheet = true
+                }
+            )
+        }
+        .sheet(isPresented: $showAnnouncementReportBottomSheet) {
+            ReportBottomSheet(
+                items: AnnouncementReport.Reason.allCases,
+                fraction: 0.45,
+                onReportClick: { reason in
+                    showAnnouncementReportBottomSheet = false
+                    
+                    if let announcement = clickedAnnouncement {
+                        onReportAnnouncementClick(
+                            AnnouncementReport(
+                                announcementId: announcement.id,
+                                authorInfo: AnnouncementReport.UserInfo(
+                                    fullName: user.fullName,
+                                    email: user.email
+                                ),
+                                userInfo: AnnouncementReport.UserInfo(
+                                    fullName: announcement.author.fullName,
+                                    email: announcement.author.email
+                                ),
+                                reason: reason
+                            )
+                        )
                     }
                 }
-                                
-                ClickableTextItem(
-                    icon: Image(systemName: "trash"),
-                    text: Text(getString(.delete))
-                ) {
-                    showBottomSheet = false
-                    showDeleteAnnouncementAlert = true
-                }
-                .foregroundColor(.error)
-            }
+            )
         }
         .alert(
             getString(.deleteAnnouncementAlertTitle),
@@ -118,7 +168,7 @@ private struct NewsView: View {
             }
             
             Button(getString(.delete), role: .destructive) {
-                if let announcement = selectedAnnouncement {
+                if let announcement = clickedAnnouncement {
                     onDeleteAnnouncementClick(announcement)
                 }
                 showDeleteAnnouncementAlert = false
@@ -127,54 +177,53 @@ private struct NewsView: View {
     }
 }
 
-struct RecentAnnouncementSection: View {
-    let announcements: [Announcement]
-    let onAnnouncementClick: (String) -> Void
-    let onUncreatedAnnouncementClick: (Announcement) -> Void
+private struct Sheet: View {
+    let user: User
+    @Binding var clickedAnnouncement: Announcement?
+    let onResendAnnouncementClick: (Announcement) -> Void
+    let onDeleteAnnouncementClick: () -> Void
+    let onEditAnnouncementClick: (Announcement) -> Void
+    let onReportAnnouncementClick: () -> Void
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(getString(.recentAnnouncements))
-                .font(.titleMedium)
-                .fontWeight(.semibold)
-                .padding(.horizontal)
-            
-            ScrollView {
-                if announcements.isEmpty {
-                    Text(getString(.noAnnouncement))
-                        .foregroundColor(Color(UIColor.lightGray))
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .top)
-                } else {
-                    ForEach(announcements) { announcement in
-                        ShortAnnouncementItem(announcement: announcement) {
-                            if announcement.state == .published {
-                                onAnnouncementClick(announcement.id)
-                            } else {
-                                onUncreatedAnnouncementClick(announcement)
-                            }
-                        }
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
-                }
+        if let announcement = clickedAnnouncement {
+            switch announcement.state {
+                case .error:
+                    ErrorAnnouncementBottomSheet(
+                        onResendClick: { onResendAnnouncementClick(announcement) },
+                        onDeleteClick: onDeleteAnnouncementClick
+                    )
+                    
+                default:
+                    AnnouncementBottomSheet(
+                        isEditable: user.isMember && announcement.author.id == user.id,
+                        onEditClick: { onEditAnnouncementClick(announcement) },
+                        onDeleteClick: onDeleteAnnouncementClick,
+                        onReportClick: onReportAnnouncementClick
+                    )
             }
-            .scrollIndicators(.hidden)
+        } else {
+            BottomSheetContainer(fraction: 0.16) {
+                Text(getString(.unknownError))
+                    .foregroundColor(.error)
+            }
         }
     }
 }
 
-
 #Preview {
    NavigationStack {
        NewsView(
-        user: userFixture,
-        announcements: announcementsFixture,
-        refreshing: false,
-        onRefreshAnnouncement: {},
-        onAnnouncementClick: {_ in },
-        onCreateAnnouncementClick: {},
-        onResendAnnouncementClick: {_ in },
-        onDeleteAnnouncementClick: {_ in }
+            user: userFixture2,
+            announcements: announcementsFixture,
+            loading: false,
+            onRefreshAnnouncement: {},
+            onAnnouncementClick: {_ in },
+            onCreateAnnouncementClick: {},
+            onEditAnnouncementClick: {_ in },
+            onResendAnnouncementClick: {_ in },
+            onDeleteAnnouncementClick: {_ in },
+            onReportAnnouncementClick: {_ in }
        )
    }
 }

@@ -81,4 +81,22 @@ class AnnouncementApiImpl: AnnouncementApi {
         let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
         return (urlResponse, serverResponse)
     }
+    
+    func reportAnnouncement(report: AnnouncementReport) async throws -> (URLResponse, ServerResponse) {
+        guard let url = baseUrl(endPoint: "/report") else {
+            throw NetworkError.invalidURL("Invalid URL")
+        }
+        
+        let session = RequestUtils.getUrlSession()
+        let authIdToken = await tokenProvider.getAuthIdToken()
+        let request = try RequestUtils.formatPostRequest(
+            dataToSend: report,
+            url: url,
+            authToken: authIdToken
+        )
+        
+        let (data, urlResponse) = try await session.data(for: request)
+        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
+        return (urlResponse, serverResponse)
+    }
 }

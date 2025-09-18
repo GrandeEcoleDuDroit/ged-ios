@@ -21,6 +21,7 @@ enum GedString: String {
     case yesterday = "yesterday"
     case home = "home"
     case sending = "sending"
+    case report = "report"
     
     // Common errors
     case mandatoryFieldError = "mandatory_field_error"
