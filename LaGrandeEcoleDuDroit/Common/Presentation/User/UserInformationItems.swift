@@ -29,8 +29,6 @@ struct UserInformationItems: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .padding(.horizontal)
-        .padding(.top, GedSpacing.smallMedium)
     }
 }
 
@@ -74,5 +72,5 @@ private struct InformationItemValue {
 }
 
 #Preview {
-    UserInformationItems(user: userFixture)
+    UserInformationItems(user: userFixture).padding()
 }

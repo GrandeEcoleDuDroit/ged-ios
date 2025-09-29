@@ -9,12 +9,10 @@ class MessageRemoteDataSource {
         self.messageApi = messageApi
     }
     
-    func listenMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<[Message], Error> {
+    func listenMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Error> {
         let offsetTime: Timestamp? = offsetTime.map { Timestamp(date: $0) }
         return messageApi.listenMessages(conversation: conversation, offsetTime: offsetTime)
-            .map { remoteMessges in
-                remoteMessges.map { $0.toMessage() }
-            }
+            .map { $0.toMessage() }
             .eraseToAnyPublisher()
     }
     

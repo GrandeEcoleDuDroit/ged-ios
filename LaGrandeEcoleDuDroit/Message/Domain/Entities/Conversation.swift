@@ -5,7 +5,7 @@ struct Conversation: Hashable, Codable {
     let interlocutor: User
     let createdAt: Date
     let state: ConversationState
-    let deleteTime: Date?
+    var deleteTime: Date?
     
     func with(
         id: String? = nil,

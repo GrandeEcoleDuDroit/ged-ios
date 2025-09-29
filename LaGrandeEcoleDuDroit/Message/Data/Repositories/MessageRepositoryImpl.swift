@@ -56,7 +56,7 @@ class MessageRepositoryImpl: MessageRepository {
         }
     }
     
-    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<[Message], Error> {
+    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Error> {
         messageRemoteDataSource.listenMessages(conversation: conversation, offsetTime: offsetTime)
     }
     
@@ -110,15 +110,6 @@ class MessageRepositoryImpl: MessageRepository {
             try await messageLocalDataSource.upsertMessage(message: message)
         } catch {
             e(tag, "Failed to upsert local message: \(error.localizedDescription)", error)
-            throw error
-        }
-    }
-    
-    func upsertLocalMessages(messages: [Message]) async throws {
-        do {
-            try await messageLocalDataSource.upsertMessages(messages: messages)
-        } catch {
-            e(tag, "Failed to upsert local messages: \(error.localizedDescription)", error)
             throw error
         }
     }

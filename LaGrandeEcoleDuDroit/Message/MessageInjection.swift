@@ -24,7 +24,6 @@ class MessageInjection: DependencyInjectionContainer {
         }.inObjectScope(.container)
         
         // Data sources
-        
         container.register(ConversationLocalDataSource.self) { resolver in
             ConversationLocalDataSource(gedDatabaseContainer: CommonInjection.shared.resolve(GedDatabaseContainer.self))
         }.inObjectScope(.container)
@@ -42,7 +41,6 @@ class MessageInjection: DependencyInjectionContainer {
         }.inObjectScope(.container)
         
         // Repositories
-        
         container.register(ConversationRepository.self) { resolver in
             ConversationRepositoryImpl(
                 conversationLocalDataSource: resolver.resolve(ConversationLocalDataSource.self)!,
@@ -66,7 +64,6 @@ class MessageInjection: DependencyInjectionContainer {
         }.inObjectScope(.container)
         
         // Use cases
-        
         container.register(ListenRemoteConversationsUseCase.self) { resolver in
             ListenRemoteConversationsUseCase(
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
@@ -79,7 +76,8 @@ class MessageInjection: DependencyInjectionContainer {
             ListenRemoteMessagesUseCase(
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
                 conversationRepository: resolver.resolve(ConversationRepository.self)!,
-                messageRepository: resolver.resolve(MessageRepository.self)!
+                messageRepository: resolver.resolve(MessageRepository.self)!,
+                blockedUserRepository: CommonInjection.shared.resolve(BlockedUserRepository.self)
             )
         }.inObjectScope(.container)
         
@@ -127,8 +125,14 @@ class MessageInjection: DependencyInjectionContainer {
             )
         }.inObjectScope(.container)
         
+        container.register(UpdateConversationDeleteTimeUseCase.self) { resolver in
+            UpdateConversationDeleteTimeUseCase(
+                conversationRepository: resolver.resolve(ConversationRepository.self)!,
+                userRepository: CommonInjection.shared.resolve(UserRepository.self)
+            )
+        }
+        
         // View models
-                
         container.register(ConversationViewModel.self) { resolver in
             ConversationViewModel(
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
@@ -140,6 +144,7 @@ class MessageInjection: DependencyInjectionContainer {
         container.register(CreateConversationViewModel.self) { resolver in
             CreateConversationViewModel(
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
+                blockedUserRepository: CommonInjection.shared.resolve(BlockedUserRepository.self),
                 getLocalConversationUseCase: resolver.resolve(GetConversationUseCase.self)!
             )
         }.inObjectScope(.weak)
@@ -153,7 +158,8 @@ class MessageInjection: DependencyInjectionContainer {
                 conversationRepository: resolver.resolve(ConversationRepository.self)!,
                 sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!,
                 notificationMessageManager: resolver.resolve(MessageNotificationManager.self)!,
-                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self),
+                blockedUserRepository: CommonInjection.shared.resolve(BlockedUserRepository.self)
             )
         }
         
@@ -165,26 +171,25 @@ class MessageInjection: DependencyInjectionContainer {
         }
         
         // Others
-        
-        container.register(SynchronizeMessageTask.self) { resolver in
-            SynchronizeMessageTask(
+        container.register(SendUnsentMessageUseCase.self) { resolver in
+            SendUnsentMessageUseCase(
                 messageRepository: resolver.resolve(MessageRepository.self)!
             )
         }
         
-        container.register(SynchronizeConversationTask.self) { resolver in
-            SynchronizeConversationTask(
+        container.register(SendUnsentConversationUseCase.self) { resolver in
+            SendUnsentConversationUseCase(
                 conversationRepository: resolver.resolve(ConversationRepository.self)!,
                 messageRepository: resolver.resolve(MessageRepository.self)!,
                 userRepository: CommonInjection.shared.resolve(UserRepository.self)
             )
         }
         
-        container.register(MessageTaskLauncher.self) { resolver in
-            MessageTaskLauncher(
+        container.register(StartupMessageTask.self) { resolver in
+            StartupMessageTask(
                 networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self),
-                synchronizeMessageTask: resolver.resolve(SynchronizeMessageTask.self)!,
-                synchronizeConversationTask: resolver.resolve(SynchronizeConversationTask.self)!
+                sendUnsentMessageUseCase: resolver.resolve(SendUnsentMessageUseCase.self)!,
+                sendUnsentConversationUseCase: resolver.resolve(SendUnsentConversationUseCase.self)!
             )
         }
         container.register(MessageNotificationManager.self) { resolver in
@@ -225,63 +230,5 @@ class MessageInjection: DependencyInjectionContainer {
             default:
                 return nil
         }
-    }
-    
-    func resolveWithMock() -> Container {
-        let mockContainer = Container()
-        let commonMockContainer = CommonInjection.shared.resolveWithMock()
-        
-        mockContainer.register(ConversationRepository.self) { _ in MockConversationRepository() }
-        
-        mockContainer.register(ConversationMessageRepository.self) { _ in
-            MockConversationMessageRepository()
-        }
-        
-        mockContainer.register(MessageRepository.self) { _ in MockMessageRepository() }
-        
-        mockContainer.register(SendMessageUseCase.self) { resolver in
-            SendMessageUseCase(
-                messageRepository: resolver.resolve(MessageRepository.self)!,
-                conversationRepository: resolver.resolve(ConversationRepository.self)!,
-                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!,
-                sendMessageNotificationUseCase: resolver.resolve(SendMessageNotificationUseCase.self)!
-            )
-        }
-        
-        mockContainer.register(GetUnreadConversationsCountUseCase.self) { resolver in
-            GetUnreadConversationsCountUseCase(
-                conversationMessageRepository: resolver.resolve(ConversationMessageRepository.self)!,
-                userRepository: commonMockContainer.resolve(UserRepository.self)!
-            )
-        }
-        
-        mockContainer.register(ConversationViewModel.self) { resolver in
-            ConversationViewModel(
-                userRepository: commonMockContainer.resolve(UserRepository.self)!,
-                getConversationsUiUseCase: resolver.resolve(GetConversationsUiUseCase.self)!,
-                deleteConversationUseCase: resolver.resolve(DeleteConversationUseCase.self)!
-            )
-        }
-        
-        mockContainer.register(CreateConversationViewModel.self) { resolver in
-            CreateConversationViewModel(
-                userRepository: commonMockContainer.resolve(UserRepository.self)!,
-                getLocalConversationUseCase: resolver.resolve(GetConversationUseCase.self)!
-            )
-        }
-        
-        mockContainer.register(ChatViewModel.self) { (resolver, conversation: Conversation) in
-            ChatViewModel(
-                conversation: conversation,
-                userRepository: commonMockContainer.resolve(UserRepository.self)!,
-                messageRepository: resolver.resolve(MessageRepository.self)!,
-                conversationRepository: resolver.resolve(ConversationRepository.self)!,
-                sendMessageUseCase: resolver.resolve(SendMessageUseCase.self)!,
-                notificationMessageManager: resolver.resolve(MessageNotificationManager.self)!,
-                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!
-            )
-        }
-        
-        return mockContainer
     }
 }

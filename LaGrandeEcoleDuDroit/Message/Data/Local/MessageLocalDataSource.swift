@@ -139,10 +139,6 @@ class MessageLocalDataSource {
         try await messageActor.upsertMessage(message: message)
     }
     
-    func upsertMessages(messages: [Message]) async throws {
-        try await messageActor.upsertMessages(messages: messages)
-    }
-    
     func updateMessage(message: Message) async throws {
         try await messageActor.updateMessage(message: message)
     }
@@ -197,29 +193,6 @@ actor MessageCoreDataActor {
                 let newLocalMessage = LocalMessage(context: self.context)
                 message.buildLocal(localMessage: newLocalMessage)
             }
-            try self.context.save()
-        }
-    }
-    
-    func upsertMessages(messages: [Message]) async throws {
-        try await context.perform {
-            messages.forEach { message in
-                let request = LocalMessage.fetchRequest()
-                request.predicate = NSPredicate(
-                    format: "%K == %lld",
-                    MessageField.messageId, message.id
-                )
-                let localMessages = try? self.context.fetch(request)
-                let localMessage = localMessages?.first
-                
-                if let localMessage = localMessage {
-                    localMessage.modify(message: message)
-                } else {
-                    let newLocalMessage = LocalMessage(context: self.context)
-                    message.buildLocal(localMessage: newLocalMessage)
-                }
-            }
-            
             try self.context.save()
         }
     }

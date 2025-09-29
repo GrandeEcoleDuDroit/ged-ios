@@ -2,17 +2,17 @@ import Combine
 import Foundation
 
 class NavigationHostViewModel: ObservableObject {
-    private let authenticationRepository: AuthenticationRepository
+    private let listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase
     @Published var uiState: NavigationHostUiState = NavigationHostUiState()
     private var cancellables: Set<AnyCancellable> = []
 
-    init(authenticationRepository: AuthenticationRepository) {
-        self.authenticationRepository = authenticationRepository
+    init(listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase) {
+        self.listenAuthenticationStateUseCase = listenAuthenticationStateUseCase
         updateStartDestination()
     }
     
     private func updateStartDestination() {
-        authenticationRepository.authenticated
+        listenAuthenticationStateUseCase.authenticated
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isAuthenticated in
                 self?.uiState.startDestination = isAuthenticated ? .app : .authentication
