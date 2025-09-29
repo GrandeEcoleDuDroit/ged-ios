@@ -2,37 +2,21 @@ import Foundation
 import Combine
 
 class RefreshAnnouncementsUseCase {
-    private let announcementRepository: AnnouncementRepository
-    private let networkMonitor: NetworkMonitor
-    private var lastRequestTime: Date?
+    private let synchronizeAnnouncementsUseCase: SynchronizeAnnouncementsUseCase
     
-    init(
-        announcementRepository: AnnouncementRepository,
-        networkMonitor: NetworkMonitor
-    ) {
-        self.announcementRepository = announcementRepository
-        self.networkMonitor = networkMonitor
+    private var lastRequestTime: Int64 = 0
+    private let tag = String(describing: RefreshAnnouncementsUseCase.self)
+    private let debounceInterval: Int64 = 10000
+    
+    init(synchronizeAnnouncementsUseCase: SynchronizeAnnouncementsUseCase) {
+        self.synchronizeAnnouncementsUseCase = synchronizeAnnouncementsUseCase
     }
     
     func execute() async throws {
-        guard networkMonitor.isConnected else {
-            throw NetworkError.noInternetConnection
-        }
-        
-        let currentTime = Date()
-        if let lastRequestTime = lastRequestTime {
-            let duration = currentTime.timeIntervalSince(lastRequestTime)
-            if duration > 10 {
-                self.lastRequestTime = currentTime
-                try await announcementRepository.refreshAnnouncements()
-            }
-        } else {
+        let currentTime = Date().toEpochMilli()
+        if currentTime - lastRequestTime > debounceInterval {
+            try await synchronizeAnnouncementsUseCase.execute()
             lastRequestTime = currentTime
-            try await announcementRepository.refreshAnnouncements()
-        }
-        
-        if currentTime.timeIntervalSinceNow > -2 {
-            try? await Task.sleep(for: .seconds(1))
         }
     }
 }

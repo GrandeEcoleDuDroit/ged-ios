@@ -13,8 +13,8 @@ class MessageApiImpl: MessageApi {
         self.messageServerApi = messageServerApi
     }
     
-    func listenMessages(conversation: Conversation, offsetTime: Timestamp?) -> AnyPublisher<[RemoteMessage], Error> {
-        let subject = PassthroughSubject<[RemoteMessage], Error>()
+    func listenMessages(conversation: Conversation, offsetTime: Timestamp?) -> AnyPublisher<RemoteMessage, Error> {
+        let subject = PassthroughSubject<RemoteMessage, Error>()
         
         let listener = conversationCollection
             .document(conversation.id.description)
@@ -26,11 +26,13 @@ class MessageApiImpl: MessageApi {
                     return
                 }
                 
-                let messages = snapshot?.documents
+                snapshot?.documents
                     .filter { !$0.metadata.hasPendingWrites && !$0.metadata.isFromCache }
-                    .compactMap { try? $0.data(as: RemoteMessage.self) }
-                
-                subject.send(messages ?? [])
+                    .forEach {
+                        if let message = try? $0.data(as: RemoteMessage.self) {
+                            subject.send(message)
+                        }
+                    }
             }
         
         messageListeners.append(listener)
@@ -38,11 +40,18 @@ class MessageApiImpl: MessageApi {
     }
     
     func createMessage(conversationId: String, messageId: String, data: [String: Any]) async throws {
-        try await conversationCollection
-            .document(conversationId)
+        let snapshot = try await conversationCollection.document(conversationId)
             .collection(messageTableName)
             .document(messageId)
-            .setData(data, merge: true)
+            .getDocument(source: .server)
+        
+        if !snapshot.exists {
+            try await conversationCollection
+                .document(conversationId)
+                .collection(messageTableName)
+                .document(messageId)
+                .setData(data, merge: true)
+        }
     }
     
     func updateSeenMessage(remoteMessage: RemoteMessage) async throws {

@@ -11,7 +11,6 @@ class MainInjection: DependencyInjectionContainer {
     
     private func registerDependencies() {
         // Use cases
-        
         container.register(ListenRemoteUserUseCase.self) { resolver in
             ListenRemoteUserUseCase(
                 authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
@@ -19,10 +18,21 @@ class MainInjection: DependencyInjectionContainer {
             )
         }.inObjectScope(.container)
         
+        container.register(ListenBlockedUserEventsUseCase.self) { resolver in
+            ListenBlockedUserEventsUseCase(
+                blockedUserRepository: CommonInjection.shared.resolve(BlockedUserRepository.self),
+                announcementRepository: NewsInjection.shared.resolve(AnnouncementRepository.self),
+                listenRemoteMessagesUseCase: MessageInjection.shared.resolve(ListenRemoteMessagesUseCase.self),
+                updateConversationDeleteTimeUseCase: MessageInjection.shared.resolve(UpdateConversationDeleteTimeUseCase.self)
+            )
+        }.inObjectScope(.container)
+        
         container.register(ListenDataUseCase.self) { resolver in
             ListenDataUseCase(
                 listenRemoteConversationsUseCase: MessageInjection.shared.resolve(ListenRemoteConversationsUseCase.self),
-                listenRemoteUserUseCase: resolver.resolve(ListenRemoteUserUseCase.self)!
+                listenRemoteUserUseCase: resolver.resolve(ListenRemoteUserUseCase.self)!,
+                listenRemoteMessagesUseCase: MessageInjection.shared.resolve(ListenRemoteMessagesUseCase.self),
+                listenBlockedUserEventsUseCase: resolver.resolve(ListenBlockedUserEventsUseCase.self)!
             )
         }
         
@@ -38,9 +48,9 @@ class MainInjection: DependencyInjectionContainer {
         container.register(FcmTokenUseCase.self) { resolver in
             FcmTokenUseCase(
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
-                authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
                 fcmTokenRepository: CommonInjection.shared.resolve(FcmTokenRepository.self),
-                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self),
+                listenAuthenticationStateUseCase: AuthenticationInjection.shared.resolve(ListenAuthenticationStateUseCase.self)
             )
         }.inObjectScope(.container)
         
@@ -51,11 +61,17 @@ class MainInjection: DependencyInjectionContainer {
             )
         }
         
-        // View models
+        container.register(SynchronizeDataUseCase.self) { resolver in
+            SynchronizeDataUseCase(
+                synchronizeBlockedUsersUseCase: CommonInjection.shared.resolve(SynchronizeBlockedUsersUseCase.self),
+                synchronizeAnnouncementsUseCase: NewsInjection.shared.resolve(SynchronizeAnnouncementsUseCase.self)
+            )
+        }
         
+        // View models
         container.register(NavigationHostViewModel.self) { resolver in
             NavigationHostViewModel(
-                authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self)
+                listenAuthenticationStateUseCase: AuthenticationInjection.shared.resolve(ListenAuthenticationStateUseCase.self)
             )
         }
         
@@ -70,9 +86,10 @@ class MainInjection: DependencyInjectionContainer {
         container.register(MainViewModel.self) { resolver in
             MainViewModel(
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
-                authenticationRepository: AuthenticationInjection.shared.resolve(AuthenticationRepository.self),
                 listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
-                clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!
+                clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!,
+                listenAuthenticationStateUseCase: AuthenticationInjection.shared.resolve(ListenAuthenticationStateUseCase.self),
+                synchronizeDataUseCase: resolver.resolve(SynchronizeDataUseCase.self)!
             )
         }
         
@@ -106,7 +123,6 @@ class MainInjection: DependencyInjectionContainer {
         }
         
         // Others
-        
         container.register(NotificationMediator.self) { resolver in
             NotificationMediatorImpl(
                 messageNotificationManager: MessageInjection.shared.resolve(MessageNotificationManager.self)
@@ -152,47 +168,5 @@ class MainInjection: DependencyInjectionContainer {
             default:
                 return nil
         }
-    }
-    
-    func resolveWithMock() -> Container {
-        let mockContainer = Container()
-        let commonMockContainer = CommonInjection.shared.resolveWithMock()
-        let authenticationMockContainer = AuthenticationInjection.shared.resolveWithMock()
-        let messageMockContainer = MessageInjection.shared.resolveWithMock()
-        
-        mockContainer.register(MainViewModel.self) { resolver in
-            MainViewModel(
-                userRepository: commonMockContainer.resolve(UserRepository.self)!,
-                authenticationRepository: authenticationMockContainer.resolve(AuthenticationRepository.self)!,
-                listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
-                clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!
-            )
-        }
-        
-        mockContainer.register(AppNavigationViewModel.self) { resolver in
-            AppNavigationViewModel(
-                getUnreadConversationsCountUseCase: messageMockContainer.resolve(GetUnreadConversationsCountUseCase.self)!,
-                navigationRequestUseCase: commonMockContainer.resolve(NavigationRequestUseCase.self)!
-            )
-        }
-        
-        mockContainer.register(ProfileViewModel.self) { resolver in
-            ProfileViewModel(
-                userRepository: commonMockContainer.resolve(UserRepository.self)!,
-                authenticationRepository: authenticationMockContainer.resolve(AuthenticationRepository.self)!
-            )
-        }
-        
-        mockContainer.register(AccountInformationViewModel.self) { resolver in
-            AccountInformationViewModel(
-                updateProfilePictureUseCase: commonMockContainer.resolve(UpdateProfilePictureUseCase.self)!,
-                deleteProfilePictureUseCase: commonMockContainer.resolve(DeleteProfilePictureUseCase.self)!,
-                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!,
-                userRepository: commonMockContainer.resolve(UserRepository.self)!,
-            )
-        }
-        
-        
-        return mockContainer
     }
 }

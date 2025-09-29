@@ -2,12 +2,16 @@ import Combine
 
 protocol AnnouncementRepository {
     var announcements: AnyPublisher<[Announcement], Never> { get }
+    
+    var currentAnnouncements: [Announcement] { get }
             
     func getAnnouncementPublisher(announcementId: String) -> AnyPublisher<Announcement?, Never>
-        
-    func refreshAnnouncements() async throws
     
+    func getRemoteAnnouncements() async throws -> [Announcement]
+        
     func createAnnouncement(announcement: Announcement) async throws
+    
+    func upsertLocalAnnouncement(announcement: Announcement) async throws
     
     func updateAnnouncement(announcement: Announcement) async throws
     
@@ -16,6 +20,8 @@ protocol AnnouncementRepository {
     func deleteAnnouncement(announcementId: String) async throws
     
     func deleteLocalAnnouncement(announcementId: String) async throws
+        
+    func deleteLocalUserAnnouncements(userId: String) async throws
     
     func reportAnnouncement(report: AnnouncementReport) async throws
 }

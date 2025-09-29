@@ -80,7 +80,7 @@ private struct AccountInformationView: View {
 
     var body: some View {
         ZStack {
-            VStack {
+            VStack(spacing: GedSpacing.medium) {
                 if let image = profilePictureImage {
                     ClickableProfilePictureImage(
                         image: image,
@@ -97,8 +97,8 @@ private struct AccountInformationView: View {
                 
                 UserInformationItems(user: user)
             }
-            .loading(loading)
         }
+        .loading(loading)
         .task(id: selectedPhoto) {
             if let data = try? await selectedPhoto?.loadTransferable(type: Data.self) {
                 if let image = UIImage(data: data) {
@@ -119,6 +119,7 @@ private struct AccountInformationView: View {
                 navigationTitle = getString(.editProfile)
             }
         }
+        .padding(.horizontal)
         .photosPicker(isPresented: $showPhotosPicker, selection: $selectedPhoto, matching: .images)
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)

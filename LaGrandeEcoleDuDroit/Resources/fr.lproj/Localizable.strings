@@ -22,6 +22,11 @@
 "home" = "Accueil";
 "sending" = "Envoi...";
 "report" = "Signaler";
+"block" = "Bloquer";
+"unblock" = "Débloquer";
+"block_user_alert_title" = "Voulez-vous bloquer cet utilisateur ?";
+"block_user_alert_message" = "Vous ne verrez plus aucun de ses contenus.";
+"unblock_user_alert_title" = "Voulez-vous débloquer cet utilisateur ?";
 
 // Common error
 "mandatory_field_error" = "Champs obligatoire.";

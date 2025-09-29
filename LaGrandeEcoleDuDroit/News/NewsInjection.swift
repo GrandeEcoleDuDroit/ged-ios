@@ -11,13 +11,11 @@ class NewsInjection: DependencyInjectionContainer {
     
     private func registerDependencies() {
         // Api
-        
         container.register(AnnouncementApi.self) { _ in
             AnnouncementApiImpl(tokenProvider: MainInjection.shared.resolve(TokenProvider.self))
         }.inObjectScope(.container)
         
         // Data sources
-        
         container.register(AnnouncementRemoteDataSource.self) { resolver in
             AnnouncementRemoteDataSource(announcementApi: resolver.resolve(AnnouncementApi.self)!)
         }.inObjectScope(.container)
@@ -27,7 +25,6 @@ class NewsInjection: DependencyInjectionContainer {
         }.inObjectScope(.container)
         
         // Repositories
-        
         container.register(AnnouncementRepository.self) { resolver in
             AnnouncementRepositoryImpl(
                 announcementLocalDataSource: resolver.resolve(AnnouncementLocalDataSource.self)!,
@@ -36,7 +33,6 @@ class NewsInjection: DependencyInjectionContainer {
         }.inObjectScope(.container)
         
         // Use cases
-        
         container.register(CreateAnnouncementUseCase.self) { resolver in
             CreateAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
         }.inObjectScope(.container)
@@ -57,13 +53,18 @@ class NewsInjection: DependencyInjectionContainer {
         
         container.register(RefreshAnnouncementsUseCase.self) { resolver in
             RefreshAnnouncementsUseCase(
-                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+                synchronizeAnnouncementsUseCase: resolver.resolve(SynchronizeAnnouncementsUseCase.self)!
             )
         }.inObjectScope(.container)
         
-        // View models
+        container.register(SynchronizeAnnouncementsUseCase.self) { resolver in
+            SynchronizeAnnouncementsUseCase(
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
+                blockedUserRepository: CommonInjection.shared.resolve(BlockedUserRepository.self)
+            )
+        }
         
+        // View models
         container.register(NewsViewModel.self) { resolver in
             NewsViewModel(
                 userRepository: CommonInjection.shared.resolve(UserRepository.self),
@@ -138,68 +139,5 @@ class NewsInjection: DependencyInjectionContainer {
             default:
                 return nil
         }
-    }
-    
-    func resolveWithMock() -> Container {
-        let mockContainer = Container()
-        let commonMockContainer = CommonInjection.shared.resolveWithMock()
-        
-        mockContainer.register(AnnouncementRepository.self) { _ in MockAnnouncementRepository() }
-       
-        mockContainer.register(CreateAnnouncementUseCase.self) { resolver in
-            CreateAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
-        }
-        
-        mockContainer.register(DeleteAnnouncementUseCase.self) { resolver in
-            DeleteAnnouncementUseCase(
-                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!
-            )
-        }
-        
-        mockContainer.register(ResendAnnouncementUseCase.self) { resolver in
-            ResendAnnouncementUseCase(
-                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!
-            )
-        }
-        
-        mockContainer.register(RefreshAnnouncementsUseCase.self) { resolver in
-            RefreshAnnouncementsUseCase(
-                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!
-            )
-        }
-        
-        mockContainer.register(NewsViewModel.self) { resolver in
-            NewsViewModel(
-                userRepository: commonMockContainer.resolve(UserRepository.self)!,
-                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
-                resendAnnouncementUseCase: resolver.resolve(ResendAnnouncementUseCase.self)!,
-                refreshAnnouncementsUseCase: resolver.resolve(RefreshAnnouncementsUseCase.self)!,
-                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!
-            )
-        }
-        
-        mockContainer.register(CreateAnnouncementViewModel.self) { resolver in
-            CreateAnnouncementViewModel(
-                createAnnouncementUseCase: resolver.resolve(CreateAnnouncementUseCase.self)!,
-                userRepository: commonMockContainer.resolve(UserRepository.self)!,
-            )
-        }
-        
-        mockContainer.register(ReadAnnouncementViewModel.self) { (resolver, announcementId: Any) in
-            let announcementId = announcementId as! String
-            return ReadAnnouncementViewModel(
-                announcementId: announcementId,
-                userRepository: commonMockContainer.resolve(UserRepository.self)!,
-                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
-                networkMonitor: commonMockContainer.resolve(NetworkMonitor.self)!
-            )
-        }
-        
-        return mockContainer
     }
 }

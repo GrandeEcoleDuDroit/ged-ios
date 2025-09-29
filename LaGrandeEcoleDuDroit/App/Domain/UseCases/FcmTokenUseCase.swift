@@ -4,27 +4,28 @@ import Combine
 
 class FcmTokenUseCase {
     private let userRepository: UserRepository
-    private let authenticationRepository: AuthenticationRepository
     private let fcmTokenRepository: FcmTokenRepository
     private let networkMonitor: NetworkMonitor
+    private let listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase
+    
     private var cancellables = Set<AnyCancellable>()
     private let tag = String(describing: FcmTokenUseCase.self)
     
     init(
         userRepository: UserRepository,
-        authenticationRepository: AuthenticationRepository,
         fcmTokenRepository: FcmTokenRepository,
-        networkMonitor: NetworkMonitor
+        networkMonitor: NetworkMonitor,
+        listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase
     ) {
         self.userRepository = userRepository
-        self.authenticationRepository = authenticationRepository
         self.fcmTokenRepository = fcmTokenRepository
         self.networkMonitor = networkMonitor
+        self.listenAuthenticationStateUseCase = listenAuthenticationStateUseCase
     }
     
     func listen() {
         Publishers.CombineLatest(
-            authenticationRepository.authenticated,
+            listenAuthenticationStateUseCase.authenticated,
             networkMonitor.connected.filter { $0 }
         ).map { authenticated, _ in
             authenticated

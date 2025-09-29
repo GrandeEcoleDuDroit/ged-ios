@@ -15,19 +15,15 @@ class AuthenticationInjection: DependencyInjectionContainer {
             FirebaseAuthApiImpl()
         }.inObjectScope(.container)
         
-        // Repositories
-        
-        container.register(FirebaseAuthenticationRepository.self) { resolver in
-            FirebaseAuthenticationRepositoryImpl(firebaseAuthApi: resolver.resolve(FirebaseAuthApi.self)!)
-        }.inObjectScope(.container)
-        
         // Data sources
-        
         container.register(AuthenticationLocalDataSource.self) { _ in
             AuthenticationLocalDataSource()
         }.inObjectScope(.container)
         
         // Repositories
+        container.register(FirebaseAuthenticationRepository.self) { resolver in
+            FirebaseAuthenticationRepositoryImpl(firebaseAuthApi: resolver.resolve(FirebaseAuthApi.self)!)
+        }.inObjectScope(.container)
         
         container.register(AuthenticationRepository.self) { resolver in
             AuthenticationRepositoryImpl(
@@ -37,7 +33,6 @@ class AuthenticationInjection: DependencyInjectionContainer {
         }.inObjectScope(.container)
         
         // Use cases
-        
         container.register(LoginUseCase.self) { resolver in
             LoginUseCase(
                 authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
@@ -55,8 +50,14 @@ class AuthenticationInjection: DependencyInjectionContainer {
             )
         }
         
-        // View models
+        container.register(ListenAuthenticationStateUseCase.self) { resolver in
+            ListenAuthenticationStateUseCase(
+                authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
+                userRepository: CommonInjection.shared.resolve(UserRepository.self)
+            )
+        }.inObjectScope(.container)
         
+        // View models
         container.register(FirstRegistrationViewModel.self) { resolver in
             FirstRegistrationViewModel()
         }
@@ -112,25 +113,5 @@ class AuthenticationInjection: DependencyInjectionContainer {
             default:
                 return nil
         }
-    }
-    
-    func resolveWithMock() -> Container {
-        let mockContainer = Container()
-        
-        mockContainer.register(AuthenticationRepository.self) { _ in MockAuthenticationRepository() }
-
-        mockContainer.register(AuthenticationViewModel.self) { resolver in
-            AuthenticationViewModel(
-                loginUseCase: resolver.resolve(LoginUseCase.self)!
-            )
-        }
-        
-        mockContainer.register(ThirdRegistrationViewModel.self) { resolver in
-            ThirdRegistrationViewModel(
-                registerUseCase: resolver.resolve(RegisterUseCase.self)!
-            )
-        }
-        
-        return mockContainer
     }
 }

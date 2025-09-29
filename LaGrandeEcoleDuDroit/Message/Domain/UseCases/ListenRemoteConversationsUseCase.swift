@@ -5,6 +5,7 @@ class ListenRemoteConversationsUseCase {
     private let userRepository: UserRepository
     private let conversationRepository: ConversationRepository
     private let listenRemoteMessagesUseCase: ListenRemoteMessagesUseCase
+    
     private var cancellables = Set<AnyCancellable>()
     private let tag = String(describing: ListenRemoteConversationsUseCase.self)
 
@@ -19,16 +20,20 @@ class ListenRemoteConversationsUseCase {
     }
     
     func start() {
+        cancellables.forEach { $0.cancel() }
+        cancellables.removeAll()
+        
         userRepository.user
-            .flatMap { user in
-                self.stop()
-                return self.conversationRepository
-                    .fetchRemoteConversations(userId: user.id)
+            .map { user in
+                self.conversationRepository
+                    .fetchRemoteConversation(userId: user.id)
                     .catch { error -> Empty<Conversation, Never> in
                         e(self.tag, "Failed to fetch conversations: \(error)", error)
                         return Empty(completeImmediately: true)
-                    }.eraseToAnyPublisher()
+                    }
+                    .eraseToAnyPublisher()
             }
+            .switchToLatest()
             .receive(on: DispatchQueue.global(qos: .background))
             .sink { [weak self] conversation in
                 Task {
@@ -41,7 +46,6 @@ class ListenRemoteConversationsUseCase {
     
     func stop() {
         conversationRepository.stopListenConversations()
-        listenRemoteMessagesUseCase.stop()
         cancellables.forEach { $0.cancel() }
         cancellables.removeAll()
     }

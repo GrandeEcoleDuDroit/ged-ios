@@ -51,7 +51,7 @@ class ConversationRepositoryImpl: ConversationRepository {
         }
     }
     
-    func fetchRemoteConversations(userId: String) -> AnyPublisher<Conversation, Error> {
+    func fetchRemoteConversation(userId: String) -> AnyPublisher<Conversation, Error> {
         conversationRemoteDataSource
             .listenConversations(userId: userId)
             .flatMap { remoteConversation in
@@ -94,6 +94,15 @@ class ConversationRepositoryImpl: ConversationRepository {
             e(tag, "Failed to update local conversation: \(error)", error)
             throw error
         }
+    }
+    
+    func updateConversationDeleteTime(conversation: Conversation, currentUserId: String) async throws {
+        try await conversationRemoteDataSource.updateConversationDeleteTime(
+            conversationId: conversation.id,
+            userId: currentUserId,
+            deleteTime: conversation.deleteTime!
+        )
+        try await conversationLocalDataSource.updateConversation(conversation: conversation)
     }
     
     func upsertLocalConversation(conversation: Conversation) async throws {

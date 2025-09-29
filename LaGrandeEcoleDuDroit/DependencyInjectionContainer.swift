@@ -6,6 +6,4 @@ protocol DependencyInjectionContainer {
     func resolve<T>(_ type: T.Type) -> T
     
     func resolve<T>(_ type: T.Type, arguments: Any...) -> T?
-        
-    func resolveWithMock() -> Container
 }

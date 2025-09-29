@@ -3,9 +3,10 @@ import Firebase
 import FirebaseMessaging
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    private let receiveNotificationMediator = MainInjection.shared.resolve(NotificationMediator.self)
+    private let notificationMediator = MainInjection.shared.resolve(NotificationMediator.self)
     private lazy var fcmManager = MainInjection.shared.resolve(FcmManager.self)
     private lazy var fcmTokenUseCase: FcmTokenUseCase = MainInjection.shared.resolve(FcmTokenUseCase.self)
+    private lazy var startupMessageTask: StartupMessageTask = MessageInjection.shared.resolve(StartupMessageTask.self)
     private let tag = String(describing: AppDelegate.self)
     
     func application(
@@ -15,7 +16,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         FirebaseApp.configure()
         configureFirestoreDb()
         registerForPushNotifications(application: application)
-        launchTasks()
+        runStartupTasks()
         listenEvents()
         return true
     }
@@ -28,8 +29,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         db.settings = settings
     }
     
-    private func launchTasks() {
-        MessageInjection.shared.resolve(MessageTaskLauncher.self).launch()
+    private func runStartupTasks() {
+        startupMessageTask.run()
     }
     
     private func listenEvents() {
@@ -46,14 +47,20 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         e(tag, "Error to register remote notifications", error)
     }
     
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        receiveNotificationMediator.presentNotification(userInfo: notification.request.content.userInfo, completionHandler: completionHandler)
+        notificationMediator.presentNotification(userInfo: notification.request.content.userInfo, completionHandler: completionHandler)
     }
     
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        receiveNotificationMediator.receiveNotification(userInfo: response.notification.request.content.userInfo)
+        notificationMediator.receiveNotification(userInfo: response.notification.request.content.userInfo)
         completionHandler()
     }
     
