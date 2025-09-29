@@ -49,10 +49,3 @@ struct AppNavigation: View {
 class TabBarVisibility: ObservableObject {
     @Published var show: Bool = false
 }
-
-#Preview {
-    AppNavigation()
-        .environmentObject(
-            MainInjection.shared.resolveWithMock().resolve(AppNavigationViewModel.self)!
-        )
-}

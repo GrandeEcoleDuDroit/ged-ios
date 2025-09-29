@@ -20,11 +20,8 @@ class MockMessageRepository: MessageRepository {
         messagesFixture
     }
     
-    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<[Message], Error> {
-        messagesSubject
-            .map { [$0] }
-            .setFailureType(to: Error.self)
-            .eraseToAnyPublisher()
+    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Error> {
+        Empty().eraseToAnyPublisher()
     }
     
     func createLocalMessage(message: Message) async throws {}
@@ -39,12 +36,6 @@ class MockMessageRepository: MessageRepository {
     
     func upsertLocalMessage(message: Message) {
         messagesSubject.send(messageFixture)
-    }
-    
-    func upsertLocalMessages(messages: [Message]) {
-        messages.forEach { message in
-            messagesSubject.send(message)
-        }
     }
     
     func deleteLocalMessages(conversationId: String) {}

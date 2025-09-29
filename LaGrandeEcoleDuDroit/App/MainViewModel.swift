@@ -3,46 +3,43 @@ import Foundation
 
 class MainViewModel: ObservableObject {
     private let userRepository: UserRepository
-    private let authenticationRepository: AuthenticationRepository
     private let listenDataUseCase: ListenDataUseCase
     private let clearDataUseCase: ClearDataUseCase
+    private let listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase
+    private let synchronizeDataUseCase: SynchronizeDataUseCase
+    
     private var cancellables: Set<AnyCancellable> = []
     
     init(
         userRepository: UserRepository,
-        authenticationRepository: AuthenticationRepository,
         listenDataUseCase: ListenDataUseCase,
-        clearDataUseCase: ClearDataUseCase
+        clearDataUseCase: ClearDataUseCase,
+        listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase,
+        synchronizeDataUseCase: SynchronizeDataUseCase
     ) {
         self.userRepository = userRepository
-        self.authenticationRepository = authenticationRepository
         self.listenDataUseCase = listenDataUseCase
         self.clearDataUseCase = clearDataUseCase
-        checkCurrentUser()
-        updateDataListening()
+        self.listenAuthenticationStateUseCase = listenAuthenticationStateUseCase
+        self.synchronizeDataUseCase = synchronizeDataUseCase
+        
+        updateDataOnAuthChange()
     }
     
-    private func updateDataListening() {
-        authenticationRepository.authenticated
-            .map { authenticated in
-                let currentUser = self.userRepository.getCurrentUser()
-                return authenticated && currentUser != nil
-            }
+    private func updateDataOnAuthChange() {
+        listenAuthenticationStateUseCase.authenticated
             .receive(on: DispatchQueue.global(qos: .background))
-            .sink { [weak self] validUser in
-                if validUser {
+            .sink { [weak self] authenticated in
+                if authenticated {
                     self?.listenDataUseCase.start()
+                    Task { await self?.synchronizeDataUseCase.execute() }
                 } else {
                     self?.listenDataUseCase.stop()
-                    Task { await self?.clearDataUseCase.execute() }
+                    Task {
+                        try? await Task.sleep(nanoseconds: 2_000_000_000)
+                        await self?.clearDataUseCase.execute()
+                    }
                 }
             }.store(in: &cancellables)
-    }
-    
-    private func checkCurrentUser() {
-        guard let user = userRepository.getCurrentUser() else {
-            authenticationRepository.logout()
-            return
-        }
     }
 }

@@ -9,6 +9,8 @@ class ChatViewModel: ObservableObject {
     private let sendMessageUseCase: SendMessageUseCase
     private let notificationMessageManager: MessageNotificationManager
     private let networkMonitor: NetworkMonitor
+    private let blockedUserRepository: BlockedUserRepository
+    
     private var cancellables: Set<AnyCancellable> = []
     private let user: User?
     private var offset: Int = 0
@@ -23,7 +25,8 @@ class ChatViewModel: ObservableObject {
         conversationRepository: ConversationRepository,
         sendMessageUseCase: SendMessageUseCase,
         notificationMessageManager: MessageNotificationManager,
-        networkMonitor: NetworkMonitor
+        networkMonitor: NetworkMonitor,
+        blockedUserRepository: BlockedUserRepository
     ) {
         self.conversation = conversation
         self.userRepository = userRepository
@@ -32,11 +35,13 @@ class ChatViewModel: ObservableObject {
         self.sendMessageUseCase = sendMessageUseCase
         self.notificationMessageManager = notificationMessageManager
         self.networkMonitor = networkMonitor
+        self.blockedUserRepository = blockedUserRepository
         
         user = userRepository.currentUser
         getMessages(offset: offset)
         listenMessages()
         listenConversationChanges()
+        listenBlockedUserIds()
         seeMessages()
         notificationMessageManager.clearNotifications(conversationId: conversation.id)
     }
@@ -181,9 +186,17 @@ class ChatViewModel: ObservableObject {
         }.store(in: &cancellables)
     }
     
+    private func listenBlockedUserIds() {
+        let interlocutorId = conversation.interlocutor.id
+        blockedUserRepository.blockedUserIds.sink { [weak self] blockedUserIds in
+            self?.uiState.userBlocked = blockedUserIds.contains(interlocutorId)
+        }.store(in: &cancellables)
+    }
+    
     struct ChatUiState {
         var messages: [Int64: Message] = [:]
         var text: String = ""
         var loading: Bool = false
+        var userBlocked: Bool = false
     }
 }

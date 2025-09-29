@@ -26,6 +26,11 @@
 "home" = "Home";
 "sending" = "Sending...";
 "report" = "Report";
+"block" = "Block";
+"unblock" = "Unblock";
+"block_user_alert_title" = "Do you want to block this user ?";
+"block_user_alert_message" = "You will no longer see any of their content.";
+"unblock_user_alert_title" = "Do you want to unblock this user ?";
 
 // Common error
 "mandatory_field_error" = "Mandatory field";

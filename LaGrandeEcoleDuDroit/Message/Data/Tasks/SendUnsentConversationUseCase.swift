@@ -1,10 +1,10 @@
 import Combine
 
-class SynchronizeConversationTask {
+class SendUnsentConversationUseCase {
     private let conversationRepository: ConversationRepository
     private let messageRepository: MessageRepository
     private let userRepository: UserRepository
-    private let tag = String(describing: SynchronizeConversationTask.self)
+    private let tag = String(describing: SendUnsentConversationUseCase.self)
     
     init(
         conversationRepository: ConversationRepository,
@@ -16,29 +16,27 @@ class SynchronizeConversationTask {
         self.userRepository = userRepository
     }
     
-    func start() async {
+    func execute() async {
         guard let userId = self.userRepository.currentUser?.id else {
             return
         }
         
         do {
             let conversations = try await self.conversationRepository.getConversations()
-            
             for conversation in conversations {
                 switch conversation.state {
-                case .creating:
-                    try await self.conversationRepository.createRemoteConversation(conversation: conversation, userId: userId)
-                case .deleting:
-                    if let deleteTime = conversation.deleteTime {
-                        try await self.conversationRepository.deleteConversation(
-                            conversation: conversation,
-                            userId: userId,
-                            deleteTime: deleteTime
-                        )
-                        try await self.messageRepository.deleteLocalMessages(conversationId: conversation.id)
-                    }
-                default:
-                    break
+                    case .creating:
+                        try await self.conversationRepository.createRemoteConversation(conversation: conversation, userId: userId)
+                    case .deleting:
+                        if let deleteTime = conversation.deleteTime {
+                            try await self.conversationRepository.deleteConversation(
+                                conversation: conversation,
+                                userId: userId,
+                                deleteTime: deleteTime
+                            )
+                            try await self.messageRepository.deleteLocalMessages(conversationId: conversation.id)
+                        }
+                    default: break
                 }
             }
         } catch {

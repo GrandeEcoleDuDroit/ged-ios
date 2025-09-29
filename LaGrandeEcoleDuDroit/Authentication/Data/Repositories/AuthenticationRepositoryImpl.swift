@@ -5,15 +5,7 @@ import FirebaseAuth
 class AuthenticationRepositoryImpl: AuthenticationRepository {
     private let firebaseAuthenticationRepository: FirebaseAuthenticationRepository
     private let authenticationLocalDataSource: AuthenticationLocalDataSource
-    private var authenticatedPublisher = CurrentValueSubject<Bool?, Never>(nil)
-    var authenticated: AnyPublisher<Bool, Never> {
-        authenticatedPublisher
-            .compactMap { $0 }
-            .eraseToAnyPublisher()
-    }
-    var isAuthenticated: Bool {
-        authenticatedPublisher.value ?? false
-    }
+    private let authenticationSubjet = PassthroughSubject<Bool, Never>()
     
     init(
         firebaseAuthenticationRepository: FirebaseAuthenticationRepository,
@@ -21,14 +13,15 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     ) {
         self.firebaseAuthenticationRepository = firebaseAuthenticationRepository
         self.authenticationLocalDataSource = authenticationLocalDataSource
-        initAuthentication()
     }
     
-    private func initAuthentication() {
-        authenticatedPublisher.send(
-            authenticationLocalDataSource.isAuthenticated() &&
-                firebaseAuthenticationRepository.isAuthenticated()
-        )
+    func getAuthenticationState() -> AnyPublisher<Bool, Never> {
+        authenticationSubjet
+            .prepend(
+                authenticationLocalDataSource.isAuthenticated() &&
+                    firebaseAuthenticationRepository.isAuthenticated()
+            )
+            .eraseToAnyPublisher()
     }
     
     func loginWithEmailAndPassword(email: String, password: String) async throws {
@@ -46,7 +39,7 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     
     func setAuthenticated(_ isAuthenticated: Bool) {
         authenticationLocalDataSource.setAuthenticated(isAuthenticated)
-        authenticatedPublisher.send(isAuthenticated)
+        authenticationSubjet.send(isAuthenticated)
     }
     
     func resetPassword(email: String) async throws {

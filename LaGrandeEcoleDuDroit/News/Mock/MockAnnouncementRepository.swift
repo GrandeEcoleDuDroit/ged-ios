@@ -2,43 +2,33 @@ import Foundation
 import Combine
 
 class MockAnnouncementRepository: AnnouncementRepository {
-    private var announcementsPublisher = CurrentValueSubject<[Announcement], Never>(announcementsFixture)
     var announcements: AnyPublisher<[Announcement], Never> {
-        announcementsPublisher.eraseToAnyPublisher()
+        Empty().eraseToAnyPublisher()
     }
+    
+    var currentAnnouncements: [Announcement] { [] }
         
-    func getAnnouncement(announcementId: String) -> Announcement? {
-        announcementsPublisher.value.first { $0.id == announcementId }
-    }
+    func getAnnouncement(announcementId: String) -> Announcement? { nil }
     
     func getAnnouncementPublisher(announcementId: String) -> AnyPublisher<Announcement?, Never> {
-        announcementsPublisher.map { $0.first { $0.id == announcementId } }.eraseToAnyPublisher()
+        Empty().eraseToAnyPublisher()
     }
+    
+    func getRemoteAnnouncements() async throws -> [Announcement] { [] }
 
-    func createAnnouncement(announcement: Announcement) async throws {
-        announcementsPublisher.value.append(announcement)
-    }
+    func createAnnouncement(announcement: Announcement) async throws {}
     
-    func updateAnnouncement(announcement: Announcement) async throws {
-        announcementsPublisher.value =
-            announcementsPublisher.value.map { $0.id == announcement.id ? announcement : $0 }
-    }
+    func upsertLocalAnnouncement(announcement: Announcement) async throws {}
     
-    func updateLocalAnnouncement(announcement: Announcement) {
-        announcementsPublisher.value = announcementsPublisher.value.map { $0.id == announcement.id ? announcement : $0 }
-    }
+    func updateAnnouncement(announcement: Announcement) async throws {}
     
-    func deleteAnnouncement(announcementId: String) async throws {
-        announcementsPublisher.value.removeAll(where: { $0.id == announcementId })
-    }
+    func updateLocalAnnouncement(announcement: Announcement) {}
     
-    func deleteLocalAnnouncement(announcementId: String) {
-        announcementsPublisher.value.removeAll(where: { $0.id == announcementId })
-    }
+    func deleteAnnouncement(announcementId: String) async throws {}
     
-    func refreshAnnouncements() async {
-        announcementsPublisher.value = announcementsFixture
-    }
+    func deleteLocalAnnouncement(announcementId: String) {}
+        
+    func deleteLocalUserAnnouncements(userId: String) async throws {}
     
     func reportAnnouncement(report: AnnouncementReport) async throws {}
 }

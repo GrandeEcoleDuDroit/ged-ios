@@ -33,9 +33,13 @@ class ConversationApiImpl: ConversationApi {
     }
     
     func createConversation(conversationId: String, data: [String: Any]) async throws {
-        try await conversationCollection
-            .document(conversationId)
-            .setData(data, merge: true)
+        let snapshot = try await conversationCollection.document(conversationId).getDocument(source: .server)
+        
+        if !snapshot.exists {
+            try await conversationCollection
+                .document(conversationId)
+                .setData(data, merge: true)
+        }
     }
     
     func updateConversation(conversationId: String, data: [String: Any]) async throws {

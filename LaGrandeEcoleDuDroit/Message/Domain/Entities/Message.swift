@@ -8,7 +8,7 @@ struct Message: Hashable, Codable {
     let content: String
     let date: Date
     let seen: Bool
-    let state: MessageState
+    var state: MessageState
     
     func with(
         id: Int64? = nil,

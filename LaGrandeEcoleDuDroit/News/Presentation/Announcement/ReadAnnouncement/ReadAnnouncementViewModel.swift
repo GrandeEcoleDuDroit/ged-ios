@@ -25,7 +25,8 @@ class ReadAnnouncementViewModel: ObservableObject {
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
         self.networkMonitor = networkMonitor
         
-        initUiState()
+        listenAnnouncement()
+        listenUser()
     }
     
     func reportAnnouncement(report: AnnouncementReport) {
@@ -49,17 +50,26 @@ class ReadAnnouncementViewModel: ObservableObject {
             }
         }
     }
+        
+    private func listenAnnouncement() {
+        announcementRepository.getAnnouncementPublisher(announcementId: announcementId)
+            .compactMap { $0 }
+            .map { announcement in
+                let title = announcement.title?.isBlank == false ? announcement.title : nil
+                return announcement.with(title: title)
+            }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] announcement in
+                self?.uiState.announcement = announcement
+            }.store(in: &cancellables)
+    }
     
-    private func initUiState() {
-        Publishers.CombineLatest(
-            announcementRepository.getAnnouncementPublisher(announcementId: announcementId),
-            userRepository.user
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] announcement, user in
-            self?.uiState.announcement = announcement
-            self?.uiState.user = user
-        }.store(in: &cancellables)
+    private func listenUser() {
+        userRepository.user
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] user in
+                self?.uiState.user = user
+            }.store(in: &cancellables)
     }
     
     func deleteAnnouncement() {
@@ -91,5 +101,9 @@ class ReadAnnouncementViewModel: ObservableObject {
         var announcement: Announcement? = nil
         var user: User? = nil
         var loading: Bool = false
+    }
+    
+    deinit {
+        print("Deinit \(String(describing: self))")
     }
 }

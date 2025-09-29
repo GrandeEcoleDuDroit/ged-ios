@@ -83,7 +83,7 @@ private struct ReadAnnouncementView: View {
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: GedSpacing.medium) {
-                    if let title = announcement.title, !title.isBlank {
+                    if let title = announcement.title {
                         Text(title)
                             .font(.title3)
                             .fontWeight(.semibold)

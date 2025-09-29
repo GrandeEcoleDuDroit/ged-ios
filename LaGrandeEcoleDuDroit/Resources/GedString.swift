@@ -22,6 +22,11 @@ enum GedString: String {
     case home = "home"
     case sending = "sending"
     case report = "report"
+    case block = "block"
+    case unblock = "unblock"
+    case blockUserAlertTitle = "block_user_alert_title"
+    case blockUserAlertMessage = "block_user_alert_message"
+    case unblockUserAlertTitle = "unblock_user_alert_title"
     
     // Common errors
     case mandatoryFieldError = "mandatory_field_error"
