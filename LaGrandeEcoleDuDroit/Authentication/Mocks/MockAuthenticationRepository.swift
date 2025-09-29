@@ -2,31 +2,17 @@ import Foundation
 import Combine
 
 class MockAuthenticationRepository: AuthenticationRepository {
-    private let authenticationPublisher = CurrentValueSubject<Bool, Never>(false)
-    var authenticated: AnyPublisher<Bool, Never> {
-        authenticationPublisher.eraseToAnyPublisher()
-    }
-    
-    var isAuthenticated: Bool {
-        authenticationPublisher.value
+    func getAuthenticationState() -> AnyPublisher<Bool, Never> {
+        Empty().eraseToAnyPublisher()
     }
 
-    func loginWithEmailAndPassword(email: String, password: String) async throws {
-        authenticationPublisher.send(true)
-    }
+    func loginWithEmailAndPassword(email: String, password: String) async throws {}
     
-    func registerWithEmailAndPassword(email: String, password: String) async throws -> String {
-        authenticationPublisher.send(true)
-        return userFixture.id
-    }
+    func registerWithEmailAndPassword(email: String, password: String) async throws -> String { "" }
     
-    func logout() {
-        authenticationPublisher.send(false)
-    }
+    func logout() {}
     
-    func setAuthenticated(_ isAuthenticated: Bool) {
-        authenticationPublisher.send(isAuthenticated)
-    }
+    func setAuthenticated(_ isAuthenticated: Bool) {}
         
     func resetPassword(email: String) async throws {}
     

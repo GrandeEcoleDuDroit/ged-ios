@@ -10,7 +10,7 @@ protocol MessageRepository {
     
     func getUnsentMessages() async throws -> [Message]
     
-    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<[Message], Error>
+    func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Error>
     
     func createLocalMessage(message: Message) async throws
         
@@ -23,9 +23,7 @@ protocol MessageRepository {
     func updateSeenMessage(message: Message) async throws
         
     func upsertLocalMessage(message: Message) async throws
-    
-    func upsertLocalMessages(messages: [Message]) async throws
-    
+        
     func deleteLocalMessage(message: Message) async throws
         
     func deleteLocalMessages(conversationId: String) async throws

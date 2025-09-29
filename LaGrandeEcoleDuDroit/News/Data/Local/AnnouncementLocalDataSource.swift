@@ -46,6 +46,10 @@ class AnnouncementLocalDataSource {
     func deleteAnnouncement(announcementId: String) async throws {
         try await announcementActor.delete(announcementId: announcementId)
     }
+    
+    func deleteUserAnnouncements(userId: String) async throws {
+        try await announcementActor.deleteUserAnnouncements(userId: userId)
+    }
 }
     
 private actor AnnouncementCoreDataActor {
@@ -107,6 +111,21 @@ private actor AnnouncementCoreDataActor {
             try self.context.fetch(request).first.map {
                 self.context.delete($0)
             }
+            
+            try self.context.save()
+        }
+    }
+    
+    func deleteUserAnnouncements(userId: String) async throws {
+        try await context.perform {
+            let request = LocalAnnouncement.fetchRequest()
+            request.predicate = NSPredicate(
+                format: "%K == %@",
+                AnnouncementField.userId, userId
+            )
+            
+            let announcements = try self.context.fetch(request)
+            announcements.forEach { self.context.delete($0) }
             
             try self.context.save()
         }

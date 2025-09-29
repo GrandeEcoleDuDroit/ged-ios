@@ -6,6 +6,7 @@ class CreateConversationViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let tag = String(describing: CreateConversationViewModel.self)
     private let userRepository: UserRepository
+    private let blockedUserRepository: BlockedUserRepository
     private let getLocalConversationUseCase: GetConversationUseCase
     
     @Published var uiState: CreateConversationUiState = CreateConversationUiState()
@@ -13,9 +14,11 @@ class CreateConversationViewModel: ObservableObject {
     
     init(
         userRepository: UserRepository,
+        blockedUserRepository: BlockedUserRepository,
         getLocalConversationUseCase: GetConversationUseCase
     ) {
         self.userRepository = userRepository
+        self.blockedUserRepository = blockedUserRepository
         self.getLocalConversationUseCase = getLocalConversationUseCase
         fetchUsers()
     }
@@ -48,11 +51,15 @@ class CreateConversationViewModel: ObservableObject {
             updateEvent(ErrorEvent(message: getString(.userNotFound)))
             return
         }
+        let blockedUserIds = blockedUserRepository.getLocalBlockedUserIds()
         
         uiState.loading = true
         
         Task {
-            let users = await userRepository.getUsers().filter { $0.id != user.id }
+            let users = await userRepository.getUsers()
+                .filter { $0.id != user.id && !blockedUserIds.contains($0.id) }
+                .sorted { $0.fullName < $1.fullName }
+            
             DispatchQueue.main.sync { [weak self] in
                 self?.uiState.loading = false
                 self?.uiState.users = users
