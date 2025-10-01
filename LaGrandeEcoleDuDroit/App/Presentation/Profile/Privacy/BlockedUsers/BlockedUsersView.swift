@@ -62,7 +62,10 @@ private struct BlockedUsersView: View {
                                     user: user,
                                     trailingContent: {
                                         Button(
-                                            action: { onUnblockClick(user.id) },
+                                            action: {
+                                                showUnblockAlert = true
+                                                clickedUser = user
+                                            },
                                             label: {
                                                 Text(getString(.unblock))
                                                     .foregroundStyle(.gedPrimary)
