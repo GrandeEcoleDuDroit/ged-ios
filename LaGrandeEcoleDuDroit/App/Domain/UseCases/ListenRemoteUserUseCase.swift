@@ -38,7 +38,7 @@ class ListenRemoteUserUseCase {
                     )
                 }
             }, receiveValue: { [weak self] user in
-                if let user = user {
+                if let user {
                     self?.userRepository.storeUser(user)
                 } else {
                     self?.authenticationRepository.logout()

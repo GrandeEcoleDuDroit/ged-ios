@@ -61,7 +61,7 @@ private struct NewsView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(alignment: .leading, spacing: GedSpacing.medium) {
-                if let announcements = announcements {
+                if let announcements {
                     RecentAnnouncementSection(
                         announcements: announcements,
                         onAnnouncementClick: onAnnouncementClick,
@@ -143,17 +143,17 @@ private struct NewsView: View {
                 onReportClick: { reason in
                     showAnnouncementReportBottomSheet = false
                     
-                    if let announcement = clickedAnnouncement {
+                    if let clickedAnnouncement {
                         onReportAnnouncementClick(
                             AnnouncementReport(
-                                announcementId: announcement.id,
+                                announcementId: clickedAnnouncement.id,
                                 authorInfo: AnnouncementReport.UserInfo(
                                     fullName: user.fullName,
                                     email: user.email
                                 ),
                                 userInfo: AnnouncementReport.UserInfo(
-                                    fullName: announcement.author.fullName,
-                                    email: announcement.author.email
+                                    fullName: clickedAnnouncement.author.fullName,
+                                    email: clickedAnnouncement.author.email
                                 ),
                                 reason: reason
                             )
@@ -171,8 +171,8 @@ private struct NewsView: View {
             }
             
             Button(getString(.delete), role: .destructive) {
-                if let announcement = clickedAnnouncement {
-                    onDeleteAnnouncementClick(announcement)
+                if let clickedAnnouncement {
+                    onDeleteAnnouncementClick(clickedAnnouncement)
                 }
                 showDeleteAnnouncementAlert = false
             }
@@ -189,18 +189,18 @@ private struct Sheet: View {
     let onReportAnnouncementClick: () -> Void
     
     var body: some View {
-        if let announcement = clickedAnnouncement {
-            switch announcement.state {
+        if let clickedAnnouncement {
+            switch clickedAnnouncement.state {
                 case .error:
                     ErrorAnnouncementBottomSheet(
-                        onResendClick: { onResendAnnouncementClick(announcement) },
+                        onResendClick: { onResendAnnouncementClick(clickedAnnouncement) },
                         onDeleteClick: onDeleteAnnouncementClick
                     )
                     
                 default:
                     AnnouncementBottomSheet(
-                        isEditable: user.isMember && announcement.author.id == user.id,
-                        onEditClick: { onEditAnnouncementClick(announcement) },
+                        isEditable: user.isMember && clickedAnnouncement.author.id == user.id,
+                        onEditClick: { onEditAnnouncementClick(clickedAnnouncement) },
                         onDeleteClick: onDeleteAnnouncementClick,
                         onReportClick: onReportAnnouncementClick
                     )

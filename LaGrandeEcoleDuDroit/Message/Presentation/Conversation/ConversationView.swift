@@ -56,8 +56,8 @@ private struct ConversationView: View {
     
     var body: some View {
         ZStack {
-            if let conversations = conversationsUi {
-                if conversations.isEmpty {
+            if let conversationsUi {
+                if conversationsUi.isEmpty {
                     VStack {
                         Text(getString(.noConversation))
                             .font(.callout)
@@ -76,7 +76,7 @@ private struct ConversationView: View {
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 0) {
-                            ForEach(conversations, id: \.id) { conversation in
+                            ForEach(conversationsUi, id: \.id) { conversation in
                                 ConversationItem(
                                     conversation: conversation,
                                     onClick: { onConversationClick(conversation) },
@@ -115,8 +115,8 @@ private struct ConversationView: View {
                 showDeleteAlert = false
             }
             Button(getString(.delete), role: .destructive) {
-                if let conversation = selectedConversation {
-                    onDeleteConversationClick(conversation.toConversation())
+                if let selectedConversation {
+                    onDeleteConversationClick(selectedConversation.toConversation())
                 }
                 showDeleteAlert = false
             }

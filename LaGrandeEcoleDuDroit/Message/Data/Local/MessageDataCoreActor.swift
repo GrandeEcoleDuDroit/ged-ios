@@ -101,7 +101,7 @@ actor MessageCoreDataActor {
             
             guard localMessage?.equals(message) != true else { return }
             
-            if let localMessage = localMessage {
+            if let localMessage {
                 localMessage.modify(message: message)
             } else {
                 let newLocalMessage = LocalMessage(context: self.context)

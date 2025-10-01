@@ -110,8 +110,8 @@ private struct ChatView: View {
             SentMessageBottomSheet(
                 onResendMessage: {
                     showSentMessageBottomSheet = false
-                    if let message = clickedMessage {
-                        onResendMessage(message)
+                    if let clickedMessage {
+                        onResendMessage(clickedMessage)
                     }
                 },
                 onDeleteMessage: {
@@ -135,11 +135,11 @@ private struct ChatView: View {
                 onReportClick: { reason in
                     showReportMessageBottomSheet = false
                     
-                    if let message = clickedMessage {
+                    if let clickedMessage {
                         onReportMessageClick(
                             MessageReport(
                                 conversationId: conversation.id,
-                                messageId: message.id,
+                                messageId: clickedMessage.id,
                                 recipientInfo: MessageReport.UserInfo(
                                     fullName: conversation.interlocutor.fullName,
                                     email: conversation.interlocutor.email
@@ -160,8 +160,8 @@ private struct ChatView: View {
                 }
                 
                 Button(getString(.delete), role: .destructive) {
-                    if let message = clickedMessage {
-                        onErrorMessageClick(message)
+                    if let clickedMessage {
+                        onErrorMessageClick(clickedMessage)
                     }
                     showDeleteAnnouncementAlert = false
                 }

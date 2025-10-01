@@ -18,7 +18,7 @@ class FirebaseAuthenticationRepositoryImpl: FirebaseAuthenticationRepository {
     }
     
     func getAuthIdToken() async throws -> String? {
-        if let authIdToken = authIdToken {
+        if let authIdToken {
             authIdToken
         } else {
             try await firebaseAuthApi.getAuthToken()

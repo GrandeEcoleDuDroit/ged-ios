@@ -36,7 +36,7 @@ class EditAnnouncementViewModel: ViewModel {
         let title = uiState.title.trimmingCharacters(in: .whitespacesAndNewlines)
         let content = uiState.content.trimmingCharacters(in: .whitespacesAndNewlines)
                                                          
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             do {
                 guard let announcement = self?.announcement.copy({
                     $0.title = title.trimmingCharacters(in: .whitespacesAndNewlines)

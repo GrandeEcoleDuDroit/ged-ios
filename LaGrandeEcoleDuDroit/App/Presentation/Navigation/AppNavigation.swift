@@ -14,8 +14,8 @@ struct AppNavigation: View {
             }
         }
         .onReceive(viewModel.$tabToNavigate) { destinationToNavigate in
-            if let destination = destinationToNavigate {
-                selectedTab = destination
+            if let destinationToNavigate {
+                selectedTab = destinationToNavigate
             }
         }
     }

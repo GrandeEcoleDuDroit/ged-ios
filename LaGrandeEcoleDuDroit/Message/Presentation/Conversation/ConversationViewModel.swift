@@ -23,7 +23,7 @@ class ConversationViewModel: ViewModel {
     }
     
     func deleteConversation(conversation: Conversation) {
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             do {
                 guard let user = self?.userRepository.currentUser else {
                     throw UserError.currentUserNotFound

@@ -44,7 +44,7 @@ class NewsViewModel: ViewModel {
         
         uiState.loading = true
         
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             await self?.resendAnnouncementUseCase.execute(announcement: announcement)
             self?.uiState.loading = false
         }
@@ -57,7 +57,7 @@ class NewsViewModel: ViewModel {
         
         uiState.loading = true
         
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             do {
                 try await self?.deleteAnnouncementUseCase.execute(announcement: announcement)
                 self?.uiState.loading = false
@@ -75,7 +75,7 @@ class NewsViewModel: ViewModel {
         
         uiState.loading = true
         
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             do {
                 try await self?.announcementRepository.reportAnnouncement(report: report)
                 self?.uiState.loading = false

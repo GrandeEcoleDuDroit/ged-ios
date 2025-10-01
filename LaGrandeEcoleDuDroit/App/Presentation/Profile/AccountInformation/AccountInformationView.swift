@@ -81,9 +81,9 @@ private struct AccountInformationView: View {
     var body: some View {
         ZStack {
             VStack(spacing: GedSpacing.medium) {
-                if let image = profilePictureImage {
+                if let profilePictureImage {
                     ClickableProfilePictureImage(
-                        image: image,
+                        image: profilePictureImage,
                         onClick: { showPhotosPicker = true },
                         scale: 1.6
                     )
@@ -171,8 +171,8 @@ private struct AccountInformationView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(
                         action: {
-                            if let image = profilePictureImage {
-                                onSaveProfilePictureClick(image.jpegData(compressionQuality: 0.8))
+                            if let profilePictureImage {
+                                onSaveProfilePictureClick(profilePictureImage.jpegData(compressionQuality: 0.8))
                             }
                         },
                         label: {
