@@ -1,16 +1,16 @@
 import Foundation
 import Combine
 
-class AccountInformationViewModel: ObservableObject {
+class AccountInformationViewModel: ViewModel {
     private let updateProfilePictureUseCase: UpdateProfilePictureUseCase
     private let deleteProfilePictureUseCase: DeleteProfilePictureUseCase
     private let networkMonitor: NetworkMonitor
     private let userRepository: UserRepository
+
+    @Published private(set) var uiState: AccountInformationUiState = AccountInformationUiState()
+    @Published private(set) var event: SingleUiEvent? = nil
     private var cancellables: Set<AnyCancellable> = []
-    
-    @Published var uiState: AccountInformationUiState = AccountInformationUiState()
-    @Published var event: SingleUiEvent? = nil
-    
+
     init(
         updateProfilePictureUseCase: UpdateProfilePictureUseCase,
         deleteProfilePictureUseCase: DeleteProfilePictureUseCase,
@@ -21,31 +21,25 @@ class AccountInformationViewModel: ObservableObject {
         self.deleteProfilePictureUseCase = deleteProfilePictureUseCase
         self.networkMonitor = networkMonitor
         self.userRepository = userRepository
+        
         initCurrentUser()
     }
     
     func updateProfilePicture(imageData: Data?) {
-        guard let imageData = imageData else {
+        guard let imageData else {
             return event = ErrorEvent(message: "Image data is required.")
         }
-        
-        guard let user = uiState.user else {
-            return
-        }
+        guard let user = uiState.user else { return }
         
         uiState.loading = true
         
         Task {  [weak self] in
             do {
                 try await self?.updateProfilePictureUseCase.execute(user: user, imageData: imageData)
-                DispatchQueue.main.sync { [weak self] in
-                    self?.resetValues()
-                }
+                self?.resetValues()
             } catch {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.resetValues()
-                    self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-                }
+                self?.resetValues()
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
             }
         }
     }
@@ -54,7 +48,6 @@ class AccountInformationViewModel: ObservableObject {
         guard networkMonitor.isConnected else {
             return event = ErrorEvent(message: getString(.noInternetConectionError))
         }
-        
         guard let user = uiState.user else {
             return event = ErrorEvent(message: getString(.userNotFoundError))
         }
@@ -66,14 +59,10 @@ class AccountInformationViewModel: ObservableObject {
                 if let url = user.profilePictureUrl {
                     try await self?.deleteProfilePictureUseCase.execute(userId: user.id, profilePictureUrl: url)
                 }
-                DispatchQueue.main.sync { [weak self] in
-                    self?.resetValues()
-                }
+                self?.resetValues()
             } catch {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.resetValues()
-                    self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-                }
+                self?.resetValues()
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
             }
         }
     }

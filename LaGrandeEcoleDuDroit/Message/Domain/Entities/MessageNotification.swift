@@ -1,6 +1,6 @@
-struct NotificationMessage: Codable {
+struct MessageNotification: Codable {
     let conversation: Conversation
-    let message: NotificationMessage.MessageContent
+    let message: MessageNotification.MessageContent
     
     struct MessageContent: Codable {
         let content: String

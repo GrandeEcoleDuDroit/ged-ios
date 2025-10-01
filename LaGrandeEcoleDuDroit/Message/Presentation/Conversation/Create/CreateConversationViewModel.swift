@@ -1,16 +1,15 @@
 import SwiftUI
 import Combine
 
-class CreateConversationViewModel: ObservableObject {
-    private var defaultUsers: [User] = []
-    private var cancellables = Set<AnyCancellable>()
-    private let tag = String(describing: CreateConversationViewModel.self)
+class CreateConversationViewModel: ViewModel {
     private let userRepository: UserRepository
     private let blockedUserRepository: BlockedUserRepository
     private let getLocalConversationUseCase: GetConversationUseCase
     
     @Published var uiState: CreateConversationUiState = CreateConversationUiState()
-    @Published var event: SingleUiEvent? = nil
+    @Published private(set) var event: SingleUiEvent? = nil
+    private var defaultUsers: [User] = []
+    private var cancellables = Set<AnyCancellable>()
     
     init(
         userRepository: UserRepository,
@@ -40,43 +39,34 @@ class CreateConversationViewModel: ObservableObject {
         do {
             return try await getLocalConversationUseCase.execute(interlocutor: interlocutor)
         } catch {
-            updateEvent(ErrorEvent(message: mapNetworkErrorMessage(error)))
+            event = ErrorEvent(message: mapNetworkErrorMessage(error))
             return nil
         }
     }
     
     private func fetchUsers() {
         guard let user = userRepository.currentUser else {
-            uiState.loading = false
-            updateEvent(ErrorEvent(message: getString(.userNotFound)))
+            event = ErrorEvent(message: getString(.userNotFound))
             return
         }
-        let blockedUserIds = blockedUserRepository.getLocalBlockedUserIds()
-        
         uiState.loading = true
         
-        Task {
-            let users = await userRepository.getUsers()
+        let blockedUserIds = blockedUserRepository.getLocalBlockedUserIds()
+        Task { [weak self] in
+            let users = await self?.userRepository.getUsers()
                 .filter { $0.id != user.id && !blockedUserIds.contains($0.id) }
                 .sorted { $0.fullName < $1.fullName }
+            ?? []
             
-            DispatchQueue.main.sync { [weak self] in
-                self?.uiState.loading = false
-                self?.uiState.users = users
-                self?.defaultUsers = users
-            }
-        }
-    }
-    
-    private func updateEvent(_ event: SingleUiEvent) {
-        DispatchQueue.main.sync { [weak self] in
-            self?.event = event
+            self?.uiState.loading = false
+            self?.uiState.users = users
+            self?.defaultUsers = users
         }
     }
     
     struct CreateConversationUiState: Withable {
-        var users: [User] = []
-        var loading: Bool = true
+        fileprivate(set) var users: [User] = []
+        fileprivate(set) var loading: Bool = false
         var query: String = ""
     }
 }

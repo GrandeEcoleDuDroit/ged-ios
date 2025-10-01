@@ -7,7 +7,7 @@ protocol AuthenticationRepository {
     
     func registerWithEmailAndPassword(email: String, password: String) async throws -> String
     
-    func logout()
+    func logout() 
             
     func setAuthenticated(_ isAuthenticated: Bool)
     

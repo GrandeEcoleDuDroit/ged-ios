@@ -1,16 +1,16 @@
 import Foundation
 import Combine
 
-class ReadAnnouncementViewModel: ObservableObject {
+class ReadAnnouncementViewModel: ViewModel {
     private let announcementId: String
     private let userRepository: UserRepository
     private let announcementRepository: AnnouncementRepository
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
     private let networkMonitor: NetworkMonitor
-    private var cancellables: Set<AnyCancellable> = []
     
-    @Published var uiState: ReadAnnouncementUiState = ReadAnnouncementUiState()
-    @Published var event: SingleUiEvent? = nil
+    @Published private(set) var uiState: ReadAnnouncementUiState = ReadAnnouncementUiState()
+    @Published private(set) var event: SingleUiEvent? = nil
+    private var cancellables: Set<AnyCancellable> = []
     
     init(
         announcementId: String,
@@ -36,17 +36,13 @@ class ReadAnnouncementViewModel: ObservableObject {
         
         uiState.loading = true
         
-        Task {
+        Task { [weak self] in
             do {
-                try await announcementRepository.reportAnnouncement(report: report)
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                }
+                try await self?.announcementRepository.reportAnnouncement(report: report)
+                self?.uiState.loading = false
             } catch {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                    self?.updateEvent(ErrorEvent(message: mapNetworkErrorMessage(error)))
-                }
+                self?.uiState.loading = false
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
             }
         }
     }
@@ -56,7 +52,7 @@ class ReadAnnouncementViewModel: ObservableObject {
             .compactMap { $0 }
             .map { announcement in
                 let title = announcement.title?.isBlank == false ? announcement.title : nil
-                return announcement.with(title: title)
+                return announcement.copy { $0.title = title }
             }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] announcement in
@@ -73,27 +69,24 @@ class ReadAnnouncementViewModel: ObservableObject {
     }
     
     func deleteAnnouncement() {
-        guard let announcement = uiState.announcement else { return }
-        uiState.loading = true
-        Task {
-            do {
-                try await deleteAnnouncementUseCase.execute(announcement: announcement)
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                }
-                updateEvent(SuccessEvent())
-            } catch {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                }
-                updateEvent(ErrorEvent(message: mapNetworkErrorMessage(error)))
-            }
+        guard networkMonitor.isConnected else {
+            return event = ErrorEvent(message: getString(.noInternetConectionError))
         }
-    }
-    
-    private func updateEvent(_ event: SingleUiEvent) {
-        DispatchQueue.main.sync { [weak self] in
-            self?.event = event
+        guard let announcement = uiState.announcement else {
+            return
+        }
+        
+        uiState.loading = true
+        
+        Task { [weak self] in
+            do {
+                try await self?.deleteAnnouncementUseCase.execute(announcement: announcement)
+                self?.uiState.loading = false
+                self?.event = SuccessEvent()
+            } catch {
+                self?.uiState.loading = false
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
+            }
         }
     }
     
@@ -101,9 +94,5 @@ class ReadAnnouncementViewModel: ObservableObject {
         var announcement: Announcement? = nil
         var user: User? = nil
         var loading: Bool = false
-    }
-    
-    deinit {
-        print("Deinit \(String(describing: self))")
-    }
+    }    
 }

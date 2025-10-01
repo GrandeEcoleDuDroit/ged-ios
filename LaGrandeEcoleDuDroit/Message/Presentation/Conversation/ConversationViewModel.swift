@@ -1,16 +1,15 @@
 import Foundation
 import Combine
 
-class ConversationViewModel: ObservableObject {
+class ConversationViewModel: ViewModel {
     private let userRepository: UserRepository
     private let deleteConversationUseCase: DeleteConversationUseCase
     private let getConversationsUiUseCase: GetConversationsUiUseCase
+    
+    @Published private(set) var uiState: ConversationUiState = ConversationUiState()
+    @Published private(set) var event: SingleUiEvent? = nil
     private var cancellables: Set<AnyCancellable> = []
     private var defaultConversations: [ConversationUi] = []
-    private let tag = String(describing: ConversationViewModel.self)
-    
-    @Published var uiState: ConversationUiState = ConversationUiState()
-    @Published var event: SingleUiEvent? = nil
     
     init(
         userRepository: UserRepository,
@@ -24,13 +23,16 @@ class ConversationViewModel: ObservableObject {
     }
     
     func deleteConversation(conversation: Conversation) {
-        do {
-            guard let user = userRepository.currentUser else {
-                throw UserError.currentUserNotFound
+        Task { [weak self] in
+            do {
+                guard let user = self?.userRepository.currentUser else {
+                    throw UserError.currentUserNotFound
+                }
+                try await self?.deleteConversationUseCase.execute(conversation: conversation, userId: user.id)
+            } catch {
+                guard let self else { return }
+                self.event = ErrorEvent(message: self.mapErrorMessage(error))
             }
-            deleteConversationUseCase.execute(conversation: conversation, userId: user.id)
-        } catch {
-            event = ErrorEvent(message: mapErrorMessage(error))
         }
     }
     

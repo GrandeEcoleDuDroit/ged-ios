@@ -1,6 +1,6 @@
 import Foundation
 
-struct Announcement: Identifiable, Hashable {
+struct Announcement: Identifiable, Hashable, Copyable {
     var id: String
     var title: String? = nil
     var content: String
@@ -10,24 +10,6 @@ struct Announcement: Identifiable, Hashable {
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
-    }
-    
-    func with(
-        id: String? = nil,
-        title: String? = nil,
-        content: String? = nil,
-        date: Date? = nil,
-        author: User? = nil,
-        state: AnnouncementState? = nil
-    ) -> Announcement {
-        Announcement(
-            id: id ?? self.id,
-            title: title ?? self.title,
-            content: content ?? self.content,
-            date: date ?? self.date,
-            author: author ?? self.author,
-            state: state ?? self.state
-        )
     }
 }
 

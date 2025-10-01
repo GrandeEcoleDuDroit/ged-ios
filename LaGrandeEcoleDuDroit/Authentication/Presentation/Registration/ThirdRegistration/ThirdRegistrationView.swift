@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ThirdRegistrationDestination: View {
-    @StateObject private var viewModel: ThirdRegistrationViewModel = AuthenticationInjection.shared.resolve(ThirdRegistrationViewModel.self)
+    @StateObject private var viewModel = AuthenticationMainThreadInjector.shared.resolve(ThirdRegistrationViewModel.self)
     @State private var focusedInputField: InputField? = nil
     @State private var isLoading: Bool = false
     @State private var showErrorAlert = false

@@ -1,12 +1,12 @@
 import Foundation
 import Combine
 
-class CreateAnnouncementViewModel: ObservableObject {
+class CreateAnnouncementViewModel: ViewModel {
     private let userRepository: UserRepository
     private let createAnnouncementUseCase: CreateAnnouncementUseCase
     
     @Published var uiState: CreateAnnouncementUiState = CreateAnnouncementUiState()
-    @Published var event: SingleUiEvent? = nil
+    @Published private(set) var event: SingleUiEvent? = nil
     private let user: User?
 
     init(
@@ -19,15 +19,11 @@ class CreateAnnouncementViewModel: ObservableObject {
     }
     
     func createAnnouncement() {
-        guard let user = self.user else {
+        guard let user else {
             return event = ErrorEvent(message: getString(.userNotFoundError))
         }
         
-        let title: String? = if uiState.title.trimmingCharacters(in: .whitespacesAndNewlines).isBlank {
-            nil
-        } else {
-            uiState.title
-        }
+        let title: String? = !uiState.title.isBlank ? uiState.title : nil
         
         let announcement = Announcement(
             id: GenerateIdUseCase.stringId(),
@@ -38,7 +34,9 @@ class CreateAnnouncementViewModel: ObservableObject {
             state: .draft
         )
         
-        createAnnouncementUseCase.execute(announcement: announcement)
+        Task {
+            await createAnnouncementUseCase.execute(announcement: announcement)
+        }
     }
     
     func onTitleChange(_ title: String) {
@@ -58,7 +56,7 @@ class CreateAnnouncementViewModel: ObservableObject {
     struct CreateAnnouncementUiState {
         var title: String = ""
         var content: String = ""
-        var loading: Bool = false
-        var enableCreate: Bool = false
+        fileprivate(set) var loading: Bool = false
+        fileprivate(set) var enableCreate: Bool = false
     }
 }

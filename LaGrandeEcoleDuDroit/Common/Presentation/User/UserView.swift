@@ -4,14 +4,14 @@ import _PhotosUI_SwiftUI
 struct UserDestination: View {
     private let user: User
     
-    @StateObject private var viewModel = CommonInjection.shared.resolve(UserViewModel.self)
+    @StateObject private var viewModel: UserViewModel
     @State private var errorMessage: String = ""
     @State private var showErrorAlert: Bool = false
     @State private var profilePictureImage: UIImage? = nil
     
     init(user: User) {
         self.user = user
-        _viewModel = StateObject(wrappedValue: CommonInjection.shared.resolve(UserViewModel.self, arguments: user.id)!)
+        _viewModel = StateObject(wrappedValue: CommonMainThreadInjector.shared.resolve(UserViewModel.self, arguments: user.id)!)
     }
     
     var body: some View {

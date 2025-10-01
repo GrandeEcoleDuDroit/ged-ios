@@ -1,26 +1,11 @@
 import Foundation
 
-struct Conversation: Hashable, Codable {
-    let id: String
-    let interlocutor: User
-    let createdAt: Date
-    let state: ConversationState
+struct Conversation: Hashable, Codable, Copyable {
+    var id: String
+    var interlocutor: User
+    var createdAt: Date
+    var state: ConversationState
     var deleteTime: Date?
-    
-    func with(
-        id: String? = nil,
-        interlocutor: User? = nil,
-        state: ConversationState? = nil,
-        deleteTime: Date? = nil,
-    ) -> Conversation {
-        Conversation(
-            id: id ?? self.id,
-            interlocutor: interlocutor ?? self.interlocutor,
-            createdAt: createdAt,
-            state: state ?? self.state,
-            deleteTime: deleteTime ?? self.deleteTime
-        )
-    }
     
     func shouldBeCreated() -> Bool {
         state == .draft ||

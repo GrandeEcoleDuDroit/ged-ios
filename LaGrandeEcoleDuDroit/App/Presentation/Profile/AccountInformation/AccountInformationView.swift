@@ -2,7 +2,7 @@ import SwiftUI
 import _PhotosUI_SwiftUI
 
 struct AccountInformationDestination: View {
-    @StateObject private var viewModel = MainInjection.shared.resolve(AccountInformationViewModel.self)
+    @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(AccountInformationViewModel.self)
     @State private var errorMessage: String = ""
     @State private var showErrorAlert: Bool = false
     @State private var profilePictureImage: UIImage? = nil

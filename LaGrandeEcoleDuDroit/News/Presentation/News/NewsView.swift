@@ -5,7 +5,7 @@ struct NewsDestination: View {
     let onCreateAnnouncementClick: () -> Void
     let onEditAnnouncementClick: (Announcement) -> Void
     
-    @StateObject private var viewModel = NewsInjection.shared.resolve(NewsViewModel.self)
+    @StateObject private var viewModel = NewsMainThreadInjector.shared.resolve(NewsViewModel.self)
     @State private var errorMessage: String = ""
     @State private var showErrorAlert: Bool = false
     
@@ -118,7 +118,10 @@ private struct NewsView: View {
             Sheet(
                 user: user,
                 clickedAnnouncement: $clickedAnnouncement,
-                onResendAnnouncementClick: onResendAnnouncementClick,
+                onResendAnnouncementClick: {
+                    showAnnouncementBottomSheet = false
+                    onResendAnnouncementClick($0)
+                },
                 onDeleteAnnouncementClick: {
                     showAnnouncementBottomSheet = false
                     showDeleteAnnouncementAlert = true

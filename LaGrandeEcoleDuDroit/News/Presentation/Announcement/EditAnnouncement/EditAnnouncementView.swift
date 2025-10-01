@@ -12,7 +12,7 @@ struct EditAnnouncementDestination: View {
         onBackClick: @escaping () -> Void
     ) {
         _viewModel = StateObject(
-            wrappedValue: NewsInjection.shared.resolve(EditAnnouncementViewModel.self, arguments: announcement)!
+            wrappedValue: NewsMainThreadInjector.shared.resolve(EditAnnouncementViewModel.self, arguments: announcement)!
         )
         self.onBackClick = onBackClick
     }

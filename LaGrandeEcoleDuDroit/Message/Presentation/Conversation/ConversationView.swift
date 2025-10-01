@@ -5,7 +5,7 @@ struct ConversationDestination: View {
     let onCreateConversationClick: () -> Void
     let onConversationClick: (ConversationUi) -> Void
     
-    @StateObject private var viewModel = MessageInjection.shared.resolve(ConversationViewModel.self)
+    @StateObject private var viewModel = MessageMainThreadInjector.shared.resolve(ConversationViewModel.self)
     @State private var showErrorAlert: Bool = false
     @State private var errorMessage: String = ""
     

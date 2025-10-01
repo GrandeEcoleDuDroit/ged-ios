@@ -3,7 +3,7 @@ import SwiftUI
 struct FirstRegistrationDestination: View {
     let onNextClick: (String, String) -> Void
      
-    @StateObject private var viewModel: FirstRegistrationViewModel = AuthenticationInjection.shared.resolve(FirstRegistrationViewModel.self)
+    @StateObject private var viewModel = AuthenticationMainThreadInjector.shared.resolve(FirstRegistrationViewModel.self)
     @State private var focusedInputField: InputField?
     @State private var isValidNameInputs = false
     
