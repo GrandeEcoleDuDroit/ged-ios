@@ -1,4 +1,9 @@
 enum GedString: String {
+    // App
+    case privacy = "privacy"
+    case blockedUsers = "blocked_users"
+    case noBlockedUser = "no_blocked_user"
+    
     // Common
     case appName = "app_name"
     case next = "next"

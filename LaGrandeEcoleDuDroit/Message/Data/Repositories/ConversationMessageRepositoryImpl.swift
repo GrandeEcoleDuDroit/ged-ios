@@ -111,12 +111,16 @@ class ConversationMessageRepositoryImpl: ConversationMessageRepository {
                 let filteredUpdatedMessages = combinedMessages.filter { $0.conversationId == conversation.id }
                 let lastUpdatedMessage = filteredUpdatedMessages.sorted { $0.date > $1.date }.first
 
-                return if let deleted = lastDeletedMessage, let updated = lastUpdatedMessage {
-                    deleted.date > updated.date ? (deleted, .deleted) : (updated, .updated)
-                } else if let deleted = lastDeletedMessage {
-                    (deleted, .deleted)
-                } else if let updated = lastUpdatedMessage {
-                    (updated, .updated)
+                return if let lastDeletedMessage, let lastUpdatedMessage {
+                    if lastDeletedMessage.date > lastUpdatedMessage.date {
+                        (lastDeletedMessage, .deleted)
+                    } else {
+                        (lastUpdatedMessage, .updated)
+                    }
+                } else if let lastDeletedMessage {
+                    (lastDeletedMessage, .deleted)
+                } else if let lastUpdatedMessage {
+                    (lastUpdatedMessage, .updated)
                 } else {
                     nil
                 }

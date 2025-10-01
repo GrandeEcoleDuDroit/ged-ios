@@ -16,7 +16,7 @@ struct RecentAnnouncementSection: View {
             ScrollView {
                 if announcements.isEmpty {
                     Text(getString(.noAnnouncement))
-                        .foregroundColor(Color(UIColor.lightGray))
+                        .foregroundStyle(.informationText)
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .top)
                 } else {

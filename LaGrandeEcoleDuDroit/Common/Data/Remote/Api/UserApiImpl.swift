@@ -218,7 +218,7 @@ class UserFirestoreApi {
         usersCollection
             .document(userId)
             .addSnapshotListener { snapshot, error in
-                if let error = error {
+                if let error {
                     subject.send(completion: .failure(error))
                     return
                 }

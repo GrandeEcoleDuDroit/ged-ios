@@ -21,7 +21,7 @@ class MessageApiImpl: MessageApi {
             .collection(messageTableName)
             .withOffsetTime(offsetTime)
             .addSnapshotListener(includeMetadataChanges: true) { snapshot, error in
-                if let error = error {
+                if let error {
                     subject.send(completion: .failure(error))
                     return
                 }

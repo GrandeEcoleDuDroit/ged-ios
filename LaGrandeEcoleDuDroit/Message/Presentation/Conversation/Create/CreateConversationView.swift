@@ -46,9 +46,9 @@ private struct CreateConversationView: View {
                 } else {
                     ScrollView {
                         ForEach(users, id: \.id) { user in
-                            UserItem(
-                                user: user,
-                                onClick: { onUserClick(user) }
+                            Clickable(
+                                action: { onUserClick(user) },
+                                content: { UserItem(user: user) }
                             )
                         }
                     }

@@ -61,7 +61,7 @@ private struct DeleteAccountView: View {
             .frame(maxHeight: 130)
             .scrollContentBackground(.hidden)
             
-            if let errorMessage = errorMessage {
+            if let errorMessage {
                 Text(errorMessage)
                     .font(.callout)
                     .foregroundStyle(.error)
