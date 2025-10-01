@@ -118,7 +118,10 @@ private struct NewsView: View {
             Sheet(
                 user: user,
                 clickedAnnouncement: $clickedAnnouncement,
-                onResendAnnouncementClick: onResendAnnouncementClick,
+                onResendAnnouncementClick: {
+                    showAnnouncementBottomSheet = false
+                    onResendAnnouncementClick($0)
+                },
                 onDeleteAnnouncementClick: {
                     showAnnouncementBottomSheet = false
                     showDeleteAnnouncementAlert = true

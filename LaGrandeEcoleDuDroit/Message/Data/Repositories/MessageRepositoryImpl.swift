@@ -5,8 +5,9 @@ class MessageRepositoryImpl: MessageRepository {
     private let tag = String(describing: MessageRepositoryImpl.self)
     private let messageLocalDataSource: MessageLocalDataSource
     private let messageRemoteDataSource: MessageRemoteDataSource
+    
+    private var cancellables: Set<AnyCancellable> = []
     private let messageChangesSubject = PassthroughSubject<CoreDataChange<Message>, Never>()
-    private var cancellables = Set<AnyCancellable>()
     var messageChanges: AnyPublisher<CoreDataChange<Message>, Never> {
         messageChangesSubject.eraseToAnyPublisher()
     }
@@ -22,7 +23,6 @@ class MessageRepositoryImpl: MessageRepository {
     
     private func listenDataChanges() {
         messageLocalDataSource.listenDataChange()
-            .receive(on: DispatchQueue.global(qos: .background))
             .sink { [weak self] change in
                 self?.messageChangesSubject.send(change)
             }
@@ -117,7 +117,7 @@ class MessageRepositoryImpl: MessageRepository {
     func deleteLocalMessage(message: Message) async throws {
         do {
             if let deletedMessage = try await messageLocalDataSource.deleteMessage(message: message) {
-                messageChangesSubject.send(.init(inserted: [], updated: [], deleted: [deletedMessage]))
+                messageChangesSubject.send(CoreDataChange(deleted: [deletedMessage]))
             }
         } catch {
             e(tag, "Failed to delete local message: \(error.localizedDescription)", error)
@@ -128,7 +128,7 @@ class MessageRepositoryImpl: MessageRepository {
     func deleteLocalMessages(conversationId: String) async throws {
         do {
             let deletedMessages = try await messageLocalDataSource.deleteMessages(conversationId: conversationId)
-            messageChangesSubject.send(.init(inserted: [], updated: [], deleted: deletedMessages))
+            messageChangesSubject.send(CoreDataChange(deleted: deletedMessages))
         } catch {
             e(tag, "Failed to delete local messages for conversation \(conversationId): \(error.localizedDescription)", error)
             throw error
@@ -138,7 +138,7 @@ class MessageRepositoryImpl: MessageRepository {
     func deleteLocalMessages() async throws {
         do {
             let deletedMessages = try await messageLocalDataSource.deleteMessages()
-            messageChangesSubject.send(.init(inserted: [], updated: [], deleted: deletedMessages))
+            messageChangesSubject.send(CoreDataChange(deleted: deletedMessages))
         } catch {
             e(tag, "Failed to delete local messages: \(error.localizedDescription )", error)
             throw error

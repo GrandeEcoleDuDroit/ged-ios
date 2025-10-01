@@ -6,7 +6,8 @@ class ConversationRepositoryImpl: ConversationRepository {
     private let conversationLocalDataSource: ConversationLocalDataSource
     private let conversationRemoteDataSource: ConversationRemoteDataSource
     private let userRepository: UserRepository
-    private var fetchedInterlocutors: [String: User] = [:]
+    
+    private let fetchedInterlocutors: FetchedInterlocutors = FetchedInterlocutors()
     private var cancellables: Set<AnyCancellable> = []
     private let conversationChangesSubject = PassthroughSubject<CoreDataChange<Conversation>, Never>()
     var conversationChanges: AnyPublisher<CoreDataChange<Conversation>, Never> {
@@ -26,7 +27,6 @@ class ConversationRepositoryImpl: ConversationRepository {
     
     private func listenDataChanges() {
         conversationLocalDataSource.listenDataChanges()
-            .receive(on: DispatchQueue.global(qos: .background))
             .sink { [weak self] change in
                 self?.conversationChangesSubject.send(change)
             }
@@ -55,23 +55,41 @@ class ConversationRepositoryImpl: ConversationRepository {
         conversationRemoteDataSource
             .listenConversations(userId: userId)
             .flatMap { remoteConversation in
-                guard let interlocutorId = remoteConversation.participants.first(where: { $0 != userId }) else {
-                    return Empty<Conversation, Error>().eraseToAnyPublisher()
-                }
-
-                if let interlocutor = self.fetchedInterlocutors[interlocutorId] {
-                    let conversation = remoteConversation.toConversation(userId: userId, interlocutor: interlocutor)
+                Future<FetchedInterlocutorResult, Error> { [weak self] promise in
+                    guard let interlocutorId = remoteConversation.participants.first(where: { $0 != userId }) else {
+                        return promise(.success(.failure))
+                    }
                     
-                    return Just(conversation)
-                        .setFailureType(to: Error.self)
-                        .eraseToAnyPublisher()
-                } else {
-                    return self.userRepository.getUserPublisher(userId: interlocutorId)
-                        .map { remoteConversation.toConversation(userId: userId, interlocutor: $0) }
-                        .eraseToAnyPublisher()
-                }
+                    Task {
+                        if let interlocutor = await self?.fetchedInterlocutors.get(interlocutorId: interlocutorId) {
+                            let conversation = remoteConversation.toConversation(userId: userId, interlocutor: interlocutor)
+                            promise(.success(.found(conversation)))
+                        } else {
+                            promise(.success(.notFound(remoteConversation, interlocutorId)))
+                        }
+                    }
+                }.eraseToAnyPublisher()
             }
-            .eraseToAnyPublisher()
+            .flatMap { fetchedInterlocutorResult in
+                switch fetchedInterlocutorResult {
+                    case let .found(conversation):
+                        Just(conversation)
+                            .setFailureType(to: Error.self)
+                            .eraseToAnyPublisher()
+                        
+                    case let .notFound(remoteConversation, interlocutorId):
+                        self.userRepository.getUserPublisher(userId: interlocutorId)
+                            .map { interlocutor in
+                                Task {
+                                    await self.fetchedInterlocutors.set(interlocutor: interlocutor, forKey: interlocutorId)
+                                }
+                                return remoteConversation.toConversation(userId: userId, interlocutor: interlocutor)
+                            }
+                            .eraseToAnyPublisher()
+
+                    default: Empty<Conversation, Error>().eraseToAnyPublisher()
+                }
+            }.eraseToAnyPublisher()
     }
 
     func createLocalConversation(conversation: Conversation) async throws {
@@ -121,14 +139,14 @@ class ConversationRepositoryImpl: ConversationRepository {
             deleteTime: conversation.deleteTime!
         )
         if let deletedConversation = try await conversationLocalDataSource.deleteConversation(conversationId: conversation.id) {
-            conversationChangesSubject.send(.init(inserted: [], updated: [], deleted: [deletedConversation]))
+            conversationChangesSubject.send(CoreDataChange(deleted: [deletedConversation]))
         }
     }
     
     func deleteLocalConversations() async throws {
         do {
             let deletedConversations = try await conversationLocalDataSource.deleteConversations()
-            conversationChangesSubject.send(.init(inserted: [], updated: [], deleted: deletedConversations))
+            conversationChangesSubject.send(CoreDataChange(deleted: deletedConversations))
         } catch {
             e(tag, "Failed to delete local conversations \(error)", error)
             throw error
@@ -137,6 +155,28 @@ class ConversationRepositoryImpl: ConversationRepository {
     
     func stopListenConversations() {
         conversationRemoteDataSource.stopListeningConversations()
-        fetchedInterlocutors.removeAll()
+        Task { await fetchedInterlocutors.removeAll() }
     }
+}
+
+private actor FetchedInterlocutors {
+    private var interlocutors: [String: User] = [:]
+    
+    func get(interlocutorId: String) -> User? {
+        interlocutors[interlocutorId]
+    }
+    
+    func set(interlocutor: User, forKey key: String) {
+        interlocutors[key] = interlocutor
+    }
+    
+    func removeAll() {
+        interlocutors.removeAll()
+    }
+}
+
+private enum FetchedInterlocutorResult {
+    case found(Conversation)
+    case notFound(RemoteConversation, String)
+    case failure
 }
