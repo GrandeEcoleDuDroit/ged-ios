@@ -3,10 +3,10 @@ import Firebase
 import FirebaseMessaging
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    private let notificationMediator = MainInjection.shared.resolve(NotificationMediator.self)
-    private lazy var fcmManager = MainInjection.shared.resolve(FcmManager.self)
-    private lazy var fcmTokenUseCase: FcmTokenUseCase = MainInjection.shared.resolve(FcmTokenUseCase.self)
-    private lazy var startupMessageTask: StartupMessageTask = MessageInjection.shared.resolve(StartupMessageTask.self)
+    private let notificationMediator = AppInjector.shared.resolve(NotificationMediator.self)
+    private lazy var fcmManager = AppInjector.shared.resolve(FcmManager.self)
+    private lazy var fcmTokenUseCase: FcmTokenUseCase = AppInjector.shared.resolve(FcmTokenUseCase.self)
+    private lazy var startupMessageTask: StartupMessageTask = MessageInjector.shared.resolve(StartupMessageTask.self)
     private let tag = String(describing: AppDelegate.self)
     
     func application(

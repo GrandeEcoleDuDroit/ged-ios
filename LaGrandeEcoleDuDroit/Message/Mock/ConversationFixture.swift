@@ -9,11 +9,11 @@ let conversationFixture = Conversation(
 )
 
 let conversationsFixture = [
-    conversationFixture.with(),
-    conversationFixture.with(id: "2"),
-    conversationFixture.with(id: "3"),
-    conversationFixture.with(id: "4"),
-    conversationFixture.with(id: "5")
+    conversationFixture,
+    conversationFixture.copy { $0.id = "2" },
+    conversationFixture.copy { $0.id = "3" },
+    conversationFixture.copy { $0.id = "4" },
+    conversationFixture.copy { $0.id = "5" }
 ]
 
 let conversationUiFixture = ConversationUi(

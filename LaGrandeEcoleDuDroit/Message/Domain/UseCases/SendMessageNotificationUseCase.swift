@@ -11,7 +11,7 @@ class SendMessageNotificationUseCase {
         self.userRepository = userRepository
     }
     
-    func execute(notification: NotificationMessage) async {
+    func execute(notification: MessageNotification) async {
         guard let currentUser = userRepository.currentUser else {
             e(tag, "Error sending notification: Current user not found")
             return

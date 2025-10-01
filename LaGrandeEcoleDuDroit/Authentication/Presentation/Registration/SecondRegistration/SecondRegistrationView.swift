@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SecondRegistrationDestination: View {
-    @StateObject private var viewModel: SecondRegistrationViewModel = AuthenticationInjection.shared.resolve(SecondRegistrationViewModel.self)
+    @StateObject private var viewModel = AuthenticationMainThreadInjector.shared.resolve(SecondRegistrationViewModel.self)
     let firstName: String
     let lastName: String
     let onNextClick: (SchoolLevel) -> Void

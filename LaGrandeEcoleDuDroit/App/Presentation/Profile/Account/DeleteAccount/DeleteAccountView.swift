@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DeleteAccountDestination: View {
-    @StateObject private var viewModel = MainInjection.shared.resolve(DeleteAccountViewModel.self)
+    @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(DeleteAccountViewModel.self)
     @State private var errorMessage: String = ""
     @State private var showErrorAlert: Bool = false
     

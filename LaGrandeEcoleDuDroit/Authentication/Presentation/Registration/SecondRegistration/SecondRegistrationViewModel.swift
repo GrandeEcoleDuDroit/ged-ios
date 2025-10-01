@@ -1,7 +1,7 @@
 import SwiftUI
 import Combine
 
-class SecondRegistrationViewModel: ObservableObject {
+class SecondRegistrationViewModel: ViewModel {
     @Published var schoolLevel: SchoolLevel
     let schoolLevels: [SchoolLevel] = SchoolLevel.allCases
     

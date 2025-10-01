@@ -1,7 +1,7 @@
 import SwiftUI
 import Combine
 
-class FirstRegistrationViewModel: ObservableObject {
+class FirstRegistrationViewModel: ViewModel {
     @Published var uiState: FirstRegistrationUiState = FirstRegistrationUiState()
     
     func onFirstNameChanged(_ firstName: String) {
@@ -22,13 +22,13 @@ class FirstRegistrationViewModel: ObservableObject {
     }
     
     private func validName(_ name: String) -> String {
-        return name.filter { $0.isLetter || $0 == " " || $0 == "-" }
+        name.filter { $0.isLetter || $0 == " " || $0 == "-" }
     }
     
     struct FirstRegistrationUiState {
         var firstName: String = ""
         var lastName: String = ""
-        var firstNameError: String? = nil
-        var lastNameError: String? = nil
+        fileprivate(set) var firstNameError: String? = nil
+        fileprivate(set) var lastNameError: String? = nil
     }
 }

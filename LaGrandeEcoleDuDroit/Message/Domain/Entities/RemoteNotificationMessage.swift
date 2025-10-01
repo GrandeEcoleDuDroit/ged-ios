@@ -1,6 +1,6 @@
 struct RemoteNotificationMessage: Codable {
     let conversation: RemoteNotificationMessage.Conversation
-    let message: NotificationMessage.MessageContent
+    let message: MessageNotification.MessageContent
     
     struct Conversation: Codable {
         let id: String

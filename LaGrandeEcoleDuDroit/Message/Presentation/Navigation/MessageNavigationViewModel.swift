@@ -1,11 +1,11 @@
 import Combine
 import Foundation
 
-class MessageNavigationViewModel: ObservableObject {
+class MessageNavigationViewModel: ViewModel {
     private let routeRepository: RouteRepository
     private let navigationRequestUseCase: NavigationRequestUseCase
     
-    @Published var routeToNavigate: RouteToNavigate?
+    @Published fileprivate(set) var routeToNavigate: RouteToNavigate?
     private var cancellables: Set<AnyCancellable> = []
     
     init(

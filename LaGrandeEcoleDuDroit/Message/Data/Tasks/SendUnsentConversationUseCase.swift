@@ -4,6 +4,7 @@ class SendUnsentConversationUseCase {
     private let conversationRepository: ConversationRepository
     private let messageRepository: MessageRepository
     private let userRepository: UserRepository
+    
     private let tag = String(describing: SendUnsentConversationUseCase.self)
     
     init(
@@ -31,8 +32,7 @@ class SendUnsentConversationUseCase {
                         if let deleteTime = conversation.deleteTime {
                             try await self.conversationRepository.deleteConversation(
                                 conversation: conversation,
-                                userId: userId,
-                                deleteTime: deleteTime
+                                userId: userId
                             )
                             try await self.messageRepository.deleteLocalMessages(conversationId: conversation.id)
                         }

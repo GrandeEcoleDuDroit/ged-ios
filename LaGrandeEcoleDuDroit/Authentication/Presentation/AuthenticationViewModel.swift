@@ -1,12 +1,12 @@
 import SwiftUI
 import Combine
 
-class AuthenticationViewModel: ObservableObject {
+class AuthenticationViewModel: ViewModel {
+    private let loginUseCase: LoginUseCase
+    private var cancellables: Set<AnyCancellable> = []
+
     @Published var uiState: AuthenticationUiState = AuthenticationUiState()
     @Published private(set) var event: SingleUiEvent? = nil
-    
-    private var cancellables: Set<AnyCancellable> = []
-    private let loginUseCase: LoginUseCase
     
     init(loginUseCase: LoginUseCase) {
         self.loginUseCase = loginUseCase
@@ -14,28 +14,28 @@ class AuthenticationViewModel: ObservableObject {
     
     func login() {
         let (email, password) = (uiState.email, uiState.password)
-        guard validateInputs(email: email, password: password) else { return }
+        guard validateInputs(email: email, password: password) else {
+            return
+        }
+        
         uiState.loading = true
         
-        Task {
+        Task { [weak self] in
             do {
-                try await loginUseCase.execute(email: email, password: password)
-            }
-            catch let error as NetworkError {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                    switch error {
-                        case .noInternetConnection: self?.event = ErrorEvent(message: getString(.noInternetConectionError))
-                        default: self?.uiState.errorMessage = self?.mapErrorMessage(error)
-                    }
-                    self?.uiState.password = ""
+                try await self?.loginUseCase.execute(email: email, password: password)
+            } catch let error as NetworkError {
+                self?.uiState.loading = false
+                switch error {
+                    case .noInternetConnection:
+                        self?.event = ErrorEvent(message: getString(.noInternetConectionError))
+                    default:
+                        self?.uiState.errorMessage = self?.mapErrorMessage(error)
                 }
+                self?.uiState.password = ""
             } catch {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                    self?.uiState.errorMessage = self?.mapErrorMessage(error)
-                    self?.uiState.password = ""
-                }
+                self?.uiState.loading = false
+                self?.uiState.errorMessage = self?.mapErrorMessage(error)
+                self?.uiState.password = ""
             }
         }
     }

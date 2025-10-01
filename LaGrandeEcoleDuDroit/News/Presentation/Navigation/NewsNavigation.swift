@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct NewsNavigation: View {
-    private let viewModel = NewsInjection.shared.resolve(NewsNavigationViewModel.self)
+    private let viewModel = NewsInjector.shared.resolve(NewsNavigationViewModel.self)
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
     @State var path: [NewsRoute] = []
 

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MessageNavigation: View {
-    @StateObject private var viewModel = MessageInjection.shared.resolve(MessageNavigationViewModel.self)
+    @StateObject private var viewModel = MessageMainThreadInjector.shared.resolve(MessageNavigationViewModel.self)
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
     @State var path: [MessageRoute] = []
     
