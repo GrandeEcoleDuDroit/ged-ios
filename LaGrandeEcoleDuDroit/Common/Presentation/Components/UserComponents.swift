@@ -1,27 +1,33 @@
 import SwiftUI
 
-struct UserItem: View {
+struct UserItem<TrailingContent: View>: View {
     let user: User
-    let onClick: () -> Void
+    let trailingContent: () -> TrailingContent
+
+    init(
+        user: User,
+        @ViewBuilder trailingContent: @escaping () -> TrailingContent = { EmptyView() }
+    ) {
+        self.user = user
+        self.trailingContent = trailingContent
+    }
     
     var body: some View {
-        Clickable(action: onClick) {
-            HStack(alignment: .center) {
-                ProfilePicture(
-                    url: user.profilePictureUrl,
-                    scale: 0.5
-                )
-                
-                Text(user.fullName)
-                    .fontWeight(.medium)
-            }
-            .padding(.vertical, GedSpacing.small)
-            .padding(.horizontal)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        HStack(alignment: .center) {
+            ProfilePicture(
+                url: user.profilePictureUrl,
+                scale: 0.5
+            )
+            Text(user.fullName)
+            Spacer()
+            trailingContent()
         }
+        .padding(.vertical, GedSpacing.small)
+        .padding(.horizontal)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
 #Preview {
-    UserItem(user: userFixture, onClick: {})
+    UserItem(user: userFixture)
 }

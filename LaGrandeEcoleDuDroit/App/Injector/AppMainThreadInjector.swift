@@ -47,5 +47,13 @@ class AppMainThreadInjector: MainThreadInjector {
                 deleteUserAccountUseCase: AppInjector.shared.resolve(DeleteUserAccountUseCase.self)
             )
         }
+        
+        container.register(BlockedUsersViewModel.self) { resolver in
+            BlockedUsersViewModel(
+                blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self),
+                userRepository: CommonInjector.shared.resolve(UserRepository.self),
+                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
+            )
+        }
     }
 }

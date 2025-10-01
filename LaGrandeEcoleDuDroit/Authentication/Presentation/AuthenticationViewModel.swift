@@ -20,7 +20,7 @@ class AuthenticationViewModel: ViewModel {
         
         uiState.loading = true
         
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             do {
                 try await self?.loginUseCase.execute(email: email, password: password)
             } catch let error as NetworkError {

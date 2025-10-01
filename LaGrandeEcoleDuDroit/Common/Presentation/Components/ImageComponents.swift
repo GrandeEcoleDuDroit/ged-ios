@@ -5,7 +5,7 @@ struct ProfilePicture: View {
     var scale: CGFloat = 1.0
    
     var body: some View {
-        if let url = url {
+        if let url {
             AsyncImage(url: URL(string: url)) { phase in
                 switch phase {
                     case .empty:
@@ -39,7 +39,7 @@ struct ClickableProfilePicture: View {
     let onClick: () -> Void
     
     var body: some View {
-        if let url = url {
+        if let url {
             AsyncImage(url: URL(string: url)) { phase in
                 switch phase {
                     case .empty:
@@ -85,7 +85,7 @@ struct ClickableProfilePictureImage: View {
     var scale: CGFloat = 1.0
     
     var body: some View {
-        if let image = image {
+        if let image {
             Clickable(action: onClick) {
                 Image(uiImage: image)
                     .resizable()

@@ -3,6 +3,7 @@ import SwiftUI
 struct ProfileDestination: View {
     let onAccountInfosClick: () -> Void
     let onAccountClick: () -> Void
+    let onPrivacyClick: () -> Void
     
     @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(ProfileViewModel.self)
     
@@ -11,6 +12,7 @@ struct ProfileDestination: View {
             user: viewModel.uiState.user,
             onAccountInfosClick: onAccountInfosClick,
             onAccountClick: onAccountClick,
+            onPrivacyClick: onPrivacyClick,
             onLogoutClick: viewModel.logout
         )
     }
@@ -20,12 +22,14 @@ private struct ProfileView: View {
     let user: User?
     let onAccountInfosClick: () -> Void
     let onAccountClick: () -> Void
+    let onPrivacyClick: () -> Void
     let onLogoutClick: () -> Void
+    
     @State private var showLogoutAlert: Bool = false
 
     var body: some View {
         ZStack {
-            if let user = user {
+            if let user {
                 List {
                     Section {
                         Button(
@@ -56,6 +60,14 @@ private struct ProfileView: View {
                             onClick: onAccountClick
                         )
                         
+                        MenuItem(
+                            icon: Image(systemName: "lock"),
+                            title: getString(.privacy),
+                            onClick: onPrivacyClick
+                        )
+                    }
+                    
+                    Section {
                         ClickableTextItem(
                             icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
                             text: Text(getString(.logout)),
@@ -94,6 +106,7 @@ private struct ProfileView: View {
             user: userFixture,
             onAccountInfosClick: {},
             onAccountClick: {},
+            onPrivacyClick: {},
             onLogoutClick: {}
         )
         .background(.listBackground)

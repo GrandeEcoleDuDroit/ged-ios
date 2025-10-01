@@ -33,7 +33,7 @@ class AccountInformationViewModel: ViewModel {
         
         uiState.loading = true
         
-        Task {  [weak self] in
+        Task { @MainActor [weak self] in
             do {
                 try await self?.updateProfilePictureUseCase.execute(user: user, imageData: imageData)
                 self?.resetValues()
@@ -54,7 +54,7 @@ class AccountInformationViewModel: ViewModel {
         
         uiState.loading = true
         
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             do {
                 if let url = user.profilePictureUrl {
                     try await self?.deleteProfilePictureUseCase.execute(userId: user.id, profilePictureUrl: url)

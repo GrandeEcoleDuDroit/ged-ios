@@ -109,7 +109,7 @@ class ChatViewModel: ViewModel {
     }
     
     func deleteErrorMessage(_ message: Message) {
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             do {
                 try await self?.messageRepository.deleteLocalMessage(message: message)
             } catch {
@@ -125,7 +125,7 @@ class ChatViewModel: ViewModel {
         
         uiState.loading = true
         
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             do {
                 try await self?.messageRepository.reportMessage(report: report)
                 self?.uiState.loading = false
@@ -137,8 +137,11 @@ class ChatViewModel: ViewModel {
     }
     
     private func getMessages(offset: Int) {
-        Task {
-            guard let messages = try? await messageRepository.getMessages(
+        Task { @MainActor [weak self] in
+            guard let conversation = self?.conversation else {
+                return
+            }
+            guard let messages = try? await self?.messageRepository.getMessages(
                 conversationId: conversation.id,
                 offset: offset
             ) else {
@@ -146,7 +149,7 @@ class ChatViewModel: ViewModel {
             }
             
             for message in messages {
-                uiState.messageMap[message.id] = message
+                self?.uiState.messageMap[message.id] = message
                 await sleep(0.1)
             }
         }

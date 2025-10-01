@@ -1,3 +1,8 @@
+// App
+"privacy" = "Confidentialité";
+"blocked_users" = "Utilisateurs bloqués";
+"no_blocked_user" = "Aucun utilisateur bloqué";
+
 // Common
 "app_name" = "Grande Ecole du Droit";
 "next" = "Suivant";

@@ -14,16 +14,16 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
             }
             
             user.getIDTokenResult() { result, error in
-                if let result = result, result.expirationDate > Date() {
+                if let result, result.expirationDate > Date() {
                     continuation.resume(returning: result.token)
                 } else {
                     user.getIDTokenResult(forcingRefresh: true) { refreshedResult, error in
-                        if let error = error {
+                        if let error {
                             continuation.resume(throwing: error)
                             return
                         }
                         
-                        if let refreshedResult = refreshedResult {
+                        if let refreshedResult {
                             continuation.resume(returning: refreshedResult.token)
                         } else {
                             continuation.resume(returning: nil)
@@ -39,7 +39,7 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
             Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
                 if authResult != nil {
                     continuation.resume()
-                } else if let error = error {
+                } else if let error {
                     continuation.resume(throwing: error)
                 }
             }
@@ -49,7 +49,7 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
     func signUp(email: String, password: String) async throws -> String {
         try await withCheckedThrowingContinuation { continuation in
             Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
                 } else {
                     continuation.resume(returning: (authResult?.user.uid)!)
@@ -82,7 +82,7 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
             }
             
             user.getIDTokenResult(forcingRefresh: false) { result, error in
-                if let result = result, result.expirationDate > Date() {
+                if let result, result.expirationDate > Date() {
                     completion(result.token)
                 } else {
                     user.getIDTokenResult(forcingRefresh: true) { refreshedResult, error in
@@ -102,7 +102,7 @@ class FirebaseAuthApiImpl: FirebaseAuthApi {
             }
             
             user.delete { error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
                 } else {
                     continuation.resume()

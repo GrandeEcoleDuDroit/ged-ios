@@ -30,7 +30,7 @@ class ThirdRegistrationViewModel: ViewModel {
         
         uiState.loading = true
         
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             do {
                 try await self?.registerUseCase.execute(
                     email: email,

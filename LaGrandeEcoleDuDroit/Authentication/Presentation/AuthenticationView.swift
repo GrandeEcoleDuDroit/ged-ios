@@ -126,7 +126,7 @@ private struct CredentialsInputs: View {
                 errorMessage: passwordError
             )
             
-            if let errorMessage = errorMessage {
+            if let errorMessage {
                 Text(errorMessage)
                     .font(.callout)
                     .foregroundStyle(.error)

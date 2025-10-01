@@ -9,7 +9,8 @@ struct ProfileNavigation: View {
         NavigationStack(path: $path) {
             ProfileDestination(
                 onAccountInfosClick: { path.append(.accountInfos) },
-                onAccountClick: { path.append(.account) }
+                onAccountClick: { path.append(.account) },
+                onPrivacyClick: { path.append(.privacy) }
             )
             .onAppear {
                 tabBarVisibility.show = true
@@ -26,15 +27,45 @@ struct ProfileNavigation: View {
                             .background(.listBackground)
                         
                     case .account:
-                        AccountDestination(onDeleteAccountClick: { path.append(.deleteAccount) })
+                        AccountDestination(
+                            onDeleteAccountClick: { path.append(.deleteAccount) }
+                        )
+                        .onAppear {
+                            tabBarVisibility.show = false
+                            viewModel.setCurrentRoute(route)
+                        }
+                        .background(.listBackground)
+                        
+                    case .deleteAccount:
+                        DeleteAccountDestination()
                             .onAppear {
                                 tabBarVisibility.show = false
                                 viewModel.setCurrentRoute(route)
                             }
                             .background(.listBackground)
                         
-                    case .deleteAccount:
-                        DeleteAccountDestination()
+                    case .privacy:
+                        PrivacyDestination(
+                            onBlockedUsersClick: { path.append(.blockedUsers) }
+                        )
+                        .onAppear {
+                            tabBarVisibility.show = false
+                            viewModel.setCurrentRoute(route)
+                        }
+                        .background(.listBackground)
+                        
+                    case .blockedUsers:
+                        BlockedUserDestination(
+                            onAccountClick: { path.append(.user($0)) }
+                        )
+                        .onAppear {
+                            tabBarVisibility.show = false
+                            viewModel.setCurrentRoute(route)
+                        }
+                        .background(.listBackground)
+                        
+                    case let .user(user):
+                        UserDestination(user: user)
                             .onAppear {
                                 tabBarVisibility.show = false
                                 viewModel.setCurrentRoute(route)
@@ -50,6 +81,9 @@ enum ProfileRoute: Route {
     case accountInfos
     case account
     case deleteAccount
+    case privacy
+    case blockedUsers
+    case user(User)
 }
 
 enum ProfileMainRoute: MainRoute {

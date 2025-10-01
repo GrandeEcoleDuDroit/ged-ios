@@ -28,14 +28,16 @@ class SendUnsentConversationUseCase {
                 switch conversation.state {
                     case .creating:
                         try await self.conversationRepository.createRemoteConversation(conversation: conversation, userId: userId)
+                    
                     case .deleting:
-                        if let deleteTime = conversation.deleteTime {
+                        if conversation.deleteTime != nil {
                             try await self.conversationRepository.deleteConversation(
                                 conversation: conversation,
                                 userId: userId
                             )
                             try await self.messageRepository.deleteLocalMessages(conversationId: conversation.id)
                         }
+                    
                     default: break
                 }
             }
