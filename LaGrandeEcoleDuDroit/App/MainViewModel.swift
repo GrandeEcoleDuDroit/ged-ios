@@ -32,11 +32,13 @@ class MainViewModel: ObservableObject {
             .sink { [weak self] authenticated in
                 if authenticated {
                     self?.listenDataUseCase.start()
-                    Task { await self?.synchronizeDataUseCase.execute() }
+                    Task {
+                        await self?.synchronizeDataUseCase.execute()
+                    }
                 } else {
                     self?.listenDataUseCase.stop()
                     Task {
-                        try? await Task.sleep(nanoseconds: 2_000_000_000)
+                        await sleep(2)
                         await self?.clearDataUseCase.execute()
                     }
                 }

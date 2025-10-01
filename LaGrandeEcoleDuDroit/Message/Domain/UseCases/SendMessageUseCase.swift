@@ -18,36 +18,33 @@ class SendMessageUseCase {
         self.sendMessageNotificationUseCase = sendMessageNotificationUseCase
     }
     
-    func execute(conversation: Conversation, message: Message, userId: String) {
-        Task {
-            do {
-                try await createDataLocally(conversation: conversation, message: message)
-                try await createDataRemotely(conversation: conversation, message: message, userId: userId)
-                await sendMessageNotificationUseCase.execute(
-                    notification: NotificationMessage(
-                        conversation: conversation,
-                        message: NotificationMessage.MessageContent(
-                            content: message.content,
-                            date: message.date.toEpochMilli()
-                        )
-                    )
+    func execute(conversation: Conversation, message: Message, userId: String) async {
+        do {
+            try await createDataLocally(conversation: conversation, message: message)
+            try await createDataRemotely(conversation: conversation, message: message, userId: userId)
+            let messageNotification = MessageNotification(
+                conversation: conversation,
+                message: MessageNotification.MessageContent(
+                    content: message.content,
+                    date: message.date.toEpochMilli()
                 )
-            } catch {
-                if conversation.state == .draft {
-                    try await conversationRepository.updateLocalConversation(conversation: conversation.with(state: .error))
-                }
-                try await messageRepository.upsertLocalMessage(message: message.with(state: .error))
+            )
+            await sendMessageNotificationUseCase.execute(notification: messageNotification)
+        } catch {
+            if conversation.state == .draft {
+                try? await conversationRepository.updateLocalConversation(conversation: conversation.copy { $0.state = .error })
             }
+            try? await messageRepository.upsertLocalMessage(message: message.copy { $0.state = .error })
         }
     }
     
     private func createDataLocally(conversation: Conversation, message: Message) async throws {
         if conversation.state == .draft {
-            try await conversationRepository.createLocalConversation(conversation: conversation.with(state: .creating))
+            try await conversationRepository.createLocalConversation(conversation: conversation.copy { $0.state = .creating })
         }
         
         if message.state == .draft {
-            try await messageRepository.createLocalMessage(message: message.with(state: .sending))
+            try await messageRepository.createLocalMessage(message: message.copy { $0.state = .sending })
         }
     }
     

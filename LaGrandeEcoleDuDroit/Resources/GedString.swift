@@ -37,6 +37,7 @@ enum GedString: String {
     case unknownError = "unknown_error"
     case unknownNetworkError = "unknown_network_error"
     case userNotFoundError = "user_not_found_error"
+    case cannotConnectToHostError = "cannot_connect_to_host_error"
     
     // Authentication
     case authenticationPageTitle = "authentication_page_title"
@@ -84,9 +85,6 @@ enum GedString: String {
     case announcementCreated = "announcement_created"
     case noAnnouncement = "no_announcement"
     case deleteAnnouncementAlertTitle = "delete_announcement_alert_title"
-    
-    // News errors
-    case announcement_refresh_error = "announcement_refresh_error"
     
     // Profile
     case profile = "profile"

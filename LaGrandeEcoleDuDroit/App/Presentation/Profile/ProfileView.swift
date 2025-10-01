@@ -4,7 +4,7 @@ struct ProfileDestination: View {
     let onAccountInfosClick: () -> Void
     let onAccountClick: () -> Void
     
-    @StateObject private var viewModel = MainInjection.shared.resolve(ProfileViewModel.self)
+    @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(ProfileViewModel.self)
     
     var body: some View {
         ProfileView(

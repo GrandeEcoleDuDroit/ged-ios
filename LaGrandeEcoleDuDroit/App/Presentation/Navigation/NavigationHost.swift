@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct NavigationHost: View {
-    @StateObject private var viewModel = MainInjection.shared.resolve(NavigationHostViewModel.self)
+    @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(NavigationHostViewModel.self)
    
     var body: some View {
         ZStack {

@@ -205,13 +205,13 @@ struct NewMessageIndicator: View {
                 )
                 
                 SentMessageItem(
-                    message: messageFixture.with(state: .error),
+                    message: messageFixture.copy { $0.state = .error },
                     showSeen: false,
                     onClick: {}
                 )
                 
                 SentMessageItem(
-                    message: messageFixture.with(state: .sending),
+                    message: messageFixture.copy { $0.state = .sending },
                     showSeen: false,
                     onClick: {}
                 )

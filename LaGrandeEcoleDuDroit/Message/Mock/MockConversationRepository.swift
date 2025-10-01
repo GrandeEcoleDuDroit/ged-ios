@@ -28,7 +28,7 @@ class MockConversationRepository: ConversationRepository {
     
     func deleteLocalConversations() async throws {}
     
-    func deleteConversation(conversation: Conversation, userId: String, deleteTime: Date) async throws {}
+    func deleteConversation(conversation: Conversation, userId: String) async throws {}
     
     func stopListenConversations() {}
 }

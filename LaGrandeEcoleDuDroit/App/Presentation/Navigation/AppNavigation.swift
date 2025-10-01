@@ -3,7 +3,7 @@ import SwiftUI
 import Foundation
 
 struct AppNavigation: View {
-    @StateObject private var viewModel: AppNavigationViewModel = MainInjection.shared.resolve(AppNavigationViewModel.self)
+    @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(AppNavigationViewModel.self)
     @State var selectedTab: TopLevelDestination = .home
     @StateObject private var tabBarVisibility = TabBarVisibility()
     

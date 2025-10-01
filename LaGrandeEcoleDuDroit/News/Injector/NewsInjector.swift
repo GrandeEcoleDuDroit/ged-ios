@@ -1,8 +1,8 @@
 import Swinject
 
-class NewsInjection: DependencyInjectionContainer {
-    static var shared: DependencyInjectionContainer = NewsInjection()
-    private let container: Container
+class NewsInjector: Injector {
+    static var shared: Injector = NewsInjector()
+    let container: Container
     
     private init() {
         container = Container()
@@ -12,7 +12,7 @@ class NewsInjection: DependencyInjectionContainer {
     private func registerDependencies() {
         // Api
         container.register(AnnouncementApi.self) { _ in
-            AnnouncementApiImpl(tokenProvider: MainInjection.shared.resolve(TokenProvider.self))
+            AnnouncementApiImpl(tokenProvider: AppInjector.shared.resolve(TokenProvider.self))
         }.inObjectScope(.container)
         
         // Data sources
@@ -21,7 +21,7 @@ class NewsInjection: DependencyInjectionContainer {
         }.inObjectScope(.container)
         
         container.register(AnnouncementLocalDataSource.self) { resolver in
-            AnnouncementLocalDataSource(gedDatabaseContainer: CommonInjection.shared.resolve(GedDatabaseContainer.self))
+            AnnouncementLocalDataSource(gedDatabaseContainer: CommonInjector.shared.resolve(GedDatabaseContainer.self))
         }.inObjectScope(.container)
         
         // Repositories
@@ -40,14 +40,13 @@ class NewsInjection: DependencyInjectionContainer {
         container.register(DeleteAnnouncementUseCase.self) { resolver in
             DeleteAnnouncementUseCase(
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
             )
         }.inObjectScope(.container)
         
         container.register(ResendAnnouncementUseCase.self) { resolver in
             ResendAnnouncementUseCase(
-                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!
             )
         }.inObjectScope(.container)
         
@@ -60,51 +59,14 @@ class NewsInjection: DependencyInjectionContainer {
         container.register(SynchronizeAnnouncementsUseCase.self) { resolver in
             SynchronizeAnnouncementsUseCase(
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                blockedUserRepository: CommonInjection.shared.resolve(BlockedUserRepository.self)
+                blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self)
             )
         }
         
-        // View models
-        container.register(NewsViewModel.self) { resolver in
-            NewsViewModel(
-                userRepository: CommonInjection.shared.resolve(UserRepository.self),
-                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
-                resendAnnouncementUseCase: resolver.resolve(ResendAnnouncementUseCase.self)!,
-                refreshAnnouncementsUseCase: resolver.resolve(RefreshAnnouncementsUseCase.self)!,
-                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
-            )
-        }
-        
-        container.register(ReadAnnouncementViewModel.self) { (resolver, announcementId: Any) in
-            let announcementId = announcementId as! String
-            return ReadAnnouncementViewModel(
-                announcementId: announcementId,
-                userRepository: CommonInjection.shared.resolve(UserRepository.self),
-                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                deleteAnnouncementUseCase: resolver.resolve(DeleteAnnouncementUseCase.self)!,
-                networkMonitor: CommonInjection.shared.resolve(NetworkMonitor.self)
-            )
-        }
-        
-        container.register(CreateAnnouncementViewModel.self) { resolver in
-            CreateAnnouncementViewModel(
-                createAnnouncementUseCase: resolver.resolve(CreateAnnouncementUseCase.self)!,
-                userRepository: CommonInjection.shared.resolve(UserRepository.self),
-            )
-        }
-        
-        container.register(EditAnnouncementViewModel.self) { (resolver, announcement: Any) in
-            let announcement = announcement as! Announcement
-            return EditAnnouncementViewModel(
-                announcement: announcement,
-                announcementRepository: resolver.resolve(AnnouncementRepository.self)!
-            )
-        }
-        
+        // ViewModels
         container.register(NewsNavigationViewModel.self) { resolver in
             NewsNavigationViewModel(
-                routeRepository: CommonInjection.shared.resolve(RouteRepository.self)
+                routeRepository: CommonInjector.shared.resolve(RouteRepository.self)
             )
         }
     }

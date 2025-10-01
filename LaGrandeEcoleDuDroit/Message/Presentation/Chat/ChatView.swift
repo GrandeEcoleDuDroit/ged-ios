@@ -17,7 +17,7 @@ struct ChatDestination: View {
     ) {
         self.conversation = conversation
         _viewModel = StateObject(
-            wrappedValue: MessageInjection.shared.resolve(ChatViewModel.self, arguments: conversation)!
+            wrappedValue: MessageMainThreadInjector.shared.resolve(ChatViewModel.self, arguments: conversation)!
         )
         self.onBackClick = onBackClick
         self.onInterlocutorClick = onInterlocutorClick
@@ -26,8 +26,8 @@ struct ChatDestination: View {
     var body: some View {
         ChatView(
             conversation: conversation,
-            messages: viewModel.uiState.messages.values.map(\.self).sorted { $0.date < $1.date },
-            text: $viewModel.uiState.text,
+            messages: viewModel.uiState.messages,
+            messageText: $viewModel.uiState.messageText,
             loading: viewModel.uiState.loading,
             onSendMessagesClick: viewModel.sendMessage,
             onBackClick: onBackClick,
@@ -59,7 +59,7 @@ struct ChatDestination: View {
 private struct ChatView: View {
     let conversation: Conversation
     let messages: [Message]
-    @Binding var text: String
+    @Binding var messageText: String
     let loading: Bool
     let onSendMessagesClick: () -> Void
     let onBackClick: () -> Void
@@ -95,7 +95,7 @@ private struct ChatView: View {
             )
             
             MessageInput(
-                text: $text,
+                text: $messageText,
                 inputFocused: $inputFocused,
                 onSendClick: onSendMessagesClick
             )
@@ -240,7 +240,7 @@ private struct ReceivedMessageBottomSheet: View {
         ChatView(
             conversation: conversationFixture,
             messages: messagesFixture,
-            text: .constant(""),
+            messageText: .constant(""),
             loading: false,
             onSendMessagesClick: {},
             onBackClick: {},

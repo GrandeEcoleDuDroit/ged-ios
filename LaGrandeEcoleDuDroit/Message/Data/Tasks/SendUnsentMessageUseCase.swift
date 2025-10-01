@@ -13,7 +13,7 @@ class SendUnsentMessageUseCase {
             let messages = try await messageRepository.getUnsentMessages()
             for message in messages {
                 try await messageRepository.createRemoteMessage(message: message)
-                try await messageRepository.updateLocalMessage(message: message.with(state: .sent))
+                try await messageRepository.updateLocalMessage(message: message.copy { $0.state = .sent })
             }
         } catch {
             e(tag, "Failed to send unsent messages: \(error.localizedDescription)", error)

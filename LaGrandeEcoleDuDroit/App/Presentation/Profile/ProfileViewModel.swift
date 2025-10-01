@@ -1,12 +1,12 @@
 import Foundation
 import Combine
 
-class ProfileViewModel: ObservableObject {
+class ProfileViewModel: ViewModel {
     private let userRepository: UserRepository
     private let authenticationRepository: AuthenticationRepository
-    private var cancellables: Set<AnyCancellable> = []
     
-    @Published var uiState: ProfileUiState = ProfileUiState()
+    @Published private(set) var uiState: ProfileUiState = ProfileUiState()
+    private var cancellables: Set<AnyCancellable> = []
 
     init(
         userRepository: UserRepository,

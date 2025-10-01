@@ -37,6 +37,7 @@
 "timeout_error" = "Le serveur a mis trop de temps à répondre. Veuillez réessayer.";
 "server_connection_error" = "Impossible de se connecter au serveur.";
 "empty_inputs_error" = "Veuillez remplir tous les champs.";
+"cannot_connect_to_host_error" = "Impossible de se connecter au serveur.";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";

@@ -1,9 +1,10 @@
 import Combine
 import Foundation
 
-class NavigationHostViewModel: ObservableObject {
+class NavigationHostViewModel: ViewModel {
     private let listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase
-    @Published var uiState: NavigationHostUiState = NavigationHostUiState()
+    
+    @Published private(set) var uiState: NavigationHostUiState = NavigationHostUiState()
     private var cancellables: Set<AnyCancellable> = []
 
     init(listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase) {

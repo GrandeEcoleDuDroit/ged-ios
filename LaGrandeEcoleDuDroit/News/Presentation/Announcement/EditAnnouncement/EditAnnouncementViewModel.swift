@@ -1,11 +1,11 @@
 import Foundation
 
-class EditAnnouncementViewModel: ObservableObject {
+class EditAnnouncementViewModel: ViewModel {
     private let announcement: Announcement
     private let announcementRepository: AnnouncementRepository
 
     @Published var uiState: EditAnnouncementUiState = EditAnnouncementUiState()
-    @Published var event: SingleUiEvent? = nil
+    @Published private(set) var event: SingleUiEvent? = nil
     
     init(
         announcement: Announcement,
@@ -17,7 +17,7 @@ class EditAnnouncementViewModel: ObservableObject {
     }
     
     private func initUiState() {
-        uiState.title = announcement.title ?? ""
+        uiState.title = announcement.title.toString()
         uiState.content = announcement.content
     }
     
@@ -33,22 +33,24 @@ class EditAnnouncementViewModel: ObservableObject {
     
     func updateAnnouncement() {
         uiState.loading = true
-        Task {
+        let title = uiState.title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let content = uiState.content.trimmingCharacters(in: .whitespacesAndNewlines)
+                                                         
+        Task { [weak self] in
             do {
-                let updatedAnnouncement = announcement.with(
-                    title: uiState.title.trimmingCharacters(in: .whitespacesAndNewlines),
-                    content: uiState.content.trimmingCharacters(in: .whitespacesAndNewlines)
-                )
-                try await announcementRepository.updateAnnouncement(announcement: updatedAnnouncement)
-                updateEvent(SuccessEvent())
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
+                guard let announcement = self?.announcement.copy({
+                    $0.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+                    $0.content = content.trimmingCharacters(in: .whitespacesAndNewlines)
+                }) else {
+                    return
                 }
+
+                try await self?.announcementRepository.updateAnnouncement(announcement: announcement)
+                self?.event = SuccessEvent()
+                self?.uiState.loading = false
             } catch {
-                updateEvent(ErrorEvent(message: mapNetworkErrorMessage(error)))
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                }
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
+                self?.uiState.loading = false
             }
         }
     }
@@ -58,24 +60,17 @@ class EditAnnouncementViewModel: ObservableObject {
     }
     
     private func validateTitle(_ title: String) -> Bool {
-        let announcementTitle = announcement.title ?? ""
-        return title != announcementTitle && !uiState.content.isBlank
+        title != announcement.title.toString() && !uiState.content.isBlank
     }
     
     private func validateContent(_ content: String) -> Bool {
         content != announcement.content && !uiState.content.isBlank
     }
     
-    private func updateEvent(_ event: SingleUiEvent) {
-        DispatchQueue.main.sync { [weak self] in
-            self?.event = event
-        }
-    }
-    
     struct EditAnnouncementUiState {
         var title: String = ""
         var content: String = ""
-        var loading: Bool = false
-        var enableUpdate: Bool = false
+        fileprivate(set) var loading: Bool = false
+        fileprivate(set) var enableUpdate: Bool = false
     }
 }
