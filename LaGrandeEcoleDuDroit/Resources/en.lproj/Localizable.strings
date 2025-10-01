@@ -41,6 +41,7 @@
 "unknown_error" = "An unknown error has occured.";
 "user_not_found_error" = "User not found. Please re-authenticate.";
 "empty_inputs_error" = "Please fill out all fields.";
+"cannot_connect_to_host_error" = "Could not connect to the server.";
 
 // Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";

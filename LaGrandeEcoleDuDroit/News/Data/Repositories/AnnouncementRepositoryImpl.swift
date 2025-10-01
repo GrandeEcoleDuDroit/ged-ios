@@ -5,12 +5,12 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
     private let tag = String(describing: AnnouncementRepositoryImpl.self)
     private let announcementLocalDataSource: AnnouncementLocalDataSource
     private let announcementRemoteDataSource: AnnouncementRemoteDataSource
+    
     private var cancellables: Set<AnyCancellable> = []
     private var announcementsSubject = CurrentValueSubject<[Announcement], Never>([])
     var announcements: AnyPublisher<[Announcement], Never> {
         announcementsSubject.eraseToAnyPublisher()
     }
-    
     var currentAnnouncements: [Announcement] {
         announcementsSubject.value
     }
@@ -35,10 +35,9 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
     
     private func loadAnnouncements() {
         Task {
-            guard let announcements = try? await announcementLocalDataSource.getAnnouncements() else {
-                return
+            if let announcements = try? await announcementLocalDataSource.getAnnouncements() {
+                announcementsSubject.send(announcements)
             }
-            announcementsSubject.send(announcements)
         }
     }
     

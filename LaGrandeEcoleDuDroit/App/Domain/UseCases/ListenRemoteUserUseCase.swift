@@ -47,8 +47,6 @@ class ListenRemoteUserUseCase {
             .store(in: &cancellables)
     }
 
-
-    
     func stop() {
         cancellables.forEach { $0.cancel() }
         cancellables.removeAll()

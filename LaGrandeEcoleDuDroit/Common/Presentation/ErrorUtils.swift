@@ -9,6 +9,7 @@ func mapNetworkErrorMessage(
             case .notConnectedToInternet,
                     .cannotFindHost,
                     .networkConnectionLost: getString(.noInternetConectionError)
+            case .cannotConnectToHost: getString(.cannotConnectToHostError)
             case .timedOut: getString(.timeOutError)
             default: specificMap()
         }

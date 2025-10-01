@@ -6,9 +6,8 @@ class ListenRemoteMessagesUseCase {
     private let conversationRepository: ConversationRepository
     private let messageRepository: MessageRepository
     private let blockedUserRepository: BlockedUserRepository
-    private let messageCancellablesQueue = DispatchQueue(label: "messageCancellablesQueue")
 
-    private var messageCancellables: [String: AnyCancellable] = [:]
+    private let messageCancellable: MessageCancellable = MessageCancellable()
     private let tag = String(describing: ListenRemoteMessagesUseCase.self)
     
     init(
@@ -24,31 +23,33 @@ class ListenRemoteMessagesUseCase {
     }
     
     func start(conversation: Conversation) {
-        messageCancellables[conversation.interlocutor.id]?.cancel()
-        updateMessageCancellables(for: conversation)
+        Task {
+            await messageCancellable.cancelAndRemove(forKey: conversation.id)
+            updateMessageCancellables(for: conversation)
+        }
     }
     
     func stop(userId: String) {
-        messageCancellables[userId]?.cancel()
-        messageCancellables.removeValue(forKey: userId)
+        Task {
+            await messageCancellable.cancelAndRemove(forKey: userId)
+        }
     }
     
     func stopAll() {
         messageRepository.stopListeningMessages()
-        messageCancellables.values.forEach { $0.cancel() }
-        messageCancellables.removeAll()
+        Task {
+            await messageCancellable.cancelAll()
+        }
     }
     
     private func updateMessageCancellables(for conversation: Conversation) {
-        Task {                
+        Task {
             do {
                 let blockedUserIds = blockedUserRepository.getLocalBlockedUserIds()
                 
                 if !blockedUserIds.contains(conversation.interlocutor.id) {
                     let cancellable = try await listenRemoteMessages(conversation)
-                    messageCancellablesQueue.async {
-                        self.messageCancellables[conversation.id] = cancellable
-                    }
+                    await messageCancellable.set(cancellable, forKey: conversation.id)
                 }
             } catch {
                 e(tag, "Failed to listen remote messages for conversation with \(conversation.interlocutor.fullName): \(error)", error)
@@ -73,5 +74,23 @@ class ListenRemoteMessagesUseCase {
         
     private func getOffsetTime(conversation: Conversation, lastMessage: Message?) -> Date? {
         [conversation.deleteTime, lastMessage?.date].compactMap { $0 }.max()
+    }
+}
+
+private actor MessageCancellable {
+    private var cancellables: [String: AnyCancellable] = [:]
+
+    func set(_ cancellable: AnyCancellable, forKey key: String) {
+        cancellables[key] = cancellable
+    }
+    
+    func cancelAndRemove(forKey key: String) {
+        cancellables[key]?.cancel()
+        cancellables.removeValue(forKey: key)
+    }
+    
+    func cancelAll() {
+        cancellables.values.forEach { $0.cancel() }
+        cancellables.removeAll()
     }
 }
