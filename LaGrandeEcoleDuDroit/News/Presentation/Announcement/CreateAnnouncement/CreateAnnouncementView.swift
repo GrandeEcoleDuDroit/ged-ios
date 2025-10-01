@@ -3,7 +3,7 @@ import SwiftUI
 struct CreateAnnouncementDestination: View {
     let onBackClick: () -> Void
     
-    @StateObject private var viewModel: CreateAnnouncementViewModel = NewsInjection.shared.resolve(CreateAnnouncementViewModel.self)
+    @StateObject private var viewModel = NewsMainThreadInjector.shared.resolve(CreateAnnouncementViewModel.self)
     @State private var errorMessage: String = ""
     @State private var showErrorAlert: Bool = false
     

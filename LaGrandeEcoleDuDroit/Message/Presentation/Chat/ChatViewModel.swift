@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class ChatViewModel: ObservableObject {
+class ChatViewModel: ViewModel {
     private var conversation: Conversation
     private let userRepository: UserRepository
     private let messageRepository: MessageRepository
@@ -11,12 +11,11 @@ class ChatViewModel: ObservableObject {
     private let networkMonitor: NetworkMonitor
     private let blockedUserRepository: BlockedUserRepository
     
+    @Published var uiState: ChatUiState = ChatUiState()
+    @Published var event: SingleUiEvent? = nil
     private var cancellables: Set<AnyCancellable> = []
     private let user: User?
     private var offset: Int = 0
-    
-    @Published var uiState: ChatUiState = ChatUiState()
-    @Published var event: SingleUiEvent? = nil
     
     init(
         conversation: Conversation,
@@ -67,29 +66,29 @@ class ChatViewModel: ObservableObject {
                 change.deleted
                     .filter { $0.conversationId == self?.conversation.id }
                     .forEach { message in
-                        self?.uiState.messages[message.id] = nil
+                        self?.uiState.messageMap[message.id] = nil
                     }
             }.store(in: &cancellables)
     }
     
     func sendMessage() {
-        guard !uiState.text.isEmpty, let user = user else {
-            return
-        }
+        guard !uiState.messageText.isEmpty, let user else { return }
         
         let message = Message(
             id: GenerateIdUseCase.intId(),
             senderId: user.id,
             recipientId: conversation.interlocutor.id,
             conversationId: conversation.id,
-            content: uiState.text,
+            content: uiState.messageText,
             date: Date(),
             seen: false,
             state: .draft
         )
         
-        sendMessageUseCase.execute(conversation: conversation, message: message, userId: user.id)
-        uiState.text = ""
+        Task {
+            await sendMessageUseCase.execute(conversation: conversation, message: message, userId: user.id)
+        }
+        uiState.messageText = ""
     }
     
     func loadMoreMessages() {
@@ -98,65 +97,63 @@ class ChatViewModel: ObservableObject {
     }
     
     func resendErrorMessage(_ message: Message) {
-        guard let user = user else {
-            return
-        }
+        guard let user else { return }
         
-        let updatedMessage = message.with(date: Date())
-        sendMessageUseCase.execute(conversation: conversation, message: updatedMessage, userId: user.id)
+        Task {
+            await sendMessageUseCase.execute(
+                conversation: conversation,
+                message: message.copy { $0.date = Date() },
+                userId: user.id
+            )
+        }
     }
     
     func deleteErrorMessage(_ message: Message) {
-        Task {
+        Task { [weak self] in
             do {
-                try await messageRepository.deleteLocalMessage(message: message)
+                try await self?.messageRepository.deleteLocalMessage(message: message)
             } catch {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.event = ErrorEvent(message: getString(.unknownError))
-                }
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
             }
         }
     }
     
-    func reportMessage(report: MessageReport) {
+    func reportMessage(_ report: MessageReport) {
         guard networkMonitor.isConnected else {
             return event = ErrorEvent(message: getString(.noInternetConectionError))
         }
         
         uiState.loading = true
         
-        Task {
+        Task { [weak self] in
             do {
-                try await messageRepository.reportMessage(report: report)
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                }
+                try await self?.messageRepository.reportMessage(report: report)
+                self?.uiState.loading = false
             } catch {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                    self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-                }
+                self?.uiState.loading = false
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
             }
         }
     }
     
     private func getMessages(offset: Int) {
         Task {
-            try? await messageRepository.getMessages(
+            guard let messages = try? await messageRepository.getMessages(
                 conversationId: conversation.id,
                 offset: offset
-            ).forEach { message in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                    self?.uiState.messages[message.id] = message
-                }
+            ) else {
+                return
+            }
+            
+            for message in messages {
+                uiState.messageMap[message.id] = message
+                await sleep(0.1)
             }
         }
     }
     
     private func seeMessages() {
-        guard let user = user else {
-            return
-        }
+        guard let user else { return }
         
         Task {
             try? await messageRepository.updateSeenMessages(
@@ -168,12 +165,14 @@ class ChatViewModel: ObservableObject {
     
     private func seeMessage(_ message: Message) {
         if !message.seen && message.senderId == conversation.interlocutor.id {
-            Task { try? await messageRepository.updateSeenMessage(message: message) }
+            Task {
+                try? await messageRepository.updateSeenMessage(message: message)
+            }
         }
     }
     
     private func addOrUpdateMessage(_ message: Message) {
-        uiState.messages[message.id] = message
+        uiState.messageMap[message.id] = message
     }
     
     private func listenConversationChanges() {
@@ -181,6 +180,7 @@ class ChatViewModel: ObservableObject {
             $0.updated.first { $0.id == self?.conversation.id }
         }
         .compactMap { $0 }
+        .receive(on: DispatchQueue.main)
         .sink { [weak self] updatedConversation in
             self?.conversation = updatedConversation
         }.store(in: &cancellables)
@@ -188,15 +188,20 @@ class ChatViewModel: ObservableObject {
     
     private func listenBlockedUserIds() {
         let interlocutorId = conversation.interlocutor.id
-        blockedUserRepository.blockedUserIds.sink { [weak self] blockedUserIds in
-            self?.uiState.userBlocked = blockedUserIds.contains(interlocutorId)
-        }.store(in: &cancellables)
+        blockedUserRepository.blockedUserIds
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] blockedUserIds in
+                self?.uiState.userBlocked = blockedUserIds.contains(interlocutorId)
+            }.store(in: &cancellables)
     }
     
     struct ChatUiState {
-        var messages: [Int64: Message] = [:]
-        var text: String = ""
-        var loading: Bool = false
-        var userBlocked: Bool = false
+        fileprivate var messageMap: [Int64: Message] = [:]
+        var messages: [Message] {
+            messageMap.values.sorted { $0.date < $1.date }
+        }
+        var messageText: String = ""
+        fileprivate(set) var loading: Bool = false
+        fileprivate(set) var userBlocked: Bool = false
     }
 }

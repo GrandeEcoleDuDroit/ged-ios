@@ -114,11 +114,11 @@ class ConversationRepositoryImpl: ConversationRepository {
         }
     }
     
-    func deleteConversation(conversation: Conversation, userId: String, deleteTime: Date) async throws {
+    func deleteConversation(conversation: Conversation, userId: String) async throws {
         try await conversationRemoteDataSource.updateConversationDeleteTime(
             conversationId: conversation.id,
             userId: userId,
-            deleteTime: deleteTime
+            deleteTime: conversation.deleteTime!
         )
         if let deletedConversation = try await conversationLocalDataSource.deleteConversation(conversationId: conversation.id) {
             conversationChangesSubject.send(.init(inserted: [], updated: [], deleted: [deletedConversation]))

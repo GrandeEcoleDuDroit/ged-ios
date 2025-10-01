@@ -3,9 +3,7 @@ import SwiftUI
 struct CreateConversationDestination: View {
     let onCreateConversationClick: (Conversation) -> Void
     
-    @StateObject private var viewModel = MessageInjection.shared.resolve(CreateConversationViewModel.self)
-    @EnvironmentObject private var tabBarVisibility: TabBarVisibility
-    
+    @StateObject private var viewModel = MessageMainThreadInjector.shared.resolve(CreateConversationViewModel.self)
     @State private var errorMessage: String = ""
     
     var body: some View {

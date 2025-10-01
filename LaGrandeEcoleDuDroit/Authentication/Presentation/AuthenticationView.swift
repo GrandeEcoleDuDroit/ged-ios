@@ -3,7 +3,7 @@ import SwiftUI
 struct AuthenticationDestination: View {
     let onRegisterClick: () -> Void
     
-    @StateObject private var viewModel: AuthenticationViewModel = AuthenticationInjection.shared.resolve(AuthenticationViewModel.self)
+    @StateObject private var viewModel = AuthenticationMainThreadInjector.shared.resolve(AuthenticationViewModel.self)
     @State private var showErrorAlert = false
     @State private var errorMessage: String = ""
     

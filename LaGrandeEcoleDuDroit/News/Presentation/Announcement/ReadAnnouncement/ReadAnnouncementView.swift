@@ -16,7 +16,7 @@ struct ReadAnnouncementDestination: View {
         onBackClick: @escaping () -> Void
     ) {
         _viewModel = StateObject(
-            wrappedValue: NewsInjection.shared.resolve(
+            wrappedValue: NewsMainThreadInjector.shared.resolve(
                 ReadAnnouncementViewModel.self,
                 arguments: announcementId
             )!

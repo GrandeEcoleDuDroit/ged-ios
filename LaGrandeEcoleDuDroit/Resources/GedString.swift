@@ -85,9 +85,6 @@ enum GedString: String {
     case noAnnouncement = "no_announcement"
     case deleteAnnouncementAlertTitle = "delete_announcement_alert_title"
     
-    // News errors
-    case announcement_refresh_error = "announcement_refresh_error"
-    
     // Profile
     case profile = "profile"
     case account = "account"

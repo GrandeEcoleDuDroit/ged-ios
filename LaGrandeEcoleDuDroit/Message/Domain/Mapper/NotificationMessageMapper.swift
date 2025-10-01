@@ -1,7 +1,7 @@
 import Foundation
 
-extension NotificationMessage {
-    func toFcm(user: User) -> FcmMessage<NotificationMessage> {
+extension MessageNotification {
+    func toFcm(user: User) -> FcmMessage<MessageNotification> {
         FcmMessage(
             notification: FcmNotification(
                 title: user.fullName,
@@ -9,8 +9,8 @@ extension NotificationMessage {
             ),
             data: FcmData(
                 type: FcmDataType.message,
-                value: NotificationMessage(
-                    conversation: conversation.with(interlocutor: user),
+                value: MessageNotification(
+                    conversation: conversation.copy { $0.interlocutor = user },
                     message: message
                 )
             ),
@@ -80,8 +80,8 @@ extension RemoteNotificationMessage {
         )
     }
     
-    func toNotificationMessage() -> NotificationMessage {
-        NotificationMessage(
+    func toNotificationMessage() -> MessageNotification {
+        MessageNotification(
             conversation: conversation.toConversation(),
             message: message
         )

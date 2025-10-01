@@ -1,12 +1,12 @@
 import Combine
 import Foundation
 
-class AppNavigationViewModel: ObservableObject {
+class AppNavigationViewModel: ViewModel {
     private let getUnreadConversationsCountUseCase: GetUnreadConversationsCountUseCase
     private let navigationRequestUseCase: NavigationRequestUseCase
-    
-    @Published var uiState: AppNavigationUiState = AppNavigationUiState()
-    @Published var tabToNavigate: TopLevelDestination? = nil
+
+    @Published private(set) var uiState: AppNavigationUiState = AppNavigationUiState()
+    @Published private(set) var tabToNavigate: TopLevelDestination? = nil
     private var cancellables: Set<AnyCancellable> = []
     
     init(

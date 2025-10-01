@@ -1,17 +1,17 @@
 import Foundation
 import Combine
 
-class NewsViewModel: ObservableObject {
+class NewsViewModel: ViewModel {
     private let userRepository: UserRepository
     private let announcementRepository: AnnouncementRepository
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
     private let resendAnnouncementUseCase: ResendAnnouncementUseCase
     private let refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
     private let networkMonitor: NetworkMonitor
-    private var cancellables: Set<AnyCancellable> = []
     
-    @Published var uiState: NewsUiState = NewsUiState()
-    @Published var event: SingleUiEvent? = nil
+    @Published private(set) var uiState: NewsUiState = NewsUiState()
+    @Published private(set) var event: SingleUiEvent? = nil
+    private var cancellables: Set<AnyCancellable> = []
     
     init(
         userRepository: UserRepository,
@@ -38,19 +38,32 @@ class NewsViewModel: ObservableObject {
 
     
     func resendAnnouncement(announcement: Announcement) {
-        do {
-            try resendAnnouncementUseCase.execute(announcement: announcement)
-        } catch {
-            updateEvent(ErrorEvent(message: mapErrorMessage(error)))
+        guard networkMonitor.isConnected else {
+            return event = ErrorEvent(message: getString(.noInternetConectionError))
+        }
+        
+        uiState.loading = true
+        
+        Task { [weak self] in
+            await self?.resendAnnouncementUseCase.execute(announcement: announcement)
+            self?.uiState.loading = false
         }
     }
     
     func deleteAnnouncement(announcement: Announcement) {
-        Task {
+        guard networkMonitor.isConnected else {
+            return event = ErrorEvent(message: getString(.noInternetConectionError))
+        }
+        
+        uiState.loading = true
+        
+        Task { [weak self] in
             do {
-                try await deleteAnnouncementUseCase.execute(announcement: announcement)
+                try await self?.deleteAnnouncementUseCase.execute(announcement: announcement)
+                self?.uiState.loading = false
             } catch {
-                updateEvent(ErrorEvent(message: mapErrorMessage(error)))
+                self?.uiState.loading = false
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
             }
         }
     }
@@ -62,17 +75,13 @@ class NewsViewModel: ObservableObject {
         
         uiState.loading = true
         
-        Task {
+        Task { [weak self] in
             do {
-                try await announcementRepository.reportAnnouncement(report: report)
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                }
+                try await self?.announcementRepository.reportAnnouncement(report: report)
+                self?.uiState.loading = false
             } catch {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                    self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-                }
+                self?.uiState.loading = false
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
             }
         }
     }
@@ -88,8 +97,8 @@ class NewsViewModel: ObservableObject {
     
     private func listenAnnouncements() {
         announcementRepository.announcements
-            .map { announcements in
-                announcements.map { self.transform($0) }
+            .map { [weak self] announcements in
+                announcements.compactMap { self?.transform($0) }
             }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] announcements in
@@ -103,24 +112,7 @@ class NewsViewModel: ObservableObject {
         let newTitle = trimmedTitle.flatMap { !$0.isEmpty ? String($0.prefix(100)) : nil }
         let newContent = String(announcement.content.prefix(100))
         
-        return announcement.with(title: newTitle, content: newContent)
-    }
-    
-    private func mapErrorMessage(_ error: Error) -> String {
-        if let error = error as? NetworkError {
-            switch error {
-                case .noInternetConnection: getString(.noInternetConectionError)
-                default: getString(.announcement_refresh_error)
-            }
-        } else {
-            getString(.unknownError)
-        }
-    }
-    
-    private func updateEvent(_ event: SingleUiEvent) {
-        DispatchQueue.main.sync { [weak self] in
-            self?.event = event
-        }
+        return announcement.copy { $0.title = newTitle; $0.content = newContent }
     }
     
     struct NewsUiState {

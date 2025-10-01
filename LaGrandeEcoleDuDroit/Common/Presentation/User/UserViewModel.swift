@@ -1,15 +1,15 @@
 import Combine
 import Foundation
 
-class UserViewModel: ObservableObject {
+class UserViewModel: ViewModel {
     private let userId: String
     private let userRepository: UserRepository
     private let blockedUserRepository: BlockedUserRepository
     private let networkMonitor: NetworkMonitor
-    private var cancellables: Set<AnyCancellable> = []
     
-    @Published var uiState: UserUiState = UserUiState()
-    @Published var event: SingleUiEvent? = nil
+    @Published private(set) var uiState: UserUiState = UserUiState()
+    @Published private(set) var event: SingleUiEvent? = nil
+    private var cancellables: Set<AnyCancellable> = []
     
     init(
         userId: String,
@@ -32,73 +32,77 @@ class UserViewModel: ObservableObject {
         }
         
         uiState.loading = true
-
-        Task {
+        
+        Task { [weak self] in
             do {
-                try await userRepository.reportUser(report: report)
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                }
+                try await self?.userRepository.reportUser(report: report)
+                self?.uiState.loading = false
             } catch {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                    self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-                }
+                self?.uiState.loading = false
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
             }
         }
     }
     
     func blockUser(userId: String) {
-        uiState.loading = true
-        guard let currentUserId = userRepository.currentUser?.id else { return }
+        guard networkMonitor.isConnected else {
+            return event = ErrorEvent(message: getString(.noInternetConectionError))
+        }
+        guard let currentUserId = userRepository.currentUser?.id else {
+            return
+        }
         
-        Task {
+        uiState.loading = true
+        
+        Task { [weak self] in
             do {
-                try await blockedUserRepository.blockUser(currentUserId: currentUserId, userId: userId)
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                }
+                try await self?.blockedUserRepository.blockUser(currentUserId: currentUserId, userId: userId)
+                self?.uiState.loading = false
             } catch {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                    self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-                }
+                self?.uiState.loading = false
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
             }
         }
     }
     
     func unblockUser(userId: String) {
-        uiState.loading = true
-        guard let currentUserId = userRepository.currentUser?.id else { return }
+        guard networkMonitor.isConnected else {
+            return event = ErrorEvent(message: getString(.noInternetConectionError))
+        }
+        guard let currentUserId = userRepository.currentUser?.id else {
+            return
+        }
         
-        Task {
+        uiState.loading = true
+        
+        Task { [weak self] in
             do {
-                try await blockedUserRepository.unblockUser(currentUserId: currentUserId, userId: userId)
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                }
+                try await self?.blockedUserRepository.unblockUser(currentUserId: currentUserId, userId: userId)
+                self?.uiState.loading = false
             } catch {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                    self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-                }
+                self?.uiState.loading = false
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
             }
         }
     }
 
     
     private func listenCurrentUser() {
-        userRepository.user.sink { [weak self] user in
-            self?.uiState.currentUser = user
-        }
-        .store(in: &cancellables)
+        userRepository.user
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] user in
+                self?.uiState.currentUser = user
+            }
+            .store(in: &cancellables)
     }
     
     private func listenBlockedUserIds(userId: String) {
-        blockedUserRepository.blockedUserIds.sink { [weak self] blockedUserIds in
-            self?.uiState.userBlocked = blockedUserIds.contains(userId)
-        }
-        .store(in: &cancellables)
+        blockedUserRepository.blockedUserIds
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] blockedUserIds in
+                self?.uiState.userBlocked = blockedUserIds.contains(userId)
+            }
+            .store(in: &cancellables)
     }
     
     struct UserUiState {

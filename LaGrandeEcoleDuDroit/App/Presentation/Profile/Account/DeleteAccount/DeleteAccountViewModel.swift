@@ -1,12 +1,12 @@
 import Foundation
 import Combine
 
-class DeleteAccountViewModel: ObservableObject {
+class DeleteAccountViewModel: ViewModel {
     private let networkMonitor: NetworkMonitor
     private let deleteUserAccountUseCase: DeleteUserAccountUseCase
     
     @Published var uiState = AccountUiState()
-    @Published var event: SingleUiEvent? = nil
+    @Published private(set) var event: SingleUiEvent? = nil
     
     init(
         networkMonitor: NetworkMonitor,
@@ -17,6 +17,10 @@ class DeleteAccountViewModel: ObservableObject {
     }
     
     func deleteUserAccount() {
+        guard networkMonitor.isConnected else {
+            return event = ErrorEvent(message: getString(.noInternetConectionError))
+        }
+        
         let (email, password) = (uiState.email, uiState.password)
         
         if let errorMessage = validateInputs(email: email, password: password) {
@@ -24,23 +28,15 @@ class DeleteAccountViewModel: ObservableObject {
             return
         }
         
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
-        }
-        
         uiState.loading = true
         
-        Task {
+        Task { [weak self] in
             do {
-                try await deleteUserAccountUseCase.execute(email: email, password: password)
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                }
+                try await self?.deleteUserAccountUseCase.execute(email: email, password: password)
+                self?.uiState.loading = false
             } catch {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.uiState.loading = false
-                    self?.event = ErrorEvent(message: self?.mapErrorMessage(error) ?? getString(.unknownError))
-                }
+                self?.uiState.loading = false
+                self?.event = ErrorEvent(message: self?.mapErrorMessage(error) ?? getString(.unknownError))
             }
         }
     }
@@ -92,7 +88,7 @@ class DeleteAccountViewModel: ObservableObject {
     struct AccountUiState {
         var email: String = ""
         var password: String = ""
-        var errorMessage: String? = nil
-        var loading: Bool = false
+        fileprivate(set) var errorMessage: String? = nil
+        fileprivate(set) var loading: Bool = false
     }
 }

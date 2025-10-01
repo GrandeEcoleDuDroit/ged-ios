@@ -2,8 +2,8 @@ import FirebaseMessaging
 import Combine
 
 class FcmManager: NSObject, MessagingDelegate {
-    private let fcmTokenUseCase = MainInjection.shared.resolve(FcmTokenUseCase.self)
-    private let userRepository = CommonInjection.shared.resolve(UserRepository.self)
+    private let fcmTokenUseCase = AppInjector.shared.resolve(FcmTokenUseCase.self)
+    private let userRepository = CommonInjector.shared.resolve(UserRepository.self)
     private var cancellable: AnyCancellable?
     
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken token: String?) {
