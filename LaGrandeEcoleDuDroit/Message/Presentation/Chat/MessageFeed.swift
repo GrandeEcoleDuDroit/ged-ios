@@ -171,7 +171,7 @@ private struct MessageCondition {
         previousSenderId = previousMessage?.senderId ?? ""
         sameSender = message.senderId == previousSenderId
         showSeenMessage = isLastMessage && isSender && message.seen
-        sameTime = if let previousMessage = previousMessage {
+        sameTime = if let previousMessage {
             Calendar.current.isDate(
                 previousMessage.date,
                 equalTo: message.date,
@@ -180,7 +180,7 @@ private struct MessageCondition {
         } else {
             false
         }
-        sameDay = if let previousMessage = previousMessage {
+        sameDay = if let previousMessage {
             Calendar.current.isDate(
                 previousMessage.date,
                 equalTo:  message.date,

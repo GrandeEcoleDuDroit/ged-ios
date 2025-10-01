@@ -13,7 +13,7 @@ class RequestUtils {
     ) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        if let authToken = authToken {
+        if let authToken {
             request.addValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
         return request
@@ -28,7 +28,7 @@ class RequestUtils {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONEncoder().encode(dataToSend)
-        if let authToken = authToken {
+        if let authToken {
             request.addValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
         return request
@@ -43,7 +43,7 @@ class RequestUtils {
         request.httpMethod = "PUT"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONEncoder().encode(dataToSend)
-        if let authToken = authToken {
+        if let authToken {
             request.addValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
         return request
@@ -52,7 +52,7 @@ class RequestUtils {
     static func formatDeleteRequest(url: URL, authToken: String? = nil) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
-        if let authToken = authToken {
+        if let authToken {
             request.addValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
         return request

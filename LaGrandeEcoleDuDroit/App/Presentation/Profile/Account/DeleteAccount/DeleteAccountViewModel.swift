@@ -30,7 +30,7 @@ class DeleteAccountViewModel: ViewModel {
         
         uiState.loading = true
         
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             do {
                 try await self?.deleteUserAccountUseCase.execute(email: email, password: password)
                 self?.uiState.loading = false

@@ -33,7 +33,7 @@ class UserViewModel: ViewModel {
         
         uiState.loading = true
         
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             do {
                 try await self?.userRepository.reportUser(report: report)
                 self?.uiState.loading = false
@@ -54,7 +54,7 @@ class UserViewModel: ViewModel {
         
         uiState.loading = true
         
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             do {
                 try await self?.blockedUserRepository.blockUser(currentUserId: currentUserId, userId: userId)
                 self?.uiState.loading = false
@@ -75,7 +75,7 @@ class UserViewModel: ViewModel {
         
         uiState.loading = true
         
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             do {
                 try await self?.blockedUserRepository.unblockUser(currentUserId: currentUserId, userId: userId)
                 self?.uiState.loading = false
