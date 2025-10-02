@@ -68,6 +68,9 @@
 "forgot_password" = "Forgot Password ?";
 "forgot_password_description" = "Enter your email address";
 "forgot_password_success" = "If an account with this email exists, a password reset email will be sent.";
+"agree_terms_privacy_beginning_text" = "I read and agree to the";
+"terms_and_privacy" = "Terms of Use and Privacy Policy";
+"legal_notice_error" = "Please accept the Terms of Use and Privacy Policy to continue.";
 
 // Authentification errors
 "invalid_email_error" = "Please enter a valid email address.";
