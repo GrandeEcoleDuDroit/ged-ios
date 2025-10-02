@@ -15,6 +15,8 @@ struct ThirdRegistrationDestination: View {
         ThirdRegistrationView(
             email: $viewModel.uiState.email,
             password: $viewModel.uiState.password,
+            legalNoticeChecked: viewModel.uiState.legalNoticeChecked,
+            onLegalNoticeCheckedChange: viewModel.onLegalNoticeCheckedChange,
             loading: viewModel.uiState.loading,
             emailError: viewModel.uiState.emailError,
             passwordError: viewModel.uiState.passwordError,
@@ -43,6 +45,8 @@ struct ThirdRegistrationDestination: View {
 private struct ThirdRegistrationView: View {
     @Binding var email: String
     @Binding var password: String
+    let legalNoticeChecked: Bool
+    let onLegalNoticeCheckedChange: (Bool) -> Void
     let loading: Bool
     let emailError: String?
     let passwordError: String?
@@ -52,7 +56,7 @@ private struct ThirdRegistrationView: View {
     @State private var focusedInputField: InputField?
     
     var body: some View {
-        ZStack {
+        VStack(spacing: GedSpacing.medium) {
             ThirdRegistrationForm(
                 email: $email,
                 password: $password,
@@ -60,7 +64,9 @@ private struct ThirdRegistrationView: View {
                 emailError: emailError,
                 passwordError: passwordError,
                 errorMessage: errorMessage,
-                focusedInputField: $focusedInputField
+                focusedInputField: $focusedInputField,
+                legalNoticeChecked: legalNoticeChecked,
+                onLegalNoticeCheckedChange: onLegalNoticeCheckedChange
             )
             
             if loading {
@@ -68,6 +74,7 @@ private struct ThirdRegistrationView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .navigationBarTitleDisplayMode(.inline)
         .contentShape(Rectangle())
         .onTapGesture { focusedInputField = nil }
@@ -101,6 +108,8 @@ private struct ThirdRegistrationView: View {
         ThirdRegistrationView(
             email: .constant(""),
             password: .constant(""),
+            legalNoticeChecked: false,
+            onLegalNoticeCheckedChange: { _ in },
             loading: false,
             emailError: nil,
             passwordError: nil,

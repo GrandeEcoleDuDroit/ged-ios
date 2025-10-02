@@ -66,6 +66,9 @@ enum GedString: String {
     case logoutAlertTitle = "logout_alert_title"
     case forgotPasswordSuccess = "forgot_password_success"
     case userNotWhiteListedError = "user_not_white_listed_error"
+    case agreeTermsPrivacyBeginningText = "agree_terms_privacy_beginning_text"
+    case termsAndPrivacy = "terms_and_privacy"
+    case legalNoticeError = "legal_notice_error"
     
     // Authentication errors
     case invalidEmailError = "invalid_email_error"
