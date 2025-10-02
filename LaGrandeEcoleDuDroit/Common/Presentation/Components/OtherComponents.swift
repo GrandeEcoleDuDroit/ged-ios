@@ -99,6 +99,19 @@ struct BottomSheetContainer<Content: View>: View {
     }
 }
 
+struct CheckBox: View {
+    let checked: Bool
+    let onCheckedChange: (Bool) -> Void
+
+    var body: some View {
+        Image(systemName: checked ? "checkmark.square.fill" : "square")
+            .foregroundColor(checked ? .gedPrimary : Color.secondary)
+            .onTapGesture {
+                onCheckedChange(!checked)
+            }
+    }
+}
+
 #Preview {
     VStack(
         alignment: .leading,
@@ -119,6 +132,11 @@ struct BottomSheetContainer<Content: View>: View {
             icon: Image(systemName: "star"),
             title: "Menu item",
             onClick: {}
+        )
+        
+        CheckBox(
+            checked: true,
+            onCheckedChange: { _ in }
         )
     }
     .padding(.horizontal)

@@ -18,14 +18,17 @@ class ThirdRegistrationViewModel: ViewModel {
     }
     
     func register(firstName: String, lastName: String, schoolLevel: SchoolLevel) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
-        }
-        
+        uiState.errorMessage = nil
         let email = uiState.email.trimmingCharacters(in: .whitespacesAndNewlines)
         let password = uiState.password
         guard (validateInputs(email: email, password: password)) else {
             return
+        }
+        guard uiState.legalNoticeChecked else {
+            return uiState.errorMessage = getString(.legalNoticeError)
+        }
+        guard networkMonitor.isConnected else {
+            return event = ErrorEvent(message: getString(.noInternetConectionError))
         }
         
         uiState.loading = true
@@ -56,7 +59,11 @@ class ThirdRegistrationViewModel: ViewModel {
         }
     }
     
-    func validateInputs(email: String, password: String) -> Bool {
+    func onLegalNoticeCheckedChange(checked: Bool) {
+        uiState.legalNoticeChecked = checked
+    }
+    
+    private func validateInputs(email: String, password: String) -> Bool {
         uiState.emailError = validateEmail(email: email)
         uiState.passwordError = validatePassword(password: password)
         return uiState.emailError == nil && uiState.passwordError == nil
@@ -103,6 +110,7 @@ class ThirdRegistrationViewModel: ViewModel {
     struct ThirdRegistrationUiState {
         var email: String = ""
         var password: String = ""
+        fileprivate(set) var legalNoticeChecked: Bool = false
         fileprivate(set) var loading: Bool = false
         fileprivate(set) var emailError: String? = nil
         fileprivate(set) var passwordError: String? = nil

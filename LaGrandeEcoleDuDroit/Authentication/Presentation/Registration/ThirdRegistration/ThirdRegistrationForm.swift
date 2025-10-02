@@ -8,7 +8,9 @@ struct ThirdRegistrationForm: View {
     let passwordError: String?
     let errorMessage: String?
     @Binding var focusedInputField: InputField?
-    
+    let legalNoticeChecked: Bool
+    let onLegalNoticeCheckedChange: (Bool) -> Void
+    private let legalNoticeUrl = "https://grandeecoledudroit.github.io/ged-website/legal-notice.html"
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
@@ -34,13 +36,28 @@ struct ThirdRegistrationForm: View {
                 errorMessage: passwordError
             )
             
+            HStack {
+                CheckBox(
+                    checked: legalNoticeChecked,
+                    onCheckedChange: onLegalNoticeCheckedChange
+                )
+                
+                Group {
+                    Text(getString(.agreeTermsPrivacyBeginningText))
+                    + Text(" ")
+                    + Text(.init("[\(getString(.termsAndPrivacy))](\(legalNoticeUrl))"))
+                        .underline()
+                    + Text(".")
+                }
+                .font(.footnote)
+            }
+
             if let errorMessage {
                 Text(errorMessage)
                     .font(.callout)
                     .foregroundStyle(.error)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
     }
 }
@@ -54,5 +71,7 @@ struct ThirdRegistrationForm: View {
         passwordError: nil,
         errorMessage: nil,
         focusedInputField: .constant(nil),
+        legalNoticeChecked: false,
+        onLegalNoticeCheckedChange: { _ in }
     )
 }
