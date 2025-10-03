@@ -4,19 +4,48 @@ import Testing
 
 class DeleteAnnouncementUseCaseTest {
     @Test
-    func deleteAnnouncementUseCase_should_throw_network_error_when_no_internet_connection() async throws {
+    func deleteAnnouncementUseCase_should_delete_announcement_when_state_is_published() async {
         // Given
+        let announcementDeleted = AnnouncementDeleted()
         let useCase = DeleteAnnouncementUseCase(
-            announcementRepository: MockAnnouncementRepository(),
-            networkMonitor: MockNetworkMonitor()
+            announcementRepository: announcementDeleted
         )
         
         // When
-        let result = await #expect(throws: NetworkError.noInternetConnection) {
-            try await useCase.execute(announcement: announcementFixture)
-        }
+        try? await useCase.execute(announcement: announcementFixture.copy{ $0.state = .published })
         
         // Then
-        #expect(result == NetworkError.noInternetConnection)
+        #expect(announcementDeleted.deleteAnnouncementCalled)
+    }
+    
+    @Test
+    func deleteAnnouncementUseCase_should_delete_announcement_locally_when_state_is_not_published() async {
+        // Given
+        let announcementDeletedLocally = AnnouncementDeletedLocally()
+        let useCase = DeleteAnnouncementUseCase(
+            announcementRepository: announcementDeletedLocally
+        )
+        
+        // When
+        try? await useCase.execute(announcement: announcementFixture.copy{ $0.state = .draft })
+
+        // Then
+        #expect(announcementDeletedLocally.deleteLocalAnnouncementCalled)
+    }
+}
+
+private class AnnouncementDeleted: MockAnnouncementRepository {
+    private(set) var deleteAnnouncementCalled = false
+    
+    override func deleteAnnouncement(announcementId: String) async throws {
+        deleteAnnouncementCalled = true
+    }
+}
+
+private class AnnouncementDeletedLocally: MockAnnouncementRepository {
+    private(set) var deleteLocalAnnouncementCalled = false
+    
+    override func deleteLocalAnnouncement(announcementId: String) {
+        deleteLocalAnnouncementCalled = true
     }
 }

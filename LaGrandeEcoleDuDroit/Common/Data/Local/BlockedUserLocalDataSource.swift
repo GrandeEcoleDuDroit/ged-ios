@@ -5,8 +5,7 @@ class BlockedUserLocalDataSource {
     private let blockedUserKey = "blockedUserKey"
     
     func getBlockedUserIds() -> Set<String> {
-        let blockedUserIds = UserDefaults.standard.stringArray(forKey: blockedUserKey) ?? []
-        return Set(blockedUserIds)
+        UserDefaults.standard.stringArray(forKey: blockedUserKey)?.toSet() ?? Set<String>()
     }
 
     func blockUser(userId: String) -> Set<String> {

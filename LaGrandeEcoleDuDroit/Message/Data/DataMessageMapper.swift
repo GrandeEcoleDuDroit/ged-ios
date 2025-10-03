@@ -40,6 +40,13 @@ extension Message {
             seen: seen
         )
     }
+    
+    func toMessageContent() -> MessageNotification.MessageContent {
+        MessageNotification.MessageContent(
+            content: content,
+            date: date.toEpochMilli()
+        )
+    }
 }
 
 extension LocalMessage {

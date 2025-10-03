@@ -2,18 +2,15 @@ class RegisterUseCase {
     private let authenticationRepository: AuthenticationRepository
     private let userRepository: UserRepository
     private let whiteListRepository: WhiteListRepository
-    private let networkMonitor: NetworkMonitor
     
     init(
         authenticationRepository: AuthenticationRepository,
         userRepository: UserRepository,
-        whiteListRepository: WhiteListRepository,
-        networkMonitor: NetworkMonitor
+        whiteListRepository: WhiteListRepository
     ) {
         self.authenticationRepository = authenticationRepository
         self.userRepository = userRepository
         self.whiteListRepository = whiteListRepository
-        self.networkMonitor = networkMonitor
     }
     
     func execute(
@@ -23,10 +20,6 @@ class RegisterUseCase {
         lastName: String,
         schoolLevel: SchoolLevel
     ) async throws {
-        guard networkMonitor.isConnected else {
-            throw NetworkError.noInternetConnection
-        }
-        
         guard try await whiteListRepository.isUserWhitelisted(email: email) else {
             throw NetworkError.forbidden
         }

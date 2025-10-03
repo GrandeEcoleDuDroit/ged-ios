@@ -3,9 +3,9 @@ import Combine
 
 @testable import GrandeEcoleDuDroit
 
-class GetConversationUiUseCaseTest {
+class GetConversationsUiUseCaseTest {
     @Test
-    func getConversationUiUseCase_should_return_conversationsUi() async {
+    func getConversationsUiUseCase_should_return_conversationsUi() async {
         // Given
         let useCase = GetConversationsUiUseCase(conversationMessageRepository: AllConversationMessages())
         let expected = conversationMessagesFixture.map { $0.toConversationUi() }
