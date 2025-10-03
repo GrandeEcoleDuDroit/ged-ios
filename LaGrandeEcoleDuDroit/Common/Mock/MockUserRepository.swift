@@ -20,7 +20,7 @@ class MockUserRepository: UserRepository {
     
     func getUserWithEmail(email: String) async -> User? { nil }
     
-    func getUserPublisher(userId: String) -> AnyPublisher<User, Error> {
+    func getUserPublisher(userId: String) -> AnyPublisher<User?, Error> {
         Empty()
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()

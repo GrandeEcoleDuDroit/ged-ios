@@ -21,3 +21,13 @@ enum ConversationState: String, Equatable, Hashable, Codable {
     case deleting = "deleting"
     case error = "error"
 }
+
+extension Conversation {
+    static func == (lhs: Conversation, rhs: Conversation) -> Bool {
+        lhs.id == rhs.id &&
+            lhs.interlocutor == rhs.interlocutor &&
+            lhs.state == rhs.state &&
+            lhs.deleteTime == rhs.deleteTime &&
+            lhs.createdAt.isAlmostEqual(to: rhs.createdAt)
+    }
+}

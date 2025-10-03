@@ -13,6 +13,6 @@ open class NavigationRequestUseCase {
     }
     
     func resetRoute() {
-        routeToNavigateSubject.value = nil
+        routeToNavigateSubject.send(nil)
     }
 }
