@@ -2,12 +2,12 @@ import Testing
 
 @testable import GrandeEcoleDuDroit
 
-class ResendAnnouncementUseCaseTest {
+class CreateAnnouncementUseCaseTest {
     @Test
-    func resendAnnouncementUseCase_should_set_announcement_state_to_pbulished() async throws {
+    func createAnnouncementUseCase_should_set_announcement_state_to_pbulished() async throws {
         // Given
         let announcementSetPublished = AnnouncementSetPublished()
-        let useCase = ResendAnnouncementUseCase(
+        let useCase = CreateAnnouncementUseCase(
             announcementRepository: announcementSetPublished
         )
         
@@ -19,10 +19,10 @@ class ResendAnnouncementUseCaseTest {
     }
     
     @Test
-    func resendAnnouncementUseCase_should_set_announcement_state_to_error_when_exception_thrown() async {
+    func createAnnouncementUseCase_should_set_announcement_state_to_error_when_exception_thrown() async {
         // Given
         let announcementSetError = AnnouncementSetError()
-        let useCase = ResendAnnouncementUseCase(
+        let useCase = CreateAnnouncementUseCase(
             announcementRepository: announcementSetError
         )
         

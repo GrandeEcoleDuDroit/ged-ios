@@ -79,6 +79,7 @@ class ConversationRepositoryImpl: ConversationRepository {
                         
                     case let .notFound(remoteConversation, interlocutorId):
                         self.userRepository.getUserPublisher(userId: interlocutorId)
+                            .compactMap { $0 }
                             .map { interlocutor in
                                 Task {
                                     await self.fetchedInterlocutors.set(interlocutor: interlocutor, forKey: interlocutorId)

@@ -1,0 +1,80 @@
+import Testing
+
+@testable import GrandeEcoleDuDroit
+
+class SynchronizeBlockedUsersUseCaseTest {
+    @Test
+    func execute_should_block_blocked_users() async throws {
+        // Given
+        let usersIds = usersFixture.map { $0.id }.toSet()
+        let blockedUsers = BlockedUsers(usersIds)
+        let useCase = SynchronizeBlockedUsersUseCase(
+            blockedUserRepository: blockedUsers,
+            userRepository: UserExist()
+        )
+        
+        // When
+        try await useCase.execute()
+        
+        // Then
+        #expect(blockedUsers.userBlockedIds == usersIds)
+    }
+    
+    @Test
+    func execute_should_unblock_non_blocked_users() async throws {
+        // Given
+        let usersIds = usersFixture.map { $0.id }.toSet()
+        let unblockedUsers = UnblockedUsers(usersIds)
+        let useCase = SynchronizeBlockedUsersUseCase(
+            blockedUserRepository: unblockedUsers,
+            userRepository: UserExist()
+        )
+        
+        // When
+        try await useCase.execute()
+        
+        // Then
+        #expect(unblockedUsers.userUnblockedIds == usersIds)
+    }
+}
+
+private class BlockedUsers: MockBlockedUserRepository {
+    let usersIds: Set<String>
+    var userBlockedIds: Set<String> = []
+    
+    init(_ usersIds: Set<String>) {
+        self.usersIds = usersIds
+    }
+    
+    override func blockUser(currentUserId: String, userId: String) async throws {
+        userBlockedIds.insert(userId)
+    }
+    
+    override func getRemoteBlockedUserIds(currentUserId: String) async throws -> Set<String> {
+        usersIds
+    }
+}
+
+private class UnblockedUsers: MockBlockedUserRepository {
+    let usersIds: Set<String>
+    var userUnblockedIds: Set<String> = []
+    
+    init(_ usersIds: Set<String>) {
+        self.usersIds = usersIds
+    }
+    
+    override func unblockUser(currentUserId: String, userId: String) async throws {
+        userUnblockedIds.insert(userId)
+    }
+    
+    override func getLocalBlockedUserIds() -> Set<String> {
+        usersIds
+    }
+}
+
+
+private class UserExist: MockUserRepository {
+    override var currentUser: User? {
+        userFixture
+    }
+}

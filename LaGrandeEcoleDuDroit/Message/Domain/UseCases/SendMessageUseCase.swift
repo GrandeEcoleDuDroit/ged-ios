@@ -3,18 +3,15 @@ import Foundation
 class SendMessageUseCase {
     private let messageRepository: MessageRepository
     private let conversationRepository: ConversationRepository
-    private let networkMonitor: NetworkMonitor
     private let sendMessageNotificationUseCase: SendMessageNotificationUseCase
     
     init(
         messageRepository: MessageRepository,
         conversationRepository: ConversationRepository,
-        networkMonitor: NetworkMonitor,
         sendMessageNotificationUseCase: SendMessageNotificationUseCase
     ) {
         self.messageRepository = messageRepository
         self.conversationRepository = conversationRepository
-        self.networkMonitor = networkMonitor
         self.sendMessageNotificationUseCase = sendMessageNotificationUseCase
     }
     

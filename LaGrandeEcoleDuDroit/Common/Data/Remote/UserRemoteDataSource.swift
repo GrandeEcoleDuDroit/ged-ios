@@ -8,10 +8,8 @@ class UserRemoteDataSource {
         self.userApi = userApi
     }
     
-    func listenUser(userId: String) -> AnyPublisher<User, Error> {
-        userApi.listenUser(userId: userId)
-            .compactMap { $0 }
-            .eraseToAnyPublisher()
+    func listenUser(userId: String) -> AnyPublisher<User?, Error> {
+        userApi.listenUser(userId: userId).eraseToAnyPublisher()
     }
     
     func getUser(userId: String) async throws -> User? {

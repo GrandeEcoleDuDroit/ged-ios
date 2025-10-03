@@ -223,13 +223,8 @@ class UserFirestoreApi {
                     return
                 }
                 
-                guard let snapshot = snapshot else { return }
-                
-                if let user = try? snapshot.data(as: FirestoreUser.self) {
-                    subject.send(user)
-                } else {
-                    subject.send(nil)
-                }
+                let user = try? snapshot?.data(as: FirestoreUser.self)
+                subject.send(user)
             }
         
         return subject.eraseToAnyPublisher()
