@@ -39,8 +39,7 @@ class NewsInjector: Injector {
         
         container.register(DeleteAnnouncementUseCase.self) { resolver in
             DeleteAnnouncementUseCase(
-                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!
             )
         }.inObjectScope(.container)
         

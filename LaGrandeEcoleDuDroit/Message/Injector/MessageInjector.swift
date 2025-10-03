@@ -120,7 +120,6 @@ class MessageInjector: Injector {
             SendMessageUseCase(
                 messageRepository: resolver.resolve(MessageRepository.self)!,
                 conversationRepository: resolver.resolve(ConversationRepository.self)!,
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 sendMessageNotificationUseCase: resolver.resolve(SendMessageNotificationUseCase.self)!
             )
         }.inObjectScope(.container)

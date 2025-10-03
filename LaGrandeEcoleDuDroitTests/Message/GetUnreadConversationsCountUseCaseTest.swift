@@ -32,7 +32,7 @@ private class AllUnreadConversations: MockConversationMessageRepository {
     override var conversationsMessage: AnyPublisher<[String : ConversationMessage], Never> {
         let unreadConversationMessages = conversationMessagesFixture.map { conversationMessage in
             conversationMessage.with {
-                $0.lastMessage = messageFixture.with(senderId: userFixture2.id, seen: false)
+                $0.lastMessage = messageFixture.copy { $0.senderId = userFixture2.id; $0.seen = false }
             }
         }.reduce(into: [String: ConversationMessage]()) { result, conversationMessage in
             result[conversationMessage.conversation.id] = conversationMessage

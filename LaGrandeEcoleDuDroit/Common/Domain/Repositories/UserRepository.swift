@@ -13,7 +13,7 @@ protocol UserRepository {
     
     func getUserWithEmail(email: String) async throws -> User?
     
-    func getUserPublisher(userId: String) -> AnyPublisher<User, Error>
+    func getUserPublisher(userId: String) -> AnyPublisher<User?, Error>
     
     func getUsers() async -> [User]
         

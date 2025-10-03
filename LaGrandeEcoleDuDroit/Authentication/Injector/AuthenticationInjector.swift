@@ -36,8 +36,7 @@ class AuthenticationInjector: Injector {
         container.register(LoginUseCase.self) { resolver in
             LoginUseCase(
                 authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
-                userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
+                userRepository: CommonInjector.shared.resolve(UserRepository.self)
             )
         }.inObjectScope(.container)
     
@@ -45,8 +44,7 @@ class AuthenticationInjector: Injector {
             RegisterUseCase(
                 authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                whiteListRepository: CommonInjector.shared.resolve(WhiteListRepository.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
+                whiteListRepository: CommonInjector.shared.resolve(WhiteListRepository.self)
             )
         }
         

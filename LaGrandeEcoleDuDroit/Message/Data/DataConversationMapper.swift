@@ -50,6 +50,15 @@ extension Conversation {
             deleteTime: deleteTime.map { [userId: Timestamp(date: $0)] }
         )
     }
+    
+    func toRemoteNotificationMessageConversation() -> RemoteNotificationMessage.Conversation {
+        RemoteNotificationMessage.Conversation(
+            id: id,
+            interlocutor: interlocutor.toRemoteNotificationMessageConversationInterlocutor(),
+            createdAt: createdAt.toEpochMilli(),
+            deleteTime: deleteTime?.toEpochMilli()
+        )
+    }
 }
 
 extension LocalConversation {
@@ -86,3 +95,17 @@ extension LocalConversation {
     }
 }
 
+private extension User {
+    func toRemoteNotificationMessageConversationInterlocutor() -> RemoteNotificationMessage.Conversation.Interlocutor {
+        RemoteNotificationMessage.Conversation.Interlocutor(
+            id: id,
+            firstName: firstName,
+            lastName: lastName,
+            fullName: fullName,
+            email: email,
+            schoolLevel: schoolLevel.rawValue,
+            isMember: isMember,
+            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl)
+        )
+    }
+}

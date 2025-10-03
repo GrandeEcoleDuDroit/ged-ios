@@ -14,10 +14,10 @@ class DeleteConversationUseCaseTest {
             messageRepository: MockMessageRepository(),
             conversationMessageRepository: MockConversationMessageRepository()
         )
-        let conversation = conversationFixture.with(deleteTime: Date())
+        let conversation = conversationFixture.copy { $0.deleteTime = Date() }
         
         // When
-        useCase.execute(conversation: conversation, userId: userFixture.id)
+        try? await useCase.execute(conversation: conversation, userId: userFixture.id)
         var iterator = conversationRepository.conversationChanges.values.makeAsyncIterator()
         let change = await iterator.next()
         let deleteTime = change?.updated.last?.deleteTime
@@ -36,7 +36,7 @@ private class UpdatedRemoteConversationDeleteTime: MockConversationRepository {
         conversationChangeSubject.eraseToAnyPublisher()
     }
     
-    override func deleteConversation(conversation: Conversation, userId: String, deleteTime: Date) async throws {
+    override func deleteConversation(conversation: Conversation, userId: String) async throws {
         conversationChangeSubject.send(
             .init(inserted: [], updated: [conversation], deleted: [])
         )

@@ -34,15 +34,15 @@ class NotificationMessageManagerTest {
     @Test
     func presentNotification_should_not_display_notification_when_is_current_view() {
         // Given
-        let emptyNavigationRequestUseCase = EmptyNavigationRequestUseCase()
-        let chatCurrentRoute = DefinedCurrentRoute(
-            MessageRoute.chat(conversation: conversationFixture)
+        let chatCurrentRoute = DefinedCurrentRoute(MessageRoute.chat(conversation: conversationFixture))
+        let userInfo = getUserInfo(
+            conversation: conversationFixture.toRemoteNotificationMessageConversation(),
+            message: messageFixture.toMessageContent()
         )
-        let userInfo = getUserInfo(conversation: conversationFixture, message: messageFixture)
         var result: UNNotificationPresentationOptions = []
         
         let useCase = MessageNotificationManager(
-            navigationRequestUseCase: emptyNavigationRequestUseCase,
+            navigationRequestUseCase: MockNavigationRequestUseCase(),
             routeRepository: chatCurrentRoute
         )
         
@@ -63,7 +63,10 @@ class NotificationMessageManagerTest {
         // Given
         let navigate = Navigate()
         let nilCurrentRoute = NilCurrentRoute()
-        let userInfo = getUserInfo(conversation: conversationFixture, message: messageFixture)
+        let userInfo = getUserInfo(
+            conversation: conversationFixture.toRemoteNotificationMessageConversation(),
+            message: messageFixture.toMessageContent()
+        )
         let expectedResult = (
             MessageMainRoute.conversation,
             [MessageRoute.chat(conversation: conversationFixture)]
@@ -78,7 +81,7 @@ class NotificationMessageManagerTest {
         
         // Then
         let mainRoute = navigate.navigatedRoute?.mainRoute as? MessageMainRoute
-        let routes = navigate.navigatedRoute?.routes.map { $0 as? MessageRoute }
+        let routes = navigate.navigatedRoute?.routes.map { $0 as? MessageRoute }        
         
         #expect(
             mainRoute == expectedResult.0 &&
@@ -87,9 +90,9 @@ class NotificationMessageManagerTest {
     }
 }
 
-private func getUserInfo(conversation: Conversation, message: Message) -> [AnyHashable: Any] {
+private func getUserInfo(conversation: RemoteNotificationMessage.Conversation, message: MessageNotification.MessageContent) -> [AnyHashable: Any] {
     let jsonEncoder = JSONEncoder()
-    guard let conversationData = try? jsonEncoder.encode(conversationFixture),
+    guard let conversationData = try? jsonEncoder.encode(conversation),
           let conversationJsonString = String(data: conversationData, encoding: .utf8),
           let messageData = try? jsonEncoder.encode(message),
           let messageJsonString = String(data: messageData, encoding: .utf8) else {

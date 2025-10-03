@@ -3,19 +3,28 @@ import Combine
 
 class AuthenticationViewModel: ViewModel {
     private let loginUseCase: LoginUseCase
+    private let networkMonitor: NetworkMonitor
     private var cancellables: Set<AnyCancellable> = []
 
     @Published var uiState: AuthenticationUiState = AuthenticationUiState()
     @Published private(set) var event: SingleUiEvent? = nil
     
-    init(loginUseCase: LoginUseCase) {
+    init(
+        loginUseCase: LoginUseCase,
+        networkMonitor: NetworkMonitor
+    ) {
         self.loginUseCase = loginUseCase
+        self.networkMonitor = networkMonitor
     }
     
     func login() {
         let (email, password) = (uiState.email, uiState.password)
         guard validateInputs(email: email, password: password) else {
             return
+        }
+        
+        guard networkMonitor.isConnected else {
+            return event = ErrorEvent(message: getString(.noInternetConectionError))
         }
         
         uiState.loading = true
