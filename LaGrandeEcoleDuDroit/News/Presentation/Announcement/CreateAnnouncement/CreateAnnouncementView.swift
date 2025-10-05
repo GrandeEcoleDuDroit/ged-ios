@@ -9,8 +9,8 @@ struct CreateAnnouncementDestination: View {
     
     var body: some View {
         CreateAnnouncementView(
-            title: $viewModel.uiState.title,
-            content: $viewModel.uiState.content,
+            title: viewModel.uiState.title,
+            content: viewModel.uiState.content,
             loading: viewModel.uiState.loading,
             enableCreate: viewModel.uiState.enableCreate,
             onTitleChange: viewModel.onTitleChange,
@@ -32,8 +32,8 @@ struct CreateAnnouncementDestination: View {
 }
 
 private struct CreateAnnouncementView: View {
-    @Binding var title: String
-    @Binding var content: String
+    let title: String
+    let content: String
     let loading: Bool
     let enableCreate: Bool
     let onTitleChange: (String) -> Void
@@ -43,8 +43,8 @@ private struct CreateAnnouncementView: View {
     
     var body: some View {
         AnnouncementInput(
-            title: $title,
-            content: $content,
+            title: title,
+            content: content,
             focusedInputField: $focusedInputField,
             onTitleChange: onTitleChange,
             onContentChange: onContentChange
@@ -86,8 +86,8 @@ private struct CreateAnnouncementView: View {
 #Preview {
     NavigationStack {
         CreateAnnouncementView(
-            title: .constant(""),
-            content: .constant(""),
+            title: "",
+            content: "",
             loading: false,
             enableCreate: false,
             onTitleChange: { _ in },

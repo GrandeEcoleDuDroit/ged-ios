@@ -74,26 +74,23 @@ private struct ReadAnnouncementView: View {
     @State private var showReportBottomSheet: Bool = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            AnnouncementHeader(
-                announcement: announcement,
-                onOptionClick: { showBottomSheet = true },
-                onAuthorClick: { onAuthorClick(announcement.author) }
-            )
-            
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: GedSpacing.medium) {
-                    if let title = announcement.title {
-                        Text(title)
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    
-                    Text(announcement.content)
-                        .font(.body)
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: GedSpacing.medium) {
+                AnnouncementHeader(
+                    announcement: announcement,
+                    onAuthorClick: { onAuthorClick(announcement.author) }
+                )
+                
+                if let title = announcement.title {
+                    Text(title)
+                        .font(.title3)
+                        .fontWeight(.semibold)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                
+                Text(announcement.content)
+                    .font(.body)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -101,6 +98,11 @@ private struct ReadAnnouncementView: View {
         .loading(loading)
         .navigationTitle(getString(.announcement))
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                OptionButton { showBottomSheet = true }
+            }
+        }
         .sheet(isPresented: $showBottomSheet) {
             AnnouncementBottomSheet(
                 isEditable: user.isMember && announcement.author.id == user.id,

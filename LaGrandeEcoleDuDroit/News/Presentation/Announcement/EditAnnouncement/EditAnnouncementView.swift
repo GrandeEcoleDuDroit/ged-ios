@@ -19,8 +19,8 @@ struct EditAnnouncementDestination: View {
     
     var body: some View {
         EditAnnouncementView(
-            title: $viewModel.uiState.title,
-            content: $viewModel.uiState.content,
+            title: viewModel.uiState.title,
+            content: viewModel.uiState.content,
             loading: viewModel.uiState.loading,
             editButtonEnable: viewModel.uiState.enableUpdate,
             onTitleChange: viewModel.onTitleChange,
@@ -48,8 +48,8 @@ struct EditAnnouncementDestination: View {
 }
 
 private struct EditAnnouncementView: View {
-    @Binding var title: String
-    @Binding var content: String
+    let title: String
+    let content: String
     let loading: Bool
     let editButtonEnable: Bool
     let onTitleChange: (String) -> Void
@@ -61,8 +61,8 @@ private struct EditAnnouncementView: View {
 
     var body: some View {
         AnnouncementInput(
-            title: $title,
-            content: $content,
+            title: title,
+            content: content,
             focusedInputField: $focusedInputField,
             onTitleChange: onTitleChange,
             onContentChange: onContentChange
@@ -118,8 +118,8 @@ private struct EditAnnouncementView: View {
 #Preview {
     NavigationStack {
         EditAnnouncementView( 
-            title: .constant(announcementFixture.title ?? ""),
-            content: .constant(announcementFixture.content),
+            title: announcementFixture.title ?? "",
+            content: announcementFixture.content,
             loading: false,
             editButtonEnable: true,
             onTitleChange: {_ in },

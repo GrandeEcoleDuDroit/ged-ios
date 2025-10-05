@@ -3,16 +3,19 @@ import Foundation
 class EditAnnouncementViewModel: ViewModel {
     private let announcement: Announcement
     private let announcementRepository: AnnouncementRepository
+    private let networkMonitor: NetworkMonitor
 
     @Published var uiState: EditAnnouncementUiState = EditAnnouncementUiState()
     @Published private(set) var event: SingleUiEvent? = nil
     
     init(
         announcement: Announcement,
-        announcementRepository: AnnouncementRepository
+        announcementRepository: AnnouncementRepository,
+        networkMonitor: NetworkMonitor
     ) {
         self.announcementRepository = announcementRepository
         self.announcement = announcement
+        self.networkMonitor = networkMonitor
         initUiState()
     }
     
@@ -32,6 +35,10 @@ class EditAnnouncementViewModel: ViewModel {
     }
     
     func updateAnnouncement() {
+        guard networkMonitor.isConnected else {
+            return event = ErrorEvent(message: getString(.noInternetConectionError))
+        }
+        
         uiState.loading = true
         let title = uiState.title.trimmingCharacters(in: .whitespacesAndNewlines)
         let content = uiState.content.trimmingCharacters(in: .whitespacesAndNewlines)

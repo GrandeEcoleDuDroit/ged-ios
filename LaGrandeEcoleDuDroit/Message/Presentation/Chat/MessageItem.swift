@@ -138,7 +138,7 @@ struct MessageInput: View {
                     }
                 )
                 .padding(.horizontal, GedSpacing.medium)
-                .padding(.vertical, 10)
+                .padding(.vertical, 8)
                 .background(.gedPrimary)
                 .foregroundStyle(.white)
                 .clipShape(.rect(cornerRadius: 20))
