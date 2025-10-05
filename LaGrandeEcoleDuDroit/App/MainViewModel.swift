@@ -32,9 +32,7 @@ class MainViewModel: ObservableObject {
             .sink { [weak self] authenticated in
                 if authenticated {
                     self?.listenDataUseCase.start()
-                    Task {
-                        await self?.synchronizeDataUseCase.execute()
-                    }
+                    self?.synchronizeDataUseCase.execute()
                 } else {
                     self?.listenDataUseCase.stop()
                     Task {

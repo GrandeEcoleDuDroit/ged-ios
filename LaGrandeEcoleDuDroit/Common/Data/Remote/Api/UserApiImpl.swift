@@ -213,7 +213,7 @@ class UserFirestoreApi {
     private let usersCollection: CollectionReference = Firestore.firestore().collection("users")
     
     func listenUser(userId: String) -> AnyPublisher<FirestoreUser?, Error> {
-        let subject = CurrentValueSubject<FirestoreUser?, Error>(nil)
+        let subject = PassthroughSubject<FirestoreUser?, Error>()
         
         usersCollection
             .document(userId)

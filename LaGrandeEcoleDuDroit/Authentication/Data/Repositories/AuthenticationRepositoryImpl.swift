@@ -15,12 +15,14 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
         self.authenticationLocalDataSource = authenticationLocalDataSource
     }
     
+    func isAuthenticated() -> Bool {
+        authenticationLocalDataSource.isAuthenticated() &&
+            firebaseAuthenticationRepository.isAuthenticated()
+    }
+    
     func getAuthenticationState() -> AnyPublisher<Bool, Never> {
         authenticationSubjet
-            .prepend(
-                authenticationLocalDataSource.isAuthenticated() &&
-                    firebaseAuthenticationRepository.isAuthenticated()
-            )
+            .prepend(isAuthenticated())
             .eraseToAnyPublisher()
     }
     

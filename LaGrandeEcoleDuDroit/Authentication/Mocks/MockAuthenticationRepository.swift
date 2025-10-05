@@ -2,6 +2,8 @@ import Foundation
 import Combine
 
 class MockAuthenticationRepository: AuthenticationRepository {
+    func isAuthenticated() -> Bool { false }
+    
     func getAuthenticationState() -> AnyPublisher<Bool, Never> {
         Empty().eraseToAnyPublisher()
     }
