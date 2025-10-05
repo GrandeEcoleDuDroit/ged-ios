@@ -26,7 +26,7 @@ class ListenAuthenticationStateUseCase {
     }
     
     private func initAuthentication() {
-        if userRepository.getCurrentUser() == nil {
+        if userRepository.getCurrentUser() == nil && authenticationRepository.isAuthenticated() {
             authenticationRepository.logout()
         }
         

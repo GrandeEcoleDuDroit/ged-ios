@@ -5,7 +5,7 @@ class DeleteAccountViewModel: ViewModel {
     private let networkMonitor: NetworkMonitor
     private let deleteUserAccountUseCase: DeleteUserAccountUseCase
     
-    @Published var uiState = AccountUiState()
+    @Published var uiState = DeleteAccountUiState()
     @Published private(set) var event: SingleUiEvent? = nil
     
     init(
@@ -85,7 +85,7 @@ class DeleteAccountViewModel: ViewModel {
         }
     }
     
-    struct AccountUiState {
+    struct DeleteAccountUiState {
         var email: String = ""
         var password: String = ""
         fileprivate(set) var errorMessage: String? = nil
