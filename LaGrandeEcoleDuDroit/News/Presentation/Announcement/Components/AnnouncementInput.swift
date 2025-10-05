@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct AnnouncementInput: View {
-    @Binding var title: String
-    @Binding var content: String
+    let title: String
+    let content: String
     @Binding var focusedInputField: InputField?
     let onTitleChange: (String) -> Void
     let onContentChange: (String) -> Void
@@ -10,13 +10,13 @@ struct AnnouncementInput: View {
     var body: some View {
         VStack(spacing: GedSpacing.medium) {
             AnnouncementTitleInput(
-                title: $title,
+                title: title,
                 onTitleChange: onTitleChange,
                 focusedInputField: $focusedInputField
             )
             
             AnnouncementContentInput(
-                content: $content,
+                content: content,
                 onContentChange: onContentChange,
                 focusedInputField: $focusedInputField
             )
@@ -26,7 +26,7 @@ struct AnnouncementInput: View {
 }
 
 private struct AnnouncementTitleInput: View {
-    @Binding var title: String
+    let title: String
     let onTitleChange: (String) -> Void
     @Binding var focusedInputField: InputField?
     @FocusState private var focusedField: InputField?
@@ -34,19 +34,15 @@ private struct AnnouncementTitleInput: View {
     var body: some View {
         TextField(
             getString(.title),
-            text: $title,
+            text: Binding(
+                get: { title },
+                set: onTitleChange
+            ),
             axis: .vertical
         )
         .font(.title3)
         .fontWeight(.semibold)
         .focused($focusedField, equals: InputField.title)
-        .onChange(of: title) { newValue in
-            if newValue.count <= 300 {
-                onTitleChange(newValue)
-            } else {
-                title = String(title.prefix(300))
-            }
-        }
         .onChange(of: focusedInputField) { newValue in
             focusedField = newValue
         }
@@ -54,7 +50,7 @@ private struct AnnouncementTitleInput: View {
 }
 
 private struct AnnouncementContentInput: View {
-    @Binding var content: String
+    let content: String
     let onContentChange: (String) -> Void
     @Binding var focusedInputField: InputField?
     @FocusState private var focusedField: InputField?
@@ -62,17 +58,13 @@ private struct AnnouncementContentInput: View {
     var body: some View {
         TextField(
             getString(.content),
-            text: $content,
+            text: Binding(
+                get: { content },
+                set: onContentChange
+            ),
             axis: .vertical
         )
         .focused($focusedField, equals: InputField.content)
-        .onChange(of: content) { newValue in
-            if newValue.count <= 2000 {
-                onContentChange(newValue)
-            } else {
-                content = String(content.prefix(2000))
-            }
-        }
         .onChange(of: focusedInputField) { newValue in
             focusedField = newValue
         }
@@ -81,8 +73,8 @@ private struct AnnouncementContentInput: View {
 
 #Preview {
     AnnouncementInput(
-        title: .constant(""),
-        content: .constant(""),
+        title: "",
+        content: "",
         focusedInputField: .constant(nil),
         onTitleChange: {_ in },
         onContentChange: {_ in }

@@ -48,7 +48,10 @@ private struct CreateConversationView: View {
                         ForEach(users, id: \.id) { user in
                             Clickable(
                                 action: { onUserClick(user) },
-                                content: { UserItem(user: user) }
+                                content: {
+                                    UserItem(user: user)
+                                        .contentShape(Rectangle())
+                                }
                             )
                         }
                     }

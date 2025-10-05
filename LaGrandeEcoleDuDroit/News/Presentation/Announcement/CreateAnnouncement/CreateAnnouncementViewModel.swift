@@ -40,13 +40,21 @@ class CreateAnnouncementViewModel: ViewModel {
     }
     
     func onTitleChange(_ title: String) {
-        uiState.title = title
-        uiState.enableCreate = validateInput()
+        if title.count <= 300 {
+            uiState.title = title
+            uiState.enableCreate = validateInput()
+        } else {
+            uiState.title = String(title.prefix(300))
+        }
     }
     
     func onContentChange(_ content: String) {
-        uiState.content = content
-        uiState.enableCreate = validateInput()
+        if content.count <= 2000 {
+            uiState.content = content
+            uiState.enableCreate = validateInput()
+        } else {
+            uiState.content = String(content.prefix(2000))
+        }
     }
     
     private func validateInput() -> Bool {

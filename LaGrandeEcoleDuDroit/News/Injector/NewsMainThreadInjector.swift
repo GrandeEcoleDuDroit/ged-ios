@@ -44,7 +44,8 @@ class NewsMainThreadInjector: MainThreadInjector {
             let announcement = announcement as! Announcement
             return EditAnnouncementViewModel(
                 announcement: announcement,
-                announcementRepository: NewsInjector.shared.resolve(AnnouncementRepository.self)
+                announcementRepository: NewsInjector.shared.resolve(AnnouncementRepository.self),
+                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
             )
         }
     }

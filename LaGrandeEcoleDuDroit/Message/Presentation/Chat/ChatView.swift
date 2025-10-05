@@ -77,7 +77,7 @@ private struct ChatView: View {
     @State private var showDeleteAnnouncementAlert: Bool = false
 
     var body: some View {
-        VStack(spacing: GedSpacing.medium) {
+        VStack(spacing: GedSpacing.small) {
             MessageFeed(
                 messages: messages,
                 conversation: conversation,
