@@ -12,10 +12,10 @@ class ChatViewModel: ViewModel {
     private let blockedUserRepository: BlockedUserRepository
     
     @Published var uiState: ChatUiState = ChatUiState()
-    @Published var event: SingleUiEvent? = nil
+    @Published private(set) var event: SingleUiEvent? = nil
+    private var messagesDict: [Int64:Message] = [:]
     private var cancellables: Set<AnyCancellable> = []
     private let user: User?
-    private var offset: Int = 0
     
     init(
         conversation: Conversation,
@@ -37,7 +37,7 @@ class ChatViewModel: ViewModel {
         self.blockedUserRepository = blockedUserRepository
         
         user = userRepository.currentUser
-        getMessages(offset: offset)
+        getMessages(offset: 0)
         listenMessages()
         listenConversationChanges()
         listenBlockedUserIds()
@@ -49,25 +49,40 @@ class ChatViewModel: ViewModel {
         messageRepository.messageChanges
             .receive(on: DispatchQueue.main)
             .sink { [weak self] change in
-                change.inserted
-                    .filter { $0.conversationId == self?.conversation.id }
-                    .forEach { message in
-                        self?.addOrUpdateMessage(message)
-                        self?.seeMessage(message)
-                    }
+                var hasChanged = false
                 
-                change.updated
-                    .filter { $0.conversationId == self?.conversation.id }
-                    .forEach { message in
-                        self?.addOrUpdateMessage(message)
+                change.inserted.forEach { message in
+                    if message.conversationId == self?.conversation.id {
+                        self?.messagesDict[message.id] = message
                         self?.seeMessage(message)
+                        if !hasChanged {
+                            hasChanged = true
+                        }
                     }
+                }
                 
-                change.deleted
-                    .filter { $0.conversationId == self?.conversation.id }
-                    .forEach { message in
-                        self?.uiState.messageMap[message.id] = nil
+                change.updated.forEach { message in
+                    if message.conversationId == self?.conversation.id {
+                        self?.messagesDict[message.id] = message
+                        self?.seeMessage(message)
+                        if !hasChanged {
+                            hasChanged = true
+                        }
                     }
+                }
+                
+                change.deleted.forEach { message in
+                    if message.conversationId == self?.conversation.id {
+                        self?.messagesDict.removeValue(forKey: message.id)
+                        if !hasChanged {
+                            hasChanged = true
+                        }
+                    }
+                }
+                
+                if hasChanged {
+                    self?.refreshMessages()
+                }
             }.store(in: &cancellables)
     }
     
@@ -86,13 +101,17 @@ class ChatViewModel: ViewModel {
         )
         
         Task {
-            await sendMessageUseCase.execute(conversation: conversation, message: message, userId: user.id)
+            await sendMessageUseCase.execute(
+                conversation: conversation,
+                message: message,
+                userId: user.id
+            )
         }
+        
         uiState.messageText = ""
     }
     
-    func loadMoreMessages() {
-        offset += 20
+    func loadMoreMessages(offset: Int) {
         getMessages(offset: offset)
     }
     
@@ -136,6 +155,12 @@ class ChatViewModel: ViewModel {
         }
     }
     
+    func onMessageTextChange(_ text: String) {
+        if text.count <= MessageConstant.characterMax {
+            uiState.messageText = text
+        }
+    }
+    
     private func getMessages(offset: Int) {
         Task { @MainActor [weak self] in
             guard let conversation = self?.conversation else {
@@ -143,14 +168,17 @@ class ChatViewModel: ViewModel {
             }
             guard let messages = try? await self?.messageRepository.getMessages(
                 conversationId: conversation.id,
-                offset: offset
+                offset: offset,
+                limit: MessageConstant.loadLimit
             ) else {
                 return
             }
             
-            for message in messages {
-                self?.uiState.messageMap[message.id] = message
-                await sleep(0.1)
+            if !messages.isEmpty {
+                messages.forEach { self?.messagesDict[$0.id] = $0 }
+                self?.refreshMessages()
+            } else {
+                self?.uiState.canLoadMoreMessages = false
             }
         }
     }
@@ -174,8 +202,8 @@ class ChatViewModel: ViewModel {
         }
     }
     
-    private func addOrUpdateMessage(_ message: Message) {
-        uiState.messageMap[message.id] = message
+    private func refreshMessages() {
+        uiState.messages = messagesDict.values.sorted { $0.date > $1.date }
     }
     
     private func listenConversationChanges() {
@@ -199,12 +227,10 @@ class ChatViewModel: ViewModel {
     }
     
     struct ChatUiState {
-        fileprivate var messageMap: [Int64: Message] = [:]
-        var messages: [Message] {
-            messageMap.values.sorted { $0.date < $1.date }
-        }
-        var messageText: String = ""
+        fileprivate(set) var messages: [Message] = []
+        fileprivate(set) var messageText: String = ""
         fileprivate(set) var loading: Bool = false
         fileprivate(set) var userBlocked: Bool = false
+        fileprivate(set) var canLoadMoreMessages: Bool = true
     }
 }

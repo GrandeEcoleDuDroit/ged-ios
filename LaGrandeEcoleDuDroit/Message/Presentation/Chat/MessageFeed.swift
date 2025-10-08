@@ -4,77 +4,85 @@ import Combine
 struct MessageFeed: View {
     let messages: [Message]
     let conversation: Conversation
-    let loadMoreMessages: () -> Void
+    let canLoadMoreMessages: Bool
+    let loadMoreMessages: (Int) -> Void
     let onErrorMessageClick: (Message) -> Void
     let onReceivedMessageLongClick: (Message) -> Void
 
     var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView(.vertical, showsIndicators: false) {
-                LazyVStack(spacing: 0) {
-                    ForEach(messages, id: \.id) { message in
-                        if let index = messages.firstIndex(where: { $0.id == message.id }) {
-                            let previousMessage = (index > 0) ? messages[index - 1] : nil
-                            let condition = MessageCondition(
-                                message: message,
-                                interlocutor: conversation.interlocutor,
-                                messagesSize: messages.count,
-                                index: index,
-                                previousMessage: previousMessage
-                            )
-                            
-                            if condition.isFirstMessage || !condition.sameDay {
-                                Text(formatDate(date: message.date))
-                                    .foregroundStyle(.gray)
-                                    .padding(.vertical, GedSpacing.large)
-                                    .font(.footnote)
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                            }
-                            
-                            GetMessageItem(
-                                message: message,
-                                interlocutorId: conversation.interlocutor.id,
-                                showSeen: condition.showSeenMessage,
-                                displayProfilePicture: condition.displayProfilePicture,
-                                profilePictureUrl: conversation.interlocutor.profilePictureUrl,
-                                onErrorMessageClick: onErrorMessageClick,
-                                onLongClick: { onReceivedMessageLongClick(message) }
-                            )
-                            .messageItemPadding(
-                                sameSender: condition.sameSender,
-                                sameTime: condition.sameTime,
-                                sameDay: condition.sameDay
-                            )
+        List {
+            ForEach(Array(messages.enumerated()), id: \.element) { index, message in
+                    Content(
+                        conversation: conversation,
+                        messages: messages,
+                        message: message,
+                        index: index,
+                        onErrorMessageClick: onErrorMessageClick,
+                        onReceivedMessageLongClick: onReceivedMessageLongClick
+                    )
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets())
+                    .onAppear {
+                        if message == messages.last &&
+                            messages.count >= MessageConstant.loadLimit &&
+                            canLoadMoreMessages
+                        {
+                            loadMoreMessages(index + 1)
+                            print("Load more messages")
                         }
                     }
-                }
-                .rotationEffect(.degrees(180))
-                .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
-                .background(
-                    GeometryReader { geometry in
-                        Color.clear.preference(
-                            key: ScrollOffsetPreferenceKey.self,
-                            value: geometry.frame(in: .named("scroll")).origin
-                        )
-                    }
-                )
-                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                    if value.y >= 0 && messages.count >= 20 {
-                        loadMoreMessages()
-                    }
-                }
             }
+            .listRowBackground(Color.background)
             .rotationEffect(.degrees(180))
             .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
-            .coordinateSpace(name: "scroll")
         }
+        .rotationEffect(.degrees(180))
+        .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+        .scrollIndicators(.hidden)
+        .listStyle(.plain)
     }
 }
 
-struct ScrollOffsetPreferenceKey: PreferenceKey {
-    static var defaultValue: CGPoint = .zero
-
-    static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {
+private struct Content: View {
+    let conversation: Conversation
+    let messages: [Message]
+    let message: Message
+    let index: Int
+    let onErrorMessageClick: (Message) -> Void
+    let onReceivedMessageLongClick: (Message) -> Void
+    
+    var body: some View {
+        let previousMessage = index < messages.count - 1 ? messages[index + 1] : nil
+        let condition = MessageCondition(
+            message: message,
+            interlocutor: conversation.interlocutor,
+            messagesCount: messages.count,
+            index: index,
+            previousMessage: previousMessage
+        )
+        
+        GetMessageItem(
+            message: message,
+            interlocutorId: conversation.interlocutor.id,
+            showSeen: condition.showSeenMessage,
+            displayProfilePicture: condition.displayProfilePicture,
+            profilePictureUrl: conversation.interlocutor.profilePictureUrl,
+            onErrorMessageClick: onErrorMessageClick,
+            onLongClick: { onReceivedMessageLongClick(message) }
+        )
+        .messageItemPadding(
+            sameSender: condition.sameSender,
+            sameTime: condition.sameTime,
+            sameDay: condition.sameDay
+        )
+        
+        if condition.isOldestMessage || !condition.sameDay {
+            Text(formatDate(date: message.date))
+                .foregroundStyle(.gray)
+                .padding(.vertical, GedSpacing.large)
+                .font(.footnote)
+                .frame(maxWidth: .infinity, alignment: .center)
+        }
     }
 }
 
@@ -143,8 +151,8 @@ private struct MessageCondition {
     private let previousMessage: Message?
     
     let isSender: Bool
-    let isFirstMessage: Bool
-    let isLastMessage: Bool
+    let isNewestMessage: Bool
+    let isOldestMessage: Bool
     let previousSenderId: String
     let sameSender: Bool
     let showSeenMessage: Bool
@@ -155,22 +163,22 @@ private struct MessageCondition {
     init(
         message: Message,
         interlocutor: User,
-        messagesSize: Int,
+        messagesCount: Int,
         index: Int,
         previousMessage: Message?
     ) {
         self.message = message
         self.interlocutor = interlocutor
-        self.messagesSize = messagesSize
+        self.messagesSize = messagesCount
         self.index = index
         self.previousMessage = previousMessage
         
         isSender = message.senderId != interlocutor.id
-        isFirstMessage = index == 0
-        isLastMessage = index == messagesSize - 1
+        isNewestMessage = index == 0
+        isOldestMessage = index == messagesCount - 1
         previousSenderId = previousMessage?.senderId ?? ""
         sameSender = message.senderId == previousSenderId
-        showSeenMessage = isLastMessage && isSender && message.seen
+        showSeenMessage = isNewestMessage && isSender && message.seen
         sameTime = if let previousMessage {
             Calendar.current.isDate(
                 previousMessage.date,
@@ -189,6 +197,18 @@ private struct MessageCondition {
         } else {
             false
         }
-        displayProfilePicture = !sameTime || isFirstMessage || !sameSender
+        displayProfilePicture = !sameTime || isNewestMessage || !sameSender
     }
+}
+
+#Preview {
+    MessageFeed(
+        messages: messagesFixture.sorted { $0.date > $1.date },
+        conversation: conversationFixture,
+        canLoadMoreMessages: true,
+        loadMoreMessages: { _ in },
+        onErrorMessageClick: { _ in },
+        onReceivedMessageLongClick: { _ in }
+    )
+    .background(Color.background)
 }

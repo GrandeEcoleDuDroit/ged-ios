@@ -107,26 +107,23 @@ private struct MessageBubble: View {
 }
 
 struct MessageInput: View {
-    @Binding var text: String
-    @Binding var inputFocused: Bool
-    @FocusState var focusedField: Bool
+    let text: String
+    let onTextChange: (String) -> Void
     let onSendClick: () -> Void
-    
-    private let maxCharacters = 1000
     
     var body: some View {
         HStack(alignment: .center) {
             TextField(
                 "",
-                text: $text,
+                text: Binding(
+                    get: { text },
+                    set: onTextChange
+                ),
                 prompt: messagePlaceholder,
                 axis: .vertical
             )
+            .lineLimit(6)
             .padding(.vertical, GedSpacing.small)
-            .focused($focusedField, equals: inputFocused)
-            .simultaneousGesture(TapGesture().onEnded({
-                inputFocused = true
-            }))
             
             if !text.isBlank {
                 Button(
@@ -150,9 +147,6 @@ struct MessageInput: View {
         .background(.chatInputBackground)
         .clipShape(.rect(cornerRadius: 30))
         .padding(.bottom, GedSpacing.small)
-        .onChange(of: inputFocused) { newValue in
-            focusedField = newValue
-        }
     }
     
     var messagePlaceholder: Text {
@@ -227,8 +221,8 @@ struct NewMessageIndicator: View {
         }
 
         MessageInput(
-            text: .constant(""),
-            inputFocused: .constant(false),
+            text: "",
+            onTextChange: { _ in },
             onSendClick: {}
         )
     }

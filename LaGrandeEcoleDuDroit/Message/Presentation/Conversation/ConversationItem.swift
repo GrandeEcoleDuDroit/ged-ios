@@ -138,9 +138,9 @@ private struct ConversationItemStructure<Content: View>: View {
             .padding(.horizontal)
             .padding(.vertical, GedSpacing.smallMedium)
             .contentShape(Rectangle())
-        }
-        .onLongPressGesture {
-            onLongClick()
+            .onLongPressGesture {
+                onLongClick()
+            }
         }
     }
 }
