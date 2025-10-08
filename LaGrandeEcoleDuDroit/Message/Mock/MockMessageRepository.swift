@@ -2,23 +2,15 @@ import Foundation
 import Combine
 
 class MockMessageRepository: MessageRepository {
-    private let messagesSubject = PassthroughSubject<Message, Never>()
-    
     var messageChanges: AnyPublisher<CoreDataChange<Message>, Never> {
         Empty().eraseToAnyPublisher()
     }
     
-    func getMessages(conversationId: String, offset: Int) async throws -> [Message] {
-        messagesFixture
-    }
+    func getMessages(conversationId: String, offset: Int, limit: Int) async throws -> [Message] { [] }
     
-    func getLastMessage(conversationId: String) -> Message? {
-        messageFixture
-    }
+    func getLastMessage(conversationId: String) -> Message? { nil }
     
-    func getUnsentMessages() async throws -> [Message] {
-        messagesFixture
-    }
+    func getUnsentMessages() async throws -> [Message] { [] }
     
     func fetchRemoteMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Error> {
         Empty().eraseToAnyPublisher()
@@ -34,9 +26,7 @@ class MockMessageRepository: MessageRepository {
     
     func updateSeenMessage(message: Message) async throws {}
     
-    func upsertLocalMessage(message: Message) {
-        messagesSubject.send(messageFixture)
-    }
+    func upsertLocalMessage(message: Message) {}
     
     func deleteLocalMessages(conversationId: String) {}
     

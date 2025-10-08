@@ -27,10 +27,12 @@ struct ChatDestination: View {
         ChatView(
             conversation: conversation,
             messages: viewModel.uiState.messages,
-            messageText: $viewModel.uiState.messageText,
+            messageText: viewModel.uiState.messageText,
             loading: viewModel.uiState.loading,
-            onSendMessagesClick: viewModel.sendMessage,
+            canLoadMoreMessages: viewModel.uiState.canLoadMoreMessages,
             onBackClick: onBackClick,
+            onSendMessagesClick: viewModel.sendMessage,
+            onMessageTextChange: viewModel.onMessageTextChange,
             loadMoreMessages: viewModel.loadMoreMessages,
             onErrorMessageClick: viewModel.deleteErrorMessage,
             onResendMessage: viewModel.resendErrorMessage,
@@ -59,11 +61,13 @@ struct ChatDestination: View {
 private struct ChatView: View {
     let conversation: Conversation
     let messages: [Message]
-    @Binding var messageText: String
+    let messageText: String
     let loading: Bool
-    let onSendMessagesClick: () -> Void
+    let canLoadMoreMessages: Bool
     let onBackClick: () -> Void
-    let loadMoreMessages: () -> Void
+    let onSendMessagesClick: () -> Void
+    let onMessageTextChange: (String) -> Void
+    let loadMoreMessages: (Int) -> Void
     let onErrorMessageClick: (Message) -> Void
     let onResendMessage: (Message) -> Void
     let onInterlocutorClick: (User) -> Void
@@ -72,15 +76,15 @@ private struct ChatView: View {
     @State private var showSentMessageBottomSheet: Bool = false
     @State private var showReceivedMessageBottomSheet: Bool = false
     @State private var showReportMessageBottomSheet: Bool = false
-    @State private var inputFocused: Bool = false
     @State private var clickedMessage: Message?
     @State private var showDeleteAnnouncementAlert: Bool = false
 
     var body: some View {
-        VStack(spacing: GedSpacing.small) {
+        VStack(spacing: GedSpacing.smallMedium) {
             MessageFeed(
                 messages: messages,
                 conversation: conversation,
+                canLoadMoreMessages: canLoadMoreMessages,
                 loadMoreMessages: loadMoreMessages,
                 onErrorMessageClick: {
                     if $0.state == .error {
@@ -95,16 +99,13 @@ private struct ChatView: View {
             )
             
             MessageInput(
-                text: $messageText,
-                inputFocused: $inputFocused,
+                text: messageText,
+                onTextChange: onMessageTextChange,
                 onSendClick: onSendMessagesClick
             )
         }
         .padding(.horizontal)
         .contentShape(Rectangle())
-        .onTapGesture {
-            inputFocused = false
-        }
         .loading(loading)
         .sheet(isPresented: $showSentMessageBottomSheet) {
             SentMessageBottomSheet(
@@ -240,11 +241,13 @@ private struct ReceivedMessageBottomSheet: View {
         ChatView(
             conversation: conversationFixture,
             messages: messagesFixture,
-            messageText: .constant(""),
+            messageText: "",
             loading: false,
-            onSendMessagesClick: {},
+            canLoadMoreMessages: true,
             onBackClick: {},
-            loadMoreMessages: {},
+            onSendMessagesClick: {},
+            onMessageTextChange: { _ in },
+            loadMoreMessages: { _ in },
             onErrorMessageClick: { _ in },
             onResendMessage: { _ in },
             onInterlocutorClick: { _ in },

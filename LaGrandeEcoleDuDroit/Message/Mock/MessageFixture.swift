@@ -30,6 +30,16 @@ let messageFixture2 = Message(
 
 let messagesFixture = [
     Message(
+        id: 1,
+        senderId: userFixture.id,
+        recipientId: userFixture2.id,
+        conversationId: "1",
+        content: "Hi, how are you ?",
+        date: Date(),
+        seen: true,
+        state: .sent
+    ),
+    Message(
         id: 2,
         senderId: userFixture.id,
         recipientId: userFixture2.id,
@@ -230,7 +240,6 @@ let messagesFixture = [
         state: .sent
     ),
 ]
-
 
 let lastMessagesFixture = [
     Message(

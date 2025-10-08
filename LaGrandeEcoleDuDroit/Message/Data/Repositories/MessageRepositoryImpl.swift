@@ -29,11 +29,15 @@ class MessageRepositoryImpl: MessageRepository {
             .store(in: &cancellables)
     }
  
-    func getMessages(conversationId: String, offset: Int) async throws -> [Message] {
+    func getMessages(conversationId: String, offset: Int, limit: Int) async throws -> [Message] {
         do {
-            return try await messageLocalDataSource.getMessages(conversationId: conversationId, offset: offset)
+            return try await messageLocalDataSource.getMessages(
+                conversationId: conversationId,
+                offset: offset,
+                limit: limit
+            )
         } catch {
-            e(tag, "Error to get messages local for conversation \(conversationId) with offset \(offset): \(error.localizedDescription)", error)
+            e(tag, "Error to get local messages for conversation \(conversationId): \(error.localizedDescription)", error)
             throw error
         }
     }

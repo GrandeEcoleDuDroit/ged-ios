@@ -7,7 +7,7 @@ actor MessageCoreDataActor {
         self.context = context
     }
     
-    func getMessages(conversationId: String, offset: Int) async throws -> [Message] {
+    func getMessages(conversationId: String, offset: Int, limit: Int) async throws -> [Message] {
         try await context.perform {
             let fetchRequest = LocalMessage.fetchRequest()
             fetchRequest.predicate = NSPredicate(
@@ -20,7 +20,7 @@ actor MessageCoreDataActor {
             )]
             
             fetchRequest.fetchOffset = offset
-            fetchRequest.fetchLimit = 20
+            fetchRequest.fetchLimit = limit
             
             return try self.context.fetch(fetchRequest).compactMap { $0.toMessage() }
         }

@@ -4,7 +4,7 @@ import Foundation
 protocol MessageRepository {
     var messageChanges: AnyPublisher<CoreDataChange<Message>, Never> { get }
 
-    func getMessages(conversationId: String, offset: Int) async throws -> [Message]
+    func getMessages(conversationId: String, offset: Int, limit: Int) async throws -> [Message]
     
     func getLastMessage(conversationId: String) async throws -> Message?
     

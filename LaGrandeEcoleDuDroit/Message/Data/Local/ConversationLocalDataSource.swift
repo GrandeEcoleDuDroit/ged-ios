@@ -33,8 +33,8 @@ class ConversationLocalDataSource {
             .flatMap { objectIds in
                 Future<CoreDataChange<Conversation>, Never> { promise in
                     Task { [weak self] in
-                        var inserted = await self?.conversationActor.resolve(objectIds.inserted) ?? []
-                        var updated = await self?.conversationActor.resolve(objectIds.updated) ?? []
+                        let inserted = await self?.conversationActor.resolve(objectIds.inserted) ?? []
+                        let updated = await self?.conversationActor.resolve(objectIds.updated) ?? []
                         
                         promise(.success(CoreDataChange(inserted: inserted, updated: updated)))
                     }

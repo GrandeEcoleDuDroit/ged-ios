@@ -33,8 +33,8 @@ class MessageLocalDataSource {
             .flatMap { objectIds in
                 Future<CoreDataChange<Message>, Never> { promise in
                     Task { [weak self] in
-                        var inserted = await self?.messageActor.resolve(objectIds.inserted) ?? []
-                        var updated = await self?.messageActor.resolve(objectIds.updated) ?? []
+                        let inserted = await self?.messageActor.resolve(objectIds.inserted) ?? []
+                        let updated = await self?.messageActor.resolve(objectIds.updated) ?? []
                         
                         promise(.success(CoreDataChange(inserted: inserted, updated: updated)))
                     }
@@ -43,8 +43,8 @@ class MessageLocalDataSource {
             .eraseToAnyPublisher()
     }
     
-    func getMessages(conversationId: String, offset: Int) async throws -> [Message] {
-        try await messageActor.getMessages(conversationId: conversationId, offset: offset)
+    func getMessages(conversationId: String, offset: Int, limit: Int) async throws -> [Message] {
+        try await messageActor.getMessages(conversationId: conversationId, offset: offset, limit: limit)
     }
     
     func getLastMessage(conversationId: String) async throws -> Message? {
