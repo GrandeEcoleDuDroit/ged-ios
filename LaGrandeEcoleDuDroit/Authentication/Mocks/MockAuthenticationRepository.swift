@@ -1,8 +1,7 @@
-import Foundation
 import Combine
 
 class MockAuthenticationRepository: AuthenticationRepository {
-    func isAuthenticated() -> Bool { false }
+    func isAuthenticated() async throws -> Bool { false }
     
     func getAuthenticationState() -> AnyPublisher<Bool, Never> {
         Empty().eraseToAnyPublisher()
@@ -19,4 +18,6 @@ class MockAuthenticationRepository: AuthenticationRepository {
     func resetPassword(email: String) async throws {}
     
     func deleteAuthUser() async throws {}
+    
+    func getToken() async throws -> String? { nil }
 }

@@ -3,8 +3,8 @@ import Combine
 class ListenAuthenticationStateUseCase {
     private let authenticationRepository: AuthenticationRepository
     private let userRepository: UserRepository
-    private var cancellables: Set<AnyCancellable> = []
     
+    private var cancellables: Set<AnyCancellable> = []
     private let authenticatedPublisher = CurrentValueSubject<Bool?, Never>(nil)
     var authenticated: AnyPublisher<Bool, Never> {
         authenticatedPublisher
@@ -21,17 +21,13 @@ class ListenAuthenticationStateUseCase {
     ) {
         self.authenticationRepository = authenticationRepository
         self.userRepository = userRepository
-        
-        initAuthentication()
+        start()
     }
     
-    private func initAuthentication() {
-        if userRepository.getCurrentUser() == nil && authenticationRepository.isAuthenticated() {
-            authenticationRepository.logout()
-        }
-        
-        authenticationRepository.getAuthenticationState().sink { [weak self] isAuthenticated in
-            self?.authenticatedPublisher.send(isAuthenticated)
-        }.store(in: &cancellables)
+    private func start() {
+        authenticationRepository.getAuthenticationState()
+            .sink { [weak self] isAuthenticated in
+                self?.authenticatedPublisher.send(isAuthenticated)
+            }.store(in: &cancellables)
     }
 }

@@ -51,10 +51,6 @@ class NewsViewModel: ViewModel {
     }
     
     func deleteAnnouncement(announcement: Announcement) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
-        }
-        
         uiState.loading = true
         
         Task { @MainActor [weak self] in

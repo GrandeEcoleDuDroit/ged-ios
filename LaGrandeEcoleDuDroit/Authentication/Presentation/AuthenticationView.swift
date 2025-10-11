@@ -7,7 +7,7 @@ struct AuthenticationDestination: View {
     @State private var showErrorAlert = false
     @State private var errorMessage: String = ""
     
-    var body: some View {            
+    var body: some View {
         AuthenticationView(
             email: $viewModel.uiState.email,
             password: $viewModel.uiState.password,
@@ -24,11 +24,15 @@ struct AuthenticationDestination: View {
                 showErrorAlert = true
             }
         }
-        .alert(errorMessage, isPresented: $showErrorAlert) {
-            Button(getString(.ok), role: .cancel) {
-                showErrorAlert = false
+        .alert(
+            errorMessage,
+            isPresented: $showErrorAlert,
+            actions: {
+                Button(getString(.ok), role: .cancel) {
+                    showErrorAlert = false
+                }
             }
-        }
+        )
     }
 }
 

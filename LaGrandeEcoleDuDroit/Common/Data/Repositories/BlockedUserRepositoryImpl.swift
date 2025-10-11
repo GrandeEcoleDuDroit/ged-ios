@@ -9,9 +9,13 @@ class BlockedUserRepositoryImpl: BlockedUserRepository {
     var blockedUserEvents: AnyPublisher<BlockUserEvent, Never> {
         blockedUserEventsSubject.eraseToAnyPublisher()
     }
-    private let blockedUserIdsSubject = CurrentValueSubject<Set<String>, Never>([])
+    
+    private let blockedUserIdsSubject: CurrentValueSubject<Set<String>, Never>
     var blockedUserIds: AnyPublisher<Set<String>, Never> {
         blockedUserIdsSubject.eraseToAnyPublisher()
+    }
+    var currentBlockedUserIds: Set<String> {
+        blockedUserIdsSubject.value
     }
     
     init(
@@ -20,14 +24,12 @@ class BlockedUserRepositoryImpl: BlockedUserRepository {
     ) {
         self.blockedUserLocalDataSource = blockedUserLocalDataSource
         self.blockedUserRemoteDataSource = blockedUserRemoteDataSource
+        let blockedUserIds = blockedUserLocalDataSource.getBlockedUserIds()
+        self.blockedUserIdsSubject = CurrentValueSubject<Set<String>, Never>(blockedUserIds)
     }
     
     func getRemoteBlockedUserIds(currentUserId: String) async throws -> Set<String> {
         try await blockedUserRemoteDataSource.getBlockedUserIds(currentUserId: currentUserId)
-    }
-    
-    func getLocalBlockedUserIds() -> Set<String> {
-        blockedUserLocalDataSource.getBlockedUserIds()
     }
     
     func blockUser(currentUserId: String, userId: String) async throws {

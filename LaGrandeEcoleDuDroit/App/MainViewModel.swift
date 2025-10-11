@@ -7,6 +7,7 @@ class MainViewModel: ObservableObject {
     private let clearDataUseCase: ClearDataUseCase
     private let listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase
     private let synchronizeDataUseCase: SynchronizeDataUseCase
+    private let checkUserValidityUseCase: CheckUserValidityUseCase
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -15,13 +16,15 @@ class MainViewModel: ObservableObject {
         listenDataUseCase: ListenDataUseCase,
         clearDataUseCase: ClearDataUseCase,
         listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase,
-        synchronizeDataUseCase: SynchronizeDataUseCase
+        synchronizeDataUseCase: SynchronizeDataUseCase,
+        checkUserValidityUseCase: CheckUserValidityUseCase
     ) {
         self.userRepository = userRepository
         self.listenDataUseCase = listenDataUseCase
         self.clearDataUseCase = clearDataUseCase
         self.listenAuthenticationStateUseCase = listenAuthenticationStateUseCase
         self.synchronizeDataUseCase = synchronizeDataUseCase
+        self.checkUserValidityUseCase = checkUserValidityUseCase
         
         updateDataOnAuthChange()
     }
@@ -31,8 +34,11 @@ class MainViewModel: ObservableObject {
             .receive(on: DispatchQueue.global(qos: .background))
             .sink { [weak self] authenticated in
                 if authenticated {
-                    self?.listenDataUseCase.start()
-                    self?.synchronizeDataUseCase.execute()
+                    Task {
+                        await self?.checkUserValidityUseCase.execute()
+                        self?.listenDataUseCase.start()
+                        self?.synchronizeDataUseCase.execute()
+                    }
                 } else {
                     self?.listenDataUseCase.stop()
                     Task {

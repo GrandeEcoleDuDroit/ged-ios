@@ -38,7 +38,7 @@ class UserRepositoryImpl: UserRepository {
         try await userRemoteDataSource.getUserWithEmail(email: email)
     }
     
-    func getUserPublisher(userId: String) -> AnyPublisher<User?, Error> {
+    func getUserPublisher(userId: String) -> AnyPublisher<User?, Never> {
         userRemoteDataSource.listenUser(userId: userId)
     }
     
@@ -69,14 +69,16 @@ class UserRepositoryImpl: UserRepository {
     func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {
         try await userRemoteDataSource.updateProfilePictureFileName(userId: userId, fileName: profilePictureFileName)
         try? userLocalDataSource.updateProfilePictureFileName(fileName: profilePictureFileName)
-        let user = userSubject.value?.with(profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName))
+        var user = userSubject.value
+        user?.profilePictureUrl = UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName)
         userSubject.send(user)
     }
     
     func deleteProfilePictureFileName(userId: String) async throws {
         try await userRemoteDataSource.deleteProfilePictureFileName(userId: userId)
         try? userLocalDataSource.updateProfilePictureFileName(fileName: nil)
-        let user = userSubject.value?.with(profilePictureUrl: nil)
+        var user = userSubject.value
+        user?.profilePictureUrl = nil
         userSubject.send(user)
     }
     

@@ -69,6 +69,14 @@ class AppInjector: Injector {
             )
         }
         
+        container.register(CheckUserValidityUseCase.self) { resolver in
+            CheckUserValidityUseCase(
+                authenticationRepository: AuthenticationInjector.shared.resolve(AuthenticationRepository.self),
+                userRepository: CommonInjector.shared.resolve(UserRepository.self),
+                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
+            )
+        }
+        
         // View models
         container.register(MainViewModel.self) { resolver in
             MainViewModel(
@@ -76,7 +84,8 @@ class AppInjector: Injector {
                 listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!,
                 listenAuthenticationStateUseCase: AuthenticationInjector.shared.resolve(ListenAuthenticationStateUseCase.self),
-                synchronizeDataUseCase: resolver.resolve(SynchronizeDataUseCase.self)!
+                synchronizeDataUseCase: resolver.resolve(SynchronizeDataUseCase.self)!,
+                checkUserValidityUseCase: resolver.resolve(CheckUserValidityUseCase.self)!
             )
         }
         
@@ -98,7 +107,7 @@ class AppInjector: Injector {
         }.inObjectScope(.container)
         
         container.register(TokenProvider.self) { resolver in
-            TokenProviderImpl(firebaseAuthenticationRepository: AuthenticationInjector.shared.resolve(FirebaseAuthenticationRepository.self))
+            TokenProviderImpl(authenticationRepository: AuthenticationInjector.shared.resolve(AuthenticationRepository.self))
         }
     }
     

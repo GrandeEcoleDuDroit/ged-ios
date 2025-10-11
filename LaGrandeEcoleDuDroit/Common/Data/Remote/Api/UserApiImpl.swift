@@ -15,7 +15,7 @@ class UserApiImpl: UserApi {
         self.userServerApi = userServerApi
     }
     
-    func listenUser(userId: String) -> AnyPublisher<User?, any Error> {
+    func listenUser(userId: String) -> AnyPublisher<User?, Never> {
         userFirestoreApi.listenUser(userId: userId)
             .map { $0?.toUser() }
             .eraseToAnyPublisher()
@@ -212,14 +212,14 @@ class UserServerApi {
 class UserFirestoreApi {
     private let usersCollection: CollectionReference = Firestore.firestore().collection("users")
     
-    func listenUser(userId: String) -> AnyPublisher<FirestoreUser?, Error> {
-        let subject = PassthroughSubject<FirestoreUser?, Error>()
+    func listenUser(userId: String) -> AnyPublisher<FirestoreUser?, Never> {
+        let subject = PassthroughSubject<FirestoreUser?, Never>()
         
         usersCollection
             .document(userId)
             .addSnapshotListener { snapshot, error in
                 if let error {
-                    subject.send(completion: .failure(error))
+                    subject.send(completion: .finished)
                     return
                 }
                 

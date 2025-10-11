@@ -1,7 +1,7 @@
 import Combine
 
 protocol UserApi {
-    func listenUser(userId: String) -> AnyPublisher<User?, Error>
+    func listenUser(userId: String) -> AnyPublisher<User?, Never>
 
     func getUser(userId: String) async throws -> User?
     

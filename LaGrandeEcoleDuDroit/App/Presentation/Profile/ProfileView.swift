@@ -83,18 +83,19 @@ private struct ProfileView: View {
         }
         .navigationTitle(getString(.profile))
         .alert(
-            getString(.logoutAlertTitle),
-            isPresented: $showLogoutAlert
-        ) {
-            Button(getString(.cancel), role: .cancel) {
-                showLogoutAlert = false
+            getString(.logoutAlertMessage),
+            isPresented: $showLogoutAlert,
+            actions: {
+                Button(getString(.cancel), role: .cancel) {
+                    showLogoutAlert = false
+                }
+                
+                Button(
+                    getString(.logout), role: .destructive,
+                    action: onLogoutClick
+                )
             }
-            
-            Button(
-                getString(.logout), role: .destructive,
-                action: onLogoutClick
-            )
-        }
+        )
         .scrollContentBackground(.hidden)
         .background(.listBackground)
     }

@@ -51,12 +51,13 @@ struct ReadAnnouncementDestination: View {
         }
         .alert(
             errorMessage,
-            isPresented: $showErrorAlert
-        ) {
-            Button(getString(.ok)) {
-                showErrorAlert = false
+            isPresented: $showErrorAlert,
+            actions: {
+                Button(getString(.ok)) {
+                    showErrorAlert = false
+                }
             }
-        }
+        )
     }
 }
 
@@ -145,19 +146,20 @@ private struct ReadAnnouncementView: View {
             )
         }
         .alert(
-            getString(.deleteAnnouncementAlertTitle),
-            isPresented: $showDeleteAlert
-        ) {
-            Button(
-                getString(.cancel),
-                role: .cancel,
-                action: { showDeleteAlert = false }
-            )
-            Button(
-                getString(.delete), role: .destructive,
-                action: onDeleteAnnouncementClick
-            )
-        }
+            getString(.deleteAnnouncementAlertMessage),
+            isPresented: $showDeleteAlert,
+            actions: {
+                Button(
+                    getString(.cancel),
+                    role: .cancel,
+                    action: { showDeleteAlert = false }
+                )
+                Button(
+                    getString(.delete), role: .destructive,
+                    action: onDeleteAnnouncementClick
+                )
+            }
+        )
     }
 }
 

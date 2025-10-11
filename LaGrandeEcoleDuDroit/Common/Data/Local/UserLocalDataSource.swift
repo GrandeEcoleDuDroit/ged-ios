@@ -23,9 +23,9 @@ class UserLocalDataSource {
             throw NSError()
         }
         let localUser = try JSONDecoder().decode(LocalUser.self, from: localUserData)
-        let updatedUser = localUser.toUser().with(profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: fileName))
-        
-        try storeUser(user: updatedUser)
+        var user = localUser.toUser()
+        user.profilePictureUrl = UrlUtils.formatOracleBucketUrl(fileName: fileName)
+        try storeUser(user: user)
     }
     
     func removeUser() {

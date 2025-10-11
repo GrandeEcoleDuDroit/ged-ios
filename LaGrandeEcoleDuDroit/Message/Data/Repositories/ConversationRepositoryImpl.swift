@@ -55,7 +55,7 @@ class ConversationRepositoryImpl: ConversationRepository {
         conversationRemoteDataSource
             .listenConversations(userId: userId)
             .flatMap { remoteConversation in
-                Future<FetchedInterlocutorResult, Error> { [weak self] promise in
+                Future<FetchedInterlocutorResult, Never> { [weak self] promise in
                     guard let interlocutorId = remoteConversation.participants.first(where: { $0 != userId }) else {
                         return promise(.success(.failure))
                     }
@@ -70,12 +70,10 @@ class ConversationRepositoryImpl: ConversationRepository {
                     }
                 }.eraseToAnyPublisher()
             }
-            .flatMap { fetchedInterlocutorResult in
-                switch fetchedInterlocutorResult {
+            .flatMap { result in
+                switch result {
                     case let .found(conversation):
-                        Just(conversation)
-                            .setFailureType(to: Error.self)
-                            .eraseToAnyPublisher()
+                        Just(conversation).eraseToAnyPublisher()
                         
                     case let .notFound(remoteConversation, interlocutorId):
                         self.userRepository.getUserPublisher(userId: interlocutorId)
@@ -88,7 +86,7 @@ class ConversationRepositoryImpl: ConversationRepository {
                             }
                             .eraseToAnyPublisher()
 
-                    default: Empty<Conversation, Error>().eraseToAnyPublisher()
+                    default: Empty<Conversation, Never>().eraseToAnyPublisher()
                 }
             }.eraseToAnyPublisher()
     }
@@ -133,11 +131,11 @@ class ConversationRepositoryImpl: ConversationRepository {
         }
     }
     
-    func deleteConversation(conversation: Conversation, userId: String) async throws {
+    func deleteConversation(conversation: Conversation, userId: String, deleteTime: Date) async throws {
         try await conversationRemoteDataSource.updateConversationDeleteTime(
             conversationId: conversation.id,
             userId: userId,
-            deleteTime: conversation.deleteTime!
+            deleteTime: deleteTime
         )
         if let deletedConversation = try await conversationLocalDataSource.deleteConversation(conversationId: conversation.id) {
             conversationChangesSubject.send(CoreDataChange(deleted: [deletedConversation]))

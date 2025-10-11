@@ -28,12 +28,13 @@ struct AccountInformationDestination: View {
             }
             .alert(
                 errorMessage,
-                isPresented: $showErrorAlert
-            ) {
-                Button(getString(.ok)) {
-                    showErrorAlert = false
+                isPresented: $showErrorAlert,
+                actions: {
+                    Button(getString(.ok)) {
+                        showErrorAlert = false
+                    }
                 }
-            }
+            )
         } else {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
@@ -148,16 +149,17 @@ private struct AccountInformationView: View {
         }
         .alert(
             getString(.deleteProfilePictureAlertMessage),
-            isPresented: $showDeleteAlert
-        ) {
-            Button(getString(.cancel), role: .cancel) {
-                showDeleteAlert = false
+            isPresented: $showDeleteAlert,
+            actions: {
+                Button(getString(.cancel), role: .cancel) {
+                    showDeleteAlert = false
+                }
+                Button(getString(.delete), role: .destructive) {
+                    onDeleteProfilePictureClick()
+                    showDeleteAlert = false
+                }
             }
-            Button(getString(.delete), role: .destructive) {
-                onDeleteProfilePictureClick()
-                showDeleteAlert = false
-            }
-        }
+        )
         .toolbar {
             if screenState == .edit {
                 ToolbarItem(placement: .topBarLeading) {

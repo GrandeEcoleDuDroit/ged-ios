@@ -20,7 +20,7 @@ protocol ConversationRepository {
     
     func upsertLocalConversation(conversation: Conversation) async throws
     
-    func deleteConversation(conversation: Conversation, userId: String) async throws
+    func deleteConversation(conversation: Conversation, userId: String, deleteTime: Date) async throws
     
     func deleteLocalConversations() async throws
     

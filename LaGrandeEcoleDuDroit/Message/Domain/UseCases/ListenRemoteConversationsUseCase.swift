@@ -29,7 +29,7 @@ class ListenRemoteConversationsUseCase {
                     .fetchRemoteConversation(userId: user.id)
                     .catch { error -> Empty<Conversation, Never> in
                         e(self.tag, "Failed to fetch conversations: \(error)", error)
-                        return Empty(completeImmediately: true)
+                        return Empty()
                     }
                     .eraseToAnyPublisher()
             }

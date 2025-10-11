@@ -1,7 +1,7 @@
 import Combine
 
 protocol AuthenticationRepository {
-    func isAuthenticated() -> Bool
+    func isAuthenticated() async throws -> Bool
     
     func getAuthenticationState() -> AnyPublisher<Bool, Never>
     
@@ -16,4 +16,6 @@ protocol AuthenticationRepository {
     func resetPassword(email: String) async throws
     
     func deleteAuthUser() async throws
+    
+    func getToken() async throws -> String?
 }

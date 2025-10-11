@@ -1,7 +1,23 @@
 // App
 "privacy" = "Confidentialité";
 "blocked_users" = "Utilisateurs bloqués";
+"blocked_user" = "Utilisateur bloqué";
 "no_blocked_user" = "Aucun utilisateur bloqué";
+"profile" = "Profil";
+"account" = "Compte";
+"account_infos" = "Informations compte";
+"school_level" = "Niveau d'étude";
+"edit_profile" = "Editer profil";
+"new_profile_picture" = "Nouvelle photo de profil";
+"profile_picture_updated" = "Photo de profil mise à jour";
+"member" = "Membre";
+"user_not_found" = "Aucun utilisateur trouvé";
+"delete_profile_picture_alert_message" = "Voulez-vous supprimer votre photo de profil ?";
+"delete_account_text" = "Supprimer votre compte entraînera la suppression définitive de toutes vos données. Cette action est irréversible.";
+"delete_account" = "Supprimer le compte";
+
+// App error
+"error_logout" = "Une erreur est survenue lors de la déconnexion.";
 
 // Common
 "app_name" = "Grande Ecole du Droit";
@@ -29,9 +45,9 @@
 "report" = "Signaler";
 "block" = "Bloquer";
 "unblock" = "Débloquer";
-"block_user_alert_title" = "Voulez-vous bloquer cet utilisateur ?";
+"block_user_alert_title" = "Bloquer utilisateur ?";
 "block_user_alert_message" = "Vous ne verrez plus aucun de ses contenus.";
-"unblock_user_alert_title" = "Voulez-vous débloquer cet utilisateur ?";
+"unblock_user_alert_message" = "Voulez-vous débloquer cet utilisateur ?";
 
 // Common error
 "mandatory_field_error" = "Champs obligatoire.";
@@ -91,39 +107,20 @@
 "content" = "Contenu";
 "post" = "Poster";
 "no_announcement" = "Aucune annonce";
-"delete_announcement_alert_title" = "Êtes-vous sûr de vouloir supprimer cette annonce ?";
-
-// News errors
-"announcement_refresh_error" = "Impossible de rafraîchir les annonces.";
-
-// Profile
-"profile" = "Profil";
-"account" = "Compte";
-"account_infos" = "Informations compte";
-"school_level" = "Niveau d'étude";
-"edit_profile" = "Editer profil";
-"new_profile_picture" = "Nouvelle photo de profil";
-"profile_picture_updated" = "Photo de profil mise à jour";
-"member" = "Membre";
-"user_not_found" = "Aucun utilisateur trouvé";
-"delete_profile_picture_alert_message" = "Voulez-vous supprimer la photo de profil ?";
-"delete_account_text" = "Supprimer votre compte entraînera la suppression définitive de toutes vos données. Cette action est irréversible.";
-"delete_account" = "Supprimer le compte";
-
-// Profile errors
-"error_logout" = "Une erreur est survenue lors de la déconnexion.";
+"delete_announcement_alert_message" = "Voulez-vous vraiment supprimer cette annonce ?";
 
 // Message
 "messages" = "Messages";
 "tap_to_chat" = "Appuyez pour discuter";
 "message_placeholder" = "Envoyer un message";
 "no_conversation" = "Démarrer une conversation avec vos amis.";
-"new_conversation" = "Nouvelle Conversation";
-"delete_conversation_alert_message" = "Voulez-vous supprimer cette conversation ?";
+"new_conversation" = "Nouvelle conversation";
+"delete_conversation_alert_title" = "Supprimer conversation ?";
+"delete_conversation_alert_message" = "Cela supprimera l'historique des messages de votre côté uniquement.";
 "seen" = "Vu";
 "new_messages" = "Nouveau messages";
-"delete_message_alert_title" = "Supprimer le message";
-"delete_message_alert_content" = "Êtes-vous sûr de vouloir supprimer ce message ?";
+"delete_message_alert_content" = "Voulez-vous supprimer ce message ?";
+"chat_blocked_user_indicator_text" = "Vous ne pouvez pas envoyer de messages à cet utilisateur à moins que vous ne le débloquiez.";
 
 // Message errors
 "error_getting_conversations" = "Une erreur est survenue lors de la récupération des conversations.";
