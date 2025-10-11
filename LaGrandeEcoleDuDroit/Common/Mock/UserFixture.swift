@@ -30,16 +30,16 @@ let userFixture3 = User(
 
 let usersFixture = [
     userFixture,
-    userFixture.with(id: "2", firstName: "Marc", lastName: "Boucher", profilePictureUrl: "https://avatarfiles.alphacoders.com/375/375590.png"),
-    userFixture.with(id: "3", firstName: "François", lastName: "Martin", profilePictureUrl: "https://avatarfiles.alphacoders.com/330/330775.png"),
-    userFixture.with(id: "4", firstName: "Pierre", lastName: "Leclerc", profilePictureUrl: "https://avatarfiles.alphacoders.com/364/364538.png"),
-    userFixture.with(id: "5", firstName: "Élodie", lastName: "LeFevre"),
-    userFixture.with(id: "6", firstName: "Marianne", lastName: "LeFevre"),
-    userFixture.with(id: "7", firstName: "Lucien", lastName: "Robert"),
-    userFixture.with(id: "8", firstName: "Marc", lastName: "Boucher", profilePictureUrl: "https://avatarfiles.alphacoders.com/375/375590.png"),
-    userFixture.with(id: "9", firstName: "François", lastName: "Martin", profilePictureUrl: "https://avatarfiles.alphacoders.com/330/330775.png"),
-    userFixture.with(id: "10", firstName: "Pierre", lastName: "Leclerc", profilePictureUrl: "https://avatarfiles.alphacoders.com/364/364538.png"),
-    userFixture.with(id: "11", firstName: "Élodie", lastName: "LeFevre"),
-    userFixture.with(id: "12", firstName: "Marianne", lastName: "LeFevre"),
-    userFixture.with(id: "13", firstName: "Lucien", lastName: "Robert"),
+    userFixture.copy { $0.id = "2"; $0.firstName = "Marc"; $0.lastName = "Boucher"; $0.profilePictureUrl = "https://avatarfiles.alphacoders.com/375/375590.png" },
+    userFixture.copy { $0.id = "3"; $0.firstName = "François"; $0.lastName = "Martin"; $0.profilePictureUrl = "https://avatarfiles.alphacoders.com/330/330775.png" },
+    userFixture.copy { $0.id = "4"; $0.firstName = "Pierre"; $0.lastName = "Leclerc"; $0.profilePictureUrl = "https://avatarfiles.alphacoders.com/364/364538.png" },
+    userFixture.copy { $0.id = "5"; $0.firstName = "Élodie"; $0.lastName = "LeFevre" },
+    userFixture.copy { $0.id = "6"; $0.firstName = "Marianne"; $0.lastName = "LeFevre" },
+    userFixture.copy { $0.id = "7"; $0.firstName = "Lucien"; $0.lastName = "Robert" },
+    userFixture.copy { $0.id = "8"; $0.firstName = "Marc"; $0.lastName = "Boucher"; $0.profilePictureUrl = "https://avatarfiles.alphacoders.com/375/375590.png" },
+    userFixture.copy { $0.id = "9"; $0.firstName = "François"; $0.lastName = "Martin"; $0.profilePictureUrl = "https://avatarfiles.alphacoders.com/330/330775.png" },
+    userFixture.copy { $0.id = "10"; $0.firstName = "Pierre"; $0.lastName = "Leclerc"; $0.profilePictureUrl = "https://avatarfiles.alphacoders.com/364/364538.png" },
+    userFixture.copy { $0.id = "11"; $0.firstName = "Élodie"; $0.lastName = "LeFevre" },
+    userFixture.copy { $0.id = "12"; $0.firstName = "Marianne"; $0.lastName = "LeFevre" },
+    userFixture.copy { $0.id = "13"; $0.firstName = "Lucien"; $0.lastName = "Robert" }
 ]

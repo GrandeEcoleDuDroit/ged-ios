@@ -1,34 +1,14 @@
-struct User: Codable, Hashable, Identifiable {
-    let id: String
-    let firstName: String
-    let lastName: String
-    let email: String
-    let schoolLevel: SchoolLevel
-    let isMember: Bool
-    let profilePictureUrl: String?
+struct User: Codable, Hashable, Identifiable, Copyable {
+    var id: String
+    var firstName: String
+    var lastName: String
+    var email: String
+    var schoolLevel: SchoolLevel
+    var isMember: Bool
+    var profilePictureUrl: String?
     
     var fullName: String {
         firstName + " " + lastName
-    }
-    
-    func with(
-        id: String? = nil,
-        firstName: String? = nil,
-        lastName: String? = nil,
-        email: String? = nil,
-        schoolLevel: SchoolLevel? = nil,
-        isMember: Bool? = nil,
-        profilePictureUrl: String? = nil
-    ) -> User {
-        User(
-            id: id ?? self.id,
-            firstName: firstName ?? self.firstName,
-            lastName: lastName ?? self.lastName,
-            email: email ?? self.email,
-            schoolLevel: schoolLevel ?? self.schoolLevel,
-            isMember: isMember ?? self.isMember,
-            profilePictureUrl: profilePictureUrl ?? self.profilePictureUrl
-        )
     }
 }
 

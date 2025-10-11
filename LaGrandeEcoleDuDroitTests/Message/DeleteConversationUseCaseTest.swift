@@ -30,15 +30,13 @@ class DeleteConversationUseCaseTest {
 
 private class UpdatedRemoteConversationDeleteTime: MockConversationRepository {
     private let conversationChangeSubject = CurrentValueSubject<CoreDataChange<Conversation>, Never>(
-        .init(inserted: [conversationFixture], updated: [], deleted: [])
+        CoreDataChange(inserted: [conversationFixture])
     )
     override var conversationChanges: AnyPublisher<CoreDataChange<Conversation>, Never> {
         conversationChangeSubject.eraseToAnyPublisher()
     }
     
-    override func deleteConversation(conversation: Conversation, userId: String) async throws {
-        conversationChangeSubject.send(
-            .init(inserted: [], updated: [conversation], deleted: [])
-        )
+    override func deleteConversation(conversation: Conversation, userId: String, deleteTime: Date) async throws {
+        conversationChangeSubject.send(CoreDataChange(updated: [conversation]))
     }
 }

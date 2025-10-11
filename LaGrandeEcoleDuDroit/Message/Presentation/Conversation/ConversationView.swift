@@ -33,13 +33,14 @@ struct ConversationDestination: View {
         }
         .alert(
             errorMessage,
-            isPresented: $showErrorAlert
-        ) {
-            Button(
-                getString(.ok),
-                action: { showErrorAlert = false }
-            )
-        }
+            isPresented: $showErrorAlert,
+            actions: {
+                Button(
+                    getString(.ok),
+                    action: { showErrorAlert = false }
+                )
+            }
+        )
     }
 }
 
@@ -108,19 +109,21 @@ private struct ConversationView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .alert(
-            getString(.deleteConversationAlertMessage),
-            isPresented: $showDeleteAlert
-        ) {
-            Button(getString(.cancel), role: .cancel) {
-                showDeleteAlert = false
-            }
-            Button(getString(.delete), role: .destructive) {
-                if let selectedConversation {
-                    onDeleteConversationClick(selectedConversation.toConversation())
+            getString(.deleteConversationAlertTitle),
+            isPresented: $showDeleteAlert,
+            actions: {
+                Button(getString(.cancel), role: .cancel) {
+                    showDeleteAlert = false
                 }
-                showDeleteAlert = false
-            }
-        }
+                Button(getString(.delete), role: .destructive) {
+                    if let selectedConversation {
+                        onDeleteConversationClick(selectedConversation.toConversation())
+                    }
+                    showDeleteAlert = false
+                }
+            },
+            message: { Text(getString(.deleteConversationAlertMessage)) }
+        )
     }
 }
 

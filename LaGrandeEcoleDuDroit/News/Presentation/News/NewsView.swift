@@ -31,12 +31,13 @@ struct NewsDestination: View {
             }
             .alert(
                 errorMessage,
-                isPresented: $showErrorAlert
-            ) {
-                Button(getString(.ok)) {
-                    showErrorAlert = false
+                isPresented: $showErrorAlert,
+                actions: {
+                    Button(getString(.ok)) {
+                        showErrorAlert = false
+                    }
                 }
-            }
+            )
         }
     }
 }
@@ -163,20 +164,21 @@ private struct NewsView: View {
             )
         }
         .alert(
-            getString(.deleteAnnouncementAlertTitle),
-            isPresented: $showDeleteAnnouncementAlert
-        ) {
-            Button(getString(.cancel), role: .cancel) {
-                showDeleteAnnouncementAlert = false
-            }
-            
-            Button(getString(.delete), role: .destructive) {
-                if let clickedAnnouncement {
-                    onDeleteAnnouncementClick(clickedAnnouncement)
+            getString(.deleteAnnouncementAlertMessage),
+            isPresented: $showDeleteAnnouncementAlert,
+            actions: {
+                Button(getString(.cancel), role: .cancel) {
+                    showDeleteAnnouncementAlert = false
                 }
-                showDeleteAnnouncementAlert = false
+                
+                Button(getString(.delete), role: .destructive) {
+                    if let clickedAnnouncement {
+                        onDeleteAnnouncementClick(clickedAnnouncement)
+                    }
+                    showDeleteAnnouncementAlert = false
+                }
             }
-        }
+        )
     }
 }
 

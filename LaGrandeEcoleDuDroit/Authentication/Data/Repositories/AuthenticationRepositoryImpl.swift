@@ -3,39 +3,44 @@ import os
 import FirebaseAuth
 
 class AuthenticationRepositoryImpl: AuthenticationRepository {
-    private let firebaseAuthenticationRepository: FirebaseAuthenticationRepository
     private let authenticationLocalDataSource: AuthenticationLocalDataSource
+    private let authenticationRemoteDataSource: AuthenticationRemoteDataSource
     private let authenticationSubjet = PassthroughSubject<Bool, Never>()
+    private var token: String?
+    private var cancellables = Set<AnyCancellable>()
     
     init(
-        firebaseAuthenticationRepository: FirebaseAuthenticationRepository,
-        authenticationLocalDataSource: AuthenticationLocalDataSource
+        authenticationLocalDataSource: AuthenticationLocalDataSource,
+        authenticationRemoteDataSource: AuthenticationRemoteDataSource
     ) {
-        self.firebaseAuthenticationRepository = firebaseAuthenticationRepository
+        self.authenticationRemoteDataSource = authenticationRemoteDataSource
         self.authenticationLocalDataSource = authenticationLocalDataSource
+        listenToken()
     }
     
-    func isAuthenticated() -> Bool {
-        authenticationLocalDataSource.isAuthenticated() &&
-            firebaseAuthenticationRepository.isAuthenticated()
+    func isAuthenticated() async throws -> Bool {
+        let localResult = authenticationLocalDataSource.isAuthenticated()
+        let remoteResult = try await authenticationRemoteDataSource.isAuthenticated()
+        return localResult && remoteResult
     }
     
     func getAuthenticationState() -> AnyPublisher<Bool, Never> {
-        authenticationSubjet
-            .prepend(isAuthenticated())
+        let localAuthenticationState = authenticationLocalDataSource.isAuthenticated()
+        return authenticationSubjet
+            .prepend(localAuthenticationState)
             .eraseToAnyPublisher()
     }
     
     func loginWithEmailAndPassword(email: String, password: String) async throws {
-        try await firebaseAuthenticationRepository.loginWithEmailAndPassword(email: email, password: password)
+        try await authenticationRemoteDataSource.loginWithEmailAndPassword(email: email, password: password)
     }
     
     func registerWithEmailAndPassword(email: String, password: String) async throws -> String {
-        try await firebaseAuthenticationRepository.registerWithEmailAndPassword(email: email, password: password)
+        try await authenticationRemoteDataSource.registerWithEmailAndPassword(email: email, password: password)
     }
     
     func logout() {
-        firebaseAuthenticationRepository.logout()
+        authenticationRemoteDataSource.logout()
         setAuthenticated(false)
     }
     
@@ -45,11 +50,21 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     }
     
     func resetPassword(email: String) async throws {
-        try await firebaseAuthenticationRepository.resetPassword(email: email)
+        try await authenticationRemoteDataSource.resetPassword(email: email)
     }
     
     func deleteAuthUser() async throws {
-        try await firebaseAuthenticationRepository.deleteAuthUser()
+        try await authenticationRemoteDataSource.deleteAuthUser()
         setAuthenticated(false)
+    }
+    
+    func getToken() async throws -> String? {
+        token != nil ? token : try await authenticationRemoteDataSource.getToken()
+    }
+    
+    private func listenToken() {
+        authenticationRemoteDataSource.listenToken().sink { [weak self] token in
+            self?.token = token
+        }.store(in: &cancellables)
     }
 }

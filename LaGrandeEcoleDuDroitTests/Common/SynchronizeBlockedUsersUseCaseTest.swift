@@ -1,4 +1,5 @@
 import Testing
+import Combine
 
 @testable import GrandeEcoleDuDroit
 
@@ -59,16 +60,16 @@ private class UnblockedUsers: MockBlockedUserRepository {
     let usersIds: Set<String>
     var userUnblockedIds: Set<String> = []
     
+    override var blockedUserIds: AnyPublisher<Set<String>, Never> {
+        Just(usersIds).eraseToAnyPublisher()
+    }
+    
     init(_ usersIds: Set<String>) {
         self.usersIds = usersIds
     }
     
     override func unblockUser(currentUserId: String, userId: String) async throws {
         userUnblockedIds.insert(userId)
-    }
-    
-    override func getLocalBlockedUserIds() -> Set<String> {
-        usersIds
     }
 }
 

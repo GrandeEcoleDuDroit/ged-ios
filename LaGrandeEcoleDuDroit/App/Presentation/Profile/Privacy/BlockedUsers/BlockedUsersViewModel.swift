@@ -43,7 +43,7 @@ class BlockedUsersViewModel: ViewModel {
     }
 
     private func initBlockedUsers() {
-        let blockedUserIds = blockedUserRepository.getLocalBlockedUserIds()
+        let blockedUserIds = blockedUserRepository.currentBlockedUserIds
         for userId in blockedUserIds {
             Task { @MainActor [weak self] in
                 if let user = try? await self?.userRepository.getUser(userId: userId) {

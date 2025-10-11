@@ -13,7 +13,7 @@ class SynchronizeBlockedUsersUseCase {
     func execute() async throws {
         guard let currentUserId = userRepository.currentUser?.id else { return }
         let remoteBlockedUserIds = try await blockedUserRepository.getRemoteBlockedUserIds(currentUserId: currentUserId)
-        let localBlockedUserIds = blockedUserRepository.getLocalBlockedUserIds()
+        let localBlockedUserIds = blockedUserRepository.currentBlockedUserIds
         
         let usersToBlock = remoteBlockedUserIds.subtracting(localBlockedUserIds)
         let usersToUnblock = localBlockedUserIds.subtracting(remoteBlockedUserIds)

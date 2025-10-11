@@ -33,12 +33,13 @@ struct UserDestination: View {
             }
             .alert(
                 errorMessage,
-                isPresented: $showErrorAlert
-            ) {
-                Button(getString(.ok)) {
-                    showErrorAlert = false
+                isPresented: $showErrorAlert,
+                actions: {
+                    Button(getString(.ok)) {
+                        showErrorAlert = false
+                    }
                 }
-            }
+            )
         } else {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
@@ -124,32 +125,35 @@ private struct UserView: View {
         }
         .alert(
             getString(.blockUserAlertTitle),
-            isPresented: $showBlockAlert
-        ) {
-            Button(
-                getString(.cancel),
-                role: .cancel,
-                action: { showBlockAlert = false }
-            )
-            Button(getString(.block)) {
-                onBlockUserClick(user.id)
+            isPresented: $showBlockAlert,
+            actions: {
+                Button(
+                    getString(.cancel),
+                    role: .cancel,
+                    action: { showBlockAlert = false }
+                )
+                Button(getString(.block)) {
+                    onBlockUserClick(user.id)
+                }
+            },
+            message: {
+                Text(getString(.blockUserAlertMessage))
             }
-        } message: {
-            Text(getString(.blockUserAlertMessage))
-        }
+        )
         .alert(
-            getString(.unblockUserAlertTitle),
-            isPresented: $showUnblockAlert
-        ) {
-            Button(
-                getString(.cancel),
-                role: .cancel,
-                action: { showUnblockAlert = false }
-            )
-            Button(getString(.unblock)) {
-                onUnblockUserClick(user.id)
+            getString(.unblockUserAlertMessage),
+            isPresented: $showUnblockAlert,
+            actions: {
+                Button(
+                    getString(.cancel),
+                    role: .cancel,
+                    action: { showUnblockAlert = false }
+                )
+                Button(getString(.unblock)) {
+                    onUnblockUserClick(user.id)
+                }
             }
-        }
+        )
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding(.horizontal)
     }

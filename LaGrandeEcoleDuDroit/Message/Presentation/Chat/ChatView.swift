@@ -29,31 +29,40 @@ struct ChatDestination: View {
             messages: viewModel.uiState.messages,
             messageText: viewModel.uiState.messageText,
             loading: viewModel.uiState.loading,
+            userBlocked: viewModel.uiState.userBlocked,
             canLoadMoreMessages: viewModel.uiState.canLoadMoreMessages,
             onBackClick: onBackClick,
             onSendMessagesClick: viewModel.sendMessage,
             onMessageTextChange: viewModel.onMessageTextChange,
             loadMoreMessages: viewModel.loadMoreMessages,
-            onErrorMessageClick: viewModel.deleteErrorMessage,
+            onDeleteErrorMessageClick: viewModel.deleteErrorMessage,
             onResendMessage: viewModel.resendErrorMessage,
             onInterlocutorClick: onInterlocutorClick,
-            onReportMessageClick: viewModel.reportMessage
+            onReportMessageClick: viewModel.reportMessage,
+            onDeleteChatClick: viewModel.deleteChat,
+            onUnblockUserClick: viewModel.unblockUser,
+            onInterlocutorProfilePictureClick: onInterlocutorClick
         )
         .onReceive(viewModel.$event) { event in
             if let errorEvent = event as? ErrorEvent {
                 errorMessage = errorEvent.message
                 showErrorAlert = true
+            } else if let messageEvent = event as? ChatViewModel.MessageEvent {
+                switch messageEvent {
+                    case .chatDeleted: onBackClick()
+                }
             }
         }
         .alert(
             errorMessage,
-            isPresented: $showErrorAlert
-        ) {
-            Button(
-                getString(.ok),
-                action: { showErrorAlert = false }
-            )
-        }
+            isPresented: $showErrorAlert,
+            actions: {
+                Button(
+                    getString(.ok),
+                    action: { showErrorAlert = false }
+                )
+            }
+        )
         .navigationBarBackButtonHidden()
     }
 }
@@ -63,21 +72,27 @@ private struct ChatView: View {
     let messages: [Message]
     let messageText: String
     let loading: Bool
+    let userBlocked: Bool
     let canLoadMoreMessages: Bool
     let onBackClick: () -> Void
     let onSendMessagesClick: () -> Void
     let onMessageTextChange: (String) -> Void
     let loadMoreMessages: (Int) -> Void
-    let onErrorMessageClick: (Message) -> Void
+    let onDeleteErrorMessageClick: (Message) -> Void
     let onResendMessage: (Message) -> Void
     let onInterlocutorClick: (User) -> Void
     let onReportMessageClick: (MessageReport) -> Void
+    let onDeleteChatClick: () -> Void
+    let onUnblockUserClick: (String) -> Void
+    let onInterlocutorProfilePictureClick: (User) -> Void
     
     @State private var showSentMessageBottomSheet: Bool = false
     @State private var showReceivedMessageBottomSheet: Bool = false
     @State private var showReportMessageBottomSheet: Bool = false
     @State private var clickedMessage: Message?
     @State private var showDeleteAnnouncementAlert: Bool = false
+    @State private var showDeleteChatAlert: Bool = false
+    @State private var showUnblockAlert: Bool = false
 
     var body: some View {
         VStack(spacing: GedSpacing.smallMedium) {
@@ -95,13 +110,17 @@ private struct ChatView: View {
                 onReceivedMessageLongClick: {
                     clickedMessage = $0
                     showReceivedMessageBottomSheet = true
-                }
+                },
+                onInterlocutorProfilePictureClick: { onInterlocutorProfilePictureClick(conversation.interlocutor) }
             )
             
-            MessageInput(
-                text: messageText,
-                onTextChange: onMessageTextChange,
-                onSendClick: onSendMessagesClick
+            MessageBottomSection(
+                userBlocked: userBlocked,
+                messageText: messageText,
+                onMessageTextChange: onMessageTextChange,
+                onSendMessagesClick: onSendMessagesClick,
+                onDeleteChatClick: { showDeleteChatAlert = true },
+                onUnblockUserClick: { showUnblockAlert = true }
             )
         }
         .padding(.horizontal)
@@ -153,7 +172,7 @@ private struct ChatView: View {
             )
         }
         .alert(
-            getString(.deleteMessageAlertTitle),
+            getString(.deleteMessageAlertContent),
             isPresented: $showDeleteAnnouncementAlert,
             actions: {
                 Button(getString(.cancel), role: .cancel) {
@@ -162,12 +181,51 @@ private struct ChatView: View {
                 
                 Button(getString(.delete), role: .destructive) {
                     if let clickedMessage {
-                        onErrorMessageClick(clickedMessage)
+                        onDeleteErrorMessageClick(clickedMessage)
                     }
                     showDeleteAnnouncementAlert = false
                 }
+            }
+        )
+        .alert(
+            getString(.deleteConversationAlertTitle),
+            isPresented: $showDeleteChatAlert,
+            actions: {
+                Button(
+                    getString(.cancel),
+                    role: .cancel,
+                    action: { showUnblockAlert = false }
+                )
+                
+                Button(
+                    getString(.unblock),
+                    role: .destructive,
+                    action: {
+                        showDeleteChatAlert = false
+                        onDeleteChatClick()
+                    }
+                )
             },
-            message: { Text(getString(.deleteMessageAlertContent)) }
+            message: { Text(getString(.deleteConversationAlertMessage)) }
+        )
+        .alert(
+            getString(.unblockUserAlertMessage),
+            isPresented: $showUnblockAlert,
+            actions: {
+                Button(
+                    getString(.cancel),
+                    role: .cancel,
+                    action: { showUnblockAlert = false }
+                )
+                
+                Button(
+                    getString(.unblock),
+                    action: {
+                        showUnblockAlert = false
+                        onUnblockUserClick(conversation.interlocutor.id)
+                    }
+                )
+            }
         )
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -236,6 +294,30 @@ private struct ReceivedMessageBottomSheet: View {
     }
 }
 
+private struct MessageBottomSection: View {
+    let userBlocked: Bool
+    let messageText: String
+    let onMessageTextChange: (String) -> Void
+    let onSendMessagesClick: () -> Void
+    let onDeleteChatClick: () -> Void
+    let onUnblockUserClick: () -> Void
+    
+    var body: some View {
+        if userBlocked {
+            MessageBlockedUserIndicator(
+                onDeleteChatClick: onDeleteChatClick,
+                onUnblockUserClick: onUnblockUserClick
+            )
+        } else {
+            MessageInput(
+                text: messageText,
+                onTextChange: onMessageTextChange,
+                onSendClick: onSendMessagesClick
+            )
+        }
+    }
+}
+
 #Preview {
     NavigationStack {
         ChatView(
@@ -243,15 +325,19 @@ private struct ReceivedMessageBottomSheet: View {
             messages: messagesFixture,
             messageText: "",
             loading: false,
+            userBlocked: false,
             canLoadMoreMessages: true,
             onBackClick: {},
             onSendMessagesClick: {},
             onMessageTextChange: { _ in },
             loadMoreMessages: { _ in },
-            onErrorMessageClick: { _ in },
+            onDeleteErrorMessageClick: { _ in },
             onResendMessage: { _ in },
             onInterlocutorClick: { _ in },
-            onReportMessageClick: { _ in }
+            onReportMessageClick: { _ in },
+            onDeleteChatClick: {},
+            onUnblockUserClick: { _ in },
+            onInterlocutorProfilePictureClick: { _ in }
         )
         .background(Color.background)
     }

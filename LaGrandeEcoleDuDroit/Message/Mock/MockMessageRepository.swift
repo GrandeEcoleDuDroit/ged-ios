@@ -22,7 +22,7 @@ class MockMessageRepository: MessageRepository {
 
     func updateLocalMessage(message: Message) {}
     
-    func updateSeenMessages(conversationId: String, userId: String) async throws {}
+    func updateSeenMessages(conversationId: String, currentUserId: String) async throws {}
     
     func updateSeenMessage(message: Message) async throws {}
     

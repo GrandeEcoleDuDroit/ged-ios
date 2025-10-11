@@ -42,8 +42,8 @@ private class NilRemoteUser: MockUserRepository {
         Just(userFixture).compactMap { $0 }.eraseToAnyPublisher()
     }
     
-    override func getUserPublisher(userId: String) -> AnyPublisher<User?, any Error> {
-        Just(nil).setFailureType(to: Error.self).eraseToAnyPublisher()
+    override func getUserPublisher(userId: String) -> AnyPublisher<User?, Never> {
+        Just(nil).eraseToAnyPublisher()
     }
 }
 
@@ -55,8 +55,8 @@ private class UserStored: MockUserRepository {
         Just(userFixture).eraseToAnyPublisher()
     }
     
-    override func getUserPublisher(userId: String) -> AnyPublisher<User?, any Error> {
-        Just(userFixture2).setFailureType(to: Error.self).eraseToAnyPublisher()
+    override func getUserPublisher(userId: String) -> AnyPublisher<User?, Never> {
+        Just(userFixture2).eraseToAnyPublisher()
     }
     
     override func storeUser(_ user: User) {

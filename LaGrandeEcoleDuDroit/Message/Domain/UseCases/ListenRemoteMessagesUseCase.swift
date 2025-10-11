@@ -45,7 +45,7 @@ class ListenRemoteMessagesUseCase {
     private func updateMessageCancellables(for conversation: Conversation) {
         Task {
             do {
-                let blockedUserIds = blockedUserRepository.getLocalBlockedUserIds()
+                let blockedUserIds = blockedUserRepository.currentBlockedUserIds
                 
                 if !blockedUserIds.contains(conversation.interlocutor.id) {
                     let cancellable = try await listenRemoteMessages(conversation)
@@ -64,8 +64,9 @@ class ListenRemoteMessagesUseCase {
         return messageRepository.fetchRemoteMessages(conversation: conversation, offsetTime: offsetTime)
             .catch { error -> Empty<Message, Never> in
                 e(self.tag, "Failed to fetch remote message with \(conversation.interlocutor.fullName): \(error)", error)
-                return Empty(completeImmediately: true)
-            }.sink { [weak self] message in
+                return Empty()
+            }
+            .sink { [weak self] message in
                 Task {
                     try? await self?.messageRepository.upsertLocalMessage(message: message)
                 }

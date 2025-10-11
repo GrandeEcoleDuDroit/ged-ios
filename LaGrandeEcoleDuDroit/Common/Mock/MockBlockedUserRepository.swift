@@ -9,9 +9,9 @@ class MockBlockedUserRepository: BlockedUserRepository {
         Empty().eraseToAnyPublisher()
     }
     
-    func getRemoteBlockedUserIds(currentUserId: String) async throws -> Set<String> { Set<String>() }
+    var currentBlockedUserIds: Set<String> { Set<String>() }
     
-    func getLocalBlockedUserIds() -> Set<String> { Set<String>() }
+    func getRemoteBlockedUserIds(currentUserId: String) async throws -> Set<String> { Set<String>() }
     
     func blockUser(currentUserId: String, userId: String) async throws {}
     

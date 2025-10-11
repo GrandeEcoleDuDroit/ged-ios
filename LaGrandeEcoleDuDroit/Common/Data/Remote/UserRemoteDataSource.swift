@@ -8,7 +8,7 @@ class UserRemoteDataSource {
         self.userApi = userApi
     }
     
-    func listenUser(userId: String) -> AnyPublisher<User?, Error> {
+    func listenUser(userId: String) -> AnyPublisher<User?, Never> {
         userApi.listenUser(userId: userId).eraseToAnyPublisher()
     }
     

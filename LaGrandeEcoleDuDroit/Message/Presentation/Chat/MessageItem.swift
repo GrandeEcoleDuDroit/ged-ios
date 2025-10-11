@@ -55,11 +55,13 @@ struct ReceiveMessageItem: View {
     let profilePictureUrl: String?
     let displayProfilePicture: Bool
     let onLongClick: () -> Void
+    let onInterlocutorProfilePictureClick: () -> Void
     
     var body: some View {
         HStack(alignment: .bottom) {
             if displayProfilePicture {
                 ProfilePicture(url: profilePictureUrl, scale: 0.3)
+                    .onTapGesture(perform: onInterlocutorProfilePictureClick)
             }
             else {
                 ProfilePicture(url: nil, scale: 0.3)
@@ -180,53 +182,81 @@ struct NewMessageIndicator: View {
     }
 }
 
+struct MessageBlockedUserIndicator: View {
+    let onDeleteChatClick: () -> Void
+    let onUnblockUserClick: () -> Void
+    
+    var body: some View {
+        VStack(spacing: GedSpacing.medium) {
+            VStack(spacing: GedSpacing.small) {
+                Text(getString(.blockedUser))
+                    .font(.titleSmall)
+                
+                Text(getString(.chatBlockedUserIndicatorText))
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.informationText)
+                    .font(.bodySmall)
+            }
+                
+            HStack {
+                Button(getString(.delete)) {
+                    onDeleteChatClick()
+                }
+                .foregroundStyle(.red)
+                .frame(maxWidth: .infinity, alignment: .center)
+                
+                Button(getString(.unblock)) {
+                    onUnblockUserClick()
+                }
+                .foregroundStyle(.gedPrimary)
+                .frame(maxWidth: .infinity, alignment: .center)
+            }.frame(maxWidth: .infinity, alignment: .center)
+        }
+    }
+}
+
 #Preview {
     VStack(spacing: GedSpacing.medium) {
-        ZStack(alignment: .bottom) {
-            ScrollView {
-                ReceiveMessageItem(
-                    message: messageFixture,
-                    profilePictureUrl: nil,
-                    displayProfilePicture: true,
-                    onLongClick: {}
-                )
-                
-                ReceiveMessageItem(
-                    message: messageFixture2,
-                    profilePictureUrl: nil,
-                    displayProfilePicture: true,
-                    onLongClick: {}
-                )
-                
-                SentMessageItem(
-                    message: messageFixture.copy { $0.state = .error },
-                    showSeen: false,
-                    onClick: {}
-                )
-                
-                SentMessageItem(
-                    message: messageFixture.copy { $0.state = .sending },
-                    showSeen: false,
-                    onClick: {}
-                )
-                
-                SentMessageItem(
-                    message: messageFixture2,
-                    showSeen: true,
-                    onClick: {}
-                )
-            }
-            
-            NewMessageIndicator(onClick: {})
-        }
-
+        ReceiveMessageItem(
+            message: messageFixture,
+            profilePictureUrl: nil,
+            displayProfilePicture: true,
+            onLongClick: {},
+            onInterlocutorProfilePictureClick: {}
+        )
+        
+        SentMessageItem(
+            message: messageFixture.copy { $0.state = .error },
+            showSeen: false,
+            onClick: {}
+        )
+        
+        SentMessageItem(
+            message: messageFixture.copy { $0.state = .sending },
+            showSeen: false,
+            onClick: {}
+        )
+        
+        SentMessageItem(
+            message: messageFixture,
+            showSeen: true,
+            onClick: {}
+        )
+        
+        NewMessageIndicator(onClick: {})
+        
         MessageInput(
             text: "",
             onTextChange: { _ in },
             onSendClick: {}
         )
+        
+        MessageBlockedUserIndicator(
+            onDeleteChatClick: {},
+            onUnblockUserClick: {}
+        )
     }
-    .padding(.top)
+    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     .padding(.horizontal)
     .background(Color.background)
 }

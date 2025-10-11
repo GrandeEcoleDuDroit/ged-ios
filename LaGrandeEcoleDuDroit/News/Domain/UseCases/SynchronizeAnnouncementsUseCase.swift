@@ -13,7 +13,7 @@ class SynchronizeAnnouncementsUseCase {
     func execute() async throws {
         let announcements = announcementRepository.currentAnnouncements
         let remoteAnnouncements = try await announcementRepository.getRemoteAnnouncements()
-        let blockedUserIds = blockedUserRepository.getLocalBlockedUserIds()
+        let blockedUserIds = blockedUserRepository.currentBlockedUserIds
         
         let announcementToDelete = announcements.filter {
             ($0.state == .published && !remoteAnnouncements.contains($0)) ||

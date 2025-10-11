@@ -5,9 +5,9 @@ protocol BlockedUserRepository {
     
     var blockedUserIds: AnyPublisher<Set<String>, Never> { get }
     
-    func getRemoteBlockedUserIds(currentUserId: String) async throws -> Set<String>
+    var currentBlockedUserIds: Set<String> { get }
     
-    func getLocalBlockedUserIds() -> Set<String>
+    func getRemoteBlockedUserIds(currentUserId: String) async throws -> Set<String>
     
     func blockUser(currentUserId: String, userId: String) async throws
     

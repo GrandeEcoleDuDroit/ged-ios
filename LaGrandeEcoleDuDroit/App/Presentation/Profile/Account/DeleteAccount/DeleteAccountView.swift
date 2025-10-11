@@ -21,12 +21,13 @@ struct DeleteAccountDestination: View {
         }
         .alert(
             errorMessage,
-            isPresented: $showErrorAlert
-        ) {
-            Button(getString(.ok)) {
-                showErrorAlert = false
+            isPresented: $showErrorAlert,
+            actions: {
+                Button(getString(.ok)) {
+                    showErrorAlert = false
+                }
             }
-        }
+        )
     }
 }
 

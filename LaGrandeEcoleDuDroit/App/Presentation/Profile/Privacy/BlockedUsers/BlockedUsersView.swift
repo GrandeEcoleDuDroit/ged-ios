@@ -27,12 +27,13 @@ struct BlockedUserDestination: View {
         }
         .alert(
             errorMessage,
-            isPresented: $showErrorAlert
-        ) {
-            Button(getString(.ok)) {
-                showErrorAlert = false
+            isPresented: $showErrorAlert,
+            actions: {
+                Button(getString(.ok)) {
+                    showErrorAlert = false
+                }
             }
-        }
+        )
     }
 }
 
@@ -86,22 +87,23 @@ private struct BlockedUsersView: View {
         .navigationTitle(getString(.blockedUsers))
         .navigationBarTitleDisplayMode(.inline)
         .alert(
-            getString(.unblockUserAlertTitle),
-            isPresented: $showUnblockAlert
-        ) {
-            Button(
-                getString(.cancel),
-                role: .cancel,
-                action: { showUnblockAlert = false }
-            )
-            
-            Button(getString(.unblock)) {
-                if let clickedUser {
-                    onUnblockClick(clickedUser.id)
+            getString(.unblockUserAlertMessage),
+            isPresented: $showUnblockAlert,
+            actions: {
+                Button(
+                    getString(.cancel),
+                    role: .cancel,
+                    action: { showUnblockAlert = false }
+                )
+                
+                Button(getString(.unblock)) {
+                    if let clickedUser {
+                        onUnblockClick(clickedUser.id)
+                    }
+                    showUnblockAlert = false
                 }
-                showUnblockAlert = false
             }
-        }
+        )
     }
 }
 

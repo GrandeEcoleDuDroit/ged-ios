@@ -30,10 +30,11 @@ class SendUnsentConversationUseCase {
                         try await self.conversationRepository.createRemoteConversation(conversation: conversation, userId: userId)
                     
                     case .deleting:
-                        if conversation.deleteTime != nil {
+                        if let deleteTime = conversation.deleteTime {
                             try await self.conversationRepository.deleteConversation(
                                 conversation: conversation,
-                                userId: userId
+                                userId: userId,
+                                deleteTime: deleteTime
                             )
                             try await self.messageRepository.deleteLocalMessages(conversationId: conversation.id)
                         }

@@ -8,6 +8,7 @@ struct MessageFeed: View {
     let loadMoreMessages: (Int) -> Void
     let onErrorMessageClick: (Message) -> Void
     let onReceivedMessageLongClick: (Message) -> Void
+    let onInterlocutorProfilePictureClick: () -> Void
 
     var body: some View {
         List {
@@ -18,7 +19,8 @@ struct MessageFeed: View {
                         message: message,
                         index: index,
                         onErrorMessageClick: onErrorMessageClick,
-                        onReceivedMessageLongClick: onReceivedMessageLongClick
+                        onReceivedMessageLongClick: onReceivedMessageLongClick,
+                        onInterlocutorProfilePictureClick: onInterlocutorProfilePictureClick
                     )
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())
@@ -50,6 +52,7 @@ private struct Content: View {
     let index: Int
     let onErrorMessageClick: (Message) -> Void
     let onReceivedMessageLongClick: (Message) -> Void
+    let onInterlocutorProfilePictureClick: () -> Void
     
     var body: some View {
         let previousMessage = index < messages.count - 1 ? messages[index + 1] : nil
@@ -68,7 +71,8 @@ private struct Content: View {
             displayProfilePicture: condition.displayProfilePicture,
             profilePictureUrl: conversation.interlocutor.profilePictureUrl,
             onErrorMessageClick: onErrorMessageClick,
-            onLongClick: { onReceivedMessageLongClick(message) }
+            onLongClick: { onReceivedMessageLongClick(message) },
+            onInterlocutorProfilePictureClick: onInterlocutorProfilePictureClick
         )
         .messageItemPadding(
             sameSender: condition.sameSender,
@@ -94,6 +98,7 @@ private struct GetMessageItem: View {
     let profilePictureUrl: String?
     let onErrorMessageClick: (Message) -> Void
     let onLongClick: () -> Void
+    let onInterlocutorProfilePictureClick: () -> Void
     
     var body: some View {
         if message.senderId == interlocutorId {
@@ -101,7 +106,8 @@ private struct GetMessageItem: View {
                 message: message,
                 profilePictureUrl: profilePictureUrl,
                 displayProfilePicture: displayProfilePicture,
-                onLongClick: onLongClick
+                onLongClick: onLongClick,
+                onInterlocutorProfilePictureClick: onInterlocutorProfilePictureClick
             )
         } else {
             VStack(alignment: .trailing) {
@@ -208,7 +214,8 @@ private struct MessageCondition {
         canLoadMoreMessages: true,
         loadMoreMessages: { _ in },
         onErrorMessageClick: { _ in },
-        onReceivedMessageLongClick: { _ in }
+        onReceivedMessageLongClick: { _ in },
+        onInterlocutorProfilePictureClick: {}
     )
     .background(Color.background)
 }

@@ -1,4 +1,5 @@
 import Testing
+import Combine
 
 @testable import GrandeEcoleDuDroit
 
@@ -121,11 +122,11 @@ private class AnnouncementsUpserted: MockAnnouncementRepository {
 private class BlockedUsers: MockBlockedUserRepository {
     private let declaredBlockedUserIds: Set<String>
     
-    init(declaredBlockedUserIds: Set<String>) {
-        self.declaredBlockedUserIds = declaredBlockedUserIds
+    override var blockedUserIds: AnyPublisher<Set<String>, Never> {
+        Just(declaredBlockedUserIds).eraseToAnyPublisher()
     }
     
-    override func getLocalBlockedUserIds() -> Set<String> {
-        declaredBlockedUserIds
+    init(declaredBlockedUserIds: Set<String>) {
+        self.declaredBlockedUserIds = declaredBlockedUserIds
     }
 }

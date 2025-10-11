@@ -2,7 +2,6 @@ import Foundation
 import Combine
 
 class ChatViewModel: ViewModel {
-    private var conversation: Conversation
     private let userRepository: UserRepository
     private let messageRepository: MessageRepository
     private let conversationRepository: ConversationRepository
@@ -14,8 +13,9 @@ class ChatViewModel: ViewModel {
     @Published var uiState: ChatUiState = ChatUiState()
     @Published private(set) var event: SingleUiEvent? = nil
     private var messagesDict: [Int64:Message] = [:]
+    private var conversation: Conversation
+    private let currentUser: User?
     private var cancellables: Set<AnyCancellable> = []
-    private let user: User?
     
     init(
         conversation: Conversation,
@@ -36,7 +36,7 @@ class ChatViewModel: ViewModel {
         self.networkMonitor = networkMonitor
         self.blockedUserRepository = blockedUserRepository
         
-        user = userRepository.currentUser
+        currentUser = userRepository.currentUser
         getMessages(offset: 0)
         listenMessages()
         listenConversationChanges()
@@ -87,11 +87,11 @@ class ChatViewModel: ViewModel {
     }
     
     func sendMessage() {
-        guard !uiState.messageText.isEmpty, let user else { return }
+        guard !uiState.messageText.isEmpty, let currentUser else { return }
         
         let message = Message(
             id: GenerateIdUseCase.intId(),
-            senderId: user.id,
+            senderId: currentUser.id,
             recipientId: conversation.interlocutor.id,
             conversationId: conversation.id,
             content: uiState.messageText,
@@ -104,7 +104,7 @@ class ChatViewModel: ViewModel {
             await sendMessageUseCase.execute(
                 conversation: conversation,
                 message: message,
-                userId: user.id
+                userId: currentUser.id
             )
         }
         
@@ -116,13 +116,13 @@ class ChatViewModel: ViewModel {
     }
     
     func resendErrorMessage(_ message: Message) {
-        guard let user else { return }
+        guard let currentUser else { return }
         
         Task {
             await sendMessageUseCase.execute(
                 conversation: conversation,
                 message: message.copy { $0.date = Date() },
-                userId: user.id
+                userId: currentUser.id
             )
         }
     }
@@ -161,6 +161,56 @@ class ChatViewModel: ViewModel {
         }
     }
     
+    func unblockUser(userId: String) {
+        guard let currentUserId = currentUser?.id else {
+            return
+        }
+        
+        uiState.loading = true
+        
+        Task { @MainActor [weak self] in
+            do {
+                try await self?.blockedUserRepository.unblockUser(
+                    currentUserId: currentUserId,
+                    userId: userId
+                )
+                self?.uiState.loading = false
+            } catch {
+                self?.uiState.loading = false
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
+            }
+        }
+    }
+    
+    func deleteChat() {
+        guard let currentUserId = currentUser?.id else {
+            return
+        }
+        
+        uiState.loading = true
+        
+        Task { @MainActor [weak self] in
+            do {
+                guard let conversation = self?.conversation else {
+                    self?.uiState.loading = false
+                    return
+                }
+                
+                try await self?.conversationRepository.deleteConversation(
+                    conversation: conversation,
+                    userId: currentUserId,
+                    deleteTime: Date()
+                )
+                try await self?.messageRepository.deleteLocalMessages(conversationId: conversation.id)
+                self?.uiState.loading = false
+                self?.event = MessageEvent.chatDeleted
+            } catch {
+                self?.uiState.loading = false
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
+            }
+        }
+    }
+    
     private func getMessages(offset: Int) {
         Task { @MainActor [weak self] in
             guard let conversation = self?.conversation else {
@@ -184,12 +234,12 @@ class ChatViewModel: ViewModel {
     }
     
     private func seeMessages() {
-        guard let user else { return }
+        guard let currentUser else { return }
         
         Task {
             try? await messageRepository.updateSeenMessages(
                 conversationId: conversation.id,
-                userId: user.id
+                currentUserId: currentUser.id
             )
         }
     }
@@ -207,13 +257,15 @@ class ChatViewModel: ViewModel {
     }
     
     private func listenConversationChanges() {
-        conversationRepository.conversationChanges.map { [weak self] in
-            $0.updated.first { $0.id == self?.conversation.id }
+        conversationRepository.conversationChanges.map { [weak self] change in
+            change.updated.first {
+                $0.id == self?.conversation.id
+            }
         }
         .compactMap { $0 }
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] updatedConversation in
-            self?.conversation = updatedConversation
+        .sink { [weak self] in
+            self?.conversation = $0
         }.store(in: &cancellables)
     }
     
@@ -232,5 +284,9 @@ class ChatViewModel: ViewModel {
         fileprivate(set) var loading: Bool = false
         fileprivate(set) var userBlocked: Bool = false
         fileprivate(set) var canLoadMoreMessages: Bool = true
+    }
+    
+    enum MessageEvent: SingleUiEvent {
+        case chatDeleted
     }
 }

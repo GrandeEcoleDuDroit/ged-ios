@@ -2,7 +2,24 @@ enum GedString: String {
     // App
     case privacy = "privacy"
     case blockedUsers = "blocked_users"
+    case blockedUser = "blocked_user"
     case noBlockedUser = "no_blocked_user"
+    case profile = "profile"
+    case account = "account"
+    case accountInfos = "account_infos"
+    case schoolLevel = "school_level"
+    case editProfile = "edit_profile"
+    case newProfilePicture = "new_profile_picture"
+    case profilePictureUpdated = "profile_picture_updated"
+    case member = "member"
+    case userNotFound = "user_not_found"
+    case deleteProfilePictureAlertMessage = "delete_profile_picture_alert_message"
+    case deleteAccountText = "delete_account_text"
+    case deleteAccount = "delete_account"
+    case logoutAlertMessage = "logout_alert_message"
+
+    // App error
+    case errorLogout = "error_logout"
     
     // Common
     case appName = "app_name"
@@ -31,7 +48,7 @@ enum GedString: String {
     case unblock = "unblock"
     case blockUserAlertTitle = "block_user_alert_title"
     case blockUserAlertMessage = "block_user_alert_message"
-    case unblockUserAlertTitle = "unblock_user_alert_title"
+    case unblockUserAlertMessage = "unblock_user_alert_message"
     
     // Common errors
     case mandatoryFieldError = "mandatory_field_error"
@@ -63,12 +80,9 @@ enum GedString: String {
     case level = "level"
     case enterNames = "enter_names"
     case enterEmailPassword = "enter_email_password"
-    case logoutAlertTitle = "logout_alert_title"
     case forgotPasswordSuccess = "forgot_password_success"
-    case userNotWhiteListedError = "user_not_white_listed_error"
     case agreeTermsPrivacyBeginningText = "agree_terms_privacy_beginning_text"
     case termsAndPrivacy = "terms_and_privacy"
-    case legalNoticeError = "legal_notice_error"
     
     // Authentication errors
     case invalidEmailError = "invalid_email_error"
@@ -80,6 +94,8 @@ enum GedString: String {
     case emailAlreadyAssociatedError = "email_already_associated_error"
     case tooManyRequestsError = "too_many_requests_error"
     case userNotConnected = "user_not_connected"
+    case legalNoticeError = "legal_notice_error"
+    case userNotWhiteListedError = "user_not_white_listed_error"
     
     // News
     case news = "news"
@@ -92,24 +108,7 @@ enum GedString: String {
     case post = "post"
     case announcementCreated = "announcement_created"
     case noAnnouncement = "no_announcement"
-    case deleteAnnouncementAlertTitle = "delete_announcement_alert_title"
-    
-    // Profile
-    case profile = "profile"
-    case account = "account"
-    case accountInfos = "account_infos"
-    case schoolLevel = "school_level"
-    case editProfile = "edit_profile"
-    case newProfilePicture = "new_profile_picture"
-    case profilePictureUpdated = "profile_picture_updated"
-    case member = "member"
-    case userNotFound = "user_not_found"
-    case deleteProfilePictureAlertMessage = "delete_profile_picture_alert_message"
-    case deleteAccountText = "delete_account_text"
-    case deleteAccount = "delete_account"
-
-    // Profile errors
-    case errorLogout = "error_logout"
+    case deleteAnnouncementAlertMessage = "delete_announcement_alert_message"
     
     // Message
     case messages = "messages"
@@ -117,11 +116,12 @@ enum GedString: String {
     case messagePlaceholder = "message_placeholder"
     case newConversation = "new_conversation"
     case noConversation = "no_conversation"
+    case deleteConversationAlertTitle = "delete_conversation_alert_title"
     case deleteConversationAlertMessage = "delete_conversation_alert_message"
     case seen = "seen"
     case newMessages = "new_messages"
-    case deleteMessageAlertTitle = "delete_message_alert_title"
     case deleteMessageAlertContent = "delete_message_alert_content"
+    case chatBlockedUserIndicatorText = "chat_blocked_user_indicator_text"
     
     // Message errors
     case errorGettingConversations = "error_getting_conversations"

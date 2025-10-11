@@ -11,8 +11,8 @@ class AuthenticationInjector: Injector {
     
     private func registerDependencies() {
         // Api
-        container.register(FirebaseAuthApi.self) { _ in
-            FirebaseAuthApiImpl()
+        container.register(AuthenticationApi.self) { _ in
+            AuthenticationApiImpl()
         }.inObjectScope(.container)
         
         // Data sources
@@ -20,15 +20,17 @@ class AuthenticationInjector: Injector {
             AuthenticationLocalDataSource()
         }.inObjectScope(.container)
         
-        // Repositories
-        container.register(FirebaseAuthenticationRepository.self) { resolver in
-            FirebaseAuthenticationRepositoryImpl(firebaseAuthApi: resolver.resolve(FirebaseAuthApi.self)!)
+        container.register(AuthenticationRemoteDataSource.self) { resolver in
+            AuthenticationRemoteDataSource(
+                authenticationApi: resolver.resolve(AuthenticationApi.self)!
+            )
         }.inObjectScope(.container)
         
+        // Repositories
         container.register(AuthenticationRepository.self) { resolver in
             AuthenticationRepositoryImpl(
-                firebaseAuthenticationRepository: resolver.resolve(FirebaseAuthenticationRepository.self)!,
-                authenticationLocalDataSource: resolver.resolve(AuthenticationLocalDataSource.self)!
+                authenticationLocalDataSource: resolver.resolve(AuthenticationLocalDataSource.self)!,
+                authenticationRemoteDataSource: resolver.resolve(AuthenticationRemoteDataSource.self)!
             )
         }.inObjectScope(.container)
         

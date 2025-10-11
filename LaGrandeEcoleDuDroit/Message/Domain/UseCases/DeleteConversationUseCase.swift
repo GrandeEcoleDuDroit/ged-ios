@@ -20,7 +20,7 @@ class DeleteConversationUseCase {
         let updatedConversation = conversation.copy { $0.deleteTime = deleteTime }
         
         try await conversationRepository.updateLocalConversation(conversation: updatedConversation.copy { $0.state = .deleting })
-        try await conversationRepository.deleteConversation(conversation: updatedConversation, userId: userId)
+        try await conversationRepository.deleteConversation(conversation: updatedConversation, userId: userId, deleteTime: deleteTime)
         try await messageRepository.deleteLocalMessages(conversationId: updatedConversation.id)
     }
 }

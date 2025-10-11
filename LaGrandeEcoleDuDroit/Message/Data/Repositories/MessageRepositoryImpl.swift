@@ -86,9 +86,13 @@ class MessageRepositoryImpl: MessageRepository {
         }
     }
         
-    func updateSeenMessages(conversationId: String, userId: String) async throws {
-        let unreadMessages = (try? await messageLocalDataSource.getUnreadMessagesByUser(conversationId: conversationId, userId: userId)) ?? []
-        try await messageLocalDataSource.updateSeenMessages(conversationId: conversationId, userId: userId)
+    func updateSeenMessages(conversationId: String, currentUserId: String) async throws {
+        let unreadMessages = (try? await messageLocalDataSource.getUnreadMessagesByUser(
+            conversationId: conversationId,
+            userId: currentUserId
+        )) ?? []
+        
+        try await messageLocalDataSource.updateSeenMessages(conversationId: conversationId, userId: currentUserId)
         try await mapFirebaseException(
             block: {
                 for message in unreadMessages {
