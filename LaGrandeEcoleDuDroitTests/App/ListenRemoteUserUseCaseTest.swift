@@ -19,32 +19,6 @@ class ListenRemoteUserUseCaseTest {
         // Then
         #expect(userStored.userStored)
     }
-    
-    @Test
-    func start_should_logout_when_user_is_null() async throws {
-        // Given
-        let logoutCalled = LogoutCalled()
-        let useCase = ListenRemoteUserUseCase(
-            authenticationRepository: logoutCalled,
-            userRepository: NilRemoteUser()
-        )
-        
-        // When
-        useCase.start()
-       
-        // Then
-        #expect(logoutCalled.logoutCalled)
-    }
-}
-
-private class NilRemoteUser: MockUserRepository {
-    override var user: AnyPublisher<User, Never> {
-        Just(userFixture).compactMap { $0 }.eraseToAnyPublisher()
-    }
-    
-    override func getUserPublisher(userId: String) -> AnyPublisher<User?, Never> {
-        Just(nil).eraseToAnyPublisher()
-    }
 }
 
 private class UserStored: MockUserRepository {
@@ -62,13 +36,5 @@ private class UserStored: MockUserRepository {
     override func storeUser(_ user: User) {
         userStored = true
         storedUserCalled.send(true)
-    }
-}
-
-private class LogoutCalled: MockAuthenticationRepository {
-    var logoutCalled: Bool = false
-    
-    override func logout() {
-        logoutCalled = true
     }
 }

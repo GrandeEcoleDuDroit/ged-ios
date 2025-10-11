@@ -5,26 +5,6 @@ import Combine
 
 class SynchronizeAnnouncementsUseCaseTest {
     @Test
-    func synchronizeAnnouncementsUseCase_should_delete_announcements_not_present_in_remote() async {
-        // Given
-        let currentAnnouncements = announcementsFixture
-        let announcementsDeleted = AnnouncementsDeleted(
-            declaredCurrentAnnouncements: currentAnnouncements,
-            declaredRemoteAnnouncements: []
-        )
-        let useCase = SynchronizeAnnouncementsUseCase(
-            announcementRepository: announcementsDeleted,
-            blockedUserRepository: MockBlockedUserRepository()
-        )
-        
-        // When
-        try? await useCase.execute()
-        
-        // Then
-        #expect(announcementsDeleted.announcementDeletedIds == currentAnnouncements.map { $0.id })
-    }
-    
-    @Test
     func synchronizeAnnouncementsUseCase_should_upsert_new_remote_announcements() async {
         // Given
         let remoteAnnouncements = announcementsFixture
@@ -45,7 +25,7 @@ class SynchronizeAnnouncementsUseCaseTest {
     }
     
     @Test
-    func synchronizeAnnouncementsUseCase_should_not_upsert_new_remote_announcements_from_blocked_users() async {
+    func synchronizeAnnouncementsUseCase_should_not_upsert_announcements_from_blocked_users() async {
         // Given
         let remoteAnnouncements = announcementsFixture
         let announcementsUpserted = AnnouncementsUpserted(
@@ -64,6 +44,47 @@ class SynchronizeAnnouncementsUseCaseTest {
         
         // Then
         #expect(announcementsUpserted.announcemenstUpserted.isEmpty)
+    }
+    
+    @Test
+    func synchronizeAnnouncementsUseCase_should_delete_announcements_not_present_in_remote() async {
+        // Given
+        let currentAnnouncements = announcementsFixture
+        let announcementsDeleted = AnnouncementsDeleted(
+            declaredCurrentAnnouncements: currentAnnouncements,
+            declaredRemoteAnnouncements: []
+        )
+        let useCase = SynchronizeAnnouncementsUseCase(
+            announcementRepository: announcementsDeleted,
+            blockedUserRepository: MockBlockedUserRepository()
+        )
+        
+        // When
+        try? await useCase.execute()
+        
+        // Then
+        #expect(announcementsDeleted.announcementDeletedIds == currentAnnouncements.map { $0.id })
+    }
+    
+    @Test
+    func synchronizeAnnouncementsUseCase_should_delete_announcements_from_blocked_users() async {
+        // Given
+        let currentAnnouncements = announcementsFixture
+        let blockedUserIds = currentAnnouncements.map { $0.author.id }.toSet()
+        let announcementsDeleted = AnnouncementsDeleted(
+            declaredCurrentAnnouncements: currentAnnouncements,
+            declaredRemoteAnnouncements: currentAnnouncements
+        )
+        let useCase = SynchronizeAnnouncementsUseCase(
+            announcementRepository: announcementsDeleted,
+            blockedUserRepository: BlockedUsers(declaredBlockedUserIds: blockedUserIds)
+        )
+        
+        // When
+        try? await useCase.execute()
+        
+        // Then
+        #expect(announcementsDeleted.announcementDeletedIds == currentAnnouncements.map { $0.id })
     }
 }
 
@@ -124,6 +145,10 @@ private class BlockedUsers: MockBlockedUserRepository {
     
     override var blockedUserIds: AnyPublisher<Set<String>, Never> {
         Just(declaredBlockedUserIds).eraseToAnyPublisher()
+    }
+    
+    override var currentBlockedUserIds: Set<String> {
+        declaredBlockedUserIds
     }
     
     init(declaredBlockedUserIds: Set<String>) {
