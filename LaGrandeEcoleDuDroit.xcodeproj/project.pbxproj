@@ -108,7 +108,6 @@
 				5EB5784F2CB3CCD3004524AD /* LaGrandeEcoleDuDroit */,
 				5EB578602CB3CCD4004524AD /* LaGrandeEcoleDuDroitTests */,
 				5EB5786A2CB3CCD4004524AD /* LaGrandeEcoleDuDroitUITests */,
-				5EDC1C062E47A34B00A3C603 /* Frameworks */,
 				5EB5784E2CB3CCD3004524AD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -121,13 +120,6 @@
 				5EB578672CB3CCD4004524AD /* LaGrandeEcoleDuDroitUITests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		5EDC1C062E47A34B00A3C603 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
