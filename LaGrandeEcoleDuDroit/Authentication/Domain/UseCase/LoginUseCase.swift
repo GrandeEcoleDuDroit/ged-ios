@@ -11,7 +11,7 @@ class LoginUseCase {
     }
     
     func execute(email: String, password: String) async throws {
-        try await withTimeout(10000) {
+        try await withTimeout(10) {
             try await self.authenticationRepository.loginWithEmailAndPassword(email: email, password: password)
             if let user = try await self.userRepository.getUserWithEmail(email: email) {
                 self.userRepository.storeUser(user)

@@ -52,8 +52,7 @@ class AuthenticationInjector: Injector {
         
         container.register(ListenAuthenticationStateUseCase.self) { resolver in
             ListenAuthenticationStateUseCase(
-                authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
-                userRepository: CommonInjector.shared.resolve(UserRepository.self)
+                authenticationRepository: resolver.resolve(AuthenticationRepository.self)!
             )
         }.inObjectScope(.container)
     }

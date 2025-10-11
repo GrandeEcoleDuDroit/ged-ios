@@ -35,7 +35,7 @@ class SynchronizeBlockedUsersUseCaseTest {
         try await useCase.execute()
         
         // Then
-        #expect(unblockedUsers.userUnblockedIds == usersIds)
+        #expect(unblockedUsers.unblockedUserIds == usersIds)
     }
 }
 
@@ -58,10 +58,14 @@ private class BlockedUsers: MockBlockedUserRepository {
 
 private class UnblockedUsers: MockBlockedUserRepository {
     let usersIds: Set<String>
-    var userUnblockedIds: Set<String> = []
+    var unblockedUserIds: Set<String> = []
     
     override var blockedUserIds: AnyPublisher<Set<String>, Never> {
         Just(usersIds).eraseToAnyPublisher()
+    }
+    
+    override var currentBlockedUserIds: Set<String> {
+        usersIds
     }
     
     init(_ usersIds: Set<String>) {
@@ -69,7 +73,7 @@ private class UnblockedUsers: MockBlockedUserRepository {
     }
     
     override func unblockUser(currentUserId: String, userId: String) async throws {
-        userUnblockedIds.insert(userId)
+        unblockedUserIds.insert(userId)
     }
 }
 

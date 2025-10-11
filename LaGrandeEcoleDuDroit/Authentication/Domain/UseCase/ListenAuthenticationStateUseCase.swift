@@ -2,7 +2,6 @@ import Combine
 
 class ListenAuthenticationStateUseCase {
     private let authenticationRepository: AuthenticationRepository
-    private let userRepository: UserRepository
     
     private var cancellables: Set<AnyCancellable> = []
     private let authenticatedPublisher = CurrentValueSubject<Bool?, Never>(nil)
@@ -15,12 +14,8 @@ class ListenAuthenticationStateUseCase {
         authenticatedPublisher.value ?? false
     }
     
-    init(
-        authenticationRepository: AuthenticationRepository,
-        userRepository: UserRepository
-    ) {
+    init(authenticationRepository: AuthenticationRepository) {
         self.authenticationRepository = authenticationRepository
-        self.userRepository = userRepository
         start()
     }
     
