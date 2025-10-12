@@ -26,7 +26,7 @@ class ListenBlockedUserEventsUseCase {
                 case let .block(userId, _):
                     self?.listenRemoteMessagesUseCase.stop(userId: userId)
                     Task {
-                        try? await self?.announcementRepository.deleteLocalUserAnnouncements(userId: userId)
+                        try? await self?.announcementRepository.deleteLocalAnnouncements(userId: userId)
                     }
                     
                 case let .unblock(userId, date):

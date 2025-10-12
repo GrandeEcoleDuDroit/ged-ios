@@ -10,4 +10,5 @@ enum NetworkError: Error, Equatable {
 
 enum UserError: Error {
     case currentUserNotFound
+    case userNotFound
 }

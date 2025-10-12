@@ -1,10 +1,18 @@
 import Foundation
 
 class RequestUtils {
-    static func getUrlSession() -> URLSession {
+    static func getSession() -> URLSession {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 10
         return URLSession(configuration: config)
+    }
+    
+    static func getUrl(base: String, endPoint: String) throws -> URL {
+        if let url = URL.oracleUrl(path: "/\(base)/\(endPoint)") {
+            return url
+        } else {
+            throw NetworkError.invalidURL("Invalid URL")
+        }
     }
     
     static func formatGetRequest(
@@ -56,5 +64,11 @@ class RequestUtils {
             request.addValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
         return request
+    }
+    
+    static func sendRequest(session: URLSession, request: URLRequest) async throws -> (URLResponse, ServerResponse) {
+        let (dataReceived, response) = try await session.data(for: request)
+        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
+        return (response, serverResponse)
     }
 }

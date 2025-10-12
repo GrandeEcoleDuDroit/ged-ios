@@ -120,14 +120,15 @@ class UserApiImpl: UserApi {
 
 class UserServerApi {
     private let tokenProvider: TokenProvider
+    private let base = "users"
     
     init(tokenProvider: TokenProvider) {
         self.tokenProvider = tokenProvider
     }
     
     func createUser(user: OracleUser) async throws -> (URLResponse, ServerResponse) {
-        let url = try getUrl(endPoint: "create")
-        let session = RequestUtils.getUrlSession()
+        let url = try RequestUtils.getUrl(base: base, endPoint: "create")
+        let session = RequestUtils.getSession()
         let authIdToken = await tokenProvider.getAuthIdToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: user,
@@ -135,17 +136,17 @@ class UserServerApi {
             authToken: authIdToken
         )
         
-        return try await sendRequest(session: session, request: request)
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
     func updateProfilePictureFileName(userId: String, fileName: String) async throws -> (URLResponse, ServerResponse) {
-        let url = try getUrl(endPoint: "profile-picture-file-name")
+        let url = try RequestUtils.getUrl(base: base, endPoint: "profile-picture-file-name")
         let dataToSend: [String: String] = [
             OracleUserDataFields.userId: userId,
             OracleUserDataFields.userProfilePictureFileName: fileName
         ]
         
-        let session = RequestUtils.getUrlSession()
+        let session = RequestUtils.getSession()
         let authIdToken = await tokenProvider.getAuthIdToken()
         let request = try RequestUtils.formatPutRequest(
             dataToSend: dataToSend,
@@ -153,36 +154,36 @@ class UserServerApi {
             authToken: authIdToken
         )
         
-        return try await sendRequest(session: session, request: request)
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
     func deleteUser(userId: String) async throws -> (URLResponse, ServerResponse) {
-        let url = try getUrl(endPoint: "\(userId)")
-        let session = RequestUtils.getUrlSession()
+        let url = try RequestUtils.getUrl(base: base, endPoint: "\(userId)")
+        let session = RequestUtils.getSession()
         let authIdToken = await tokenProvider.getAuthIdToken()
         let request = RequestUtils.formatDeleteRequest(
             url: url,
             authToken: authIdToken
         )
         
-        return try await sendRequest(session: session, request: request)
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
     func deleteProfilePictureFileName(userId: String) async throws -> (URLResponse, ServerResponse) {
-       let url = try getUrl(endPoint: "profile-picture-file-name/\(userId)")
-        let session = RequestUtils.getUrlSession()
+        let url = try RequestUtils.getUrl(base: base, endPoint: "profile-picture-file-name/\(userId)")
+        let session = RequestUtils.getSession()
         let authIdToken = await tokenProvider.getAuthIdToken()
         let request = RequestUtils.formatDeleteRequest(
             url: url,
             authToken: authIdToken
         )
         
-        return try await sendRequest(session: session, request: request)
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
     func reportUser(report: RemoteUserReport) async throws -> (URLResponse, ServerResponse) {
-        let url = try getUrl(endPoint: "report")
-        let session = RequestUtils.getUrlSession()
+        let url = try RequestUtils.getUrl(base: base, endPoint: "report")
+        let session = RequestUtils.getSession()
         let authIdToken = await tokenProvider.getAuthIdToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: report,
@@ -190,21 +191,7 @@ class UserServerApi {
             authToken: authIdToken
         )
         
-        return try await sendRequest(session: session, request: request)
-    }
-    
-    private func getUrl(endPoint: String) throws -> URL {
-        if let url = URL.oracleUrl(path: "/users/\(endPoint)") {
-            return url
-        } else {
-            throw NetworkError.invalidURL("Invalid URL")
-        }
-    }
-    
-    private func sendRequest(session: URLSession, request: URLRequest) async throws -> (URLResponse, ServerResponse) {
-        let (dataReceived, response) = try await session.data(for: request)
-        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
-        return (response, serverResponse)
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
 }
 
