@@ -42,15 +42,6 @@ class ThirdRegistrationViewModel: ViewModel {
                     lastName: lastName,
                     schoolLevel: schoolLevel
                 )
-            } catch let error as NetworkError {
-                self?.uiState.loading = false
-                switch error {
-                    case .noInternetConnection: self?.event = ErrorEvent(message: getString(.noInternetConectionError))
-                    default:
-                        self?.uiState.errorMessage = self?.mapErrorMessage(error)
-                        self?.uiState.password = ""
-                        
-                }
             } catch {
                 self?.uiState.loading = false
                 self?.uiState.errorMessage = self?.mapErrorMessage(error)
@@ -73,7 +64,7 @@ class ThirdRegistrationViewModel: ViewModel {
         if email.isBlank {
             getString(.mandatoryFieldError)
         } else if !VerifyEmailFormatUseCase.execute(email) {
-            getString(.invalidEmailError)
+            getString(.incorrectEmailFormatError)
         } else {
             nil
         }

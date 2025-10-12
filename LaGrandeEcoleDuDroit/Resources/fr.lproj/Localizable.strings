@@ -15,9 +15,11 @@
 "delete_profile_picture_alert_message" = "Voulez-vous supprimer votre photo de profil ?";
 "delete_account_text" = "Supprimer votre compte entraînera la suppression définitive de toutes vos données. Cette action est irréversible.";
 "delete_account" = "Supprimer le compte";
+"enter_password" = "Saisissez votre mot de passe";
+"logout_alert_message" = "Êtes-vous sûr de vouloir vous déconnecter ?";
 
 // App error
-"error_logout" = "Une erreur est survenue lors de la déconnexion.";
+"incorrect_password_error" = "Mot de passe incorrect.";
 
 // Common
 "app_name" = "Grande Ecole du Droit";
@@ -40,7 +42,6 @@
 "weeks_ago_short" = "%d sem";
 "today" = "Aujourd'hui";
 "yester" = "Hier";
-"home" = "Accueil";
 "sending" = "Envoi...";
 "report" = "Signaler";
 "block" = "Bloquer";
@@ -59,6 +60,8 @@
 "server_connection_error" = "Impossible de se connecter au serveur.";
 "empty_inputs_error" = "Veuillez remplir tous les champs.";
 "cannot_connect_to_host_error" = "Impossible de se connecter au serveur.";
+"too_many_requests_error" = "Vous avez effectué trop de requêtes. Veuillez réessayer dans quelques minutes.";
+"internet_connection_lost_error" = "La connexion Internet a été perdue.";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";
@@ -76,25 +79,21 @@
 "level" = "Niveau";
 "enter_names" = "Saisissez votre nom";
 "enter_email_password" = "Saisissez votre adresse mail et votre mot de passe";
-"logout_alert_title" = "Voulez-vous vous déconnecter ?";
 "forgot_password" = "Mot de passe oublié";
 "forgot_password_description" = "Entrez votre adresse e-mail";
 "forgot_password_success" = "Si un compte associé à cette adresse e-mail existe, un lien de réinitialisation vous sera envoyé.";
-"agree_terms_privacy_beginning_text" = "J’ai lu et j’accepte las";
+"agree_terms_privacy_beginning_text" = "J’ai lu et j’accepte les";
 "terms_and_privacy" = "Conditions d'utilisation et la Politique de Confidentialité";
 "legal_notice_error" = "Veuillez accepter les Conditions d’utilisation et la Politique de Confidentialité pour continuer.";
 
 // Authtentication errors
 "incorrect_email_format_error" = "Veuillez entrer une adresse e-mail valide.";
 "password_length_error" = "Le mot de passe doit faire au moins 8 caractères.";
-"invalid_credentials_error" = "Adresse e-mail ou mot de passe incorrect.";
-"user_not_white_listed" = "L'inscription est actuellement limitée aux utilisateurs autorisés.";
-
-"user_not_exist" = "L'utilisateur n'existe pas.";
+"incorrect_credentials_error" = "Adresse e-mail ou mot de passe incorrect.";
+"user_disabled_error" = "Votre compte a été désactivé. Veuillez contacter le support.";
+"user_not_exist_error" = "L'utilisateur n'existe pas.";
 "email_not_verified_error" = "Veuillez validez votre adresse e-mail avant de continuer.";
 "email_already_associated" = "Cette adresse e-mail est déjà utilisée.";
-"too_many_requests_error" = "Vous avez effectué trop de requêtes. Veuillez réessayer dans quelques minutes.";
-"user_not_connected" = "Vous n'êtes pas authentifié. Veuillez vous connecter avant de continuer.";
 "user_not_white_listed_error" = "L'inscription est actuellement limitée aux utilisateurs autorisés.";
 
 // News
@@ -121,8 +120,3 @@
 "new_messages" = "Nouveau messages";
 "delete_message_alert_content" = "Voulez-vous supprimer ce message ?";
 "chat_blocked_user_indicator_text" = "Vous ne pouvez pas envoyer de messages à cet utilisateur à moins que vous ne le débloquiez.";
-
-// Message errors
-"error_getting_conversations" = "Une erreur est survenue lors de la récupération des conversations.";
-"error_creating_conversation" = "Une erreur est survenue lors de la création de la conversation.";
-"error_delete_conversation" = "Une erreur est survenue lors de la suppression de la conversation.";

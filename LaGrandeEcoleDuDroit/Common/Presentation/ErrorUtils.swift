@@ -8,7 +8,7 @@ func mapNetworkErrorMessage(
         switch urlError.code {
             case .notConnectedToInternet,
                     .cannotFindHost,
-                    .networkConnectionLost: getString(.noInternetConectionError)
+                    .networkConnectionLost: getString(.internetConnectionLostError)
             case .cannotConnectToHost: getString(.cannotConnectToHostError)
             case .timedOut: getString(.timeOutError)
             default: specificMap()
@@ -17,7 +17,7 @@ func mapNetworkErrorMessage(
         switch networkError {
             case .internalServer: getString(.internalServerError)
             case .timeout: getString(.timeOutError)
-            case .noInternetConnection: getString(.noInternetConectionError)
+            case .noInternetConnection: getString(.internetConnectionLostError)
             case .tooManyRequests: getString(.tooManyRequestsError)
             default : specificMap()
         }

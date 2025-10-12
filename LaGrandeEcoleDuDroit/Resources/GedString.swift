@@ -17,9 +17,10 @@ enum GedString: String {
     case deleteAccountText = "delete_account_text"
     case deleteAccount = "delete_account"
     case logoutAlertMessage = "logout_alert_message"
-
+    case enterPassword = "enter_password"
+    
     // App error
-    case errorLogout = "error_logout"
+    case incorrectPasswordError = "incorrect_password_error"
     
     // Common
     case appName = "app_name"
@@ -60,7 +61,9 @@ enum GedString: String {
     case unknownNetworkError = "unknown_network_error"
     case userNotFoundError = "user_not_found_error"
     case cannotConnectToHostError = "cannot_connect_to_host_error"
-    
+    case tooManyRequestsError = "too_many_requests_error"
+    case internetConnectionLostError = "internet_connection_lost_error"
+
     // Authentication
     case authenticationPageTitle = "authentication_page_title"
     case authenticationPageSubtitle = "authentication_page_subtitle"
@@ -85,15 +88,12 @@ enum GedString: String {
     case termsAndPrivacy = "terms_and_privacy"
     
     // Authentication errors
-    case invalidEmailError = "invalid_email_error"
+    case incorrectEmailFormatError = "incorrect_email_format_error"
     case passwordLengthError = "password_length_error"
-    case invalidCredentials = "invalid_credentials"
-    case userDisabled = "user_disabled"
-    case authUserNotFound = "auth_user_not_found"
-    case userNotExist = "user_not_exist"
+    case incorrectCredentialsError = "incorrect_credentials_error"
+    case userDisabledError = "user_disabled_error"
+    case userNotExistError = "user_not_exist_error"
     case emailAlreadyAssociatedError = "email_already_associated_error"
-    case tooManyRequestsError = "too_many_requests_error"
-    case userNotConnected = "user_not_connected"
     case legalNoticeError = "legal_notice_error"
     case userNotWhiteListedError = "user_not_white_listed_error"
     
@@ -122,9 +122,4 @@ enum GedString: String {
     case newMessages = "new_messages"
     case deleteMessageAlertContent = "delete_message_alert_content"
     case chatBlockedUserIndicatorText = "chat_blocked_user_indicator_text"
-    
-    // Message errors
-    case errorGettingConversations = "error_getting_conversations"
-    case errorCreatingConversation = "error_creating_conversation"
-    case errorDeletingConversation = "error_deleting_conversation"
 }
