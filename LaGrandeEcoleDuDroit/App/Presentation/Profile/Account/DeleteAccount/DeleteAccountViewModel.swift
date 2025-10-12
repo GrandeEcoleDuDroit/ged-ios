@@ -2,6 +2,7 @@ import Foundation
 import Combine
 
 class DeleteAccountViewModel: ViewModel {
+    private let userRepository: UserRepository
     private let networkMonitor: NetworkMonitor
     private let deleteUserAccountUseCase: DeleteUserAccountUseCase
     
@@ -9,23 +10,27 @@ class DeleteAccountViewModel: ViewModel {
     @Published private(set) var event: SingleUiEvent? = nil
     
     init(
+        userRepository: UserRepository,
         networkMonitor: NetworkMonitor,
         deleteUserAccountUseCase: DeleteUserAccountUseCase
     ) {
+        self.userRepository = userRepository
         self.networkMonitor = networkMonitor
         self.deleteUserAccountUseCase = deleteUserAccountUseCase
     }
     
     func deleteUserAccount() {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+        guard let email = userRepository.currentUser?.email else {
+            return 
+        }
+        let password = uiState.password
+        
+        guard validateInput(password: password) else {
+            return
         }
         
-        let (email, password) = (uiState.email, uiState.password)
-        
-        if let errorMessage = validateInputs(email: email, password: password) {
-            uiState.errorMessage = errorMessage
-            return
+        guard networkMonitor.isConnected else {
+            return event = ErrorEvent(message: getString(.noInternetConectionError))
         }
         
         uiState.loading = true
@@ -36,31 +41,14 @@ class DeleteAccountViewModel: ViewModel {
                 self?.uiState.loading = false
             } catch {
                 self?.uiState.loading = false
-                self?.event = ErrorEvent(message: self?.mapErrorMessage(error) ?? getString(.unknownError))
+                self?.uiState.errorMessage = self?.mapErrorMessage(error)
             }
         }
     }
     
-    private func validateInputs(email: String, password: String) -> String? {
-        if let emailError = validateEmail(email: email) {
-            return emailError
-        }
-        
-        if let passwordError = validatePassword(password: password) {
-            return passwordError
-        }
-        
-        return nil
-    }
-    
-    private func validateEmail(email: String) -> String? {
-        if email.isBlank {
-            getString(.emptyInputsError)
-        } else if !VerifyEmailFormatUseCase.execute(email) {
-            getString(.invalidEmailError)
-        } else {
-            nil
-        }
+    private func validateInput(password: String) -> Bool {
+        uiState.errorMessage = validatePassword(password: password)
+        return uiState.errorMessage == nil
     }
     
     private func validatePassword(password: String) -> String? {
@@ -75,8 +63,8 @@ class DeleteAccountViewModel: ViewModel {
         mapNetworkErrorMessage(e) {
             if let authError = e as? AuthenticationError {
                 switch authError {
-                    case .invalidCredentials: getString(.invalidCredentials)
-                    case .userDisabled: getString(.userDisabled)
+                    case .invalidCredentials: getString(.incorrectPasswordError)
+                    case .userDisabled: getString(.userDisabledError)
                     default: getString(.unknownError)
                 }
             } else {
@@ -86,7 +74,6 @@ class DeleteAccountViewModel: ViewModel {
     }
     
     struct DeleteAccountUiState {
-        var email: String = ""
         var password: String = ""
         fileprivate(set) var errorMessage: String? = nil
         fileprivate(set) var loading: Bool = false

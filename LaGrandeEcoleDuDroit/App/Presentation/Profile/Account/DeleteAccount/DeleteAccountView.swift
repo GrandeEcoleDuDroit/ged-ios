@@ -7,7 +7,6 @@ struct DeleteAccountDestination: View {
     
     var body: some View {
         DeleteAccountView(
-            email: $viewModel.uiState.email,
             password: $viewModel.uiState.password,
             loading: viewModel.uiState.loading,
             errorMessage: viewModel.uiState.errorMessage,
@@ -32,34 +31,27 @@ struct DeleteAccountDestination: View {
 }
 
 private struct DeleteAccountView: View {
-    @Binding var email: String
     @Binding var password: String
     let loading: Bool
     let errorMessage: String?
     let onDeleteAccountClick: () -> Void
             
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack {
             Text(getString(.deleteAccountText))
                 .padding(.horizontal, GedSpacing.mediumLarge)
-
-            List {
-                Section(getString(.enterEmailPassword)) {
-                    TextField(
-                        getString(.email),
-                        text: $email
-                    )
-                    .keyboardType(.emailAddress)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled(true)
-                    
-                    SecureField(
-                        getString(.password),
-                        text: $password
-                    )
+            
+            Form {
+                Section(getString(.enterPassword)) {
+                    VStack(alignment: .leading, spacing: GedSpacing.medium) {
+                        SecureField(
+                            getString(.password),
+                            text: $password
+                        )
+                    }
                 }
             }
-            .frame(maxHeight: 130)
+            .frame(maxHeight: 100)
             .scrollContentBackground(.hidden)
             
             if let errorMessage {
@@ -79,7 +71,7 @@ private struct DeleteAccountView: View {
             )
             .background(.listRowBackground)
             .foregroundColor(.red)
-            .cornerRadius(10)
+            .clipShape(.rect(cornerRadius: 10))
             .padding(.horizontal, GedSpacing.mediumLarge)
             .padding(.vertical, GedSpacing.small)
         }
@@ -95,7 +87,6 @@ private struct DeleteAccountView: View {
 #Preview {
     NavigationStack {
         DeleteAccountView(
-            email: .constant(""),
             password: .constant(""),
             loading: false,
             errorMessage: nil,

@@ -32,15 +32,6 @@ class AuthenticationViewModel: ViewModel {
         Task { @MainActor [weak self] in
             do {
                 try await self?.loginUseCase.execute(email: email, password: password)
-            } catch let error as NetworkError {
-                self?.uiState.loading = false
-                switch error {
-                    case .noInternetConnection:
-                        self?.event = ErrorEvent(message: getString(.noInternetConectionError))
-                    default:
-                        self?.uiState.errorMessage = self?.mapErrorMessage(error)
-                }
-                self?.uiState.password = ""
             } catch {
                 self?.uiState.loading = false
                 self?.uiState.errorMessage = self?.mapErrorMessage(error)
@@ -59,7 +50,7 @@ class AuthenticationViewModel: ViewModel {
         if email.isBlank {
             getString(.mandatoryFieldError)
         } else if !VerifyEmailFormatUseCase.execute(email) {
-            getString(.invalidEmailError)
+            getString(.incorrectEmailFormatError)
         } else {
             nil
         }
@@ -77,8 +68,8 @@ class AuthenticationViewModel: ViewModel {
         mapNetworkErrorMessage(e) {
             if let authError = e as? AuthenticationError {
                 switch authError {
-                    case .invalidCredentials: getString(.invalidCredentials)
-                    case .userDisabled: getString(.userDisabled)
+                    case .invalidCredentials: getString(.incorrectCredentialsError)
+                    case .userDisabled: getString(.userDisabledError)
                     default: getString(.unknownError)
                 }
             } else {
