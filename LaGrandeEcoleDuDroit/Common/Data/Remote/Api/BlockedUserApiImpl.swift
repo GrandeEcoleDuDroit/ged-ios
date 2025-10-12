@@ -42,7 +42,6 @@ class BlockedUserFirestoreApi {
             .getDocument()
             .data()?[dataKey] as? [String] ?? []
         
-
         return Set(userIds)
     }
     

@@ -16,12 +16,14 @@ protocol AnnouncementRepository {
     func updateAnnouncement(announcement: Announcement) async throws
     
     func updateLocalAnnouncement(announcement: Announcement) async throws
+    
+    func deleteAnnouncements(userId: String) async throws
         
     func deleteAnnouncement(announcementId: String) async throws
     
     func deleteLocalAnnouncement(announcementId: String) async throws
         
-    func deleteLocalUserAnnouncements(userId: String) async throws
+    func deleteLocalAnnouncements(userId: String) async throws
     
     func reportAnnouncement(report: AnnouncementReport) async throws
 }

@@ -1,28 +1,22 @@
 import Foundation
 
 class FcmApiImpl: FcmApi {
-    private let tag = String(describing: FcmApiImpl.self)
     private let tokenProvider: TokenProvider
+    private let base = "fcm"
     
     init(tokenProvider: TokenProvider) {
         self.tokenProvider = tokenProvider
     }
     
-    private func baseUrl(endPoint: String) -> URL? {
-        URL.oracleUrl(path: "/fcm/" + endPoint)
-    }
-    
     func addToken(userId: String, value: String) async throws -> (URLResponse, ServerResponse) {
-        guard let url = baseUrl(endPoint: "add-token") else {
-            throw NetworkError.invalidURL("Invalid URL")
-        }
+        let url = try RequestUtils.getUrl(base: base, endPoint: "add-token")
         
         let dataToSend: [String: String] = [
             "userId": userId,
             "token": value
         ]
         
-        let session = RequestUtils.getUrlSession()
+        let session = RequestUtils.getSession()
         let authIdToken = await tokenProvider.getAuthIdToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: dataToSend,
@@ -30,21 +24,17 @@ class FcmApiImpl: FcmApi {
             authToken: authIdToken
         )
         
-        let (dataReceived, response) = try await session.data(for: request)
-        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
-        return (response, serverResponse)
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
     func sendNotification(recipientId: String, fcmMessage: String) async throws -> (URLResponse, ServerResponse) {
-        guard let url = baseUrl(endPoint: "send-notification") else {
-            throw NetworkError.invalidURL("Invalid URL")
-        }
+        let url = try RequestUtils.getUrl(base: base, endPoint: "send-notification")
         
         let dataToSend: [String: String] = [
             "recipientId": recipientId,
             "fcmMessage": fcmMessage
         ]
-        let session = RequestUtils.getUrlSession()
+        let session = RequestUtils.getSession()
         let authIdToken = await tokenProvider.getAuthIdToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: dataToSend,
@@ -52,8 +42,6 @@ class FcmApiImpl: FcmApi {
             authToken: authIdToken
         )
         
-        let (dataReceived, response) = try await session.data(for: request)
-        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
-        return (response, serverResponse)
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
 }

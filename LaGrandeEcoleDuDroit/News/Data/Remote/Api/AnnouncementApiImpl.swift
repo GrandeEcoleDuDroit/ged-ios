@@ -3,21 +3,16 @@ import os
 
 class AnnouncementApiImpl: AnnouncementApi {
     private let tokenProvider: TokenProvider
+    private let base = "announcements"
     
     init(tokenProvider: TokenProvider) {
         self.tokenProvider = tokenProvider
     }
     
-    private func baseUrl(endPoint: String) -> URL? {
-        URL.oracleUrl(path: "/announcements" + endPoint)
-    }
-    
     func getAnnouncements() async throws -> (URLResponse, [RemoteAnnouncementWithUser]) {
-        guard let url = baseUrl(endPoint: "") else {
-            throw NetworkError.invalidURL("Invalid URL")
-        }
+        let url = try RequestUtils.getUrl(base: base, endPoint: "")
         
-        let session = RequestUtils.getUrlSession()
+        let session = RequestUtils.getSession()
         let authIdToken = await tokenProvider.getAuthIdToken()
         let request = RequestUtils.formatGetRequest(
             url: url,
@@ -30,11 +25,9 @@ class AnnouncementApiImpl: AnnouncementApi {
     }
     
     func createAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws -> (URLResponse, ServerResponse) {
-        guard let url = baseUrl(endPoint: "/create") else {
-            throw NetworkError.invalidURL("Invalid URL")
-        }
-        
-        let session = RequestUtils.getUrlSession()
+        let url = try RequestUtils.getUrl(base: base, endPoint: "create")
+
+        let session = RequestUtils.getSession()
         let authIdToken = await tokenProvider.getAuthIdToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: remoteAnnouncement,
@@ -42,52 +35,55 @@ class AnnouncementApiImpl: AnnouncementApi {
             authToken: authIdToken
         )
         
-        let (data, urlResponse) = try await session.data(for: request)
-        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
-        return (urlResponse, serverResponse)
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func deleteAnnouncement(remoteAnnouncementId: String) async throws -> (URLResponse, ServerResponse) {
-        guard let url = baseUrl(endPoint: "/\(remoteAnnouncementId)") else {
-            throw NetworkError.invalidURL("Invalid URL")
-        }
+    func updateAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws -> (URLResponse, ServerResponse) {
+        let url = try RequestUtils.getUrl(base: base, endPoint: "update")
+
+        let session = RequestUtils.getSession()
+        let authIdToken = await tokenProvider.getAuthIdToken()
+        let request = try RequestUtils.formatPostRequest(
+            dataToSend: remoteAnnouncement,
+            url: url,
+            authToken: authIdToken
+        )
         
-        let session = RequestUtils.getUrlSession()
+        return try await RequestUtils.sendRequest(session: session, request: request)
+    }
+    
+    func deleteAnnouncements(userId: String) async throws -> (URLResponse, ServerResponse) {
+        let url = try RequestUtils.getUrl(base: base, endPoint: "user/\(userId)")
+
+        
+        let session = RequestUtils.getSession()
         let authIdToken = await tokenProvider.getAuthIdToken()
         let request = RequestUtils.formatDeleteRequest(
             url: url,
             authToken: authIdToken
         )
         
-        let (data, urlResponse) = try await session.data(for: request)
-        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
-        return (urlResponse, serverResponse)
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func updateAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws -> (URLResponse, ServerResponse) {
-        guard let url = baseUrl(endPoint: "/update") else {
-            throw NetworkError.invalidURL("Invalid URL")
-        }
+    func deleteAnnouncement(announcementId: String) async throws -> (URLResponse, ServerResponse) {
+        let url = try RequestUtils.getUrl(base: base, endPoint: announcementId)
+
         
-        let session = RequestUtils.getUrlSession()
+        let session = RequestUtils.getSession()
         let authIdToken = await tokenProvider.getAuthIdToken()
-        let request = try RequestUtils.formatPostRequest(
-            dataToSend: remoteAnnouncement,
+        let request = RequestUtils.formatDeleteRequest(
             url: url,
             authToken: authIdToken
         )
         
-        let (data, urlResponse) = try await session.data(for: request)
-        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
-        return (urlResponse, serverResponse)
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
     func reportAnnouncement(report: RemoteAnnouncementReport) async throws -> (URLResponse, ServerResponse) {
-        guard let url = baseUrl(endPoint: "/report") else {
-            throw NetworkError.invalidURL("Invalid URL")
-        }
+        let url = try RequestUtils.getUrl(base: base, endPoint: "report")
         
-        let session = RequestUtils.getUrlSession()
+        let session = RequestUtils.getSession()
         let authIdToken = await tokenProvider.getAuthIdToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: report,
@@ -95,8 +91,6 @@ class AnnouncementApiImpl: AnnouncementApi {
             authToken: authIdToken
         )
         
-        let (data, urlResponse) = try await session.data(for: request)
-        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
-        return (urlResponse, serverResponse)
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
 }

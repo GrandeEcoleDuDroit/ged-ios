@@ -57,7 +57,8 @@ class AppInjector: Injector {
         container.register(DeleteUserAccountUseCase.self) { resolver in
             DeleteUserAccountUseCase(
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                authenticationRepository: AuthenticationInjector.shared.resolve(AuthenticationRepository.self)
+                authenticationRepository: AuthenticationInjector.shared.resolve(AuthenticationRepository.self),
+                announcementRepository: NewsInjector.shared.resolve(AnnouncementRepository.self)
             )
         }
         

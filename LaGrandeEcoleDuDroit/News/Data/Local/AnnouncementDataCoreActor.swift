@@ -77,7 +77,7 @@ actor AnnouncementCoreDataActor {
         }
     }
     
-    func deleteUserAnnouncements(userId: String) async throws {
+    func deleteAnnouncements(userId: String) async throws {
         try await context.perform {
             let request = LocalAnnouncement.fetchRequest()
             request.predicate = NSPredicate(
