@@ -35,6 +35,7 @@ private struct DeleteAccountView: View {
     let loading: Bool
     let errorMessage: String?
     let onDeleteAccountClick: () -> Void
+    @State private var showPassword: Bool = false
             
     var body: some View {
         VStack {
@@ -43,11 +44,32 @@ private struct DeleteAccountView: View {
             
             Form {
                 Section(getString(.enterPassword)) {
-                    VStack(alignment: .leading, spacing: GedSpacing.medium) {
-                        SecureField(
-                            getString(.password),
-                            text: $password
-                        )
+                    if showPassword {
+                        HStack {
+                            TextField(
+                                getString(.password),
+                                text: $password
+                            )
+                            
+                            Image(systemName: "eye")
+                                .foregroundColor(.iconInput)
+                                .onTapGesture {
+                                    showPassword = false
+                                }
+                        }
+                    } else {
+                        HStack {
+                            SecureField(
+                                getString(.password),
+                                text: $password
+                            )
+                            
+                            Image(systemName: "eye.slash")
+                                .foregroundColor(.iconInput)
+                                .onTapGesture {
+                                    showPassword = true
+                                }
+                        }
                     }
                 }
             }
@@ -92,6 +114,5 @@ private struct DeleteAccountView: View {
             errorMessage: nil,
             onDeleteAccountClick: {}
         )
-        .background(.listBackground)
     }
 }
