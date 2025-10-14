@@ -3,6 +3,7 @@ import Combine
 class ConversationMessageRepositoryImpl: ConversationMessageRepository {
     private let conversationRepository: ConversationRepository
     private let messageRepository: MessageRepository
+    
     private var conversationCancellables: Set<AnyCancellable> = []
     private var messageCancellables: [String: AnyCancellable] = [:]
     private let conversationsMessageSubject = CurrentValueSubject<[String: ConversationMessage], Never>([:])

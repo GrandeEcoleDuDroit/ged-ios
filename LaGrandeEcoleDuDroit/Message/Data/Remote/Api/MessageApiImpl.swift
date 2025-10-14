@@ -73,35 +73,22 @@ class MessageApiImpl: MessageApi {
 
 class MessageServerApi {
     private let tokenProvider: TokenProvider
+    private let base = "messages"
     
     init(tokenProvider: TokenProvider) {
         self.tokenProvider = tokenProvider
     }
     
     func reportMessage(report: RemoteMessageReport) async throws -> (URLResponse, ServerResponse) {
-        let url = try getUrl(endPoint: "report")
-        let session = RequestUtils.getUrlSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let url = try RequestUtils.getUrl(base: base, endPoint: "report")
+        let session = RequestUtils.getSession()
+        let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: report,
             url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
-        return try await sendRequest(session: session, request: request)
-    }
-    
-    private func getUrl(endPoint: String) throws -> URL {
-        if let url = URL.oracleUrl(path: "/messages/\(endPoint)") {
-            return url
-        } else {
-            throw NetworkError.invalidURL("Invalid URL")
-        }
-    }
-    
-    private func sendRequest(session: URLSession, request: URLRequest) async throws -> (URLResponse, ServerResponse) {
-        let (dataReceived, response) = try await session.data(for: request)
-        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
-        return (response, serverResponse)
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
 }

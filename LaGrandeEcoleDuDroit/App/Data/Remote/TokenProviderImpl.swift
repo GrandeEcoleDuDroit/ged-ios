@@ -5,7 +5,7 @@ class TokenProviderImpl: TokenProvider {
         self.authenticationRepository = authenticationRepository
     }
     
-    func getAuthIdToken() async -> String? {
+    func getAuthToken() async -> String? {
         try? await authenticationRepository.getToken()
     }
 }

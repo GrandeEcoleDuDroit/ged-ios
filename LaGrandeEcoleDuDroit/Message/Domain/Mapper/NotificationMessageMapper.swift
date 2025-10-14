@@ -98,7 +98,8 @@ private extension User {
             email: email,
             schoolLevel: schoolLevel.rawValue,
             isMember: isMember,
-            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl)
+            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
+            isDeleted: isDeleted
         )
     }
 }
@@ -124,7 +125,8 @@ private extension RemoteNotificationMessage.Conversation.Interlocutor {
             email: email,
             schoolLevel: SchoolLevel(rawValue: schoolLevel) ?? .ged1,
             isMember: isMember,
-            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName)
+            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName),
+            isDeleted: isDeleted
         )
     }
 }

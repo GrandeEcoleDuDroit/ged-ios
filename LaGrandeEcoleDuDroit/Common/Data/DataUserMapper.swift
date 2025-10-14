@@ -7,7 +7,8 @@ extension FirestoreUser {
             email: email,
             schoolLevel: SchoolLevel(rawValue: schoolLevel) ?? .ged1,
             isMember: isMember,
-            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName)
+            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName),
+            isDeleted: isDeleted
         )
     }
 }
@@ -19,9 +20,10 @@ extension User {
             userFirstName: firstName,
             userLastName: lastName,
             userEmail: email,
-            schoolLevel: schoolLevel.rawValue,
+            userSchoolLevel: schoolLevel.rawValue,
             userIsMember: isMember ? 1 : 0,
-            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl)
+            userProfilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
+            userIsDeleted: isDeleted
         )
     }
     
@@ -33,7 +35,8 @@ extension User {
             email: email,
             schoolLevel: schoolLevel.rawValue,
             isMember: isMember,
-            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl)
+            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
+            isDeleted: isDeleted
         )
     }
     
@@ -45,7 +48,8 @@ extension User {
             userEmail: email,
             userSchoolLevel: schoolLevel.rawValue,
             userIsMember: isMember,
-            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl)
+            userProfilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
+            userIsDeleted: isDeleted
         )
     }
 }
@@ -59,7 +63,8 @@ extension LocalUser {
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel)!,
             isMember: userIsMember,
-            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName)
+            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: userProfilePictureFileName),
+            isDeleted: userIsDeleted
         )
     }
 }

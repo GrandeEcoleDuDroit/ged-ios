@@ -17,7 +17,7 @@ class ClearDataUseCase {
     }
     
     func execute() async {
-        userRepository.deleteLocalCurrentUser()
+        userRepository.deleteLocalUser()
         try? await messageRepository.deleteLocalMessages()
         try? await conversationRepository.deleteLocalConversations()
         conversationMessageRepository.clear()

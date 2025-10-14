@@ -17,6 +17,7 @@ struct RemoteNotificationMessage: Codable {
             let schoolLevel: String
             let isMember: Bool
             let profilePictureFileName: String?
+            let isDeleted: Bool
         }
     }
 }

@@ -4,7 +4,7 @@ import Combine
 class DeleteAccountViewModel: ViewModel {
     private let userRepository: UserRepository
     private let networkMonitor: NetworkMonitor
-    private let deleteUserAccountUseCase: DeleteUserAccountUseCase
+    private let deleteUserAccountUseCase: DeleteAccountUseCase
     
     @Published var uiState = DeleteAccountUiState()
     @Published private(set) var event: SingleUiEvent? = nil
@@ -12,7 +12,7 @@ class DeleteAccountViewModel: ViewModel {
     init(
         userRepository: UserRepository,
         networkMonitor: NetworkMonitor,
-        deleteUserAccountUseCase: DeleteUserAccountUseCase
+        deleteUserAccountUseCase: DeleteAccountUseCase
     ) {
         self.userRepository = userRepository
         self.networkMonitor = networkMonitor
@@ -20,8 +20,8 @@ class DeleteAccountViewModel: ViewModel {
     }
     
     func deleteUserAccount() {
-        guard let email = userRepository.currentUser?.email else {
-            return 
+        guard let currentUser = userRepository.currentUser else {
+            return event = ErrorEvent(message: getString(.currentUserNotFoundError))
         }
         let password = uiState.password
         
@@ -37,7 +37,7 @@ class DeleteAccountViewModel: ViewModel {
         
         Task { @MainActor [weak self] in
             do {
-                try await self?.deleteUserAccountUseCase.execute(email: email, password: password)
+                try await self?.deleteUserAccountUseCase.execute(user: currentUser, password: password)
                 self?.uiState.loading = false
             } catch {
                 self?.uiState.loading = false
@@ -64,7 +64,7 @@ class DeleteAccountViewModel: ViewModel {
             if let authError = e as? AuthenticationError {
                 switch authError {
                     case .invalidCredentials: getString(.incorrectPasswordError)
-                    case .userDisabled: getString(.userDisabledError)
+                    case .userDisabled: getString(.disabledUserError)
                     default: getString(.unknownError)
                 }
             } else {

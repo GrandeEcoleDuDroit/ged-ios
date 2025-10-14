@@ -32,7 +32,8 @@ class RegisterUseCase {
             email: email,
             schoolLevel: schoolLevel,
             isMember: false,
-            profilePictureUrl: nil
+            profilePictureUrl: nil,
+            isDeleted: false
         )
         
         try await userRepository.createUser(user: user)

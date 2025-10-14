@@ -60,6 +60,26 @@ private struct UserView: View {
     @State private var showReportBottomSheet: Bool = false
     @State private var showBlockAlert: Bool = false
     @State private var showUnblockAlert: Bool = false
+    private let userName: String
+    
+    init(
+        user: User,
+        currentUser: User,
+        loading: Bool,
+        isUserBlocked: Bool,
+        onReportClick: @escaping (UserReport) -> Void,
+        onBlockUserClick: @escaping (String) -> Void,
+        onUnblockUserClick: @escaping (String) -> Void
+    ) {
+        self.user = user
+        self.currentUser = currentUser
+        self.loading = loading
+        self.isUserBlocked = isUserBlocked
+        self.onReportClick = onReportClick
+        self.onBlockUserClick = onBlockUserClick
+        self.onUnblockUserClick = onUnblockUserClick
+        self.userName = user.isDeleted ? getString(.deletedUser) : user.fullName
+    }
 
     var body: some View {
         ZStack {
@@ -69,11 +89,14 @@ private struct UserView: View {
                     scale: 1.6
                 )
                 
-                UserInformationItems(user: user)
+                if !user.isDeleted {
+                    UserInformationItems(user: user)
+                }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .loading(loading)
-        .navigationTitle(user.fullName)
+        .navigationTitle(userName)
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showUserBottomSheet) {
             UserBottomSheet(

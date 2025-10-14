@@ -45,7 +45,6 @@ class ThirdRegistrationViewModel: ViewModel {
             } catch {
                 self?.uiState.loading = false
                 self?.uiState.errorMessage = self?.mapErrorMessage(error)
-                self?.uiState.password = ""
             }
         }
     }

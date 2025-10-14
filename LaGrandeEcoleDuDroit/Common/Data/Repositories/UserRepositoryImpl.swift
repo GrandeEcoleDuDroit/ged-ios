@@ -24,12 +24,6 @@ class UserRepositoryImpl: UserRepository {
         userLocalDataSource.getUser()
     }
         
-    func createUser(user: User) async throws {
-        try await userRemoteDataSource.createUser(user: user)
-        try? userLocalDataSource.storeUser(user: user)
-        userSubject.send(user)
-    }
-    
     func getUser(userId: String) async throws -> User? {
         try await userRemoteDataSource.getUser(userId: userId)
     }
@@ -38,7 +32,7 @@ class UserRepositoryImpl: UserRepository {
         try await userRemoteDataSource.getUserWithEmail(email: email)
     }
     
-    func getUserPublisher(userId: String) -> AnyPublisher<User?, Never> {
+    func getUserPublisher(userId: String) -> AnyPublisher<User?, Error> {
         userRemoteDataSource.listenUser(userId: userId)
     }
     
@@ -46,24 +40,19 @@ class UserRepositoryImpl: UserRepository {
         await userRemoteDataSource.getUsers()
     }
     
+    func createUser(user: User) async throws {
+        try await userRemoteDataSource.createUser(user: user)
+        try? userLocalDataSource.storeUser(user: user)
+        userSubject.send(user)
+    }
+    
     func storeUser(_ user: User) {
         try? userLocalDataSource.storeUser(user: user)
         userSubject.send(user)
     }
     
-    func deleteCurrentUser() async throws {
-        guard let currentUser = currentUser else {
-            throw UserError.currentUserNotFound
-        }
-        
-        try await userRemoteDataSource.deleteUser(user: currentUser)
-        userLocalDataSource.removeUser()
-        userSubject.send(nil)
-    }
-    
-    func deleteLocalCurrentUser() {
-        userLocalDataSource.removeUser()
-        userSubject.send(nil)
+    func updateRemoteUser(user: User) async throws {
+        try await userRemoteDataSource.updateUser(user: user)
     }
     
     func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {
@@ -72,6 +61,11 @@ class UserRepositoryImpl: UserRepository {
         var user = userSubject.value
         user?.profilePictureUrl = UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName)
         userSubject.send(user)
+    }
+    
+    func deleteLocalUser() {
+        userLocalDataSource.removeUser()
+        userSubject.send(nil)
     }
     
     func deleteProfilePictureFileName(userId: String) async throws {

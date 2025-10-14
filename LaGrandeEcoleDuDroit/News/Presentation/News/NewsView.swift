@@ -38,6 +38,9 @@ struct NewsDestination: View {
                     }
                 }
             )
+        } else {
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
     }
 }

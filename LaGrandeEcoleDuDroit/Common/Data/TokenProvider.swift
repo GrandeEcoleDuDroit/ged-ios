@@ -1,3 +1,3 @@
 protocol TokenProvider {
-    func getAuthIdToken() async -> String?
+    func getAuthToken() async -> String?
 }
