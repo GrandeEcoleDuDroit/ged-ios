@@ -13,10 +13,10 @@ class AnnouncementApiImpl: AnnouncementApi {
         let url = try RequestUtils.getUrl(base: base, endPoint: "")
         
         let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.formatGetRequest(
             url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
         let (data, urlResponse) = try await session.data(for: request)
@@ -28,11 +28,11 @@ class AnnouncementApiImpl: AnnouncementApi {
         let url = try RequestUtils.getUrl(base: base, endPoint: "create")
 
         let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: remoteAnnouncement,
             url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)
@@ -42,11 +42,11 @@ class AnnouncementApiImpl: AnnouncementApi {
         let url = try RequestUtils.getUrl(base: base, endPoint: "update")
 
         let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: remoteAnnouncement,
             url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)
@@ -57,10 +57,10 @@ class AnnouncementApiImpl: AnnouncementApi {
 
         
         let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.formatDeleteRequest(
             url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)
@@ -71,10 +71,10 @@ class AnnouncementApiImpl: AnnouncementApi {
 
         
         let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.formatDeleteRequest(
             url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)
@@ -84,11 +84,11 @@ class AnnouncementApiImpl: AnnouncementApi {
         let url = try RequestUtils.getUrl(base: base, endPoint: "report")
         
         let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: report,
             url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)

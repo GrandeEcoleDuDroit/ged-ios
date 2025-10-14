@@ -69,7 +69,7 @@ class AuthenticationViewModel: ViewModel {
             if let authError = e as? AuthenticationError {
                 switch authError {
                     case .invalidCredentials: getString(.incorrectCredentialsError)
-                    case .userDisabled: getString(.userDisabledError)
+                    case .userDisabled: getString(.disabledUserError)
                     default: getString(.unknownError)
                 }
             } else {

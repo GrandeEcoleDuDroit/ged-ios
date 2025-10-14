@@ -17,6 +17,7 @@
 "delete_account" = "Supprimer le compte";
 "enter_password" = "Saisissez votre mot de passe";
 "logout_alert_message" = "Êtes-vous sûr de vouloir vous déconnecter ?";
+"deleted_user" = "Utilisateur supprimé";
 
 // App error
 "incorrect_password_error" = "Mot de passe incorrect.";
@@ -62,6 +63,8 @@
 "cannot_connect_to_host_error" = "Impossible de se connecter au serveur.";
 "too_many_requests_error" = "Vous avez effectué trop de requêtes. Veuillez réessayer dans quelques minutes.";
 "internet_connection_lost_error" = "La connexion Internet a été perdue.";
+"disabled_user_error" = "Votre compte a été désactivé. Veuillez contacter le support.";
+"current_user_not_found_error" = "Utilisateur actuel non trouvé. Veuillez vous réauthentifier.";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";
@@ -90,7 +93,6 @@
 "incorrect_email_format_error" = "Veuillez entrer une adresse e-mail valide.";
 "password_length_error" = "Le mot de passe doit faire au moins 8 caractères.";
 "incorrect_credentials_error" = "Adresse e-mail ou mot de passe incorrect.";
-"user_disabled_error" = "Votre compte a été désactivé. Veuillez contacter le support.";
 "user_not_exist_error" = "L'utilisateur n'existe pas.";
 "email_not_verified_error" = "Veuillez validez votre adresse e-mail avant de continuer.";
 "email_already_associated" = "Cette adresse e-mail est déjà utilisée.";

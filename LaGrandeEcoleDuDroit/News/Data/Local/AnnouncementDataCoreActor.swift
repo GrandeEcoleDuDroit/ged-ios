@@ -92,35 +92,3 @@ actor AnnouncementCoreDataActor {
         }
     }
 }
-
-private extension LocalAnnouncement {
-    func modify(announcement: Announcement) {
-        announcementId = announcement.id
-        announcementTitle = announcement.title
-        announcementContent = announcement.content
-        announcementDate = announcement.date
-        announcementState = announcement.state.rawValue
-        userId = announcement.author.id
-        userFirstName = announcement.author.firstName
-        userLastName = announcement.author.lastName
-        userEmail = announcement.author.email
-        userSchoolLevel = announcement.author.schoolLevel.rawValue
-        userIsMember = announcement.author.isMember
-        userProfilePictureFileName = UrlUtils.extractFileName(url: announcement.author.profilePictureUrl)
-    }
-    
-    func equals(_ announcement: Announcement) -> Bool {
-        announcementId == announcement.id &&
-        announcementTitle == announcement.title &&
-        announcementContent == announcement.content &&
-        announcementDate == announcement.date &&
-        announcementState == announcement.state.rawValue &&
-        userId == announcement.author.id &&
-        userFirstName == announcement.author.firstName &&
-        userLastName == announcement.author.lastName &&
-        userEmail == announcement.author.email &&
-        userSchoolLevel == announcement.author.schoolLevel.rawValue &&
-        userIsMember == announcement.author.isMember &&
-        userProfilePictureFileName == UrlUtils.extractFileName(url: announcement.author.profilePictureUrl)
-    }
-}

@@ -54,7 +54,11 @@ class CreateConversationViewModel: ViewModel {
         let blockedUserIds = blockedUserRepository.currentBlockedUserIds
         Task { @MainActor [weak self] in
             let users = await self?.userRepository.getUsers()
-                .filter { $0.id != user.id && !blockedUserIds.contains($0.id) }
+                .filter {
+                    $0.id != user.id &&
+                    !$0.isDeleted &&
+                    !blockedUserIds.contains($0.id)
+                }
                 .sorted { $0.fullName < $1.fullName }
             ?? []
             

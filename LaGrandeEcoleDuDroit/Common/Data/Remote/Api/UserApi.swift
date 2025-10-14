@@ -1,7 +1,7 @@
 import Combine
 
 protocol UserApi {
-    func listenUser(userId: String) -> AnyPublisher<User?, Never>
+    func listenUser(userId: String) -> AnyPublisher<User?, Error>
 
     func getUser(userId: String) async throws -> User?
     
@@ -11,9 +11,9 @@ protocol UserApi {
     
     func createUser(user: User) async throws
         
-    func updateProfilePictureFileName(userId: String, fileName: String) async throws
+    func updateUser(user: User) async throws
     
-    func deleteUser(userId: String) async throws
+    func updateProfilePictureFileName(userId: String, fileName: String) async throws
     
     func deleteProfilePictureFileName(userId: String) async throws
     

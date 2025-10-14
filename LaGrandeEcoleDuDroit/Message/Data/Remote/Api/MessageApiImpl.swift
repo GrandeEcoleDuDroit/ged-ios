@@ -82,11 +82,11 @@ class MessageServerApi {
     func reportMessage(report: RemoteMessageReport) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.getUrl(base: base, endPoint: "report")
         let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: report,
             url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)

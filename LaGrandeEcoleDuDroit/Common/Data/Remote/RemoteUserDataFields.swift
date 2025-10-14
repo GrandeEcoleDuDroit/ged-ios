@@ -6,7 +6,7 @@ struct FirestoreUserDataFields {
     static let schoolLevel = "schoolLevel"
     static let isMember = "isMember"
     static let profilePictureFileName = "profilePictureFileName"
-    static let isOnline = "isOnline"
+    static let isDeleted = "isDeleted"
 }
 
 struct OracleUserDataFields {
@@ -17,4 +17,5 @@ struct OracleUserDataFields {
     static let userSchoolLevel = "USER_SCHOOL_LEVEL"
     static let userIsMember = "USER_IS_MEMBER"
     static let userProfilePictureFileName = "USER_PROFILE_PICTURE_FILE_NAME"
+    static let userIsDeleted = "USER_IS_DELETED"
 }
