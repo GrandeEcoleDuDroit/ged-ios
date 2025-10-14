@@ -9,18 +9,12 @@ class MockUserRepository: UserRepository {
     var currentUser: User? { nil }
     
     func getCurrentUser() -> User? { nil }
-    
-    func storeUser(_ user: User) {}
-    
-    func deleteLocalCurrentUser() {}
-    
-    func createUser(user: User) async throws {}
-    
+        
     func getUser(userId: String) async -> User? { nil }
     
     func getUserWithEmail(email: String) async -> User? { nil }
     
-    func getUserPublisher(userId: String) -> AnyPublisher<User?, Never> {
+    func getUserPublisher(userId: String) -> AnyPublisher<User?, Error> {
         Empty().eraseToAnyPublisher()
     }
     
@@ -28,9 +22,15 @@ class MockUserRepository: UserRepository {
     
     func getFilteredUsers(filter: String) async -> [User] { [] }
     
-    func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {}
+    func storeUser(_ user: User) {}
     
-    func deleteCurrentUser() async throws {}
+    func createUser(user: User) async throws {}
+    
+    func updateRemoteUser(user: User) async throws {}
+    
+    func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {}
+        
+    func deleteLocalUser() {}
     
     func deleteProfilePictureFileName(userId: String) async throws {}
     

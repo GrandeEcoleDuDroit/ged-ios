@@ -13,18 +13,18 @@ protocol UserRepository {
     
     func getUserWithEmail(email: String) async throws -> User?
     
-    func getUserPublisher(userId: String) -> AnyPublisher<User?, Never>
+    func getUserPublisher(userId: String) -> AnyPublisher<User?, Error>
     
     func getUsers() async -> [User]
         
     func storeUser(_ user: User)
     
-    func deleteCurrentUser() async throws
-    
-    func deleteLocalCurrentUser()
+    func updateRemoteUser(user: User) async throws
     
     func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws
     
+    func deleteLocalUser()
+        
     func deleteProfilePictureFileName(userId: String) async throws
     
     func reportUser(report: UserReport) async throws

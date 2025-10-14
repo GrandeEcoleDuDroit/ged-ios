@@ -8,7 +8,7 @@ class UserRemoteDataSource {
         self.userApi = userApi
     }
     
-    func listenUser(userId: String) -> AnyPublisher<User?, Never> {
+    func listenUser(userId: String) -> AnyPublisher<User?, Error> {
         userApi.listenUser(userId: userId).eraseToAnyPublisher()
     }
     
@@ -32,8 +32,8 @@ class UserRemoteDataSource {
         try await userApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
     }
     
-    func deleteUser(user: User) async throws {
-        try await userApi.deleteUser(userId: user.id)
+    func updateUser(user: User) async throws {
+        try await userApi.updateUser(user: user)
     }
     
     func deleteProfilePictureFileName(userId: String) async throws {

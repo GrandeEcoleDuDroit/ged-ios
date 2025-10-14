@@ -93,6 +93,46 @@ private struct ChatView: View {
     @State private var showDeleteAnnouncementAlert: Bool = false
     @State private var showDeleteChatAlert: Bool = false
     @State private var showUnblockAlert: Bool = false
+    private let interlocutorName: String
+    
+    init(
+        conversation: Conversation,
+        messages: [Message],
+        messageText: String,
+        loading: Bool,
+        userBlocked: Bool,
+        canLoadMoreMessages: Bool,
+        onBackClick: @escaping () -> Void,
+        onSendMessagesClick: @escaping () -> Void,
+        onMessageTextChange: @escaping (String) -> Void,
+        loadMoreMessages: @escaping (Int) -> Void,
+        onDeleteErrorMessageClick: @escaping (Message) -> Void,
+        onResendMessage: @escaping (Message) -> Void,
+        onInterlocutorClick: @escaping (User) -> Void,
+        onReportMessageClick: @escaping (MessageReport) -> Void,
+        onDeleteChatClick: @escaping () -> Void,
+        onUnblockUserClick: @escaping (String) -> Void,
+        onInterlocutorProfilePictureClick: @escaping (User) -> Void
+    ) {
+        self.conversation = conversation
+        self.messages = messages
+        self.messageText = messageText
+        self.loading = loading
+        self.userBlocked = userBlocked
+        self.canLoadMoreMessages = canLoadMoreMessages
+        self.onBackClick = onBackClick
+        self.onSendMessagesClick = onSendMessagesClick
+        self.onMessageTextChange = onMessageTextChange
+        self.loadMoreMessages = loadMoreMessages
+        self.onDeleteErrorMessageClick = onDeleteErrorMessageClick
+        self.onResendMessage = onResendMessage
+        self.onInterlocutorClick = onInterlocutorClick
+        self.onReportMessageClick = onReportMessageClick
+        self.onDeleteChatClick = onDeleteChatClick
+        self.onUnblockUserClick = onUnblockUserClick
+        self.onInterlocutorProfilePictureClick = onInterlocutorProfilePictureClick
+        self.interlocutorName = conversation.interlocutor.isDeleted ? getString(.deletedUser) : conversation.interlocutor.fullName
+    }
 
     var body: some View {
         VStack(spacing: GedSpacing.smallMedium) {
@@ -245,7 +285,7 @@ private struct ChatView: View {
                             scale: 0.3
                         )
                         
-                        Text(conversation.interlocutor.fullName)
+                        Text(interlocutorName)
                             .fontWeight(.medium)
                     }
                     .onTapGesture {

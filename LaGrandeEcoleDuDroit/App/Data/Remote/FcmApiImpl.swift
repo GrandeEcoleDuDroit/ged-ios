@@ -17,11 +17,11 @@ class FcmApiImpl: FcmApi {
         ]
         
         let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: dataToSend,
             url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)
@@ -35,11 +35,11 @@ class FcmApiImpl: FcmApi {
             "fcmMessage": fcmMessage
         ]
         let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: dataToSend,
             url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)

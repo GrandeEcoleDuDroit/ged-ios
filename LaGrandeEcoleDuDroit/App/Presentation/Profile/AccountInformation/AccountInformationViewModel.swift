@@ -48,16 +48,19 @@ class AccountInformationViewModel: ViewModel {
         guard networkMonitor.isConnected else {
             return event = ErrorEvent(message: getString(.noInternetConectionError))
         }
-        guard let user = uiState.user else {
-            return event = ErrorEvent(message: getString(.userNotFoundError))
+        guard let currentUser = uiState.user else {
+            return event = ErrorEvent(message: getString(.currentUserNotFoundError))
         }
         
         uiState.loading = true
         
         Task { @MainActor [weak self] in
             do {
-                if let url = user.profilePictureUrl {
-                    try await self?.deleteProfilePictureUseCase.execute(userId: user.id, profilePictureUrl: url)
+                if let url = currentUser.profilePictureUrl {
+                    try await self?.deleteProfilePictureUseCase.execute(
+                        userId: currentUser.id,
+                        profilePictureUrl: url
+                    )
                 }
                 self?.resetValues()
             } catch {

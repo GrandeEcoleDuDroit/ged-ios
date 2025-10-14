@@ -3,6 +3,7 @@ import SwiftUI
 struct UserItem<TrailingContent: View>: View {
     let user: User
     let trailingContent: () -> TrailingContent
+    private let userName: String
 
     init(
         user: User,
@@ -10,16 +11,20 @@ struct UserItem<TrailingContent: View>: View {
     ) {
         self.user = user
         self.trailingContent = trailingContent
+        self.userName = user.isDeleted ? getString(.deletedUser) : user.fullName
     }
     
     var body: some View {
         HStack(alignment: .center) {
-            ProfilePicture(
-                url: user.profilePictureUrl,
-                scale: 0.5
-            )
-            Text(user.fullName)
-            Spacer()
+            HStack {
+                ProfilePicture(
+                    url: user.profilePictureUrl,
+                    scale: 0.5
+                )
+                Text(userName)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
             trailingContent()
         }
         .padding(.vertical, GedSpacing.small)
@@ -29,5 +34,8 @@ struct UserItem<TrailingContent: View>: View {
 }
 
 #Preview {
-    UserItem(user: userFixture)
+    UserItem(
+        user: userFixture,
+        trailingContent: {  Text("Trailing") }
+    )
 }

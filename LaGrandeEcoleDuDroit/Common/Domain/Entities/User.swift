@@ -6,6 +6,7 @@ struct User: Codable, Hashable, Identifiable, Copyable {
     var schoolLevel: SchoolLevel
     var isMember: Bool
     var profilePictureUrl: String?
+    var isDeleted: Bool
     
     var fullName: String {
         firstName + " " + lastName

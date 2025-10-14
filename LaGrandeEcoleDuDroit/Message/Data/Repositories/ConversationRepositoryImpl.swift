@@ -77,6 +77,14 @@ class ConversationRepositoryImpl: ConversationRepository {
                         
                     case let .notFound(remoteConversation, interlocutorId):
                         self.userRepository.getUserPublisher(userId: interlocutorId)
+                            .catch{ [weak self] error in
+                                e(
+                                    self?.tag ?? "ConversationRepositoryImpl",
+                                    "Failed to listen remote user: \(error.localizedDescription)",
+                                    error
+                                )
+                                return Empty<User?, Never>()
+                            }
                             .compactMap { $0 }
                             .map { interlocutor in
                                 Task {

@@ -46,8 +46,10 @@ private struct SwitchConversationItem: View {
     let text: String
     let onClick: () -> Void
     let onLongClick: () -> Void
+    
     @State private var elapsedTimeText: String
     @State private var loading: Bool
+    private let interlocutorName: String
 
     init(
         interlocutor: User,
@@ -67,6 +69,7 @@ private struct SwitchConversationItem: View {
         self.onLongClick = onLongClick
         self.elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
         self.loading = self.conversationState == .creating || self.conversationState == .deleting
+        self.interlocutorName = interlocutor.isDeleted ? getString(.deletedUser) : interlocutor.fullName
     }
     
     var body: some View {
@@ -77,20 +80,20 @@ private struct SwitchConversationItem: View {
         ) {
             if loading {
                 ReadConversationItemContent(
-                    interlocutorName: interlocutor.fullName,
+                    interlocutorName: interlocutorName,
                     text: text,
                     elapsedTimeText: elapsedTimeText
                 ).opacity(0.5)
             } else {
                 if isUnread {
                     UnreadConversationItemContent(
-                        interlocutorName: interlocutor.fullName,
+                        interlocutorName: interlocutorName,
                         text: text,
                         elapsedTimeText: elapsedTimeText
                     )
                 } else {
                     ReadConversationItemContent(
-                        interlocutorName: interlocutor.fullName,
+                        interlocutorName: interlocutorName,
                         text: text,
                         elapsedTimeText: elapsedTimeText
                     )

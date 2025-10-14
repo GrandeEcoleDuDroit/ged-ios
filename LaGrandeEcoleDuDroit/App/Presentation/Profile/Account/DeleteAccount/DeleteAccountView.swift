@@ -36,9 +36,9 @@ private struct DeleteAccountView: View {
     let errorMessage: String?
     let onDeleteAccountClick: () -> Void
     @State private var showPassword: Bool = false
-            
+    
     var body: some View {
-        VStack {
+        VStack(alignment: .leading) {
             Text(getString(.deleteAccountText))
                 .padding(.horizontal, GedSpacing.mediumLarge)
             
@@ -73,7 +73,7 @@ private struct DeleteAccountView: View {
                     }
                 }
             }
-            .frame(maxHeight: 100)
+            .frame(maxHeight: 90)
             .scrollContentBackground(.hidden)
             
             if let errorMessage {
@@ -92,7 +92,7 @@ private struct DeleteAccountView: View {
                 }
             )
             .background(.listRowBackground)
-            .foregroundColor(.red)
+            .foregroundStyle(.red)
             .clipShape(.rect(cornerRadius: 10))
             .padding(.horizontal, GedSpacing.mediumLarge)
             .padding(.vertical, GedSpacing.small)

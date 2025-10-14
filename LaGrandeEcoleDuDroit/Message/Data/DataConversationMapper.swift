@@ -59,6 +59,23 @@ extension Conversation {
             deleteTime: deleteTime?.toEpochMilli()
         )
     }
+    
+    func buildLocal(localConversation: LocalConversation) {
+        localConversation.conversationId = id
+        localConversation.createdAt = createdAt
+        localConversation.state = state.rawValue
+        localConversation.deleteTime = deleteTime
+        localConversation.interlocutorId = interlocutor.id
+        localConversation.interlocutorFirstName = interlocutor.firstName
+        localConversation.interlocutorLastName = interlocutor.lastName
+        localConversation.interlocutorEmail = interlocutor.email
+        localConversation.interlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
+        localConversation.interlocutorIsMember = interlocutor.isMember
+        localConversation.interlocutorProfilePictureFileName = UrlUtils.extractFileName(
+            url: interlocutor.profilePictureUrl
+        )
+        localConversation.interlocutorIsDeleted = interlocutor.isDeleted
+    }
 }
 
 extension LocalConversation {
@@ -82,7 +99,8 @@ extension LocalConversation {
             isMember: interlocutorIsMember,
             profilePictureUrl: UrlUtils.formatOracleBucketUrl(
                 fileName: interlocutorProfilePictureFileName
-            )
+            ),
+            isDeleted: interlocutorIsDeleted
         )
         
         return Conversation(
@@ -92,6 +110,36 @@ extension LocalConversation {
             state: state,
             deleteTime: deleteTime
         )
+    }
+    
+    func modify(conversation: Conversation) {
+        conversationId = conversation.id
+        createdAt = conversation.createdAt
+        state = conversation.state.rawValue
+        deleteTime = conversation.deleteTime
+        interlocutorId = conversation.interlocutor.id
+        interlocutorFirstName = conversation.interlocutor.firstName
+        interlocutorLastName = conversation.interlocutor.lastName
+        interlocutorEmail = conversation.interlocutor.email
+        interlocutorSchoolLevel = conversation.interlocutor.schoolLevel.rawValue
+        interlocutorIsMember = conversation.interlocutor.isMember
+        interlocutorProfilePictureFileName = UrlUtils.extractFileName(url: conversation.interlocutor.profilePictureUrl)
+        interlocutorIsDeleted = conversation.interlocutor.isDeleted
+    }
+    
+    func equals(_ conversation: Conversation) -> Bool {
+        conversationId == conversation.id &&
+        createdAt == conversation.createdAt &&
+        state == conversation.state.rawValue &&
+        deleteTime == conversation.deleteTime &&
+        interlocutorId == conversation.interlocutor.id &&
+        interlocutorFirstName == conversation.interlocutor.firstName &&
+        interlocutorLastName == conversation.interlocutor.lastName &&
+        interlocutorEmail == conversation.interlocutor.email &&
+        interlocutorSchoolLevel == conversation.interlocutor.schoolLevel.rawValue &&
+        interlocutorIsMember == conversation.interlocutor.isMember &&
+        interlocutorProfilePictureFileName == UrlUtils.extractFileName(url: conversation.interlocutor.profilePictureUrl) &&
+        interlocutorIsDeleted == conversation.interlocutor.isDeleted
     }
 }
 
@@ -105,7 +153,8 @@ private extension User {
             email: email,
             schoolLevel: schoolLevel.rawValue,
             isMember: isMember,
-            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl)
+            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
+            isDeleted: isDeleted
         )
     }
 }

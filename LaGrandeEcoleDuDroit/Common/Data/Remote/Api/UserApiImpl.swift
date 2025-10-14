@@ -15,7 +15,7 @@ class UserApiImpl: UserApi {
         self.userServerApi = userServerApi
     }
     
-    func listenUser(userId: String) -> AnyPublisher<User?, Never> {
+    func listenUser(userId: String) -> AnyPublisher<User?, Error> {
         userFirestoreApi.listenUser(userId: userId)
             .map { $0?.toUser() }
             .eraseToAnyPublisher()
@@ -81,15 +81,15 @@ class UserApiImpl: UserApi {
         )
     }
     
-    func deleteUser(userId: String) async throws {
+    func updateUser(user: User) async throws {
         try await mapServerError(
-            block: { try await userServerApi.deleteUser(userId: userId) },
+            block: { try await userServerApi.updateUser(oracleUser: user.toOracleUser()) },
             tag: tag,
             message: "Failed to delete user with server"
         )
         
         try await mapFirebaseException(
-            block: { try await userFirestoreApi.deleteUser(userId: userId) },
+            block: { try await userFirestoreApi.updateUser(firestoreUser: user.toFirestoreUser()) },
             tag: tag,
             message: "Failed to delete user with firestore"
         )
@@ -129,11 +129,25 @@ class UserServerApi {
     func createUser(user: OracleUser) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.getUrl(base: base, endPoint: "create")
         let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: user,
             url: url,
-            authToken: authIdToken
+            authToken: authToken
+        )
+        
+        return try await RequestUtils.sendRequest(session: session, request: request)
+    }
+    
+    func updateUser(oracleUser: OracleUser) async throws -> (URLResponse, ServerResponse) {
+        let url = try RequestUtils.getUrl(base: base, endPoint: "\(oracleUser.userId)")
+        let session = RequestUtils.getSession()
+        let authToken = await tokenProvider.getAuthToken()
+        
+        let request = try RequestUtils.formatPutRequest(
+            dataToSend: oracleUser,
+            url: url,
+            authToken: authToken
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)
@@ -145,25 +159,13 @@ class UserServerApi {
             OracleUserDataFields.userId: userId,
             OracleUserDataFields.userProfilePictureFileName: fileName
         ]
-        
         let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
-        let request = try RequestUtils.formatPutRequest(
+        let authToken = await tokenProvider.getAuthToken()
+        
+        let request = try RequestUtils.formatPatchRequest(
             dataToSend: dataToSend,
             url: url,
-            authToken: authIdToken
-        )
-        
-        return try await RequestUtils.sendRequest(session: session, request: request)
-    }
-    
-    func deleteUser(userId: String) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "\(userId)")
-        let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
-        let request = RequestUtils.formatDeleteRequest(
-            url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)
@@ -172,10 +174,10 @@ class UserServerApi {
     func deleteProfilePictureFileName(userId: String) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.getUrl(base: base, endPoint: "profile-picture-file-name/\(userId)")
         let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.formatDeleteRequest(
             url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)
@@ -184,11 +186,11 @@ class UserServerApi {
     func reportUser(report: RemoteUserReport) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.getUrl(base: base, endPoint: "report")
         let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.formatPostRequest(
             dataToSend: report,
             url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)
@@ -199,19 +201,23 @@ class UserServerApi {
 class UserFirestoreApi {
     private let usersCollection: CollectionReference = Firestore.firestore().collection("users")
     
-    func listenUser(userId: String) -> AnyPublisher<FirestoreUser?, Never> {
-        let subject = PassthroughSubject<FirestoreUser?, Never>()
+    func listenUser(userId: String) -> AnyPublisher<FirestoreUser?, Error> {
+        let subject = PassthroughSubject<FirestoreUser?, Error>()
         
         usersCollection
             .document(userId)
             .addSnapshotListener { snapshot, error in
                 if let error {
-                    subject.send(completion: .finished)
+                    subject.send(completion: .failure(error))
                     return
                 }
                 
-                let user = try? snapshot?.data(as: FirestoreUser.self)
-                subject.send(user)
+                do {
+                    let user = try snapshot?.data(as: FirestoreUser.self)
+                    subject.send(user)
+                } catch {
+                    subject.send(completion: .failure(error))
+                }
             }
         
         return subject.eraseToAnyPublisher()
@@ -249,9 +255,10 @@ class UserFirestoreApi {
         userRef.updateData([FirestoreUserDataFields.profilePictureFileName: fileName])
     }
     
-    func deleteUser(userId: String) async throws {
-        let userRef = usersCollection.document(userId)
-        try await userRef.delete()
+    func updateUser(firestoreUser: FirestoreUser) async throws {
+        let userRef = usersCollection.document(firestoreUser.userId)
+        let userData = try Firestore.Encoder().encode(firestoreUser)
+        try await userRef.setData(userData, merge: true)
     }
     
     func deleteProfilePictureFileName(userId: String) {

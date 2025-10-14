@@ -27,8 +27,8 @@ class ImageApiImpl: ImageApi {
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.setValue("\(body.count)", forHTTPHeaderField: "Content-Length")
         request.httpBody = body
-        if let authIdToken = await tokenProvider.getAuthIdToken() {
-            request.setValue("Bearer \(authIdToken)", forHTTPHeaderField: "Authorization")
+        if let authToken = await tokenProvider.getAuthToken() {
+            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
         
         let session = RequestUtils.getSession()
@@ -40,10 +40,10 @@ class ImageApiImpl: ImageApi {
         let url = try RequestUtils.getUrl(base: base, endPoint: fileName)
         
         let session = RequestUtils.getSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.formatDeleteRequest(
             url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)

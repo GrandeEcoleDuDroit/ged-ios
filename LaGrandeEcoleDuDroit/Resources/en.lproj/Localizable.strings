@@ -18,6 +18,7 @@
 "delete_account_text" = "Deleting your account will permanently delete all your data. This action is irreversible.";
 "logout_alert_message" = "Are you sure you want to log out?";
 "enter_password" = "Enter your password";
+"deleted_user" = "Deleted user";
 
 // App error
 "incorrect_password_error" = "Incorrect password.";
@@ -67,7 +68,8 @@
 "empty_inputs_error" = "Please fill out all fields.";
 "cannot_connect_to_host_error" = "Could not connect to the server.";
 "internet_connection_lost_error" = "The internet connection was lost.";
-"user_disabled_error" = "Your account has been disabled. Please contact the support.";
+"disabled_user_error" = "Your account has been disabled. Please contact the support.";
+"current_user_not_found_error" = "Current user not found. Please re-authenticate.";
 
 // Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";
