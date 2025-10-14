@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788" systemVersion="24D81" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788.4" systemVersion="24G84" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="LocalAnnouncement" representedClassName=".LocalAnnouncement" syncable="YES" codeGenerationType="class">
         <attribute name="announcementContent" attributeType="String" defaultValueString=""/>
         <attribute name="announcementDate" attributeType="Date" usesScalarValueType="NO"/>
@@ -9,6 +9,7 @@
         <attribute name="userEmail" attributeType="String" defaultValueString=""/>
         <attribute name="userFirstName" attributeType="String" defaultValueString=""/>
         <attribute name="userId" attributeType="String" defaultValueString=""/>
+        <attribute name="userIsDeleted" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="userIsMember" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="userLastName" attributeType="String" defaultValueString=""/>
         <attribute name="userProfilePictureFileName" optional="YES" attributeType="String"/>
@@ -21,6 +22,7 @@
         <attribute name="interlocutorEmail" optional="YES" attributeType="String"/>
         <attribute name="interlocutorFirstName" optional="YES" attributeType="String"/>
         <attribute name="interlocutorId" optional="YES" attributeType="String"/>
+        <attribute name="interlocutorIsDeleted" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="interlocutorIsMember" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="interlocutorLastName" optional="YES" attributeType="String"/>
         <attribute name="interlocutorProfilePictureFileName" optional="YES" attributeType="String"/>

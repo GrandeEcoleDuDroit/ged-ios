@@ -18,6 +18,7 @@ enum GedString: String {
     case deleteAccount = "delete_account"
     case logoutAlertMessage = "logout_alert_message"
     case enterPassword = "enter_password"
+    case deletedUser = "deleted_user"
     
     // App error
     case incorrectPasswordError = "incorrect_password_error"
@@ -59,10 +60,11 @@ enum GedString: String {
     case internalServerError = "internal_server_error"
     case unknownError = "unknown_error"
     case unknownNetworkError = "unknown_network_error"
-    case userNotFoundError = "user_not_found_error"
+    case currentUserNotFoundError = "current_user_not_found_error"
     case cannotConnectToHostError = "cannot_connect_to_host_error"
     case tooManyRequestsError = "too_many_requests_error"
     case internetConnectionLostError = "internet_connection_lost_error"
+    case disabledUserError = "disabled_user_error"
 
     // Authentication
     case authenticationPageTitle = "authentication_page_title"
@@ -91,7 +93,6 @@ enum GedString: String {
     case incorrectEmailFormatError = "incorrect_email_format_error"
     case passwordLengthError = "password_length_error"
     case incorrectCredentialsError = "incorrect_credentials_error"
-    case userDisabledError = "user_disabled_error"
     case userNotExistError = "user_not_exist_error"
     case emailAlreadyAssociatedError = "email_already_associated_error"
     case legalNoticeError = "legal_notice_error"

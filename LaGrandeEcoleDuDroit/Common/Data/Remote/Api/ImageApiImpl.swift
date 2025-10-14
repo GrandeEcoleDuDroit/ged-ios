@@ -2,19 +2,14 @@ import Foundation
 
 class ImageApiImpl: ImageApi {
     private let tokenProvider: TokenProvider
+    private let base = "image"
     
     init(tokenProvider: TokenProvider) {
         self.tokenProvider = tokenProvider
     }
 
-    private func baseUrl(endPoint: String) -> URL? {
-        URL.oracleUrl(path: "/image/" + endPoint)
-    }
-    
     func uploadImage(imageData: Data, fileName: String) async throws -> (URLResponse, ServerResponse) {
-        guard let url = baseUrl(endPoint: "upload") else {
-            throw NetworkError.invalidURL("Invalid URL")
-        }
+        let url = try RequestUtils.getUrl(base: base, endPoint: "upload")
         
         let fileExtension = (fileName as NSString).pathExtension
         let boundary = "Boundary-\(UUID().uuidString)"
@@ -32,31 +27,25 @@ class ImageApiImpl: ImageApi {
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.setValue("\(body.count)", forHTTPHeaderField: "Content-Length")
         request.httpBody = body
-        if let authIdToken = await tokenProvider.getAuthIdToken() {
-            request.setValue("Bearer \(authIdToken)", forHTTPHeaderField: "Authorization")
+        if let authToken = await tokenProvider.getAuthToken() {
+            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
         
-        let session = RequestUtils.getUrlSession()
-        let (dataReceived, urlResponse) = try await session.data(for: request)
-        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
+        let session = RequestUtils.getSession()
         
-        return (urlResponse, serverResponse)
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
     func deleteImage(fileName: String) async throws -> (URLResponse, ServerResponse) {
-        guard let url = baseUrl(endPoint: "/\(fileName)") else {
-            throw NetworkError.invalidURL("Invalid URL")
-        }
+        let url = try RequestUtils.getUrl(base: base, endPoint: fileName)
         
-        let sessions = RequestUtils.getUrlSession()
-        let authIdToken = await tokenProvider.getAuthIdToken()
+        let session = RequestUtils.getSession()
+        let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.formatDeleteRequest(
             url: url,
-            authToken: authIdToken
+            authToken: authToken
         )
         
-        let (data, urlResponse) = try await sessions.data(for: request)
-        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: data)
-        return (urlResponse, serverResponse)
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
 }

@@ -5,7 +5,8 @@ let userFixture = User(
     email: "jean.dupont@email.com",
     schoolLevel: SchoolLevel.ged1,
     isMember: true,
-    profilePictureUrl: nil
+    profilePictureUrl: nil,
+    isDeleted: false
 )
 
 let userFixture2 = User(
@@ -15,7 +16,8 @@ let userFixture2 = User(
     email: "patrick.boucher@email.com",
     schoolLevel: SchoolLevel.ged2,
     isMember: false,
-    profilePictureUrl: nil
+    profilePictureUrl: nil,
+    isDeleted: false
 )
 
 let userFixture3 = User(
@@ -25,7 +27,8 @@ let userFixture3 = User(
     email: "evelyne.aubin@email.com",
     schoolLevel: SchoolLevel.ged2,
     isMember: false,
-    profilePictureUrl: nil
+    profilePictureUrl: nil,
+    isDeleted: false
 )
 
 let usersFixture = [

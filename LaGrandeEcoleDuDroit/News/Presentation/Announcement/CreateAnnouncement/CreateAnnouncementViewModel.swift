@@ -7,7 +7,7 @@ class CreateAnnouncementViewModel: ViewModel {
     
     @Published var uiState: CreateAnnouncementUiState = CreateAnnouncementUiState()
     @Published private(set) var event: SingleUiEvent? = nil
-    private let user: User?
+    private let currentUser: User?
 
     init(
         createAnnouncementUseCase: CreateAnnouncementUseCase,
@@ -15,12 +15,12 @@ class CreateAnnouncementViewModel: ViewModel {
     ) {
         self.createAnnouncementUseCase = createAnnouncementUseCase
         self.userRepository = userRepository
-        self.user = userRepository.currentUser
+        self.currentUser = userRepository.currentUser
     }
     
     func createAnnouncement() {
-        guard let user else {
-            return event = ErrorEvent(message: getString(.userNotFoundError))
+        guard let currentUser else {
+            return event = ErrorEvent(message: getString(.currentUserNotFoundError))
         }
         
         let title: String? = !uiState.title.isBlank ? uiState.title : nil
@@ -30,7 +30,7 @@ class CreateAnnouncementViewModel: ViewModel {
             title: title,
             content: uiState.content.trimmingCharacters(in: .whitespacesAndNewlines),
             date: Date(),
-            author: user,
+            author: currentUser,
             state: .draft
         )
         

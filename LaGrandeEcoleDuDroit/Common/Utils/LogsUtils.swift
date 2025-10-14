@@ -50,7 +50,6 @@ func e(_ tag: String, _ message: String, _ error: Error? = nil) {
     let date = formatter.string(from: Date())
     
     logger.critical("🛑 \(date) \(tag)\t\(subsystem)\t [E] \(message)")
-    logger.critical("🛑 \(message)")
     #if DEBUG
     #else
     crashlytics.log("\(date) \(tag)\t\(subsystem)\t E \(message)")

@@ -6,7 +6,7 @@ import os
 class AnnouncementLocalDataSource {
     private let container: NSPersistentContainer
     private let context: NSManagedObjectContext
-    private let announcementActor :AnnouncementCoreDataActor
+    private let announcementActor: AnnouncementCoreDataActor
     
     init(gedDatabaseContainer: GedDatabaseContainer) {
         container = gedDatabaseContainer.container
@@ -38,7 +38,7 @@ class AnnouncementLocalDataSource {
         try await announcementActor.delete(announcementId: announcementId)
     }
     
-    func deleteUserAnnouncements(userId: String) async throws {
-        try await announcementActor.deleteUserAnnouncements(userId: userId)
+    func deleteAnnouncements(userId: String) async throws {
+        try await announcementActor.deleteAnnouncements(userId: userId)
     }
 }
