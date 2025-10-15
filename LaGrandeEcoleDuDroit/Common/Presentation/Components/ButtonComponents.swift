@@ -96,12 +96,24 @@ private struct ClickStyle: ButtonStyle {
     }
 }
 
+struct OptionButton : View {
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "ellipsis")
+        }.buttonStyle(.plain)
+    }
+}
+
 #Preview {
-    VStack {
+    VStack(spacing: GedSpacing.large) {
         LoadingButton(
             label: "Loading button",
             onClick: {},
             isLoading : false
         )
+        
+        OptionButton(action: {})
     }.padding()
 }

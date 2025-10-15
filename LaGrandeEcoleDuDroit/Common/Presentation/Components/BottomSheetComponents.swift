@@ -33,16 +33,6 @@ struct ReportBottomSheet<T: CustomStringConvertible>: View {
     }
 }
 
-struct OptionButton : View {
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            Image(systemName: "ellipsis")
-        }
-    }
-}
-
 #Preview {
     ReportBottomSheet(
         items: ["Spam", "Inappropriate content", "Harassment"],
