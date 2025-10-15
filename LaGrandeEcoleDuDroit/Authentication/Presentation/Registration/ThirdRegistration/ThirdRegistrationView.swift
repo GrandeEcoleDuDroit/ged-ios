@@ -2,7 +2,6 @@ import SwiftUI
 
 struct ThirdRegistrationDestination: View {
     @StateObject private var viewModel = AuthenticationMainThreadInjector.shared.resolve(ThirdRegistrationViewModel.self)
-    @State private var focusedInputField: InputField? = nil
     @State private var isLoading: Bool = false
     @State private var showErrorAlert = false
     @State private var errorMessage: String = ""
@@ -28,7 +27,8 @@ struct ThirdRegistrationDestination: View {
                     schoolLevel: schoolLevel
                 )
             }
-        ).onReceive(viewModel.$event) { event in
+        )
+        .onReceive(viewModel.$event) { event in
             if let errorEvent = event as? ErrorEvent {
                 errorMessage = errorEvent.message
                 showErrorAlert = true
@@ -57,8 +57,8 @@ private struct ThirdRegistrationView: View {
     let errorMessage: String?
     let onRegisterClick: () -> Void
     
-    @State private var focusedInputField: InputField?
-    
+    @FocusState private var focusState: Field?
+
     var body: some View {
         VStack(spacing: GedSpacing.medium) {
             ThirdRegistrationForm(
@@ -68,9 +68,9 @@ private struct ThirdRegistrationView: View {
                 emailError: emailError,
                 passwordError: passwordError,
                 errorMessage: errorMessage,
-                focusedInputField: $focusedInputField,
                 legalNoticeChecked: legalNoticeChecked,
-                onLegalNoticeCheckedChange: onLegalNoticeCheckedChange
+                onLegalNoticeCheckedChange: onLegalNoticeCheckedChange,
+                focusState: _focusState
             )
             
             if loading {
@@ -81,7 +81,7 @@ private struct ThirdRegistrationView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .navigationBarTitleDisplayMode(.inline)
         .contentShape(Rectangle())
-        .onTapGesture { focusedInputField = nil }
+        .onTapGesture { focusState = nil }
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Text(getString(.registration))

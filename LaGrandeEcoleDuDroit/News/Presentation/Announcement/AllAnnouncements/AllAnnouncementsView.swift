@@ -1,29 +1,28 @@
 import SwiftUI
 
-struct NewsDestination: View {
+struct AllAnnouncementsDestination: View {
     let onAnnouncementClick: (String) -> Void
-    let onCreateAnnouncementClick: () -> Void
     let onEditAnnouncementClick: (Announcement) -> Void
-    let onSeeAllAnnouncementClick: () -> Void
+    let onAuthorClick: (User) -> Void
     
-    @StateObject private var viewModel = NewsMainThreadInjector.shared.resolve(NewsViewModel.self)
+    @StateObject private var viewModel = NewsMainThreadInjector.shared.resolve(AllAnnouncementsViewModel.self)
     @State private var errorMessage: String = ""
     @State private var showErrorAlert: Bool = false
     
     var body: some View {
-        if let user = viewModel.uiState.user {
-            NewsView(
+        if let user = viewModel.uiState.user, let announcements = viewModel.uiState.announcements {
+            AllAnnouncementsView(
                 user: user,
-                announcements: viewModel.uiState.announcements,
+                announcements: announcements,
+                refreshing: viewModel.uiState.refreshing,
                 loading: viewModel.uiState.loading,
-                onRefreshAnnouncements: viewModel.refreshAnnouncements,
+                onRefresh: viewModel.refreshAnnouncements,
+                onAuthorClick: onAuthorClick,
                 onAnnouncementClick: onAnnouncementClick,
-                onCreateAnnouncementClick: onCreateAnnouncementClick,
+                onResendAnnouncementClick: { viewModel.resendAnnouncement(announcement: $0) },
                 onEditAnnouncementClick: onEditAnnouncementClick,
-                onResendAnnouncementClick: viewModel.resendAnnouncement,
-                onDeleteAnnouncementClick: viewModel.deleteAnnouncement,
-                onReportAnnouncementClick: viewModel.reportAnnouncement,
-                onSeeAllAnnouncementClick: onSeeAllAnnouncementClick
+                onReportAnnouncementClick: { viewModel.reportAnnouncement(report: $0) },
+                onDeleteAnnouncementClick: { viewModel.deleteAnnouncement(announcement: $0) }
             )
             .onReceive(viewModel.$event) { event in
                 if let errorEvent = event as? ErrorEvent {
@@ -47,18 +46,18 @@ struct NewsDestination: View {
     }
 }
 
-private struct NewsView: View {
+private struct AllAnnouncementsView: View {
     let user: User
-    let announcements: [Announcement]?
+    let announcements: [Announcement]
+    let refreshing: Bool
     let loading: Bool
-    let onRefreshAnnouncements: () async -> Void
+    let onRefresh: () async -> Void
+    let onAuthorClick: (User) -> Void
     let onAnnouncementClick: (String) -> Void
-    let onCreateAnnouncementClick: () -> Void
-    let onEditAnnouncementClick: (Announcement) -> Void
     let onResendAnnouncementClick: (Announcement) -> Void
-    let onDeleteAnnouncementClick: (Announcement) -> Void
+    let onEditAnnouncementClick: (Announcement) -> Void
     let onReportAnnouncementClick: (AnnouncementReport) -> Void
-    let onSeeAllAnnouncementClick: () -> Void
+    let onDeleteAnnouncementClick: (Announcement) -> Void
     
     @State private var showAnnouncementBottomSheet: Bool = false
     @State private var showAnnouncementReportBottomSheet: Bool = false
@@ -66,62 +65,47 @@ private struct NewsView: View {
     @State private var clickedAnnouncement: Announcement?
     
     var body: some View {
-        GeometryReader { geometry in
-            VStack(alignment: .leading, spacing: GedSpacing.medium) {
-                if let announcements {
-                    RecentAnnouncementSection(
-                        announcements: announcements,
-                        onAnnouncementClick: onAnnouncementClick,
-                        onUncreatedAnnouncementClick: {
-                            clickedAnnouncement = $0
+        List {
+            if announcements.isEmpty {
+                Text(getString(.noAnnouncement))
+                    .foregroundStyle(.informationText)
+                    .padding()
+                    .listRowBackground(Color.background)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets())
+                    .frame(maxWidth: .infinity, alignment: .center)
+            } else {
+                ForEach(announcements) { announcement in
+                    ExtendedAnnouncementItem(
+                        announcement: announcement,
+                        onClick: {
+                            if announcement.state == .published {
+                                onAnnouncementClick(announcement.id)
+                            } else {
+                                clickedAnnouncement = announcement
+                                showAnnouncementBottomSheet = true
+                            }
+                        },
+                        onOptionClick: {
+                            clickedAnnouncement = announcement
                             showAnnouncementBottomSheet = true
                         },
-                        onAnnouncementOptionClick: {
-                            clickedAnnouncement = $0
-                            showAnnouncementBottomSheet = true
-                            
-                        },
-                        onSeeAllAnnouncementClick: onSeeAllAnnouncementClick
+                        onAuthorClick: { onAuthorClick(announcement.author) },
                     )
-                    .frame(
-                        minHeight: geometry.size.height / 8,
-                        maxHeight: geometry.size.height / 2,
-                        alignment: .top
-                    )
-                } else {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.visible)
                 }
+                .listRowBackground(Color.background)
+                .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
             }
         }
+        .scrollIndicators(.hidden)
+        .listStyle(.plain)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .refreshable { await onRefreshAnnouncements() }
-        .padding(.top, GedSpacing.medium)
+        .refreshable { await onRefresh() }
         .loading(loading)
+        .navigationTitle(getString(.allAnnouncements))
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                HStack {
-                    Image(ImageResource.gedLogo)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 38, height: 38)
-                    
-                    Text(getString(.appName))
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                }
-            }
-            
-            ToolbarItem(placement: .topBarTrailing) {
-                if user.isMember {
-                    Button(
-                        action: onCreateAnnouncementClick,
-                        label: { Image(systemName: "plus") }
-                    )
-                }
-            }
-        }
         .sheet(isPresented: $showAnnouncementBottomSheet) {
             Sheet(
                 user: user,
@@ -217,20 +201,20 @@ private struct Sheet: View {
 }
 
 #Preview {
-   NavigationStack {
-       NewsView(
+    NavigationStack {
+        AllAnnouncementsView(
             user: userFixture,
             announcements: announcementsFixture,
+            refreshing: false,
             loading: false,
-            onRefreshAnnouncements: {},
-            onAnnouncementClick: {_ in },
-            onCreateAnnouncementClick: {},
-            onEditAnnouncementClick: {_ in },
-            onResendAnnouncementClick: {_ in },
-            onDeleteAnnouncementClick: {_ in },
-            onReportAnnouncementClick: {_ in },
-            onSeeAllAnnouncementClick: {}
-       )
-       .background(Color.background)
-   }
+            onRefresh: {},
+            onAuthorClick: { _ in },
+            onAnnouncementClick: { _ in },
+            onResendAnnouncementClick: { _ in },
+            onEditAnnouncementClick: { _ in },
+            onReportAnnouncementClick: { _ in },
+            onDeleteAnnouncementClick: {  _ in }
+        )
+        .background(Color.background)
+    }
 }

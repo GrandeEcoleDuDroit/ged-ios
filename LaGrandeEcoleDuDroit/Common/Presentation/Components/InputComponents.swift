@@ -3,11 +3,10 @@ import SwiftUI
 struct OutlineTextField: View {
     let label: String
     @Binding var text: String
-    @Binding var focusedInputField: InputField?
-    let inputField: InputField
     let isDisabled: Bool
     let errorMessage: String?
-    @FocusState private var focusedField: InputField?
+    @FocusState var focusState: Field?
+    let field: Field
     
     private var borderColor: Color {
         if errorMessage != nil {
@@ -20,7 +19,7 @@ struct OutlineTextField: View {
     }
     
     private var borderWeight: CGFloat {
-        if focusedField == inputField {
+        if focusState == field {
             4
         } else {
             2
@@ -46,17 +45,17 @@ struct OutlineTextField: View {
     init(
         label: String,
         text: Binding<String>,
-        inputField: InputField,
-        focusedInputField: Binding<InputField?>,
         isDisable: Bool = false,
-        errorMessage: String? = nil
+        errorMessage: String? = nil,
+        focusState: FocusState<Field?>,
+        field: Field
     ) {
         self.label = label
         self._text = text
-        self.inputField = inputField
-        self._focusedInputField = focusedInputField
         self.isDisabled = isDisable
         self.errorMessage = errorMessage
+        self._focusState = focusState
+        self.field = field
     }
     
     var body: some View {
@@ -67,20 +66,14 @@ struct OutlineTextField: View {
                 prompt: Text(label).foregroundColor(labelColor)
             )
             .foregroundStyle(textColor)
-            .focused($focusedField, equals: inputField)
+            .focused($focusState, equals: field)
             .padding()
             .overlay(
                 RoundedRectangle(cornerRadius: 5)
                     .stroke(borderColor, lineWidth: 2)
             )
             .cornerRadius(5)
-            .onChange(of: focusedInputField) { newValue in
-                focusedField = newValue
-            }
             .disabled(isDisabled)
-            .simultaneousGesture(TapGesture().onEnded({
-                focusedInputField = self.inputField
-            }))
             
             if errorMessage != nil {
                 Text(errorMessage!)
@@ -95,12 +88,12 @@ struct OutlineTextField: View {
 struct OutlinePasswordTextField: View {
     let label: String
     @Binding var text: String
-    @Binding var focusedInputField: InputField?
-    let inputField: InputField
     let isDisabled: Bool
-    @State private var showPassword = false
-    @FocusState private var focusedField: InputField?
     let errorMessage: String?
+    @FocusState var focusState: Field?
+    let field: Field
+    
+    @State private var showPassword = false
 
     private var borderColor: Color {
         if errorMessage != nil {
@@ -113,7 +106,7 @@ struct OutlinePasswordTextField: View {
     }
     
     private var borderWeight: CGFloat {
-        if focusedField == inputField {
+        if focusState == field {
             2
         } else {
             1
@@ -134,7 +127,7 @@ struct OutlinePasswordTextField: View {
     
     private var textColor: Color {
         if isDisabled {
-            .gray
+            .disableText
         } else {
             .primary
         }
@@ -143,17 +136,17 @@ struct OutlinePasswordTextField: View {
     init(
         label: String,
         text: Binding<String>,
-        inputField: InputField,
-        focusedInputField: Binding<InputField?>,
         isDisable: Bool = false,
-        errorMessage: String? = nil
+        errorMessage: String? = nil,
+        focusState: FocusState<Field?>,
+        field: Field
     ) {
         self.label = label
         self._text = text
-        self.inputField = inputField
-        self._focusedInputField = focusedInputField
         self.isDisabled = isDisable
         self.errorMessage = errorMessage
+        self._focusState = focusState
+        self.field = field
     }
     
     var body: some View {
@@ -167,13 +160,8 @@ struct OutlinePasswordTextField: View {
                     )
                     .foregroundColor(textColor)
                     .textInputAutocapitalization(.never)
-                    .focused($focusedField, equals: inputField)
-                    .onChange(of: focusedInputField) { newValue in
-                        focusedField = newValue
-                    }
-                    .simultaneousGesture(TapGesture().onEnded({
-                        focusedInputField = self.inputField
-                    }))
+                    .textContentType(.password)
+                    .focused($focusState, equals: field)
                     
                     Image(systemName: "eye.slash")
                         .foregroundColor(.iconInput)
@@ -188,13 +176,8 @@ struct OutlinePasswordTextField: View {
                     )
                     .foregroundColor(textColor)
                     .textInputAutocapitalization(.never)
-                    .focused($focusedField, equals: inputField)
-                    .onChange(of: focusedInputField) { newValue in
-                        focusedField = newValue
-                    }
-                    .simultaneousGesture(TapGesture().onEnded({
-                        focusedInputField = self.inputField
-                    }))
+                    .textContentType(.password)
+                    .focused($focusState, equals: field)
                 
                     Image(systemName: "eye")
                         .foregroundColor(.iconInput)
@@ -227,19 +210,19 @@ struct OutlinePasswordTextField: View {
         OutlineTextField(
             label: "Email",
             text: .constant(""),
-            inputField: InputField.email,
-            focusedInputField: .constant(InputField.email),
             isDisable: false,
-            errorMessage: nil
+            errorMessage: nil,
+            focusState: FocusState<Field?>(),
+            field: .email
         )
         
         OutlinePasswordTextField(
             label: "Password",
             text: .constant(""),
-            inputField: InputField.password,
-            focusedInputField: .constant(InputField.password),
             isDisable: false,
-            errorMessage: nil
+            errorMessage: nil,
+            focusState: FocusState<Field?>(),
+            field: .password
         )
     }.padding()
 }

@@ -109,6 +109,8 @@
 "post" = "Poster";
 "no_announcement" = "Aucune annonce";
 "delete_announcement_alert_message" = "Voulez-vous vraiment supprimer cette annonce ?";
+"see_all" = "Voir tout";
+"all_announcements" = "Toutes les annonces";
 
 // Message
 "messages" = "Messages";

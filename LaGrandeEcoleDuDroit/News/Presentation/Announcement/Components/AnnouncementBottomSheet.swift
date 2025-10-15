@@ -1,31 +1,41 @@
 import SwiftUI
 
 struct AnnouncementBottomSheet: View {
+    let announcement: Announcement
     let isEditable: Bool
     let onEditClick: () -> Void
+    let onResendClick: () -> Void
     let onDeleteClick: () -> Void
     let onReportClick: () -> Void
     
     var body: some View {
-        if isEditable {
-            BottomSheetContainer(fraction: 0.16) {
-                EditableAnnouncementBottomSheetContent(
-                    onEditClick: onEditClick,
+        switch announcement.state {
+            case .error:
+                ErrorAnnouncementBottomSheet(
+                    onResendClick: onResendClick,
                     onDeleteClick: onDeleteClick
                 )
-            }
-        } else {
-            BottomSheetContainer(fraction: 0.1) {
-                NonEditableAnnouncementBottomSheetContent(
-                    onReportClick: onReportClick
-                )
-            }
+                
+            default:
+                if isEditable {
+                    BottomSheetContainer(fraction: 0.16) {
+                        EditableAnnouncementBottomSheetContent(
+                            onEditClick: onEditClick,
+                            onDeleteClick: onDeleteClick
+                        )
+                    }
+                } else {
+                    BottomSheetContainer(fraction: 0.1) {
+                        NonEditableAnnouncementBottomSheetContent(
+                            onReportClick: onReportClick
+                        )
+                    }
+                }
         }
-        
     }
 }
 
-struct ErrorAnnouncementBottomSheet: View {
+private struct ErrorAnnouncementBottomSheet: View {
     let onResendClick: () -> Void
     let onDeleteClick: () -> Void
     
@@ -84,8 +94,10 @@ private struct NonEditableAnnouncementBottomSheetContent: View {
     ZStack {}
         .sheet(isPresented: .constant(true)) {
             AnnouncementBottomSheet(
+                announcement: announcementFixture,
                 isEditable: true,
                 onEditClick: {},
+                onResendClick: {},
                 onDeleteClick: {},
                 onReportClick: {}
             )

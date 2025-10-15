@@ -39,13 +39,14 @@ struct AuthenticationDestination: View {
 private struct AuthenticationView: View {
     @Binding var email: String
     @Binding var password: String
-    @State private var focusedInputField: InputField?
     let loading: Bool
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
     let onLoginClick: () -> Void
     let onRegisterClick: () -> Void
+    
+    @FocusState private var focusState: Field?
         
     var body: some View {
         VStack(spacing: GedSpacing.large) {
@@ -58,7 +59,7 @@ private struct AuthenticationView: View {
                 emailError: emailError,
                 passwordError: passwordError,
                 errorMessage: errorMessage,
-                focusedInputField: $focusedInputField
+                focusState: _focusState
             )
             .padding(.top, GedSpacing.medium)
             
@@ -71,7 +72,7 @@ private struct AuthenticationView: View {
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .contentShape(Rectangle())
-        .onTapGesture { focusedInputField = nil }
+        .onTapGesture { focusState = nil }
     }
 }
 
@@ -107,27 +108,29 @@ private struct CredentialsInputs: View {
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
-    @Binding var focusedInputField: InputField?
+    @FocusState var focusState: Field?
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
             OutlineTextField(
                 label: getString(.email),
                 text: $email,
-                inputField: InputField.email,
-                focusedInputField: $focusedInputField,
                 isDisable: loading,
-                errorMessage: emailError
+                errorMessage: emailError,
+                focusState: _focusState,
+                field: .email
             )
+            .keyboardType(.emailAddress)
+            .textContentType(.emailAddress)
             .textInputAutocapitalization(.never)
             
             OutlinePasswordTextField(
                 label: getString(.password),
                 text: $password,
-                inputField: InputField.password,
-                focusedInputField: $focusedInputField,
                 isDisable: loading,
-                errorMessage: passwordError
+                errorMessage: passwordError,
+                focusState: _focusState,
+                field: .password
             )
             
             if let errorMessage {

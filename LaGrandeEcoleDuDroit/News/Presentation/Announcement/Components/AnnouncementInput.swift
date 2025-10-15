@@ -3,22 +3,22 @@ import SwiftUI
 struct AnnouncementInput: View {
     let title: String
     let content: String
-    @Binding var focusedInputField: InputField?
     let onTitleChange: (String) -> Void
     let onContentChange: (String) -> Void
+    var focusState: FocusState<Field?>.Binding
     
     var body: some View {
         VStack(spacing: GedSpacing.medium) {
             AnnouncementTitleInput(
                 title: title,
                 onTitleChange: onTitleChange,
-                focusedInputField: $focusedInputField
+                focusState: focusState
             )
             
             AnnouncementContentInput(
                 content: content,
                 onContentChange: onContentChange,
-                focusedInputField: $focusedInputField
+                focusState: focusState
             )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -28,8 +28,7 @@ struct AnnouncementInput: View {
 private struct AnnouncementTitleInput: View {
     let title: String
     let onTitleChange: (String) -> Void
-    @Binding var focusedInputField: InputField?
-    @FocusState private var focusedField: InputField?
+    var focusState: FocusState<Field?>.Binding
 
     var body: some View {
         TextField(
@@ -40,21 +39,17 @@ private struct AnnouncementTitleInput: View {
             ),
             axis: .vertical
         )
-        .font(.title3)
+        .font(.titleMedium)
         .fontWeight(.semibold)
-        .focused($focusedField, equals: InputField.title)
-        .onChange(of: focusedInputField) { newValue in
-            focusedField = newValue
-        }
+        .focused(focusState, equals: .title)
     }
 }
 
 private struct AnnouncementContentInput: View {
     let content: String
     let onContentChange: (String) -> Void
-    @Binding var focusedInputField: InputField?
-    @FocusState private var focusedField: InputField?
-    
+    var focusState: FocusState<Field?>.Binding
+
     var body: some View {
         TextField(
             getString(.content),
@@ -64,20 +59,20 @@ private struct AnnouncementContentInput: View {
             ),
             axis: .vertical
         )
-        .focused($focusedField, equals: InputField.content)
-        .onChange(of: focusedInputField) { newValue in
-            focusedField = newValue
-        }
+        .font(.bodyMedium)
+        .focused(focusState, equals: .content)
     }
 }
 
 #Preview {
+    @FocusState var focusState: Field?
+    
     AnnouncementInput(
         title: "",
         content: "",
-        focusedInputField: .constant(nil),
         onTitleChange: {_ in },
-        onContentChange: {_ in }
+        onContentChange: {_ in },
+        focusState: $focusState
     )
     .padding(GedSpacing.medium)
 }
