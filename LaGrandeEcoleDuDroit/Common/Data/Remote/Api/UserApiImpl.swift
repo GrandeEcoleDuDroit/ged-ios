@@ -85,13 +85,13 @@ class UserApiImpl: UserApi {
         try await mapServerError(
             block: { try await userServerApi.updateUser(oracleUser: user.toOracleUser()) },
             tag: tag,
-            message: "Failed to delete user with server"
+            message: "Failed to update user with server"
         )
         
         try await mapFirebaseException(
             block: { try await userFirestoreApi.updateUser(firestoreUser: user.toFirestoreUser()) },
             tag: tag,
-            message: "Failed to delete user with firestore"
+            message: "Failed to update user with firestore"
         )
     }
     
