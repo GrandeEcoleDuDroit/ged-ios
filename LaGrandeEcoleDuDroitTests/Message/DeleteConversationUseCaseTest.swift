@@ -8,35 +8,33 @@ class DeleteConversationUseCaseTest {
     @Test
     func deleteConversationUseCase_should_update_remote_conversation_delete_time() async {
         // Given
-        let conversationRepository = UpdatedRemoteConversationDeleteTime()
+        let conversation = conversationFixture
+        let conversationRepository = ConversationDeleteTimeUpdated(
+            givenConversation: conversation.copy { $0.deleteTime = Date().addingTimeInterval(-1000) }
+        )
         let useCase = DeleteConversationUseCase(
             conversationRepository: conversationRepository,
             messageRepository: MockMessageRepository(),
             conversationMessageRepository: MockConversationMessageRepository()
         )
-        let conversation = conversationFixture.copy { $0.deleteTime = Date() }
         
         // When
         try? await useCase.execute(conversation: conversation, userId: userFixture.id)
-        var iterator = conversationRepository.conversationChanges.values.makeAsyncIterator()
-        let change = await iterator.next()
-        let deleteTime = change?.updated.last?.deleteTime
-        
         
         // Then
-        #expect(deleteTime != nil && deleteTime! > conversation.deleteTime!)
+        #expect(conversationRepository.deleteTimeUpdated)
     }
 }
 
-private class UpdatedRemoteConversationDeleteTime: MockConversationRepository {
-    private let conversationChangeSubject = CurrentValueSubject<CoreDataChange<Conversation>, Never>(
-        CoreDataChange(inserted: [conversationFixture])
-    )
-    override var conversationChanges: AnyPublisher<CoreDataChange<Conversation>, Never> {
-        conversationChangeSubject.eraseToAnyPublisher()
+private class ConversationDeleteTimeUpdated: MockConversationRepository {
+    var deleteTimeUpdated: Bool = false
+    let givenConversation: Conversation
+    
+    init(givenConversation: Conversation) {
+        self.givenConversation = givenConversation
     }
     
     override func deleteConversation(conversation: Conversation, userId: String, deleteTime: Date) async throws {
-        conversationChangeSubject.send(CoreDataChange(updated: [conversation]))
+        deleteTimeUpdated = conversation.deleteTime != nil && conversation.deleteTime! > givenConversation.deleteTime!
     }
 }
