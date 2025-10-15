@@ -47,7 +47,7 @@ private struct ProfileView: View {
                                         .fontWeight(.semibold)
                                     
                                     Text(user.email)
-                                        .font(.caption)
+                                        .font(.footnote)
                                         .foregroundStyle(.secondary)
                                 }
                                 
