@@ -3,15 +3,18 @@ import SwiftUI
 struct AnnouncementHeader: View {
     let announcement: Announcement
     let onAuthorClick: () -> Void
+    let onOptionClick: () -> Void
     
     private let elapsedTimeText: String
     
     init(
         announcement: Announcement,
-        onAuthorClick: @escaping () -> Void
+        onAuthorClick: @escaping () -> Void,
+        onOptionClick: @escaping () -> Void
     ) {
         self.announcement = announcement
         self.onAuthorClick = onAuthorClick
+        self.onOptionClick = onOptionClick
         
         elapsedTimeText = getElapsedTimeText(
             elapsedTime: GetElapsedTimeUseCase.execute(date: announcement.date),
@@ -21,19 +24,25 @@ struct AnnouncementHeader: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: GedSpacing.small) {
-            ProfilePicture(
-                url: announcement.author.profilePictureUrl,
-                scale: 0.4
-            )
+            HStack {
+                ProfilePicture(
+                    url: announcement.author.profilePictureUrl,
+                    scale: 0.4
+                )
+                
+                Text(announcement.author.fullName)
+                    .font(.titleSmall)
+                
+                Text(elapsedTimeText)
+                    .foregroundStyle(.textPreview)
+                    .font(.bodySmall)
+            }
+            .onTapGesture(perform: onAuthorClick)
             
-            Text(announcement.author.fullName)
-                .font(.titleSmall)
-            
-            Text(elapsedTimeText)
-                .foregroundStyle(.textPreview)
-                .font(.bodySmall)
+            Spacer()
+                        
+            OptionButton(action: onOptionClick)
         }
-        .onTapGesture(perform: onAuthorClick)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -41,6 +50,7 @@ struct AnnouncementHeader: View {
 #Preview {
     AnnouncementHeader(
         announcement: announcementFixture,
-        onAuthorClick: {}
+        onAuthorClick: {},
+        onOptionClick: {}
     ).padding(.horizontal)
 }

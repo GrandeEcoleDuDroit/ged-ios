@@ -70,27 +70,28 @@ private struct ReadAnnouncementView: View {
     let onReportAnnouncementClick: (AnnouncementReport) -> Void
     let onAuthorClick: (User) -> Void
     
-    @State private var showDeleteAlert: Bool = false
-    @State private var showBottomSheet: Bool = false
-    @State private var showReportBottomSheet: Bool = false
+    @State private var showDeleteAnnouncementAlert: Bool = false
+    @State private var showAnnouncementBottomSheet: Bool = false
+    @State private var showAnnouncementReportBottomSheet: Bool = false
     
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: GedSpacing.medium) {
                 AnnouncementHeader(
                     announcement: announcement,
-                    onAuthorClick: { onAuthorClick(announcement.author) }
+                    onAuthorClick: { onAuthorClick(announcement.author) },
+                    onOptionClick: { showAnnouncementBottomSheet = true }
                 )
                 
                 if let title = announcement.title {
                     Text(title)
-                        .font(.title3)
+                        .font(.titleMedium)
                         .fontWeight(.semibold)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
                 Text(announcement.content)
-                    .font(.body)
+                    .font(.bodyMedium)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
@@ -99,35 +100,31 @@ private struct ReadAnnouncementView: View {
         .loading(loading)
         .navigationTitle(getString(.announcement))
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                OptionButton { showBottomSheet = true }
-            }
-        }
-        .sheet(isPresented: $showBottomSheet) {
+        .sheet(isPresented: $showAnnouncementBottomSheet) {
             AnnouncementBottomSheet(
+                announcement: announcement,
                 isEditable: user.isMember && announcement.author.id == user.id,
                 onEditClick: {
-                    showBottomSheet = false
+                    showAnnouncementBottomSheet = false
                     onEditAnnouncementClick(announcement)
                 },
+                onResendClick: {},
                 onDeleteClick: {
-                    showBottomSheet = false
-                    showDeleteAlert = true
+                    showAnnouncementBottomSheet = false
+                    showDeleteAnnouncementAlert = true
                 },
                 onReportClick: {
-                    showBottomSheet = false
-                    showReportBottomSheet = true
+                    showAnnouncementBottomSheet = false
+                    showAnnouncementReportBottomSheet = true
                 }
             )
         }
-        .sheet(isPresented: $showReportBottomSheet) {
+        .sheet(isPresented: $showAnnouncementReportBottomSheet) {
             ReportBottomSheet(
                 items: AnnouncementReport.Reason.allCases,
                 fraction: 0.45,
                 onReportClick: { reason in
-                    showReportBottomSheet = false
-                    
+                    showAnnouncementReportBottomSheet = false
                     onReportAnnouncementClick(
                         AnnouncementReport(
                             announcementId: announcement.id,
@@ -147,12 +144,12 @@ private struct ReadAnnouncementView: View {
         }
         .alert(
             getString(.deleteAnnouncementAlertMessage),
-            isPresented: $showDeleteAlert,
+            isPresented: $showDeleteAnnouncementAlert,
             actions: {
                 Button(
                     getString(.cancel),
                     role: .cancel,
-                    action: { showDeleteAlert = false }
+                    action: { showDeleteAnnouncementAlert = false }
                 )
                 Button(
                     getString(.delete), role: .destructive,

@@ -110,6 +110,8 @@ enum GedString: String {
     case announcementCreated = "announcement_created"
     case noAnnouncement = "no_announcement"
     case deleteAnnouncementAlertMessage = "delete_announcement_alert_message"
+    case seeAll = "see_all"
+    case allAnnouncements = "all_announcements"
     
     // Message
     case messages = "messages"

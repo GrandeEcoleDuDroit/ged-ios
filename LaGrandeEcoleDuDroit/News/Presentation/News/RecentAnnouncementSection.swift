@@ -5,40 +5,56 @@ struct RecentAnnouncementSection: View {
     let onAnnouncementClick: (String) -> Void
     let onUncreatedAnnouncementClick: (Announcement) -> Void
     let onAnnouncementOptionClick: (Announcement) -> Void
+    let onSeeAllAnnouncementClick: () -> Void
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(getString(.recentAnnouncements))
-                .font(.titleMedium)
+            HStack(alignment: .center) {
+                Text(getString(.recentAnnouncements))
+                    .font(.titleMedium)
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                Button(
+                    getString(.seeAll),
+                    action: onSeeAllAnnouncementClick
+                )
+                .foregroundStyle(.gedPrimary)
+                .font(.callout)
                 .fontWeight(.semibold)
-                .padding(.horizontal)
+            }
+            .padding(.horizontal)
             
-            ScrollView {
+            List {
                 if announcements.isEmpty {
                     Text(getString(.noAnnouncement))
                         .foregroundStyle(.informationText)
                         .padding()
-                        .frame(maxWidth: .infinity, alignment: .top)
+                        .listRowBackground(Color.background)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets())
+                        .frame(maxWidth: .infinity, alignment: .center)
                 } else {
-                    LazyVStack(spacing: 0) {
-                        ForEach(announcements) { announcement in
-                            CompactAnnouncementItem(
-                                announcement: announcement,
-                                onClick: {
-                                    if announcement.state == .published {
-                                        onAnnouncementClick(announcement.id)
-                                    } else {
-                                        onUncreatedAnnouncementClick(announcement)
-                                    }
-                                },
-                                onOptionClick: { onAnnouncementOptionClick(announcement) }
-                            )
-                        }
-                        .fixedSize(horizontal: false, vertical: true)
+                    ForEach(announcements) { announcement in
+                        CompactAnnouncementItem(
+                            announcement: announcement,
+                            onClick: {
+                                if announcement.state == .published {
+                                    onAnnouncementClick(announcement.id)
+                                } else {
+                                    onUncreatedAnnouncementClick(announcement)
+                                }
+                            },
+                            onOptionClick: { onAnnouncementOptionClick(announcement) }
+                        )
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets())
                     }
+                    .listRowBackground(Color.background)
                 }
             }
             .scrollIndicators(.hidden)
+            .listStyle(.plain)
         }
     }
 }
@@ -48,7 +64,8 @@ struct RecentAnnouncementSection: View {
         announcements: announcementsFixture,
         onAnnouncementClick: { _ in },
         onUncreatedAnnouncementClick: { _ in },
-        onAnnouncementOptionClick: { _ in }
+        onAnnouncementOptionClick: { _ in },
+        onSeeAllAnnouncementClick: {}
     )
     .background(Color.background)
 }

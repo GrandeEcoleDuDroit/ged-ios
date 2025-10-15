@@ -1,8 +1,8 @@
-enum InputField: Hashable {
-    case firstName
-    case lastName
+enum Field: Hashable {
     case email
     case password
     case title
     case content
+    case firstName
+    case lastName
 }

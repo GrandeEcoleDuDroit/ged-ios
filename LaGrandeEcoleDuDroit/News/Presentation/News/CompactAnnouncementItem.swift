@@ -6,7 +6,6 @@ struct CompactAnnouncementItem: View {
     let onOptionClick: () -> Void
     
     private let elapsedTimeText: String
-    @State private var isClicked: Bool = false
     
     init(
         announcement: Announcement,
@@ -27,17 +26,19 @@ struct CompactAnnouncementItem: View {
         switch (announcement.state) {
             case .published, .draft:
                 Clickable(action: onClick) {
-                    DefaultAnnouncementItem(
+                    DefaultItem(
                         announcement: announcement,
                         elapsedTimeText: elapsedTimeText,
                         onOptionClick: onOptionClick
                     )
                     .padding(.horizontal)
-                    .padding(.vertical, GedSpacing.small)
+                    .padding(.vertical, GedSpacing.smallMedium)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
                 
             case .publishing:
-                PublishingAnnouncementItem(
+                PublishingItem(
                     announcement: announcement,
                     elapsedTimeText: elapsedTimeText,
                     onClick: onClick,
@@ -45,7 +46,7 @@ struct CompactAnnouncementItem: View {
                 )
                 
             case .error:
-                ErrorAnnouncementItem(
+                ErrorItem(
                     announcement: announcement,
                     elapsedTimeText: elapsedTimeText,
                     onClick: onClick,
@@ -55,7 +56,7 @@ struct CompactAnnouncementItem: View {
     }
 }
 
-private struct DefaultAnnouncementItem: View {
+private struct DefaultItem: View {
     let announcement: Announcement
     let elapsedTimeText: String
     let onOptionClick: () -> Void
@@ -96,19 +97,14 @@ private struct DefaultAnnouncementItem: View {
                         .truncationMode(.tail)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
-            Spacer()
-            
-            Button(action: onOptionClick) {
-                Image(systemName: "ellipsis")
-            }
+            OptionButton(action: onOptionClick)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .contentShape(Rectangle())
     }
 }
 
-private struct PublishingAnnouncementItem: View {
+private struct PublishingItem: View {
     let announcement: Announcement
     let elapsedTimeText: String
     let onClick: () -> Void
@@ -118,19 +114,21 @@ private struct PublishingAnnouncementItem: View {
 
     var body: some View {
         Clickable(action: onClick) {
-            DefaultAnnouncementItem(
+            DefaultItem(
                 announcement: announcement,
                 elapsedTimeText: elapsedTimeText,
                 onOptionClick: onOptionClick
             )
             .opacity(0.5)
             .padding(.horizontal)
-            .padding(.vertical, GedSpacing.small)
+            .padding(.vertical, GedSpacing.smallMedium)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
         }
     }
 }
 
-private struct ErrorAnnouncementItem: View {
+private struct ErrorItem: View {
     let announcement: Announcement
     let elapsedTimeText: String
     let onClick: () -> Void
@@ -144,15 +142,16 @@ private struct ErrorAnnouncementItem: View {
                 Image(systemName: "exclamationmark.circle")
                     .foregroundStyle(.red)
                 
-                DefaultAnnouncementItem(
+                DefaultItem(
                     announcement: announcement,
                     elapsedTimeText: elapsedTimeText,
                     onOptionClick: onOptionClick
                 )
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
-            .padding(.vertical, GedSpacing.small)
+            .padding(.vertical, GedSpacing.smallMedium)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
         }
     }
 }
@@ -160,23 +159,22 @@ private struct ErrorAnnouncementItem: View {
 #Preview {
     VStack {
         Clickable(action: {}) {
-            DefaultAnnouncementItem(
+            DefaultItem(
                 announcement: announcementFixture,
                 elapsedTimeText: "Now",
                 onOptionClick: {}
             )
-            .padding(.horizontal)
-            .padding(.vertical, GedSpacing.small)
+            .padding()
         }
         
-        PublishingAnnouncementItem(
+        PublishingItem(
             announcement: announcementFixture,
             elapsedTimeText: "5m",
             onClick: {},
             onOptionClick: {}
         )
         
-        ErrorAnnouncementItem(
+        ErrorItem(
             announcement: announcementFixture,
             elapsedTimeText: "1h",
             onClick: {},
