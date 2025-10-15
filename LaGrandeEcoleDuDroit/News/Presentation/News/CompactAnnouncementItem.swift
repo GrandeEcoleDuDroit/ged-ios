@@ -100,6 +100,7 @@ private struct DefaultItem: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             
             OptionButton(action: onOptionClick)
+                .buttonStyle(.borderless)
         }
     }
 }

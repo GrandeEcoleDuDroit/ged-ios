@@ -42,6 +42,7 @@ struct AnnouncementHeader: View {
             Spacer()
                         
             OptionButton(action: onOptionClick)
+                .buttonStyle(.borderless)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

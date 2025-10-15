@@ -102,7 +102,7 @@ struct OptionButton : View {
     var body: some View {
         Button(action: action) {
             Image(systemName: "ellipsis")
-        }.buttonStyle(.plain)
+        }
     }
 }
 
