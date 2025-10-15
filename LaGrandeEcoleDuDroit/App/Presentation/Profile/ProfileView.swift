@@ -41,9 +41,15 @@ private struct ProfileView: View {
                             ) {
                                 ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
                                 
-                                Text(user.fullName)
-                                    .font(.title3)
-                                    .fontWeight(.semibold)
+                                VStack(alignment: .leading) {
+                                    Text(user.fullName)
+                                        .font(.title3)
+                                        .fontWeight(.semibold)
+                                    
+                                    Text(user.email)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
                                 
                                 Spacer()
                                 
