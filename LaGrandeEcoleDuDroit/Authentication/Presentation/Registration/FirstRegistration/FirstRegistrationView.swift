@@ -4,13 +4,11 @@ struct FirstRegistrationDestination: View {
     let onNextClick: (String, String) -> Void
      
     @StateObject private var viewModel = AuthenticationMainThreadInjector.shared.resolve(FirstRegistrationViewModel.self)
-    @State private var focusedInputField: InputField?
-    @State private var isValidNameInputs = false
     
     var body: some View {
         FirstRegistrationView(
-            firstName: $viewModel.uiState.firstName,
-            lastName: $viewModel.uiState.lastName,
+            firstName: viewModel.uiState.firstName,
+            lastName: viewModel.uiState.lastName,
             firstNameError: viewModel.uiState.firstNameError,
             lastNameError: viewModel.uiState.lastNameError,
             onFirstNameChange: viewModel.onFirstNameChanged,
@@ -25,15 +23,15 @@ struct FirstRegistrationDestination: View {
 }
 
 private struct FirstRegistrationView: View {
-    @Binding var firstName: String
-    @Binding var lastName: String
+    let firstName: String
+    let lastName: String
     let firstNameError: String?
     let lastNameError: String?
     let onFirstNameChange: (String) -> Void
     let onLastNameChange: (String) -> Void
     let onNextClick: (String, String) -> Void
-    @State private var focusedInputField: InputField?
-    @State private var firstNameInput: String = ""
+    
+    @FocusState private var focusState: Field?
     
     var body: some View {
         VStack(alignment: .leading, spacing: GedSpacing.medium) {
@@ -42,30 +40,30 @@ private struct FirstRegistrationView: View {
             
             OutlineTextField(
                 label: getString(.firstName),
-                text: $firstName,
-                inputField: InputField.firstName,
-                focusedInputField: $focusedInputField,
-                errorMessage: firstNameError
+                text: Binding(
+                    get: { firstName },
+                    set: onFirstNameChange
+                ),
+                errorMessage: firstNameError,
+                focusState: _focusState,
+                field: .firstName
             )
             
             OutlineTextField(
                 label: getString(.lastName),
-                text: $lastName,
-                inputField: InputField.lastName,
-                focusedInputField: $focusedInputField,
-                errorMessage: lastNameError
+                text: Binding(
+                    get: { lastName },
+                    set: onLastNameChange
+                ),
+                errorMessage: lastNameError,
+                focusState: _focusState,
+                field: .lastName
             )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
-        .onChange(of: firstName) { newValue in
-            onFirstNameChange(newValue)
-        }
-        .onChange(of: lastName) { newValue in
-            onLastNameChange(newValue)
-        }
+        .onTapGesture { focusState = nil }
         .contentShape(Rectangle())
-        .onTapGesture { focusedInputField = nil }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
@@ -90,8 +88,8 @@ private struct FirstRegistrationView: View {
 #Preview {
     NavigationStack {
         FirstRegistrationView(
-            firstName: .constant(""),
-            lastName: .constant(""),
+            firstName: "",
+            lastName: "",
             firstNameError: nil,
             lastNameError: nil,
             onFirstNameChange: {_ in},

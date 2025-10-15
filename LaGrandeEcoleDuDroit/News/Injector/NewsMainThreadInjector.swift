@@ -48,5 +48,16 @@ class NewsMainThreadInjector: MainThreadInjector {
                 networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
             )
         }
+        
+        container.register(AllAnnouncementsViewModel.self) { resolver in
+            AllAnnouncementsViewModel(
+                userRepository: CommonInjector.shared.resolve(UserRepository.self),
+                announcementRepository: NewsInjector.shared.resolve(AnnouncementRepository.self),
+                deleteAnnouncementUseCase: NewsInjector.shared.resolve(DeleteAnnouncementUseCase.self),
+                resendAnnouncementUseCase: NewsInjector.shared.resolve(ResendAnnouncementUseCase.self),
+                refreshAnnouncementsUseCase: NewsInjector.shared.resolve(RefreshAnnouncementsUseCase.self),
+                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
+            )
+        }
     }
 }

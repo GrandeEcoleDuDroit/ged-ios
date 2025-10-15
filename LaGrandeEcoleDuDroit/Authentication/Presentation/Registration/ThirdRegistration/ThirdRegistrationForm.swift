@@ -7,9 +7,10 @@ struct ThirdRegistrationForm: View {
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
-    @Binding var focusedInputField: InputField?
     let legalNoticeChecked: Bool
     let onLegalNoticeCheckedChange: (Bool) -> Void
+    @FocusState var focusState: Field?
+    
     private let legalNoticeUrl = "https://grandeecoledudroit.github.io/ged-website/legal-notice.html"
     
     var body: some View {
@@ -20,21 +21,23 @@ struct ThirdRegistrationForm: View {
             OutlineTextField(
                 label: getString(.email),
                 text: $email,
-                inputField: InputField.email,
-                focusedInputField: $focusedInputField,
                 isDisable: loading,
-                errorMessage: emailError
+                errorMessage: emailError,
+                focusState: _focusState,
+                field: .email
             )
+            .textContentType(.emailAddress)
             .textInputAutocapitalization(.never)
             
             OutlinePasswordTextField(
                 label: getString(.password),
                 text: $password,
-                inputField: InputField.password,
-                focusedInputField: $focusedInputField,
                 isDisable: loading,
-                errorMessage: passwordError
+                errorMessage: passwordError,
+                focusState: _focusState,
+                field: .password
             )
+            .textContentType(.password)
             
             HStack {
                 CheckBox(
@@ -70,8 +73,8 @@ struct ThirdRegistrationForm: View {
         emailError: nil,
         passwordError: nil,
         errorMessage: nil,
-        focusedInputField: .constant(nil),
         legalNoticeChecked: false,
-        onLegalNoticeCheckedChange: { _ in }
+        onLegalNoticeCheckedChange: { _ in },
+        focusState: FocusState<Field?>()
     )
 }

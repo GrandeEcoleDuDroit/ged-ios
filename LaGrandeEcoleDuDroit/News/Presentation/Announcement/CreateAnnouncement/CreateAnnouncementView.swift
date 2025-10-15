@@ -39,16 +39,18 @@ private struct CreateAnnouncementView: View {
     let onTitleChange: (String) -> Void
     let onContentChange: (String) -> Void
     let onCreateClick: () -> Void
-    @State private var focusedInputField: InputField? = nil
+    
+    @FocusState private var focusState: Field?
     
     var body: some View {
         AnnouncementInput(
             title: title,
             content: content,
-            focusedInputField: $focusedInputField,
             onTitleChange: onTitleChange,
-            onContentChange: onContentChange
+            onContentChange: onContentChange,
+            focusState: $focusState
         )
+        .onTapGesture { focusState = nil }
         .navigationTitle(getString(.newAnnouncement))
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -73,13 +75,10 @@ private struct CreateAnnouncementView: View {
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                focusedInputField = InputField.title
+                focusState = .title
             }
         }
         .contentShape(Rectangle())
-        .onTapGesture {
-            focusedInputField = nil
-        }
     }
 }
 

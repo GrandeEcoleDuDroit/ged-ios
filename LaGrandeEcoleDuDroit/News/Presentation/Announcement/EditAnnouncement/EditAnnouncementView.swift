@@ -58,15 +58,15 @@ private struct EditAnnouncementView: View {
     let onUpdateAnnouncementClick: () -> Void
     let onBackClick: () -> Void
     
-    @State private var focusedInputField: InputField? = nil
+    @FocusState private var focusState: Field?
 
     var body: some View {
         AnnouncementInput(
             title: title,
             content: content,
-            focusedInputField: $focusedInputField,
             onTitleChange: onTitleChange,
-            onContentChange: onContentChange
+            onContentChange: onContentChange,
+            focusState: $focusState
         )
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
@@ -100,19 +100,12 @@ private struct EditAnnouncementView: View {
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                focusedInputField = InputField.title
+                focusState = .title
             }
         }
         .contentShape(Rectangle())
-        .onTapGesture {
-            focusedInputField = nil
-        }
+        .onTapGesture { focusState = nil }
         .disabled(loading)
-        .onChange(of: loading) { isLoading in
-            if isLoading {
-                focusedInputField = nil
-            }
-        }
     }
 }
 

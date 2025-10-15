@@ -35,6 +35,7 @@ private struct DeleteAccountView: View {
     let loading: Bool
     let errorMessage: String?
     let onDeleteAccountClick: () -> Void
+    
     @State private var showPassword: Bool = false
     
     var body: some View {
@@ -50,7 +51,8 @@ private struct DeleteAccountView: View {
                                 getString(.password),
                                 text: $password
                             )
-                            
+                            .textContentType(.password)
+
                             Image(systemName: "eye")
                                 .foregroundColor(.iconInput)
                                 .onTapGesture {
@@ -63,6 +65,7 @@ private struct DeleteAccountView: View {
                                 getString(.password),
                                 text: $password
                             )
+                            .textContentType(.password)
                             
                             Image(systemName: "eye.slash")
                                 .foregroundColor(.iconInput)
