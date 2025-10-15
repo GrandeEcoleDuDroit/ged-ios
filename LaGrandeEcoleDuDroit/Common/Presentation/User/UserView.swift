@@ -82,16 +82,14 @@ private struct UserView: View {
     }
 
     var body: some View {
-        ZStack {
-            VStack(spacing: GedSpacing.medium) {
-                ProfilePicture(
-                    url: user.profilePictureUrl,
-                    scale: 1.6
-                )
-                
-                if !user.isDeleted {
-                    UserInformationItems(user: user)
-                }
+        VStack(spacing: GedSpacing.medium) {
+            ProfilePicture(
+                url: user.profilePictureUrl,
+                scale: 1.6
+            )
+            
+            if !user.isDeleted {
+                UserInformationItems(user: user)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
