@@ -14,7 +14,6 @@ struct AllAnnouncementsDestination: View {
             AllAnnouncementsView(
                 user: user,
                 announcements: announcements,
-                refreshing: viewModel.uiState.refreshing,
                 loading: viewModel.uiState.loading,
                 onRefresh: viewModel.refreshAnnouncements,
                 onAuthorClick: onAuthorClick,
@@ -49,7 +48,6 @@ struct AllAnnouncementsDestination: View {
 private struct AllAnnouncementsView: View {
     let user: User
     let announcements: [Announcement]
-    let refreshing: Bool
     let loading: Bool
     let onRefresh: () async -> Void
     let onAuthorClick: (User) -> Void
@@ -205,7 +203,6 @@ private struct Sheet: View {
         AllAnnouncementsView(
             user: userFixture,
             announcements: announcementsFixture,
-            refreshing: false,
             loading: false,
             onRefresh: {},
             onAuthorClick: { _ in },

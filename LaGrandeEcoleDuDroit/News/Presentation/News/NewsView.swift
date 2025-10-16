@@ -66,32 +66,25 @@ private struct NewsView: View {
     @State private var clickedAnnouncement: Announcement?
     
     var body: some View {
-        GeometryReader { geometry in
-            VStack(alignment: .leading, spacing: GedSpacing.medium) {
-                if let announcements {
-                    RecentAnnouncementSection(
-                        announcements: announcements,
-                        onAnnouncementClick: onAnnouncementClick,
-                        onUncreatedAnnouncementClick: {
-                            clickedAnnouncement = $0
-                            showAnnouncementBottomSheet = true
-                        },
-                        onAnnouncementOptionClick: {
-                            clickedAnnouncement = $0
-                            showAnnouncementBottomSheet = true
-                            
-                        },
-                        onSeeAllAnnouncementClick: onSeeAllAnnouncementClick
-                    )
-                    .frame(
-                        minHeight: geometry.size.height / 8,
-                        maxHeight: geometry.size.height / 2,
-                        alignment: .top
-                    )
-                } else {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                }
+        HStack {
+            if let announcements {
+                RecentAnnouncementSection(
+                    announcements: announcements,
+                    onAnnouncementClick: onAnnouncementClick,
+                    onUncreatedAnnouncementClick: {
+                        clickedAnnouncement = $0
+                        showAnnouncementBottomSheet = true
+                    },
+                    onAnnouncementOptionClick: {
+                        clickedAnnouncement = $0
+                        showAnnouncementBottomSheet = true
+                        
+                    },
+                    onSeeAllAnnouncementClick: onSeeAllAnnouncementClick
+                )
+            } else {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

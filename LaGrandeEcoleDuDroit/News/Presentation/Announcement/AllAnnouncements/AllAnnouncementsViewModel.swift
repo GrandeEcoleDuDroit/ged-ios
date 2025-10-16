@@ -104,6 +104,5 @@ class AllAnnouncementsViewModel: ViewModel {
         fileprivate(set) var announcements: [Announcement]? = nil
         fileprivate(set) var user: User? = nil
         fileprivate(set) var loading: Bool = false
-        fileprivate(set) var refreshing: Bool = false
     }
 }
