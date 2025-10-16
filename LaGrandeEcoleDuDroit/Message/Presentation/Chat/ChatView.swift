@@ -31,7 +31,6 @@ struct ChatDestination: View {
             loading: viewModel.uiState.loading,
             userBlocked: viewModel.uiState.userBlocked,
             canLoadMoreMessages: viewModel.uiState.canLoadMoreMessages,
-            onBackClick: onBackClick,
             onSendMessagesClick: viewModel.sendMessage,
             onMessageTextChange: viewModel.onMessageTextChange,
             loadMoreMessages: viewModel.loadMoreMessages,
@@ -63,7 +62,6 @@ struct ChatDestination: View {
                 )
             }
         )
-        .navigationBarBackButtonHidden()
     }
 }
 
@@ -74,7 +72,6 @@ private struct ChatView: View {
     let loading: Bool
     let userBlocked: Bool
     let canLoadMoreMessages: Bool
-    let onBackClick: () -> Void
     let onSendMessagesClick: () -> Void
     let onMessageTextChange: (String) -> Void
     let loadMoreMessages: (Int) -> Void
@@ -102,7 +99,6 @@ private struct ChatView: View {
         loading: Bool,
         userBlocked: Bool,
         canLoadMoreMessages: Bool,
-        onBackClick: @escaping () -> Void,
         onSendMessagesClick: @escaping () -> Void,
         onMessageTextChange: @escaping (String) -> Void,
         loadMoreMessages: @escaping (Int) -> Void,
@@ -120,7 +116,6 @@ private struct ChatView: View {
         self.loading = loading
         self.userBlocked = userBlocked
         self.canLoadMoreMessages = canLoadMoreMessages
-        self.onBackClick = onBackClick
         self.onSendMessagesClick = onSendMessagesClick
         self.onMessageTextChange = onMessageTextChange
         self.loadMoreMessages = loadMoreMessages
@@ -269,28 +264,17 @@ private struct ChatView: View {
         )
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                HStack {
-                    Button(
-                        action: onBackClick,
-                        label: {
-                            Image(systemName: "chevron.backward")
-                                .fontWeight(.semibold)
-                                .padding(.trailing)
-                        }
+                HStack(spacing: GedSpacing.smallMedium) {
+                    ProfilePicture(
+                        url: conversation.interlocutor.profilePictureUrl,
+                        scale: 0.3
                     )
                     
-                    HStack(spacing: GedSpacing.smallMedium) {
-                        ProfilePicture(
-                            url: conversation.interlocutor.profilePictureUrl,
-                            scale: 0.3
-                        )
-                        
-                        Text(interlocutorName)
-                            .fontWeight(.medium)
-                    }
-                    .onTapGesture {
-                        onInterlocutorClick(conversation.interlocutor)
-                    }
+                    Text(interlocutorName)
+                        .fontWeight(.medium)
+                }
+                .onTapGesture {
+                    onInterlocutorClick(conversation.interlocutor)
                 }
             }
         }
@@ -367,7 +351,6 @@ private struct MessageBottomSection: View {
             loading: false,
             userBlocked: false,
             canLoadMoreMessages: true,
-            onBackClick: {},
             onSendMessagesClick: {},
             onMessageTextChange: { _ in },
             loadMoreMessages: { _ in },
