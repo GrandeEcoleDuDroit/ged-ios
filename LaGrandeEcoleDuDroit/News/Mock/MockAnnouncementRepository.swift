@@ -28,9 +28,11 @@ class MockAnnouncementRepository: AnnouncementRepository {
     
     func deleteAnnouncement(announcementId: String) async throws {}
     
-    func deleteLocalAnnouncement(announcementId: String) {}
-        
+    func deleteLocalAnnouncements() async throws {}
+    
     func deleteLocalAnnouncements(userId: String) async throws {}
     
+    func deleteLocalAnnouncement(announcementId: String) {}
+            
     func reportAnnouncement(report: AnnouncementReport) async throws {}
 }

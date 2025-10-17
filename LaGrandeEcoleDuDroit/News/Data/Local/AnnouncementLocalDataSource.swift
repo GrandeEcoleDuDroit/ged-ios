@@ -38,7 +38,11 @@ class AnnouncementLocalDataSource {
         try await announcementActor.delete(announcementId: announcementId)
     }
     
+    func deleteAnnouncements() async throws {
+        try await announcementActor.deleteAll()
+    }
+    
     func deleteAnnouncements(userId: String) async throws {
-        try await announcementActor.deleteAnnouncements(userId: userId)
+        try await announcementActor.deleteAll(userId: userId)
     }
 }

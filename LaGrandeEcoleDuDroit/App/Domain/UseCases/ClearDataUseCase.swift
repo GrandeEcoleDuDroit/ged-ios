@@ -3,17 +3,20 @@ class ClearDataUseCase {
     private let conversationRepository: ConversationRepository
     private let messageRepository: MessageRepository
     private let conversationMessageRepository: ConversationMessageRepository
+    private let announcementRepository: AnnouncementRepository
     
     init(
         userRepository: UserRepository,
         conversationRepository: ConversationRepository,
         messageRepository: MessageRepository,
-        conversationMessageRepository: ConversationMessageRepository
+        conversationMessageRepository: ConversationMessageRepository,
+        announcementRepository: AnnouncementRepository
     ) {
         self.userRepository = userRepository
         self.conversationRepository = conversationRepository
         self.messageRepository = messageRepository
         self.conversationMessageRepository = conversationMessageRepository
+        self.announcementRepository = announcementRepository
     }
     
     func execute() async {
@@ -21,5 +24,6 @@ class ClearDataUseCase {
         try? await messageRepository.deleteLocalMessages()
         try? await conversationRepository.deleteLocalConversations()
         conversationMessageRepository.clear()
+        try? await announcementRepository.deleteLocalAnnouncements()
     }
 }
