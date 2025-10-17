@@ -91,10 +91,9 @@ private struct AllAnnouncementsView: View {
                         onAuthorClick: { onAuthorClick(announcement.author) },
                     )
                     .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.visible)
+                    .listSectionSeparator(.hidden)
                 }
                 .listRowBackground(Color.background)
-                .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
             }
         }
         .scrollIndicators(.hidden)
