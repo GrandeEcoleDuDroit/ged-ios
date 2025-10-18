@@ -1,4 +1,4 @@
-struct OracleUser: Codable {
+struct ServerUser: Codable {
     let userId: String
     let userFirstName: String
     let userLastName: String
@@ -6,7 +6,7 @@ struct OracleUser: Codable {
     let userSchoolLevel: String
     let userIsMember: Int
     let userProfilePictureFileName: String?
-    let userIsDeleted: Bool
+    let userIsDeleted: Int
     
     enum CodingKeys: String, CodingKey {
         case userId = "USER_ID"
@@ -27,7 +27,7 @@ struct OracleUser: Codable {
         userSchoolLevel: String,
         userIsMember: Int,
         userProfilePictureFileName: String?,
-        userIsDeleted: Bool
+        userIsDeleted: Int
     ) {
         self.userId = userId
         self.userFirstName = userFirstName
@@ -49,6 +49,6 @@ struct OracleUser: Codable {
         self.userSchoolLevel = try container.decode(String.self, forKey: .userSchoolLevel)
         self.userIsMember = try container.decode(Int.self, forKey: .userIsMember)
         self.userProfilePictureFileName = try container.decodeIfPresent(String.self, forKey: .userProfilePictureFileName)
-        self.userIsDeleted = try container.decodeIfPresent(Bool.self, forKey: .userIsDeleted) ?? false
+        self.userIsDeleted = try container.decodeIfPresent(Int.self, forKey: .userIsDeleted) ?? 0
     }
 }

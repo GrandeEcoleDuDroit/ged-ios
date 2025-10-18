@@ -14,8 +14,8 @@ extension FirestoreUser {
 }
 
 extension User {
-    func toOracleUser() -> OracleUser {
-        OracleUser(
+    func toServerUser() -> ServerUser {
+        ServerUser(
             userId: id,
             userFirstName: firstName,
             userLastName: lastName,
@@ -23,7 +23,7 @@ extension User {
             userSchoolLevel: schoolLevel.rawValue,
             userIsMember: isMember ? 1 : 0,
             userProfilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
-            userIsDeleted: isDeleted
+            userIsDeleted: isDeleted ? 1 : 0
         )
     }
     

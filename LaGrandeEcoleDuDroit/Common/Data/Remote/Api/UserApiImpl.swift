@@ -47,7 +47,7 @@ class UserApiImpl: UserApi {
     
     func createUser(user: User) async throws {
         try await mapServerError(
-            block: { try await userServerApi.createUser(user: user.toOracleUser()) },
+            block: { try await userServerApi.createUser(serverUser: user.toServerUser()) },
             tag: tag,
             message: "Failed to create user \(user.fullName) with server",
             specificHandle: { urlResponse, serverResponse in
@@ -83,7 +83,7 @@ class UserApiImpl: UserApi {
     
     func updateUser(user: User) async throws {
         try await mapServerError(
-            block: { try await userServerApi.updateUser(oracleUser: user.toOracleUser()) },
+            block: { try await userServerApi.updateUser(serverUser: user.toServerUser()) },
             tag: tag,
             message: "Failed to update user with server"
         )
@@ -126,12 +126,12 @@ class UserServerApi {
         self.tokenProvider = tokenProvider
     }
     
-    func createUser(user: OracleUser) async throws -> (URLResponse, ServerResponse) {
+    func createUser(serverUser: ServerUser) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.getUrl(base: base, endPoint: "create")
         let session = RequestUtils.getSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.formatPostRequest(
-            dataToSend: user,
+            dataToSend: serverUser,
             url: url,
             authToken: authToken
         )
@@ -139,13 +139,13 @@ class UserServerApi {
         return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func updateUser(oracleUser: OracleUser) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "\(oracleUser.userId)")
+    func updateUser(serverUser: ServerUser) async throws -> (URLResponse, ServerResponse) {
+        let url = try RequestUtils.getUrl(base: base, endPoint: "\(serverUser.userId)")
         let session = RequestUtils.getSession()
         let authToken = await tokenProvider.getAuthToken()
         
         let request = try RequestUtils.formatPutRequest(
-            dataToSend: oracleUser,
+            dataToSend: serverUser,
             url: url,
             authToken: authToken
         )
