@@ -26,7 +26,7 @@ struct RemoteAnnouncementWithUser: Codable {
     var userSchoolLevel: String
     var userIsMember: Int
     var userProfilePictureFileName: String?
-    var userIsDeleted: Bool
+    var userIsDeleted: Int
     
     enum CodingKeys: String, CodingKey {
         case announcementId = "ANNOUNCEMENT_ID"
@@ -55,7 +55,7 @@ struct RemoteAnnouncementWithUser: Codable {
         userSchoolLevel: String,
         userIsMember: Int,
         userProfilePictureFileName: String?,
-        userIsDeleted: Bool
+        userIsDeleted: Int
     ) {
         self.announcementId = announcementId
         self.announcementTitle = announcementTitle
@@ -85,6 +85,6 @@ struct RemoteAnnouncementWithUser: Codable {
         userSchoolLevel = try container.decode(String.self, forKey: .userSchoolLevel)
         userIsMember = try container.decode(Int.self, forKey: .userIsMember)
         userProfilePictureFileName = try container.decodeIfPresent(String.self, forKey: .userProfilePictureFileName)
-        userIsDeleted = try container.decodeIfPresent(Bool.self, forKey: .userIsDeleted) ?? false
+        userIsDeleted = try container.decodeIfPresent(Int.self, forKey: .userIsDeleted) ?? 0
     }
 }

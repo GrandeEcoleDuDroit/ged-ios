@@ -11,7 +11,7 @@ extension RemoteAnnouncementWithUser {
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel) ?? SchoolLevel.ged1,
             isMember: userIsMember == 1,
             profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: userProfilePictureFileName),
-            isDeleted: userIsDeleted
+            isDeleted: userIsDeleted == 1
         )
         
         return Announcement(
