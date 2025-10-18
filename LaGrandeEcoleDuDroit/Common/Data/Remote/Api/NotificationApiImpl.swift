@@ -15,9 +15,11 @@ class NotificationApiImpl: NotificationApi {
                 throw NSError()
             }
             
-            try await mapServerError {
-                try await fcmApi.sendNotification(recipientId: recipientId, fcmMessage: fcmMessageString)
-            }
+            try await mapServerError(
+                block: { try await fcmApi.sendNotification(recipientId: recipientId, fcmMessage: fcmMessageString) },
+                tag: tag,
+                message: "Failed to send notification"
+            )
         } catch {
             e(tag, "Error sending notification: \(error.localizedDescription)", error)
         }
