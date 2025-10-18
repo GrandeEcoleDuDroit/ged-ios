@@ -1,6 +1,7 @@
 import Foundation
 
 class FcmTokenRepositoryImpl: FcmTokenRepository {
+    private let tag = String(describing: FcmTokenRepositoryImpl.self)
     private let fcmLocalDataSource: FcmLocalDataSource
     private let fcmApi: FcmApi
     
@@ -21,9 +22,11 @@ class FcmTokenRepositoryImpl: FcmTokenRepository {
             throw NSError()
         }
         
-        try await mapServerError {
-            try await fcmApi.addToken(userId: userId, value: token.value)
-        }
+        try await mapServerError(
+            block: { try await fcmApi.addToken(userId: userId, value: token.value) },
+            tag: tag,
+            message: "Faield to add fcm token"
+        )
     }
     
     func storeUnsetToken(token: FcmToken) async throws {
