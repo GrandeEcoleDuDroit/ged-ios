@@ -4,9 +4,7 @@ let userFixture = User(
     lastName: "Dupont",
     email: "jean.dupont@email.com",
     schoolLevel: SchoolLevel.ged1,
-    isMember: true,
-    profilePictureUrl: nil,
-    isDeleted: false
+    admin: true
 )
 
 let userFixture2 = User(
@@ -14,10 +12,7 @@ let userFixture2 = User(
     firstName: "Patrick",
     lastName: "Boucher",
     email: "patrick.boucher@email.com",
-    schoolLevel: SchoolLevel.ged2,
-    isMember: false,
-    profilePictureUrl: nil,
-    isDeleted: false
+    schoolLevel: SchoolLevel.ged2
 )
 
 let userFixture3 = User(
@@ -25,10 +20,7 @@ let userFixture3 = User(
     firstName: "Evelyne",
     lastName: "Aubin",
     email: "evelyne.aubin@email.com",
-    schoolLevel: SchoolLevel.ged2,
-    isMember: false,
-    profilePictureUrl: nil,
-    isDeleted: false
+    schoolLevel: SchoolLevel.ged2
 )
 
 let usersFixture = [

@@ -11,7 +11,7 @@ struct UserItem<TrailingContent: View>: View {
     ) {
         self.user = user
         self.trailingContent = trailingContent
-        self.userName = user.isDeleted ? getString(.deletedUser) : user.fullName
+        self.userName = user.state == .deleted ? getString(.deletedUser) : user.fullName
     }
     
     var body: some View {

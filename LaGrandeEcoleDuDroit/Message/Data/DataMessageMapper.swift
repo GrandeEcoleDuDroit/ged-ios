@@ -17,13 +17,13 @@ extension RemoteMessage {
     
     func toMap() -> [String: Any] {
         [
-            MessageField.messageId: messageId,
-            MessageField.conversationId: conversationId,
-            MessageField.senderId: senderId,
-            MessageField.recipientId: recipientId,
-            MessageField.content: content,
-            MessageField.timestamp: timestamp,
-            MessageField.seen: seen
+            MessageField.Local.messageId: messageId,
+            MessageField.Local.messageConversationId: conversationId,
+            MessageField.Local.messageSenderId: senderId,
+            MessageField.Local.messageRecipientId: recipientId,
+            MessageField.Local.messageContent: content,
+            MessageField.Local.messageTimestamp: timestamp,
+            MessageField.Local.messageSeen: seen
         ]
     }
 }
@@ -51,25 +51,25 @@ extension Message {
 
 extension LocalMessage {
     func toMessage() -> Message? {
-        guard let content = content,
-              let date = timestamp,
-              let senderId = senderId,
-              let recipientId = recipientId,
-              let conversationId = conversationId,
-              let state = MessageState(rawValue: state ?? "")
+        guard let messageContent = messageContent,
+              let messageTimestamp = messageTimestamp,
+              let messageSenderId = messageSenderId,
+              let messageRecipientId = messageRecipientId,
+              let messageConversationId = messageConversationId,
+              let messageState = MessageState(rawValue: messageState ?? "")
         else {
             return nil
         }
         
         return Message(
             id: messageId,
-            senderId: senderId,
-            recipientId: recipientId,
-            conversationId: conversationId,
-            content: content,
-            date: date,
-            seen: seen,
-            state: state
+            senderId: messageSenderId,
+            recipientId: messageRecipientId,
+            conversationId: messageConversationId,
+            content: messageContent,
+            date: messageTimestamp,
+            seen: messageSeen,
+            state: messageState
         )
     }
 }

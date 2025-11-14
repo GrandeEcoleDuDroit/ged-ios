@@ -9,7 +9,7 @@ class AnnouncementApiImpl: AnnouncementApi {
         self.tokenProvider = tokenProvider
     }
     
-    func getAnnouncements() async throws -> (URLResponse, [RemoteAnnouncementWithUser]) {
+    func getAnnouncements() async throws -> (URLResponse, [InboundRemoteAnnouncement]) {
         let url = try RequestUtils.getUrl(base: base, endPoint: "")
         
         let session = RequestUtils.getSession()
@@ -20,11 +20,11 @@ class AnnouncementApiImpl: AnnouncementApi {
         )
         
         let (data, urlResponse) = try await session.data(for: request)
-        let announcements = try JSONDecoder().decode([RemoteAnnouncementWithUser].self, from: data)
+        let announcements = try JSONDecoder().decode([InboundRemoteAnnouncement].self, from: data)
         return (urlResponse, announcements)
     }
     
-    func createAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws -> (URLResponse, ServerResponse) {
+    func createAnnouncement(remoteAnnouncement: OutbondRemoteAnnouncement) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.getUrl(base: base, endPoint: "create")
 
         let session = RequestUtils.getSession()
@@ -38,7 +38,7 @@ class AnnouncementApiImpl: AnnouncementApi {
         return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func updateAnnouncement(remoteAnnouncement: RemoteAnnouncement) async throws -> (URLResponse, ServerResponse) {
+    func updateAnnouncement(remoteAnnouncement: OutbondRemoteAnnouncement) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.getUrl(base: base, endPoint: "update")
 
         let session = RequestUtils.getSession()

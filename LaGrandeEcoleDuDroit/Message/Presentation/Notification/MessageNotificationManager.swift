@@ -70,7 +70,7 @@ open class MessageNotificationManager: NotificationManager {
     private func parseNotificationMessage(userInfo: [AnyHashable : Any]) -> MessageNotification? {
         guard let valueString = userInfo["value"] as? String else { return nil }
         let remoteNotificationMessage = try? JSONDecoder().decode(
-            RemoteNotificationMessage.self,
+            RemoteMessageNotification.self,
             from: valueString.data(using: .utf8)!
         )
         

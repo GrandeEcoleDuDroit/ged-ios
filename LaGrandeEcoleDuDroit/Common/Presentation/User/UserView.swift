@@ -78,7 +78,7 @@ private struct UserView: View {
         self.onReportClick = onReportClick
         self.onBlockUserClick = onBlockUserClick
         self.onUnblockUserClick = onUnblockUserClick
-        self.userName = user.isDeleted ? getString(.deletedUser) : user.fullName
+        self.userName = user.state == .deleted ? getString(.deletedUser) : user.fullName
     }
 
     var body: some View {
@@ -88,7 +88,7 @@ private struct UserView: View {
                 scale: 1.6
             )
             
-            if !user.isDeleted {
+            if user.state != .deleted {
                 UserInformationItems(user: user)
             }
         }

@@ -92,7 +92,7 @@ actor AnnouncementCoreDataActor {
             let request = LocalAnnouncement.fetchRequest()
             request.predicate = NSPredicate(
                 format: "%K == %@",
-                AnnouncementField.Local.userId, userId
+                AnnouncementField.Local.announcementAuthorId, userId
             )
             
             let announcements = try self.context.fetch(request)

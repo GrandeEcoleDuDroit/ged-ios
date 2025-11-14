@@ -59,7 +59,7 @@ class MessageApiImpl: MessageApi {
             .document(remoteMessage.conversationId)
             .collection(messageTableName)
             .document(remoteMessage.messageId.toString())
-            .updateData([MessageField.seen: remoteMessage.seen])
+            .updateData([MessageField.Remote.seen: remoteMessage.seen])
     }
     
     func stopListeningMessages() {

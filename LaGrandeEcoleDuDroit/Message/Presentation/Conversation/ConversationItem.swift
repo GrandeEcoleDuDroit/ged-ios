@@ -69,7 +69,7 @@ private struct SwitchConversationItem: View {
         self.onLongClick = onLongClick
         self.elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
         self.loading = self.conversationState == .creating || self.conversationState == .deleting
-        self.interlocutorName = interlocutor.isDeleted ? getString(.deletedUser) : interlocutor.fullName
+        self.interlocutorName = interlocutor.state == .deleted ? getString(.deletedUser) : interlocutor.fullName
     }
     
     var body: some View {

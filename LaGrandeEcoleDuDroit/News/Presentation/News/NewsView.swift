@@ -107,7 +107,7 @@ private struct NewsView: View {
             }
             
             ToolbarItem(placement: .topBarTrailing) {
-                if user.isMember {
+                if user.admin {
                     Button(
                         action: onCreateAnnouncementClick,
                         label: { Image(systemName: "plus") }
@@ -194,7 +194,7 @@ private struct Sheet: View {
         if let clickedAnnouncement {
             AnnouncementBottomSheet(
                 announcement: clickedAnnouncement,
-                isEditable: user.isMember && clickedAnnouncement.author.id == user.id,
+                isEditable: user.admin && clickedAnnouncement.author.id == user.id,
                 onEditClick: { onEditAnnouncementClick(clickedAnnouncement) },
                 onResendClick: { onResendAnnouncementClick(clickedAnnouncement) },
                 onDeleteClick: onDeleteAnnouncementClick,

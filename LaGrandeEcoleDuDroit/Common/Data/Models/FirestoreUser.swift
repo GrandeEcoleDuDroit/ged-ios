@@ -4,9 +4,10 @@ struct FirestoreUser: Codable, Hashable {
     let lastName: String
     let email: String
     let schoolLevel: String
-    let isMember: Bool
+    let admin: Bool
     let profilePictureFileName: String?
-    let isDeleted: Bool
+    let state: String
+    let tester: Bool
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(userId)
@@ -18,9 +19,10 @@ struct FirestoreUser: Codable, Hashable {
         case lastName = "lastName"
         case email = "email"
         case schoolLevel = "schoolLevel"
-        case isMember = "isMember"
+        case admin = "admin"
         case profilePictureFileName = "profilePictureFileName"
-        case isDeleted = "isDeleted"
+        case state = "state"
+        case tester = "tester"
     }
     
     init(
@@ -29,18 +31,20 @@ struct FirestoreUser: Codable, Hashable {
         lastName: String,
         email: String,
         schoolLevel: String,
-        isMember: Bool,
+        admin: Bool,
         profilePictureFileName: String?,
-        isDeleted: Bool
+        state: String,
+        tester: Bool
     ) {
         self.userId = userId
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
         self.schoolLevel = schoolLevel
-        self.isMember = isMember
+        self.admin = admin
         self.profilePictureFileName = profilePictureFileName
-        self.isDeleted = isDeleted
+        self.state = state
+        self.tester = tester
     }
     
     init(from decoder: Decoder) throws {
@@ -51,8 +55,9 @@ struct FirestoreUser: Codable, Hashable {
         self.lastName = try container.decode(String.self, forKey: .lastName)
         self.email = try container.decode(String.self, forKey: .email)
         self.schoolLevel = try container.decode(String.self, forKey: .schoolLevel)
-        self.isMember = try container.decode(Bool.self, forKey: .isMember)
+        self.admin = try container.decode(Bool.self, forKey: .admin)
         self.profilePictureFileName = try container.decodeIfPresent(String.self, forKey: .profilePictureFileName)
-        self.isDeleted = try container.decodeIfPresent(Bool.self, forKey: .isDeleted) ?? false
+        self.state = try container.decode(String.self, forKey: .state)
+        self.tester = try container.decode(Bool.self, forKey: .tester)
     }
 }

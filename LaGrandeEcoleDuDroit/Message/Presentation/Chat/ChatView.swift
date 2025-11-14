@@ -126,7 +126,7 @@ private struct ChatView: View {
         self.onDeleteChatClick = onDeleteChatClick
         self.onUnblockUserClick = onUnblockUserClick
         self.onInterlocutorProfilePictureClick = onInterlocutorProfilePictureClick
-        self.interlocutorName = conversation.interlocutor.isDeleted ? getString(.deletedUser) : conversation.interlocutor.fullName
+        self.interlocutorName = conversation.interlocutor.state == .deleted ? getString(.deletedUser) : conversation.interlocutor.fullName
     }
 
     var body: some View {

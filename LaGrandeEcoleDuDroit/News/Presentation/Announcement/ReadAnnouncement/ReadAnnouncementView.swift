@@ -103,7 +103,7 @@ private struct ReadAnnouncementView: View {
         .sheet(isPresented: $showAnnouncementBottomSheet) {
             AnnouncementBottomSheet(
                 announcement: announcement,
-                isEditable: user.isMember && announcement.author.id == user.id,
+                isEditable: user.admin && announcement.author.id == user.id,
                 onEditClick: {
                     showAnnouncementBottomSheet = false
                     onEditAnnouncementClick(announcement)

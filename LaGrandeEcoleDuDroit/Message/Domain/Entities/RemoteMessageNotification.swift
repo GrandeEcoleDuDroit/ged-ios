@@ -1,10 +1,10 @@
-struct RemoteNotificationMessage: Codable {
-    let conversation: RemoteNotificationMessage.Conversation
+struct RemoteMessageNotification: Codable {
+    let conversation: RemoteMessageNotification.Conversation
     let message: MessageNotification.MessageContent
     
     struct Conversation: Codable {
         let id: String
-        let interlocutor: RemoteNotificationMessage.Conversation.Interlocutor
+        let interlocutor: RemoteMessageNotification.Conversation.Interlocutor
         let createdAt: Int64
         let deleteTime: Int64?
         
@@ -15,9 +15,10 @@ struct RemoteNotificationMessage: Codable {
             let fullName: String
             let email: String
             let schoolLevel: String
-            let isMember: Bool
+            let admin: Bool
             let profilePictureFileName: String?
-            let isDeleted: Bool
+            let state: String
+            let tester: Bool
         }
     }
 }
