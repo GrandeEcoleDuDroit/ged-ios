@@ -13,6 +13,8 @@
 		5EC0EA4A2CC5644100632199 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 5EC0EA492CC5644100632199 /* FirebaseCrashlytics */; };
 		5EC0EA4C2CC5644100632199 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 5EC0EA4B2CC5644100632199 /* FirebaseFirestore */; };
 		5EDC1C082E47A34B00A3C603 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 5EDC1C072E47A34B00A3C603 /* FirebaseMessaging */; };
+		5EDC292D2EC79CE8006F4F95 /* ci_pre_xcodebuild.sh in Resources */ = {isa = PBXBuildFile; fileRef = 5EDC292C2EC79CE8006F4F95 /* ci_pre_xcodebuild.sh */; };
+		5EDC29312EC7A5CB006F4F95 /* debug_script.sh in Resources */ = {isa = PBXBuildFile; fileRef = 5EDC29302EC7A5CB006F4F95 /* debug_script.sh */; };
 		5EE765C82D2A1B2600EC8447 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 5EE765C72D2A1B2600EC8447 /* Swinject */; };
 /* End PBXBuildFile section */
 
@@ -37,6 +39,8 @@
 		5EB5784D2CB3CCD3004524AD /* GrandeEcoleDuDroit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GrandeEcoleDuDroit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EB5785D2CB3CCD4004524AD /* LaGrandeEcoleDuDroitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LaGrandeEcoleDuDroitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EB578672CB3CCD4004524AD /* LaGrandeEcoleDuDroitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LaGrandeEcoleDuDroitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5EDC292C2EC79CE8006F4F95 /* ci_pre_xcodebuild.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_pre_xcodebuild.sh; sourceTree = "<group>"; };
+		5EDC29302EC7A5CB006F4F95 /* debug_script.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = debug_script.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -105,6 +109,7 @@
 		5EB578442CB3CCD3004524AD = {
 			isa = PBXGroup;
 			children = (
+				5EDC29322EC7B286006F4F95 /* ci_scripts */,
 				5EB578602CB3CCD4004524AD /* LaGrandeEcoleDuDroitTests */,
 				5EB5786A2CB3CCD4004524AD /* LaGrandeEcoleDuDroitUITests */,
 				5EB5784E2CB3CCD3004524AD /* Products */,
@@ -120,6 +125,15 @@
 				5EB578672CB3CCD4004524AD /* LaGrandeEcoleDuDroitUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		5EDC29322EC7B286006F4F95 /* ci_scripts */ = {
+			isa = PBXGroup;
+			children = (
+				5EDC292C2EC79CE8006F4F95 /* ci_pre_xcodebuild.sh */,
+				5EDC29302EC7A5CB006F4F95 /* debug_script.sh */,
+			);
+			path = ci_scripts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -254,6 +268,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5EDC292D2EC79CE8006F4F95 /* ci_pre_xcodebuild.sh in Resources */,
+				5EDC29312EC7A5CB006F4F95 /* debug_script.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
