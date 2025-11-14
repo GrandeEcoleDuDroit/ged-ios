@@ -435,7 +435,7 @@
 		5EB578722CB3CCD4004524AD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = 5EB5784F2CB3CCD3004524AD /* LaGrandeEcoleDuDroit */;
-			baseConfigurationReferenceRelativePath = DebugConfig.xcconfig;
+			baseConfigurationReferenceRelativePath = Config.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -471,7 +471,7 @@
 		5EB578732CB3CCD4004524AD /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = 5EB5784F2CB3CCD3004524AD /* LaGrandeEcoleDuDroit */;
-			baseConfigurationReferenceRelativePath = ReleaseConfig.xcconfig;
+			baseConfigurationReferenceRelativePath = Config.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
