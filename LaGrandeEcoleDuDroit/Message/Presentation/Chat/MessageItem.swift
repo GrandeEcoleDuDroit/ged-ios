@@ -127,7 +127,7 @@ struct MessageInput: View {
             .lineLimit(6)
             .padding(.vertical, GedSpacing.small)
             
-            if !text.isBlank {
+            if !text.isBlank() {
                 Button(
                     action: onSendClick,
                     label: {

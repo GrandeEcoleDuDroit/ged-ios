@@ -67,11 +67,11 @@ class EditAnnouncementViewModel: ViewModel {
     }
     
     private func validateTitle(_ title: String) -> Bool {
-        title != announcement.title.toString() && !uiState.content.isBlank
+        title != announcement.title.toString() && !uiState.content.isBlank()
     }
     
     private func validateContent(_ content: String) -> Bool {
-        content != announcement.content && !uiState.content.isBlank
+        content != announcement.content && !uiState.content.isBlank()
     }
     
     struct EditAnnouncementUiState {

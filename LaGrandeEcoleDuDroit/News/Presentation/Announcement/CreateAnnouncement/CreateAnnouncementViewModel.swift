@@ -23,7 +23,7 @@ class CreateAnnouncementViewModel: ViewModel {
             return event = ErrorEvent(message: getString(.currentUserNotFoundError))
         }
         
-        let title: String? = !uiState.title.isBlank ? uiState.title : nil
+        let title: String? = !uiState.title.isBlank() ? uiState.title : nil
         
         let announcement = Announcement(
             id: GenerateIdUseCase.stringId(),
@@ -58,7 +58,7 @@ class CreateAnnouncementViewModel: ViewModel {
     }
     
     private func validateInput() -> Bool {
-        !uiState.content.isBlank
+        !uiState.content.isBlank()
     }
     
     struct CreateAnnouncementUiState {

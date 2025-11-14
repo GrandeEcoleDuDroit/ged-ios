@@ -60,7 +60,7 @@ class ThirdRegistrationViewModel: ViewModel {
     }
     
     private func validateEmail(email: String) -> String? {
-        if email.isBlank {
+        if email.isBlank() {
             getString(.mandatoryFieldError)
         } else if !VerifyEmailFormatUseCase.execute(email) {
             getString(.incorrectEmailFormatError)
@@ -70,7 +70,7 @@ class ThirdRegistrationViewModel: ViewModel {
     }
     
     private func validatePassword(password: String) -> String? {
-        if password.isBlank {
+        if password.isBlank() {
             getString(.mandatoryFieldError)
         } else if password.count < minPasswordLength {
             getString(.passwordLengthError)
