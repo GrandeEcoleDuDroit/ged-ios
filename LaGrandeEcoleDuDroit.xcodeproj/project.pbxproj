@@ -105,10 +105,10 @@
 		5EB578442CB3CCD3004524AD = {
 			isa = PBXGroup;
 			children = (
-				5EB5784F2CB3CCD3004524AD /* LaGrandeEcoleDuDroit */,
 				5EB578602CB3CCD4004524AD /* LaGrandeEcoleDuDroitTests */,
 				5EB5786A2CB3CCD4004524AD /* LaGrandeEcoleDuDroitUITests */,
 				5EB5784E2CB3CCD3004524AD /* Products */,
+				5EB5784F2CB3CCD3004524AD /* LaGrandeEcoleDuDroit */,
 			);
 			sourceTree = "<group>";
 		};
