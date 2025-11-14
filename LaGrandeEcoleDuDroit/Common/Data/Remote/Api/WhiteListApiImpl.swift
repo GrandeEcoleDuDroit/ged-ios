@@ -7,7 +7,7 @@ class WhiteListApiImpl: WhiteListApi {
         let url = try RequestUtils.getUrl(base: base, endPoint: "user")
         
         let dataToSend: [String: String] = [
-            OracleUserDataFields.userEmail: email
+            UserField.Server.userEmail: email
         ]
         
         let session = RequestUtils.getSession()

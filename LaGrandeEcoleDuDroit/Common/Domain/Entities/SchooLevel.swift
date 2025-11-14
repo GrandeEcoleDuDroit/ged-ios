@@ -15,7 +15,7 @@ enum SchoolLevel: String, CaseIterable, Identifiable, Codable {
         }
     }
     
-    static func from(number: Int) -> SchoolLevel {
+    static func fromNumber(_ number: Int) -> SchoolLevel {
         switch number {
             case 1: .ged1
             case 2: .ged2
