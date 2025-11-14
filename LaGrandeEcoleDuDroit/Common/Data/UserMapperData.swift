@@ -2,12 +2,14 @@ extension FirestoreUser {
     func toUser() -> User {
         User(
             id: userId,
-            firstName: firstName,
-            lastName: lastName,
+            firstName: firstName.uppercaseFirstLetter(),
+            lastName: lastName.uppercaseFirstLetter(),
             email: email,
-            schoolLevel: SchoolLevel(rawValue: schoolLevel) ?? .ged1,
+            schoolLevel: SchoolLevel.fromNumber(schoolLevel),
             admin: admin,
             profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName),
+            state: User.UserState(rawValue: state) ?? .active,
+            tester: tester
         )
     }
 }
@@ -16,8 +18,8 @@ extension User {
     func toServerUser() -> ServerUser {
         ServerUser(
             userId: id,
-            userFirstName: firstName,
-            userLastName: lastName,
+            userFirstName: firstName.lowercased(),
+            userLastName: lastName.lowercased(),
             userEmail: email,
             userSchoolLevel: schoolLevel.rawValue,
             userAdmin: admin ? 1 : 0,
@@ -30,10 +32,10 @@ extension User {
     func toFirestoreUser() -> FirestoreUser {
         FirestoreUser(
             userId: id,
-            firstName: firstName,
-            lastName: lastName,
+            firstName: firstName.lowercased(),
+            lastName: lastName.lowercased(),
             email: email,
-            schoolLevel: schoolLevel.rawValue,
+            schoolLevel: schoolLevel.number,
             admin: admin,
             profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
             state: state.rawValue,
@@ -44,8 +46,8 @@ extension User {
     func toLocal() -> LocalUser {
         LocalUser(
             userId: id,
-            userFirstName: firstName,
-            userLastName: lastName,
+            userFirstName: firstName.lowercased(),
+            userLastName: lastName.lowercased(),
             userEmail: email,
             userSchoolLevel: schoolLevel.rawValue,
             userAdmin: admin,
@@ -60,8 +62,8 @@ extension LocalUser {
     func toUser() -> User {
         User(
             id: userId,
-            firstName: userFirstName,
-            lastName: userLastName,
+            firstName: userFirstName.uppercaseFirstLetter(),
+            lastName: userLastName.uppercaseFirstLetter(),
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel)!,
             admin: userAdmin,

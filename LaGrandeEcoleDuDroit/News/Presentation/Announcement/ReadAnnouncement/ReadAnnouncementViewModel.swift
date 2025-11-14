@@ -51,7 +51,7 @@ class ReadAnnouncementViewModel: ViewModel {
         announcementRepository.getAnnouncementPublisher(announcementId: announcementId)
             .compactMap { $0 }
             .map { announcement in
-                let title = announcement.title?.isBlank == false ? announcement.title : nil
+                let title = announcement.title?.isBlank() == false ? announcement.title : nil
                 return announcement.copy { $0.title = title }
             }
             .receive(on: DispatchQueue.main)

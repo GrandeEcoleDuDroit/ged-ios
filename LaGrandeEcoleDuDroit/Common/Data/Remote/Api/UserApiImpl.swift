@@ -156,8 +156,8 @@ class UserServerApi {
     func updateProfilePictureFileName(userId: String, fileName: String) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.getUrl(base: base, endPoint: "profile-picture-file-name")
         let dataToSend: [String: String] = [
-            OracleUserDataFields.userId: userId,
-            OracleUserDataFields.userProfilePictureFileName: fileName
+            UserField.Server.userId: userId,
+            UserField.Server.userProfilePictureFileName: fileName
         ]
         let session = RequestUtils.getSession()
         let authToken = await tokenProvider.getAuthToken()
@@ -230,7 +230,7 @@ class UserFirestoreApi {
     
     func getUserWithEmail(email: String) async throws -> FirestoreUser? {
         let snapshot = try await usersCollection
-            .whereField(FirestoreUserDataFields.email, isEqualTo: email)
+            .whereField(UserField.Firestore.email, isEqualTo: email)
             .getDocuments()
         
         return try snapshot.documents.first?.data(as: FirestoreUser.self)
@@ -252,7 +252,7 @@ class UserFirestoreApi {
     
     func updateProfilePictureFileName(userId: String, fileName: String) {
         let userRef = usersCollection.document(userId)
-        userRef.updateData([FirestoreUserDataFields.profilePictureFileName: fileName])
+        userRef.updateData([UserField.Firestore.profilePictureFileName: fileName])
     }
     
     func updateUser(firestoreUser: FirestoreUser) async throws {
@@ -263,6 +263,6 @@ class UserFirestoreApi {
     
     func deleteProfilePictureFileName(userId: String) {
         let userRef = usersCollection.document(userId)
-        userRef.updateData([FirestoreUserDataFields.profilePictureFileName: FieldValue.delete()])
+        userRef.updateData([UserField.Firestore.profilePictureFileName: FieldValue.delete()])
     }
 }

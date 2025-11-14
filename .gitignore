@@ -25,6 +25,5 @@ playground.xcworkspace
 
 *.xcuserstate
 
-LaGrandeEcoleDuDroit/DebugConfig.xcconfig
-LaGrandeEcoleDuDroit/ReleaseConfig.xcconfig
+LaGrandeEcoleDuDroit/Config.xcconfig
 .DS_Store

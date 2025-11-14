@@ -23,7 +23,7 @@ struct InboundRemoteAnnouncement: Codable {
     var userFirstName: String
     var userLastName: String
     var userEmail: String
-    var userSchoolLevel: String
+    var userSchoolLevel: Int
     var userAdmin: Int
     var userProfilePictureFileName: String?
     var userState: String
@@ -39,7 +39,7 @@ struct InboundRemoteAnnouncement: Codable {
         case userLastName = "USER_LAST_NAME"
         case userEmail = "USER_EMAIL"
         case userSchoolLevel = "USER_SCHOOL_LEVEL"
-        case userAdmin = "USER_IS_MEMBER"
+        case userAdmin = "USER_ADMIN"
         case userProfilePictureFileName = "USER_PROFILE_PICTURE_FILE_NAME"
         case userState = "USER_STATE"
         case userTester = "USER_TESTER"
@@ -54,7 +54,7 @@ struct InboundRemoteAnnouncement: Codable {
         userFirstName: String,
         userLastName: String,
         userEmail: String,
-        userSchoolLevel: String,
+        userSchoolLevel: Int,
         userAdmin: Int,
         userProfilePictureFileName: String?,
         userState: String,
@@ -86,7 +86,7 @@ struct InboundRemoteAnnouncement: Codable {
         userFirstName = try container.decode(String.self, forKey: .userFirstName)
         userLastName = try container.decode(String.self, forKey: .userLastName)
         userEmail = try container.decode(String.self, forKey: .userEmail)
-        userSchoolLevel = try container.decode(String.self, forKey: .userSchoolLevel)
+        userSchoolLevel = try container.decode(Int.self, forKey: .userSchoolLevel)
         userAdmin = try container.decode(Int.self, forKey: .userAdmin)
         userProfilePictureFileName = try container.decodeIfPresent(String.self, forKey: .userProfilePictureFileName)
         userState = try container.decode(String.self, forKey: .userState)

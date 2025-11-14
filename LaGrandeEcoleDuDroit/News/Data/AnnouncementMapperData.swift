@@ -5,10 +5,10 @@ extension InboundRemoteAnnouncement {
     func toAnnouncement() -> Announcement {
         let user = User(
             id: userId,
-            firstName: userFirstName,
-            lastName: userLastName,
+            firstName: userFirstName.uppercaseFirstLetter(),
+            lastName: userLastName.uppercaseFirstLetter(),
             email: userEmail,
-            schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel) ?? SchoolLevel.ged1,
+            schoolLevel: SchoolLevel.fromNumber(userSchoolLevel),
             admin: userAdmin == 1,
             profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: userProfilePictureFileName),
             state: User.UserState(rawValue: userState) ?? .active,
@@ -41,8 +41,8 @@ extension Announcement {
 extension LocalAnnouncement {
     func toAnnouncement() -> Announcement? {
         guard let authorId = announcementAuthorId,
-              let authorFirstName = announcementAuthorFirstName,
-              let authorLastName = announcementAuthorLastName,
+              let authorFirstName = announcementAuthorFirstName?.uppercaseFirstLetter(),
+              let authorLastName = announcementAuthorLastName?.uppercaseFirstLetter(),
               let authorEmail = announcementAuthorEmail,
               let authorSchoolLevel = announcementAuthorSchoolLevel,
               let announcementId = announcementId,
@@ -78,8 +78,8 @@ extension LocalAnnouncement {
         announcementDate = announcement.date
         announcementState = announcement.state.rawValue
         announcementAuthorId = announcement.author.id
-        announcementAuthorFirstName = announcement.author.firstName
-        announcementAuthorLastName = announcement.author.lastName
+        announcementAuthorFirstName = announcement.author.firstName.lowercased()
+        announcementAuthorLastName = announcement.author.lastName.lowercased()
         announcementAuthorEmail = announcement.author.email
         announcementAuthorSchoolLevel = announcement.author.schoolLevel.rawValue
         announcementAuthorAdmin = announcement.author.admin
@@ -95,8 +95,8 @@ extension LocalAnnouncement {
         announcementDate == announcement.date &&
         announcementState == announcement.state.rawValue &&
         announcementAuthorId == announcement.author.id &&
-        announcementAuthorFirstName == announcement.author.firstName &&
-        announcementAuthorLastName == announcement.author.lastName &&
+        announcementAuthorFirstName == announcement.author.firstName.lowercased() &&
+        announcementAuthorLastName == announcement.author.lastName.lowercased() &&
         announcementAuthorEmail == announcement.author.email &&
         announcementAuthorSchoolLevel == announcement.author.schoolLevel.rawValue &&
         announcementAuthorAdmin == announcement.author.admin &&

@@ -13,10 +13,10 @@ class FirstRegistrationViewModel: ViewModel {
     }
     
     func validateInputs() -> Bool {
-        uiState.firstName = uiState.firstName.trimmedAndCapitalizedFirstLetter
-        uiState.lastName = uiState.lastName.trimmedAndCapitalizedFirstLetter
-        uiState.firstNameError = uiState.firstName.isBlank ? getString(.mandatoryFieldError) : nil
-        uiState.lastNameError = uiState.lastName.isBlank ? getString(.mandatoryFieldError) : nil
+        uiState.firstName = uiState.firstName.trimmedAndCapitalizedFirstLetter()
+        uiState.lastName = uiState.lastName.trimmedAndCapitalizedFirstLetter()
+        uiState.firstNameError = uiState.firstName.isBlank() ? getString(.mandatoryFieldError) : nil
+        uiState.lastNameError = uiState.lastName.isBlank() ? getString(.mandatoryFieldError) : nil
         
         return uiState.firstNameError == nil && uiState.lastNameError == nil
     }

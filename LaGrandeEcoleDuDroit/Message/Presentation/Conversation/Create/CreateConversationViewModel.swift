@@ -24,7 +24,7 @@ class CreateConversationViewModel: ViewModel {
     
     func onQueryChange(_ query: String) {
         uiState.query = query
-        if query.isBlank {
+        if query.isBlank() {
             uiState.users = defaultUsers
         } else {
             uiState.users = defaultUsers.filter {

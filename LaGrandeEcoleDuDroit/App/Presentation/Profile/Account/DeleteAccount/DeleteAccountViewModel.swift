@@ -52,7 +52,7 @@ class DeleteAccountViewModel: ViewModel {
     }
     
     private func validatePassword(password: String) -> String? {
-        if password.isBlank {
+        if password.isBlank() {
             getString(.emptyInputsError)
         } else {
             nil

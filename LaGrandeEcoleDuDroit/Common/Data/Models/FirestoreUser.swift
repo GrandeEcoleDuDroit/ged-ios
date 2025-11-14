@@ -3,7 +3,7 @@ struct FirestoreUser: Codable, Hashable {
     let firstName: String
     let lastName: String
     let email: String
-    let schoolLevel: String
+    let schoolLevel: Int
     let admin: Bool
     let profilePictureFileName: String?
     let state: String
@@ -30,7 +30,7 @@ struct FirestoreUser: Codable, Hashable {
         firstName: String,
         lastName: String,
         email: String,
-        schoolLevel: String,
+        schoolLevel: Int,
         admin: Bool,
         profilePictureFileName: String?,
         state: String,
@@ -54,7 +54,7 @@ struct FirestoreUser: Codable, Hashable {
         self.firstName = try container.decode(String.self, forKey: .firstName)
         self.lastName = try container.decode(String.self, forKey: .lastName)
         self.email = try container.decode(String.self, forKey: .email)
-        self.schoolLevel = try container.decode(String.self, forKey: .schoolLevel)
+        self.schoolLevel = try container.decode(Int.self, forKey: .schoolLevel)
         self.admin = try container.decode(Bool.self, forKey: .admin)
         self.profilePictureFileName = try container.decodeIfPresent(String.self, forKey: .profilePictureFileName)
         self.state = try container.decode(String.self, forKey: .state)
