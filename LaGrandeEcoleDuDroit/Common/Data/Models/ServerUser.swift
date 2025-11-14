@@ -4,9 +4,10 @@ struct ServerUser: Codable {
     let userLastName: String
     let userEmail: String
     let userSchoolLevel: String
-    let userIsMember: Int
+    let userAdmin: Int
     let userProfilePictureFileName: String?
-    let userIsDeleted: Int
+    let userState: String
+    let userTester: Int
     
     enum CodingKeys: String, CodingKey {
         case userId = "USER_ID"
@@ -14,9 +15,10 @@ struct ServerUser: Codable {
         case userLastName = "USER_LAST_NAME"
         case userEmail = "USER_EMAIL"
         case userSchoolLevel = "USER_SCHOOL_LEVEL"
-        case userIsMember = "USER_IS_MEMBER"
+        case userAdmin = "USER_ADMIN"
         case userProfilePictureFileName = "USER_PROFILE_PICTURE_FILE_NAME"
-        case userIsDeleted = "USER_IS_DELETED"
+        case userState = "USER_STATE"
+        case userTester = "USER_TESTER"
     }
     
     init(
@@ -25,18 +27,21 @@ struct ServerUser: Codable {
         userLastName: String,
         userEmail: String,
         userSchoolLevel: String,
-        userIsMember: Int,
+        userAdmin: Int,
         userProfilePictureFileName: String?,
-        userIsDeleted: Int
+        userState: String,
+        userTester: Int
     ) {
         self.userId = userId
         self.userFirstName = userFirstName
         self.userLastName = userLastName
         self.userEmail = userEmail
         self.userSchoolLevel = userSchoolLevel
-        self.userIsMember = userIsMember
+        self.userAdmin = userAdmin
         self.userProfilePictureFileName = userProfilePictureFileName
-        self.userIsDeleted = userIsDeleted
+        self.userState = userState
+        self.userTester = userTester
+        
     }
     
     init(from decoder: Decoder) throws {
@@ -47,8 +52,9 @@ struct ServerUser: Codable {
         self.userLastName = try container.decode(String.self, forKey: .userLastName)
         self.userEmail = try container.decode(String.self, forKey: .userEmail)
         self.userSchoolLevel = try container.decode(String.self, forKey: .userSchoolLevel)
-        self.userIsMember = try container.decode(Int.self, forKey: .userIsMember)
+        self.userAdmin = try container.decode(Int.self, forKey: .userAdmin)
         self.userProfilePictureFileName = try container.decodeIfPresent(String.self, forKey: .userProfilePictureFileName)
-        self.userIsDeleted = try container.decodeIfPresent(Int.self, forKey: .userIsDeleted) ?? 0
+        self.userState = try container.decode(String.self, forKey: .userState)
+        self.userTester = try container.decode(Int.self, forKey: .userTester)
     }
 }

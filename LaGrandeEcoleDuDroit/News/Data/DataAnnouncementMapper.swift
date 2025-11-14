@@ -1,7 +1,7 @@
 import Foundation
 import CoreData
 
-extension RemoteAnnouncementWithUser {
+extension InboundRemoteAnnouncement {
     func toAnnouncement() -> Announcement {
         let user = User(
             id: userId,
@@ -9,9 +9,10 @@ extension RemoteAnnouncementWithUser {
             lastName: userLastName,
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel) ?? SchoolLevel.ged1,
-            isMember: userIsMember == 1,
+            admin: userAdmin == 1,
             profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: userProfilePictureFileName),
-            isDeleted: userIsDeleted == 1
+            state: User.UserState(rawValue: userState) ?? .active,
+            tester: userTester == 1
         )
         
         return Announcement(
@@ -26,8 +27,8 @@ extension RemoteAnnouncementWithUser {
 }
 
 extension Announcement {    
-    func toRemote() -> RemoteAnnouncement {
-        RemoteAnnouncement(
+    func toRemote() -> OutbondRemoteAnnouncement {
+        OutbondRemoteAnnouncement(
             announcementId: id,
             announcementTitle: title,
             announcementContent: content,
@@ -39,11 +40,11 @@ extension Announcement {
 
 extension LocalAnnouncement {
     func toAnnouncement() -> Announcement? {
-        guard let userId = userId,
-              let userFirstName = userFirstName,
-              let userLastName = userLastName,
-              let userEmail = userEmail,
-              let userSchoolLevel = userSchoolLevel,
+        guard let authorId = announcementAuthorId,
+              let authorFirstName = announcementAuthorFirstName,
+              let authorLastName = announcementAuthorLastName,
+              let authorEmail = announcementAuthorEmail,
+              let authorSchoolLevel = announcementAuthorSchoolLevel,
               let announcementId = announcementId,
               let announcementContent = announcementContent,
               let announcementDate = announcementDate,
@@ -51,14 +52,13 @@ extension LocalAnnouncement {
         else { return nil }
         
         let user = User(
-            id: userId,
-            firstName: userFirstName,
-            lastName: userLastName,
-            email: userEmail,
-            schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel) ?? SchoolLevel.ged1,
-            isMember: userIsMember,
-            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: userProfilePictureFileName),
-            isDeleted: isDeleted
+            id: authorId,
+            firstName: authorFirstName,
+            lastName: authorLastName,
+            email: authorEmail,
+            schoolLevel: SchoolLevel(rawValue: authorSchoolLevel) ?? SchoolLevel.unknown,
+            admin: announcementAuthorAdmin,
+            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: announcementAuthorProfilePictureFileName),
         )
         
         return Announcement(
@@ -77,14 +77,15 @@ extension LocalAnnouncement {
         announcementContent = announcement.content
         announcementDate = announcement.date
         announcementState = announcement.state.rawValue
-        userId = announcement.author.id
-        userFirstName = announcement.author.firstName
-        userLastName = announcement.author.lastName
-        userEmail = announcement.author.email
-        userSchoolLevel = announcement.author.schoolLevel.rawValue
-        userIsMember = announcement.author.isMember
-        userProfilePictureFileName = UrlUtils.extractFileName(url: announcement.author.profilePictureUrl)
-        userIsDeleted = announcement.author.isDeleted
+        announcementAuthorId = announcement.author.id
+        announcementAuthorFirstName = announcement.author.firstName
+        announcementAuthorLastName = announcement.author.lastName
+        announcementAuthorEmail = announcement.author.email
+        announcementAuthorSchoolLevel = announcement.author.schoolLevel.rawValue
+        announcementAuthorAdmin = announcement.author.admin
+        announcementAuthorProfilePictureFileName = UrlUtils.extractFileName(url: announcement.author.profilePictureUrl)
+        announcementAuthorState = announcement.author.state.rawValue
+        announcementAuthorTester = announcement.author.tester
     }
     
     func equals(_ announcement: Announcement) -> Bool {
@@ -93,14 +94,15 @@ extension LocalAnnouncement {
         announcementContent == announcement.content &&
         announcementDate == announcement.date &&
         announcementState == announcement.state.rawValue &&
-        userId == announcement.author.id &&
-        userFirstName == announcement.author.firstName &&
-        userLastName == announcement.author.lastName &&
-        userEmail == announcement.author.email &&
-        userSchoolLevel == announcement.author.schoolLevel.rawValue &&
-        userIsMember == announcement.author.isMember &&
-        userProfilePictureFileName == UrlUtils.extractFileName(url: announcement.author.profilePictureUrl) &&
-        userIsDeleted == announcement.author.isDeleted
+        announcementAuthorId == announcement.author.id &&
+        announcementAuthorFirstName == announcement.author.firstName &&
+        announcementAuthorLastName == announcement.author.lastName &&
+        announcementAuthorEmail == announcement.author.email &&
+        announcementAuthorSchoolLevel == announcement.author.schoolLevel.rawValue &&
+        announcementAuthorAdmin == announcement.author.admin &&
+        announcementAuthorProfilePictureFileName == UrlUtils.extractFileName(url: announcement.author.profilePictureUrl) &&
+        announcementAuthorState == announcement.author.state.rawValue &&
+        announcementAuthorTester == announcement.author.tester
     }
 }
 

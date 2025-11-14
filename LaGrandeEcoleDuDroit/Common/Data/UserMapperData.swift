@@ -6,9 +6,8 @@ extension FirestoreUser {
             lastName: lastName,
             email: email,
             schoolLevel: SchoolLevel(rawValue: schoolLevel) ?? .ged1,
-            isMember: isMember,
+            admin: admin,
             profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName),
-            isDeleted: isDeleted
         )
     }
 }
@@ -21,9 +20,10 @@ extension User {
             userLastName: lastName,
             userEmail: email,
             userSchoolLevel: schoolLevel.rawValue,
-            userIsMember: isMember ? 1 : 0,
+            userAdmin: admin ? 1 : 0,
             userProfilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
-            userIsDeleted: isDeleted ? 1 : 0
+            userState: state.rawValue,
+            userTester: tester ? 1 : 0
         )
     }
     
@@ -34,9 +34,10 @@ extension User {
             lastName: lastName,
             email: email,
             schoolLevel: schoolLevel.rawValue,
-            isMember: isMember,
+            admin: admin,
             profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
-            isDeleted: isDeleted
+            state: state.rawValue,
+            tester: tester
         )
     }
     
@@ -47,9 +48,10 @@ extension User {
             userLastName: lastName,
             userEmail: email,
             userSchoolLevel: schoolLevel.rawValue,
-            userIsMember: isMember,
+            userAdmin: admin,
             userProfilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
-            userIsDeleted: isDeleted
+            userState: state.rawValue,
+            userTester: tester
         )
     }
 }
@@ -62,9 +64,8 @@ extension LocalUser {
             lastName: userLastName,
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel)!,
-            isMember: userIsMember,
+            admin: userAdmin,
             profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: userProfilePictureFileName),
-            isDeleted: userIsDeleted
         )
     }
 }

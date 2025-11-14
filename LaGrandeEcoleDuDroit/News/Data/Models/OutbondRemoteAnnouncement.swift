@@ -1,4 +1,4 @@
-struct RemoteAnnouncement: Codable {
+struct OutbondRemoteAnnouncement: Codable {
     var announcementId: String
     var announcementTitle: String?
     var announcementContent: String
@@ -14,7 +14,7 @@ struct RemoteAnnouncement: Codable {
     }
 }
 
-struct RemoteAnnouncementWithUser: Codable {
+struct InboundRemoteAnnouncement: Codable {
     var announcementId: String
     var announcementTitle: String?
     var announcementContent: String
@@ -24,9 +24,10 @@ struct RemoteAnnouncementWithUser: Codable {
     var userLastName: String
     var userEmail: String
     var userSchoolLevel: String
-    var userIsMember: Int
+    var userAdmin: Int
     var userProfilePictureFileName: String?
-    var userIsDeleted: Int
+    var userState: String
+    var userTester: Int
     
     enum CodingKeys: String, CodingKey {
         case announcementId = "ANNOUNCEMENT_ID"
@@ -38,9 +39,10 @@ struct RemoteAnnouncementWithUser: Codable {
         case userLastName = "USER_LAST_NAME"
         case userEmail = "USER_EMAIL"
         case userSchoolLevel = "USER_SCHOOL_LEVEL"
-        case userIsMember = "USER_IS_MEMBER"
+        case userAdmin = "USER_IS_MEMBER"
         case userProfilePictureFileName = "USER_PROFILE_PICTURE_FILE_NAME"
-        case userIsDeleted = "USER_IS_DELETED"
+        case userState = "USER_STATE"
+        case userTester = "USER_TESTER"
     }
     
     init(
@@ -53,9 +55,10 @@ struct RemoteAnnouncementWithUser: Codable {
         userLastName: String,
         userEmail: String,
         userSchoolLevel: String,
-        userIsMember: Int,
+        userAdmin: Int,
         userProfilePictureFileName: String?,
-        userIsDeleted: Int
+        userState: String,
+        userTester: Int
     ) {
         self.announcementId = announcementId
         self.announcementTitle = announcementTitle
@@ -66,9 +69,10 @@ struct RemoteAnnouncementWithUser: Codable {
         self.userLastName = userLastName
         self.userEmail = userEmail
         self.userSchoolLevel = userSchoolLevel
-        self.userIsMember = userIsMember
+        self.userAdmin = userAdmin
         self.userProfilePictureFileName = userProfilePictureFileName
-        self.userIsDeleted = userIsDeleted
+        self.userState = userState
+        self.userTester = userTester
     }
     
     init(from decoder: Decoder) throws {
@@ -83,8 +87,9 @@ struct RemoteAnnouncementWithUser: Codable {
         userLastName = try container.decode(String.self, forKey: .userLastName)
         userEmail = try container.decode(String.self, forKey: .userEmail)
         userSchoolLevel = try container.decode(String.self, forKey: .userSchoolLevel)
-        userIsMember = try container.decode(Int.self, forKey: .userIsMember)
+        userAdmin = try container.decode(Int.self, forKey: .userAdmin)
         userProfilePictureFileName = try container.decodeIfPresent(String.self, forKey: .userProfilePictureFileName)
-        userIsDeleted = try container.decodeIfPresent(Int.self, forKey: .userIsDeleted) ?? 0
+        userState = try container.decode(String.self, forKey: .userState)
+        userTester = try container.decode(Int.self, forKey: .userTester)
     }
 }

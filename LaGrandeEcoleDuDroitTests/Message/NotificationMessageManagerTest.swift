@@ -90,7 +90,7 @@ class NotificationMessageManagerTest {
     }
 }
 
-private func getUserInfo(conversation: RemoteNotificationMessage.Conversation, message: MessageNotification.MessageContent) -> [AnyHashable: Any] {
+private func getUserInfo(conversation: RemoteMessageNotification.Conversation, message: MessageNotification.MessageContent) -> [AnyHashable: Any] {
     let jsonEncoder = JSONEncoder()
     guard let conversationData = try? jsonEncoder.encode(conversation),
           let conversationJsonString = String(data: conversationData, encoding: .utf8),

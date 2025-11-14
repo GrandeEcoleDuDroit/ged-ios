@@ -27,7 +27,7 @@ class DeleteAccountUseCase {
         let deletedUser = user.copy {
             $0.email = "\(user.id)@deleted.com"
             $0.profilePictureUrl = nil;
-            $0.isDeleted = true
+            $0.state = .deleted
         }
         
         try await userRepository.updateRemoteUser(user: deletedUser)

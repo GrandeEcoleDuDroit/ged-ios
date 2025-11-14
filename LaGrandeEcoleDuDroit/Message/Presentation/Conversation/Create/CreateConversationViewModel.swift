@@ -56,7 +56,7 @@ class CreateConversationViewModel: ViewModel {
             let users = await self?.userRepository.getUsers()
                 .filter {
                     $0.id != user.id &&
-                    !$0.isDeleted &&
+                    $0.state != .deleted &&
                     !blockedUserIds.contains($0.id)
                 }
                 .sorted { $0.fullName < $1.fullName }
