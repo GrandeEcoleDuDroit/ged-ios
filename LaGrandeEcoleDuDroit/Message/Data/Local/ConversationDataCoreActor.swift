@@ -12,7 +12,7 @@ actor ConversationCoreDataActor {
             let fetchRequest = LocalConversation.fetchRequest()
             
             fetchRequest.sortDescriptors = [NSSortDescriptor(
-                key: ConversationField.createdAt,
+                key: ConversationField.Local.conversationCreatedAt,
                 ascending: false
             )]
             
@@ -26,7 +26,7 @@ actor ConversationCoreDataActor {
             
             request.predicate = NSPredicate(
                 format: "%K == %@",
-                ConversationField.Local.interlocutorId, interlocutorId
+                ConversationField.Local.conversationInterlocutorId, interlocutorId
             )
             
             return try self.context.fetch(request).first?.toConversation()
@@ -58,7 +58,7 @@ actor ConversationCoreDataActor {
             let request = LocalConversation.fetchRequest()
             request.predicate = NSPredicate(
                 format: "%K == %@",
-                ConversationField.conversationId, conversation.id
+                ConversationField.Local.conversationId, conversation.id
             )
             
             let localConversation = try self.context.fetch(request).first
@@ -81,7 +81,7 @@ actor ConversationCoreDataActor {
             let request = LocalConversation.fetchRequest()
             request.predicate = NSPredicate(
                 format: "%K == %@",
-                ConversationField.conversationId, conversation.id
+                ConversationField.Local.conversationId, conversation.id
             )
             
             let localConversation = try self.context.fetch(request).first
@@ -96,7 +96,7 @@ actor ConversationCoreDataActor {
             let request = LocalConversation.fetchRequest()
             request.predicate = NSPredicate(
                 format: "%K == %@",
-                ConversationField.conversationId, conversationId
+                ConversationField.Local.conversationId, conversationId
             )
             
             guard let localConversation = try self.context.fetch(request).first else {

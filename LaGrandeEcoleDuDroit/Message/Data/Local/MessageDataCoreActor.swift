@@ -12,10 +12,10 @@ actor MessageCoreDataActor {
             let fetchRequest = LocalMessage.fetchRequest()
             fetchRequest.predicate = NSPredicate(
                 format: "%K == %@",
-                MessageField.conversationId, conversationId
+                MessageField.Local.messageConversationId, conversationId
             )
             fetchRequest.sortDescriptors = [NSSortDescriptor(
-                key: MessageField.timestamp,
+                key: MessageField.Local.messageTimestamp,
                 ascending: false
             )]
             
@@ -31,10 +31,10 @@ actor MessageCoreDataActor {
             let fetchRequest = LocalMessage.fetchRequest()
             fetchRequest.predicate = NSPredicate(
                 format: "%K == %@",
-                MessageField.conversationId, conversationId
+                MessageField.Local.messageConversationId, conversationId
             )
             fetchRequest.sortDescriptors = [NSSortDescriptor(
-                key: MessageField.timestamp,
+                key: MessageField.Local.messageTimestamp,
                 ascending: false
             )]
             fetchRequest.fetchLimit = 1
@@ -49,9 +49,9 @@ actor MessageCoreDataActor {
             let fetchRequest = LocalMessage.fetchRequest()
             fetchRequest.predicate = NSPredicate(
                 format: "%K == %@ AND %K == %@ AND %K == %@",
-                MessageField.conversationId, conversationId,
-                MessageField.seen, NSNumber(value: false),
-                MessageField.recipientId, userId
+                MessageField.Local.messageConversationId, conversationId,
+                MessageField.Local.messageSeen, NSNumber(value: false),
+                MessageField.Local.messageRecipientId, userId
             )
             let unreadMessages = try self.context.fetch(fetchRequest)
             return unreadMessages.compactMap { $0.toMessage() }
@@ -63,7 +63,7 @@ actor MessageCoreDataActor {
             let fetchRequest = LocalMessage.fetchRequest()
             fetchRequest.predicate = NSPredicate(
                 format: "%K == %@",
-                MessageField.Local.state, MessageState.sending.rawValue
+                MessageField.Local.messageState, MessageState.sending.rawValue
             )
             
             return try self.context.fetch(fetchRequest).compactMap { $0.toMessage() }
@@ -94,7 +94,7 @@ actor MessageCoreDataActor {
             let request = LocalMessage.fetchRequest()
             request.predicate = NSPredicate(
                 format: "%K == %lld",
-                MessageField.messageId, message.id
+                MessageField.Local.messageId, message.id
             )
             let localMessages = try self.context.fetch(request)
             let localMessage = localMessages.first
@@ -116,7 +116,7 @@ actor MessageCoreDataActor {
             let request = LocalMessage.fetchRequest()
             request.predicate = NSPredicate(
                 format: "%K == %lld",
-                MessageField.messageId, message.id
+                MessageField.Local.messageId, message.id
             )
             
             try self.context.fetch(request).first?.modify(message: message)
@@ -129,9 +129,9 @@ actor MessageCoreDataActor {
             let request = LocalMessage.fetchRequest()
             request.predicate = NSPredicate(
                 format: "%K == %@ AND %K == %@ AND %K == %@",
-                MessageField.conversationId, conversationId,
-                MessageField.seen, NSNumber(value: false),
-                MessageField.recipientId, userId
+                MessageField.Local.messageConversationId, conversationId,
+                MessageField.Local.messageSeen, NSNumber(value: false),
+                MessageField.Local.messageRecipientId, userId
             )
             let unreadMessages = try self.context.fetch(request)
             guard !unreadMessages.isEmpty else {
@@ -139,7 +139,7 @@ actor MessageCoreDataActor {
             }
             
             unreadMessages.forEach {
-                $0.seen = true
+                $0.messageSeen = true
             }
             try self.context.save()
         }
@@ -150,7 +150,7 @@ actor MessageCoreDataActor {
             let request = LocalMessage.fetchRequest()
             request.predicate = NSPredicate(
                 format: "%K == %lld",
-                MessageField.messageId, messageId
+                MessageField.Local.messageId, messageId
             )
             
             guard let localMessage = try self.context.fetch(request).first else {
@@ -169,7 +169,7 @@ actor MessageCoreDataActor {
             let request = LocalMessage.fetchRequest()
             request.predicate = NSPredicate(
                 format: "%K == %@",
-                MessageField.conversationId, conversationId
+                MessageField.Local.messageConversationId, conversationId
             )
             
             let localMessages = try self.context.fetch(request)
@@ -201,30 +201,30 @@ actor MessageCoreDataActor {
 private extension Message {
     func buildLocal(localMessage: LocalMessage) {
         localMessage.messageId = Int64(id)
-        localMessage.conversationId = conversationId
-        localMessage.senderId = senderId
-        localMessage.recipientId = recipientId
-        localMessage.content = content
-        localMessage.timestamp = date
-        localMessage.seen = seen
-        localMessage.state = state.rawValue
+        localMessage.messageConversationId = conversationId
+        localMessage.messageSenderId = senderId
+        localMessage.messageRecipientId = recipientId
+        localMessage.messageContent = content
+        localMessage.messageTimestamp = date
+        localMessage.messageSeen = seen
+        localMessage.messageState = state.rawValue
     }
 }
 
 private extension LocalMessage {
     func modify(message: Message) {
-        state = message.state.rawValue
-        seen = message.seen
+        messageState = message.state.rawValue
+        messageSeen = message.seen
     }
     
     func equals(_ message: Message) -> Bool {
         messageId == message.id &&
-        senderId == message.senderId &&
-        recipientId == message.recipientId &&
-        conversationId == message.conversationId &&
-        content == message.content &&
-        timestamp == message.date &&
-        seen == message.seen &&
-        state == message.state.rawValue
+        messageSenderId == message.senderId &&
+        messageRecipientId == message.recipientId &&
+        messageConversationId == message.conversationId &&
+        messageContent == message.content &&
+        messageTimestamp == message.date &&
+        messageSeen == message.seen &&
+        messageState == message.state.rawValue
     }
 }

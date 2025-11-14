@@ -4,20 +4,39 @@ struct User: Codable, Hashable, Identifiable, Copyable {
     var lastName: String
     var email: String
     var schoolLevel: SchoolLevel
-    var isMember: Bool
+    var admin: Bool
     var profilePictureUrl: String?
-    var isDeleted: Bool
+    var state: UserState
+    var tester: Bool
+    
+    init(
+        id: String,
+        firstName: String,
+        lastName: String,
+        email: String,
+        schoolLevel: SchoolLevel,
+        admin: Bool = false,
+        profilePictureUrl: String? = nil,
+        state: UserState = .active,
+        tester: Bool = false
+    ) {
+        self.id = id
+        self.firstName = firstName
+        self.lastName = lastName
+        self.email = email
+        self.schoolLevel = schoolLevel
+        self.admin = admin
+        self.profilePictureUrl = profilePictureUrl
+        self.state = state
+        self.tester = tester
+    }
     
     var fullName: String {
         firstName + " " + lastName
     }
-}
-
-enum SchoolLevel: String, CaseIterable, Identifiable, Codable {
-    case ged1 = "GED 1"
-    case ged2 = "GED 2"
-    case ged3 = "GED 3"
-    case ged4 = "GED 4"
     
-    var id: String { self.rawValue }
+    enum UserState: String, Codable {
+        case active = "active"
+        case deleted = "deleted"
+    }
 }

@@ -35,9 +35,9 @@ extension MessageNotification {
         )
     }
     
-    func toRemote(currentUser: User) -> RemoteNotificationMessage {
-        RemoteNotificationMessage(
-            conversation: RemoteNotificationMessage.Conversation(
+    func toRemote(currentUser: User) -> RemoteMessageNotification {
+        RemoteMessageNotification(
+            conversation: RemoteMessageNotification.Conversation(
                 id: conversation.id,
                 interlocutor: currentUser.toIntelocutor(),
                 createdAt: conversation.createdAt.toEpochMilli(),
@@ -48,8 +48,8 @@ extension MessageNotification {
     }
 }
 
-extension RemoteNotificationMessage {
-    func toFcm() -> FcmMessage<RemoteNotificationMessage> {
+extension RemoteMessageNotification {
+    func toFcm() -> FcmMessage<RemoteMessageNotification> {
         FcmMessage(
             notification: FcmNotification(
                 title: conversation.interlocutor.fullName,
@@ -89,22 +89,23 @@ extension RemoteNotificationMessage {
 }
 
 private extension User {
-    func toIntelocutor() -> RemoteNotificationMessage.Conversation.Interlocutor {
-        RemoteNotificationMessage.Conversation.Interlocutor(
+    func toIntelocutor() -> RemoteMessageNotification.Conversation.Interlocutor {
+        RemoteMessageNotification.Conversation.Interlocutor(
             id: id,
             firstName: firstName,
             lastName: lastName,
             fullName: fullName,
             email: email,
             schoolLevel: schoolLevel.rawValue,
-            isMember: isMember,
+            admin: admin,
             profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
-            isDeleted: isDeleted
+            state: state.rawValue,
+            tester: tester
         )
     }
 }
 
-private extension RemoteNotificationMessage.Conversation {
+private extension RemoteMessageNotification.Conversation {
     func toConversation() -> Conversation {
         Conversation(
             id: id,
@@ -116,7 +117,7 @@ private extension RemoteNotificationMessage.Conversation {
     }
 }
 
-private extension RemoteNotificationMessage.Conversation.Interlocutor {
+private extension RemoteMessageNotification.Conversation.Interlocutor {
     func toUser() -> User {
         User(
             id: id,
@@ -124,9 +125,10 @@ private extension RemoteNotificationMessage.Conversation.Interlocutor {
             lastName: lastName,
             email: email,
             schoolLevel: SchoolLevel(rawValue: schoolLevel) ?? .ged1,
-            isMember: isMember,
+            admin: admin,
             profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName),
-            isDeleted: isDeleted
+            state: User.UserState(rawValue: state) ?? .active,
+            tester: tester
         )
     }
 }

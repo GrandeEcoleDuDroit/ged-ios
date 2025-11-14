@@ -24,7 +24,7 @@ struct UserInformationItems: View {
                 )
             }
             
-            if user.isMember {
+            if user.admin {
                MemberField()
             }
         }

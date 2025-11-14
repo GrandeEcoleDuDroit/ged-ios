@@ -15,11 +15,11 @@ extension RemoteConversation {
     
     func toMap() -> [String: Any] {
         var data = [
-            ConversationField.conversationId: conversationId,
+            ConversationField.Remote.conversationId: conversationId,
             ConversationField.Remote.participants: participants,
-            ConversationField.createdAt: createdAt
+            ConversationField.Remote.createdAt: createdAt
         ] as [String: Any]
-        deleteTime.map { data[ConversationField.deleteTime] = $0 }
+        deleteTime.map { data[ConversationField.Remote.deleteTime] = $0 }
         return data
     }
 }
@@ -28,17 +28,17 @@ extension Conversation {
     func toLocal() -> LocalConversation? {
         let localConversation = LocalConversation()
         localConversation.conversationId = id
-        localConversation.interlocutorId = interlocutor.id
-        localConversation.interlocutorFirstName = interlocutor.firstName
-        localConversation.interlocutorLastName = interlocutor.lastName
-        localConversation.interlocutorEmail = interlocutor.email
-        localConversation.interlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
-        localConversation.interlocutorIsMember = interlocutor.isMember
-        localConversation.interlocutorProfilePictureFileName = UrlUtils.extractFileName(
-            url: interlocutor.profilePictureUrl
-        )
-        localConversation.createdAt = createdAt
-        localConversation.state = state.rawValue
+        localConversation.conversationCreatedAt = createdAt
+        localConversation.conversationState = state.rawValue
+        localConversation.conversationInterlocutorId = interlocutor.id
+        localConversation.conversationInterlocutorFirstName = interlocutor.firstName
+        localConversation.conversationInterlocutorLastName = interlocutor.lastName
+        localConversation.conversationInterlocutorEmail = interlocutor.email
+        localConversation.conversationInterlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
+        localConversation.conversationInterlocutorAdmin = interlocutor.admin
+        localConversation.conversationInterlocutorProfilePictureFileName = UrlUtils.extractFileName(url: interlocutor.profilePictureUrl)
+        localConversation.conversationInterlocutorState = interlocutor.state.rawValue
+        localConversation.conversationInterlocutorTester = interlocutor.tester
         return localConversation
     }
     
@@ -51,8 +51,8 @@ extension Conversation {
         )
     }
     
-    func toRemoteNotificationMessageConversation() -> RemoteNotificationMessage.Conversation {
-        RemoteNotificationMessage.Conversation(
+    func toRemoteNotificationMessageConversation() -> RemoteMessageNotification.Conversation {
+        RemoteMessageNotification.Conversation(
             id: id,
             interlocutor: interlocutor.toRemoteNotificationMessageConversationInterlocutor(),
             createdAt: createdAt.toEpochMilli(),
@@ -62,32 +62,32 @@ extension Conversation {
     
     func buildLocal(localConversation: LocalConversation) {
         localConversation.conversationId = id
-        localConversation.createdAt = createdAt
-        localConversation.state = state.rawValue
-        localConversation.deleteTime = deleteTime
-        localConversation.interlocutorId = interlocutor.id
-        localConversation.interlocutorFirstName = interlocutor.firstName
-        localConversation.interlocutorLastName = interlocutor.lastName
-        localConversation.interlocutorEmail = interlocutor.email
-        localConversation.interlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
-        localConversation.interlocutorIsMember = interlocutor.isMember
-        localConversation.interlocutorProfilePictureFileName = UrlUtils.extractFileName(
-            url: interlocutor.profilePictureUrl
-        )
-        localConversation.interlocutorIsDeleted = interlocutor.isDeleted
+        localConversation.conversationCreatedAt = createdAt
+        localConversation.conversationState = state.rawValue
+        localConversation.conversationInterlocutorId = interlocutor.id
+        localConversation.conversationInterlocutorFirstName = interlocutor.firstName
+        localConversation.conversationInterlocutorLastName = interlocutor.lastName
+        localConversation.conversationInterlocutorEmail = interlocutor.email
+        localConversation.conversationInterlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
+        localConversation.conversationInterlocutorAdmin = interlocutor.admin
+        localConversation.conversationInterlocutorProfilePictureFileName = UrlUtils.extractFileName(url: interlocutor.profilePictureUrl)
+        localConversation.conversationInterlocutorState = interlocutor.state.rawValue
+        localConversation.conversationInterlocutorTester = interlocutor.tester
     }
 }
 
 extension LocalConversation {
     func toConversation() -> Conversation? {
-        guard let interlocutorId = interlocutorId,
-              let interlocutorFirstName = interlocutorFirstName,
-              let interlocutorLastName = interlocutorLastName,
-              let interlocutorEmail = interlocutorEmail,
-              let interlocutorSchoolLevel = interlocutorSchoolLevel,
-              let id = conversationId,
-              let createdAt = createdAt,
-              let state = ConversationState(rawValue: state ?? "")
+        guard let id = conversationId,
+              let createdAt = conversationCreatedAt,
+              let state = ConversationState(rawValue: conversationState ?? ""),
+              let interlocutorId = conversationInterlocutorId,
+              let interlocutorFirstName = conversationInterlocutorFirstName,
+              let interlocutorLastName = conversationInterlocutorLastName,
+              let interlocutorEmail = conversationInterlocutorEmail,
+              let interlocutorSchoolLevel = conversationInterlocutorSchoolLevel,
+              let interlocutorProfilePictureFileName = conversationInterlocutorProfilePictureFileName,
+              let interlocutorState = conversationInterlocutorState
         else { return nil }
         
         let interlocutor = User(
@@ -95,12 +95,11 @@ extension LocalConversation {
             firstName: interlocutorFirstName,
             lastName: interlocutorLastName,
             email: interlocutorEmail,
-            schoolLevel: SchoolLevel.init(rawValue: interlocutorSchoolLevel) ?? SchoolLevel.ged1,
-            isMember: interlocutorIsMember,
-            profilePictureUrl: UrlUtils.formatOracleBucketUrl(
-                fileName: interlocutorProfilePictureFileName
-            ),
-            isDeleted: interlocutorIsDeleted
+            schoolLevel: SchoolLevel.init(rawValue: interlocutorSchoolLevel) ?? SchoolLevel.unknown,
+            admin: conversationInterlocutorAdmin,
+            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: interlocutorProfilePictureFileName),
+            state: User.UserState(rawValue: interlocutorState) ?? .active,
+            tester: conversationInterlocutorTester
         )
         
         return Conversation(
@@ -108,53 +107,56 @@ extension LocalConversation {
             interlocutor: interlocutor,
             createdAt: createdAt,
             state: state,
-            deleteTime: deleteTime
+            deleteTime: conversationDeleteTime
         )
     }
     
     func modify(conversation: Conversation) {
         conversationId = conversation.id
-        createdAt = conversation.createdAt
-        state = conversation.state.rawValue
-        deleteTime = conversation.deleteTime
-        interlocutorId = conversation.interlocutor.id
-        interlocutorFirstName = conversation.interlocutor.firstName
-        interlocutorLastName = conversation.interlocutor.lastName
-        interlocutorEmail = conversation.interlocutor.email
-        interlocutorSchoolLevel = conversation.interlocutor.schoolLevel.rawValue
-        interlocutorIsMember = conversation.interlocutor.isMember
-        interlocutorProfilePictureFileName = UrlUtils.extractFileName(url: conversation.interlocutor.profilePictureUrl)
-        interlocutorIsDeleted = conversation.interlocutor.isDeleted
+        conversationCreatedAt = conversation.createdAt
+        conversationState = conversation.state.rawValue
+        conversationDeleteTime = conversation.deleteTime
+        conversationInterlocutorId = conversation.interlocutor.id
+        conversationInterlocutorFirstName = conversation.interlocutor.firstName
+        conversationInterlocutorLastName = conversation.interlocutor.lastName
+        conversationInterlocutorEmail = conversation.interlocutor.email
+        conversationInterlocutorSchoolLevel = conversation.interlocutor.schoolLevel.rawValue
+        conversationInterlocutorAdmin = conversation.interlocutor.admin
+        conversationInterlocutorProfilePictureFileName = UrlUtils.extractFileName(url: conversation.interlocutor.profilePictureUrl)
+        conversationInterlocutorState = conversation.interlocutor.state.rawValue
+        conversationInterlocutorTester = conversation.interlocutor.tester
     }
     
     func equals(_ conversation: Conversation) -> Bool {
         conversationId == conversation.id &&
-        createdAt == conversation.createdAt &&
-        state == conversation.state.rawValue &&
-        deleteTime == conversation.deleteTime &&
-        interlocutorId == conversation.interlocutor.id &&
-        interlocutorFirstName == conversation.interlocutor.firstName &&
-        interlocutorLastName == conversation.interlocutor.lastName &&
-        interlocutorEmail == conversation.interlocutor.email &&
-        interlocutorSchoolLevel == conversation.interlocutor.schoolLevel.rawValue &&
-        interlocutorIsMember == conversation.interlocutor.isMember &&
-        interlocutorProfilePictureFileName == UrlUtils.extractFileName(url: conversation.interlocutor.profilePictureUrl) &&
-        interlocutorIsDeleted == conversation.interlocutor.isDeleted
+        conversationCreatedAt == conversation.createdAt &&
+        conversationState == conversation.state.rawValue &&
+        conversationDeleteTime == conversation.deleteTime &&
+        conversationInterlocutorId == conversation.interlocutor.id &&
+        conversationInterlocutorFirstName == conversation.interlocutor.firstName &&
+        conversationInterlocutorLastName == conversation.interlocutor.lastName &&
+        conversationInterlocutorEmail == conversation.interlocutor.email &&
+        conversationInterlocutorSchoolLevel == conversation.interlocutor.schoolLevel.rawValue &&
+        conversationInterlocutorAdmin == conversation.interlocutor.admin &&
+        conversationInterlocutorProfilePictureFileName == UrlUtils.extractFileName(url: conversation.interlocutor.profilePictureUrl) &&
+        conversationInterlocutorState == conversation.interlocutor.state.rawValue &&
+        conversationInterlocutorTester == conversation.interlocutor.tester
     }
 }
 
 private extension User {
-    func toRemoteNotificationMessageConversationInterlocutor() -> RemoteNotificationMessage.Conversation.Interlocutor {
-        RemoteNotificationMessage.Conversation.Interlocutor(
+    func toRemoteNotificationMessageConversationInterlocutor() -> RemoteMessageNotification.Conversation.Interlocutor {
+        RemoteMessageNotification.Conversation.Interlocutor(
             id: id,
             firstName: firstName,
             lastName: lastName,
             fullName: fullName,
             email: email,
             schoolLevel: schoolLevel.rawValue,
-            isMember: isMember,
+            admin: admin,
             profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
-            isDeleted: isDeleted
+            state: state.rawValue,
+            tester: tester
         )
     }
 }
