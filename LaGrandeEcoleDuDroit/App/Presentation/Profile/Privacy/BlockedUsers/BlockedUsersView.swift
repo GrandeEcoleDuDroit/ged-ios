@@ -29,7 +29,7 @@ struct BlockedUserDestination: View {
             errorMessage,
             isPresented: $showErrorAlert,
             actions: {
-                Button(getString(.ok)) {
+                Button(stringResource(.ok)) {
                     showErrorAlert = false
                 }
             }
@@ -49,7 +49,7 @@ private struct BlockedUsersView: View {
     var body: some View {
         ScrollView {
             if blockedUsers.isEmpty {
-                Text(getString(.noBlockedUser))
+                Text(stringResource(.noBlockedUser))
                     .foregroundColor(.informationText)
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .top)
@@ -68,7 +68,7 @@ private struct BlockedUsersView: View {
                                                 clickedUser = user
                                             },
                                             label: {
-                                                Text(getString(.unblock))
+                                                Text(stringResource(.unblock))
                                                     .foregroundStyle(.gedPrimary)
                                                     .fontWeight(.medium)
                                             }
@@ -84,19 +84,19 @@ private struct BlockedUsersView: View {
         }
         .scrollIndicators(.hidden)
         .loading(loading)
-        .navigationTitle(getString(.blockedUsers))
+        .navigationTitle(stringResource(.blockedUsers))
         .navigationBarTitleDisplayMode(.inline)
         .alert(
-            getString(.unblockUserAlertMessage),
+            stringResource(.unblockUserAlertMessage),
             isPresented: $showUnblockAlert,
             actions: {
                 Button(
-                    getString(.cancel),
+                    stringResource(.cancel),
                     role: .cancel,
                     action: { showUnblockAlert = false }
                 )
                 
-                Button(getString(.unblock)) {
+                Button(stringResource(.unblock)) {
                     if let clickedUser {
                         onUnblockClick(clickedUser.id)
                     }

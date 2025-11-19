@@ -1,13 +1,15 @@
 enum TopLevelDestination: Hashable, CaseIterable {
     case home
     case message
+    case mission
     case profile
     
     var label: String {
         switch self {
-            case .home: getString(.home)
-            case .message: getString(.messages)
-            case .profile: getString(.profile)
+            case .home: stringResource(.home)
+            case .message: stringResource(.messages)
+            case .mission: stringResource(.mission)
+            case .profile: stringResource(.profile)
         }
     }
     
@@ -15,6 +17,7 @@ enum TopLevelDestination: Hashable, CaseIterable {
         switch self {
             case .home: "house.fill"
             case .message: "message.fill"
+            case .mission: "target"
             case .profile: "person.fill"
         }
     }
@@ -23,6 +26,7 @@ enum TopLevelDestination: Hashable, CaseIterable {
         switch self {
             case .home: "house"
             case .message: "message"
+            case .mission: "target"
             case .profile: "person"
         }
     }

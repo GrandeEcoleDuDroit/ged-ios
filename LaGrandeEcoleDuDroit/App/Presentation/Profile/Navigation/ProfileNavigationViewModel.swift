@@ -1,4 +1,4 @@
-class ProfileNavigationViewModel {
+class ProfileNavigationViewModel: NavigationViewModel {
     private let routeRepository: RouteRepository
     
     init(routeRepository: RouteRepository) {

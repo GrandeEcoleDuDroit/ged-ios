@@ -23,7 +23,7 @@ struct AnnouncementHeader: View {
     }
 
     var body: some View {
-        HStack(alignment: .center, spacing: GedSpacing.small) {
+        HStack(alignment: .center, spacing: Dimens.smallPadding) {
             HStack {
                 ProfilePicture(
                     url: announcement.author.profilePictureUrl,

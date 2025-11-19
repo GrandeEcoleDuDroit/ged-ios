@@ -22,6 +22,12 @@ class NewsMainThreadInjector: MainThreadInjector {
             )
         }
         
+        container.register(NewsNavigationViewModel.self) { resolver in
+            NewsNavigationViewModel(
+                routeRepository: CommonInjector.shared.resolve(RouteRepository.self)
+            )
+        }
+        
         container.register(ReadAnnouncementViewModel.self) { (resolver, announcementId: Any) in
             let announcementId = announcementId as! String
             return ReadAnnouncementViewModel(

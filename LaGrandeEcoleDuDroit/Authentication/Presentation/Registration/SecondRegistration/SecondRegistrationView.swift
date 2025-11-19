@@ -25,17 +25,17 @@ private struct SecondRegistrationView: View {
     let onNextClick: () -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            Text(getString(.selectSchoolLevel))
+        VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+            Text(stringResource(.selectSchoolLevel))
                 .font(.title3)
             
             HStack {
-                Text(getString(.level))
+                Text(stringResource(.level))
                 
                 Spacer()
                 
                 Picker(
-                    getString(.selectSchoolLevel),
+                    stringResource(.selectSchoolLevel),
                     selection: $schoolLevel
                 ) {
                     ForEach(SchoolLevel.allCases) { level in
@@ -55,7 +55,7 @@ private struct SecondRegistrationView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text(getString(.registration))
+                Text(stringResource(.registration))
             }
             
             ToolbarItem(placement: .topBarTrailing) {
@@ -64,7 +64,7 @@ private struct SecondRegistrationView: View {
                         onNextClick()
                     },
                     label: {
-                        Text(getString(.next))
+                        Text(stringResource(.next))
                             .foregroundStyle(.gedPrimary)
                             .fontWeight(.semibold)
                     }

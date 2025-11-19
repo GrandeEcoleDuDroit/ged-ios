@@ -33,7 +33,7 @@ struct AllAnnouncementsDestination: View {
                 errorMessage,
                 isPresented: $showErrorAlert,
                 actions: {
-                    Button(getString(.ok)) {
+                    Button(stringResource(.ok)) {
                         showErrorAlert = false
                     }
                 }
@@ -65,7 +65,7 @@ private struct AllAnnouncementsView: View {
     var body: some View {
         List {
             if announcements.isEmpty {
-                Text(getString(.noAnnouncement))
+                Text(stringResource(.noAnnouncement))
                     .foregroundStyle(.informationText)
                     .padding()
                     .listRowBackground(Color.background)
@@ -101,7 +101,7 @@ private struct AllAnnouncementsView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .refreshable { await onRefresh() }
         .loading(loading)
-        .navigationTitle(getString(.allAnnouncements))
+        .navigationTitle(stringResource(.allAnnouncements))
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showAnnouncementBottomSheet) {
             Sheet(
@@ -152,14 +152,14 @@ private struct AllAnnouncementsView: View {
             )
         }
         .alert(
-            getString(.deleteAnnouncementAlertMessage),
+            stringResource(.deleteAnnouncementAlertMessage),
             isPresented: $showDeleteAnnouncementAlert,
             actions: {
-                Button(getString(.cancel), role: .cancel) {
+                Button(stringResource(.cancel), role: .cancel) {
                     showDeleteAnnouncementAlert = false
                 }
                 
-                Button(getString(.delete), role: .destructive) {
+                Button(stringResource(.delete), role: .destructive) {
                     if let clickedAnnouncement {
                         onDeleteAnnouncementClick(clickedAnnouncement)
                     }
@@ -190,7 +190,7 @@ private struct Sheet: View {
             )
         } else {
             BottomSheetContainer(fraction: 0.16) {
-                Text(getString(.unknownError))
+                Text(stringResource(.unknownError))
                     .foregroundColor(.error)
             }
         }

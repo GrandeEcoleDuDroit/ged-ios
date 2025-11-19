@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ProfileNavigation: View {
-    private let viewModel = AppInjector.shared.resolve(ProfileNavigationViewModel.self)
+    private let viewModel = AppMainThreadInjector.shared.resolve(ProfileNavigationViewModel.self)
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
     @State var path: [ProfileRoute] = []
 

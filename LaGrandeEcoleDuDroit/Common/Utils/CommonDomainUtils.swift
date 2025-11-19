@@ -1,12 +1,14 @@
 import Foundation
 
-func getString(_ gedString: GedString) -> String {
-    NSLocalizedString(gedString.rawValue, comment: "")
+func stringResource(_ value: Strings) -> String {
+    NSLocalizedString(value.rawValue, comment: "")
 }
 
-func getString(_ gedString: GedString, _ args: CVarArg...) -> String {
-    let value = NSLocalizedString(gedString.rawValue, comment: "")
-    return String(format: value, arguments: args)
+func stringResource(_ value: Strings, _ args: CVarArg...) -> String {
+    String(
+        format: NSLocalizedString(value.rawValue, comment: ""),
+        arguments: args
+    )
 }
 
 func sleep(_ seconds: Float) async {

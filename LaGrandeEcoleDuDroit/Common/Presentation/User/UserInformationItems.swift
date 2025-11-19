@@ -8,15 +8,15 @@ struct UserInformationItems: View {
     init(user: User) {
         self.user = user
         values = [
-            InformationItemValue(label: getString(.lastName), value: user.lastName),
-            InformationItemValue(label: getString(.firstName), value: user.firstName),
-            InformationItemValue(label: getString(.email), value: user.email),
-            InformationItemValue(label: getString(.schoolLevel), value: user.schoolLevel.rawValue)
+            InformationItemValue(label: stringResource(.lastName), value: user.lastName),
+            InformationItemValue(label: stringResource(.firstName), value: user.firstName),
+            InformationItemValue(label: stringResource(.email), value: user.email),
+            InformationItemValue(label: stringResource(.schoolLevel), value: user.schoolLevel.rawValue)
         ]
     }
     
     var body: some View {
-        VStack(spacing: GedSpacing.medium) {
+        VStack(spacing: Dimens.mediumPadding) {
             ForEach(values, id: \.label) { item in
                 InformationItem(
                     title: item.label,
@@ -35,7 +35,7 @@ struct UserInformationItems: View {
 private struct MemberField: View {
     var body: some View {
         HStack {
-            Text(getString(.member))
+            Text(stringResource(.member))
                 .font(.callout)
                 .bold()
                 .foregroundColor(.gedPrimary)

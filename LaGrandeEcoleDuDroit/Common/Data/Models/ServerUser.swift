@@ -3,7 +3,7 @@ struct ServerUser: Codable {
     let userFirstName: String
     let userLastName: String
     let userEmail: String
-    let userSchoolLevel: String
+    let userSchoolLevel: Int
     let userAdmin: Int
     let userProfilePictureFileName: String?
     let userState: String
@@ -26,7 +26,7 @@ struct ServerUser: Codable {
         userFirstName: String,
         userLastName: String,
         userEmail: String,
-        userSchoolLevel: String,
+        userSchoolLevel: Int,
         userAdmin: Int,
         userProfilePictureFileName: String?,
         userState: String,
@@ -51,7 +51,7 @@ struct ServerUser: Codable {
         self.userFirstName = try container.decode(String.self, forKey: .userFirstName)
         self.userLastName = try container.decode(String.self, forKey: .userLastName)
         self.userEmail = try container.decode(String.self, forKey: .userEmail)
-        self.userSchoolLevel = try container.decode(String.self, forKey: .userSchoolLevel)
+        self.userSchoolLevel = try container.decode(Int.self, forKey: .userSchoolLevel)
         self.userAdmin = try container.decode(Int.self, forKey: .userAdmin)
         self.userProfilePictureFileName = try container.decodeIfPresent(String.self, forKey: .userProfilePictureFileName)
         self.userState = try container.decode(String.self, forKey: .userState)
