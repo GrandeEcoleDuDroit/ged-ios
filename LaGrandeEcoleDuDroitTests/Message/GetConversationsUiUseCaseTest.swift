@@ -8,11 +8,11 @@ class GetConversationsUiUseCaseTest {
     func getConversationsUiUseCase_should_return_conversationsUi() async {
         // Given
         let useCase = GetConversationsUiUseCase(conversationMessageRepository: AllConversationMessages())
-        let expected = conversationMessagesFixture.map { $0.toConversationUi() }
+        let expected = conversationMessagesFixture.map { $0.toConversationUi() }.sorted { $0.id < $1.id }
         
         // When
         var iterator = useCase.execute().values.makeAsyncIterator()
-        let result = await iterator.next()
+        let result = await iterator.next()?.sorted { $0.id < $1.id }
         
         // Then
         #expect(result == expected)

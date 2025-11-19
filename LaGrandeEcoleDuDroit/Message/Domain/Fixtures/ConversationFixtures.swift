@@ -26,12 +26,12 @@ let conversationUiFixture = ConversationUi(
 
 let conversationsUiFixture = [
     conversationUiFixture.copy { $0.lastMessage = messageFixture },
-    conversationUiFixture.copy { $0.id = "2"; $0.lastMessage = messageFixture },
-    conversationUiFixture.copy { $0.id = "3"; $0.lastMessage = messageFixture },
-    conversationUiFixture.copy { $0.id = "4"; $0.lastMessage = messageFixture },
-    conversationUiFixture.copy { $0.id = "5"; $0.lastMessage = messageFixture },
-    conversationUiFixture.copy { $0.id = "6"; $0.lastMessage = messageFixture },
-    conversationUiFixture.copy { $0.id = "7"; $0.lastMessage = messageFixture }
+    conversationUiFixture.copy { $0.id = "2" },
+    conversationUiFixture.copy { $0.id = "3" },
+    conversationUiFixture.copy { $0.id = "4" },
+    conversationUiFixture.copy { $0.id = "5" },
+    conversationUiFixture.copy { $0.id = "6" },
+    conversationUiFixture.copy { $0.id = "7" }
 ]
 
 let conversationMessageFixture = ConversationMessage(
