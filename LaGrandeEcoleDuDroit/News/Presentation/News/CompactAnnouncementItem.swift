@@ -32,7 +32,7 @@ struct CompactAnnouncementItem: View {
                         onOptionClick: onOptionClick
                     )
                     .padding(.horizontal)
-                    .padding(.vertical, GedSpacing.smallMedium)
+                    .padding(.vertical, Dimens.smallMediumPadding)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .contentShape(Rectangle())
                 }
@@ -64,13 +64,13 @@ private struct DefaultItem: View {
     @State private var isClicked: Bool = false
     
     var body: some View {
-        HStack(spacing: GedSpacing.smallMedium) {
+        HStack(spacing: Dimens.smallMediumPadding) {
             ProfilePicture(
                 url: announcement.author.profilePictureUrl,
                 scale: 0.5
             )
             
-            VStack(alignment: .leading, spacing: GedSpacing.extraSmall) {
+            VStack(alignment: .leading, spacing: Dimens.extraSmallPadding) {
                 HStack {
                     Text(announcement.author.fullName)
                         .font(.titleSmall)
@@ -122,7 +122,7 @@ private struct PublishingItem: View {
             )
             .opacity(0.5)
             .padding(.horizontal)
-            .padding(.vertical, GedSpacing.smallMedium)
+            .padding(.vertical, Dimens.smallMediumPadding)
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
         }
@@ -139,7 +139,7 @@ private struct ErrorItem: View {
 
     var body: some View {
         Clickable(action: onClick) {
-            HStack(alignment: .center, spacing: GedSpacing.smallMedium) {
+            HStack(alignment: .center, spacing: Dimens.smallMediumPadding) {
                 Image(systemName: "exclamationmark.circle")
                     .foregroundStyle(.red)
                 
@@ -150,7 +150,7 @@ private struct ErrorItem: View {
                 )
             }
             .padding(.horizontal)
-            .padding(.vertical, GedSpacing.smallMedium)
+            .padding(.vertical, Dimens.smallMediumPadding)
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
         }

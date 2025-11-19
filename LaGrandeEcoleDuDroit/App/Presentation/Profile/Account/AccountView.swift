@@ -14,11 +14,11 @@ private struct AccountView: View {
     var body: some View {
         List {
             MenuItem(
-                title: getString(.deleteAccount),
+                title: stringResource(.deleteAccount),
                 onClick: onDeleteAccountClick
             )
         }
-        .navigationTitle(getString(.account))
+        .navigationTitle(stringResource(.account))
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .scrollContentBackground(.hidden)

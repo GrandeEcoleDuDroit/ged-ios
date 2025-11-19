@@ -107,7 +107,7 @@ struct OptionButton : View {
 }
 
 #Preview {
-    VStack(spacing: GedSpacing.large) {
+    VStack(spacing: Dimens.largePadding) {
         LoadingButton(
             label: "Loading button",
             onClick: {},

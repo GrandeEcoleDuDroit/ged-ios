@@ -41,6 +41,7 @@ struct AppNavigation: View {
         switch tab {
             case .home: NewsNavigation()
             case .message: MessageNavigation()
+            case .mission: MissionNavigation()
             case .profile: ProfileNavigation()
         }
     }

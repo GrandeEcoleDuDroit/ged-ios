@@ -36,7 +36,7 @@ class EditAnnouncementViewModel: ViewModel {
     
     func updateAnnouncement() {
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
         
         uiState.loading = true

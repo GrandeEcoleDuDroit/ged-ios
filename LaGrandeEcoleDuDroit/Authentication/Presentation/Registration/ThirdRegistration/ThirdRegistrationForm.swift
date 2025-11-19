@@ -14,12 +14,12 @@ struct ThirdRegistrationForm: View {
     private let legalNoticeUrl = "https://grandeecoledudroit.github.io/ged-website/legal-notice.html"
     
     var body: some View {
-        VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            Text(getString(.enterEmailPassword))
+        VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+            Text(stringResource(.enterEmailPassword))
                 .font(.title3)
             
             OutlineTextField(
-                label: getString(.email),
+                label: stringResource(.email),
                 text: $email,
                 isDisable: loading,
                 errorMessage: emailError,
@@ -30,7 +30,7 @@ struct ThirdRegistrationForm: View {
             .textInputAutocapitalization(.never)
             
             OutlinePasswordTextField(
-                label: getString(.password),
+                label: stringResource(.password),
                 text: $password,
                 isDisable: loading,
                 errorMessage: passwordError,
@@ -46,9 +46,9 @@ struct ThirdRegistrationForm: View {
                 )
                 
                 Group {
-                    Text(getString(.agreeTermsPrivacyBeginningText))
+                    Text(stringResource(.agreeTermsPrivacyBeginningText))
                     + Text(" ")
-                    + Text(.init("[\(getString(.termsAndPrivacy))](\(legalNoticeUrl))"))
+                    + Text(.init("[\(stringResource(.termsAndPrivacy))](\(legalNoticeUrl))"))
                         .underline()
                     + Text(".")
                 }

@@ -51,9 +51,9 @@ class ConversationViewModel: ViewModel {
     private func mapErrorMessage(_ error: Error) -> String {
         mapNetworkErrorMessage(error) {
             if error as? UserError == .currentUserNotFound {
-                getString(.currentUserNotFoundError)
+                stringResource(.currentUserNotFoundError)
             } else {
-                getString(.unknownError)
+                stringResource(.unknownError)
             }
         }
     }

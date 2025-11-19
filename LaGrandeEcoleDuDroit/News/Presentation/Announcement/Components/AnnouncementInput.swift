@@ -8,7 +8,7 @@ struct AnnouncementInput: View {
     var focusState: FocusState<Field?>.Binding
     
     var body: some View {
-        VStack(spacing: GedSpacing.medium) {
+        VStack(spacing: Dimens.mediumPadding) {
             AnnouncementTitleInput(
                 title: title,
                 onTitleChange: onTitleChange,
@@ -32,7 +32,7 @@ private struct AnnouncementTitleInput: View {
 
     var body: some View {
         TextField(
-            getString(.title),
+            stringResource(.title),
             text: Binding(
                 get: { title },
                 set: onTitleChange
@@ -52,7 +52,7 @@ private struct AnnouncementContentInput: View {
 
     var body: some View {
         TextField(
-            getString(.content),
+            stringResource(.content),
             text: Binding(
                 get: { content },
                 set: onContentChange
@@ -74,5 +74,5 @@ private struct AnnouncementContentInput: View {
         onContentChange: {_ in },
         focusState: $focusState
     )
-    .padding(GedSpacing.medium)
+    .padding(Dimens.mediumPadding)
 }

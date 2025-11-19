@@ -1,0 +1,26 @@
+class SynchronizeMissionsUseCase {
+    private let missionRepository: MissionRepository
+    
+    init(missionRepository: MissionRepository) {
+        self.missionRepository = missionRepository
+    }
+    
+    func execute() async throws {
+        let missions = missionRepository.currentMissions
+        let remoteMissions = try await missionRepository.getRemoteMissions()
+        
+        let missionsToDelete = missions.filter {
+            !remoteMissions.contains($0)
+        }
+        let missionsToUpsert = remoteMissions.filter {
+            !missions.contains($0)
+        }
+        
+        for mission in missionsToDelete {
+            try? await missionRepository.deleteLocalMission(missionId: mission.id)
+        }
+        for mission in missionsToUpsert {
+            try? await missionRepository.upsertLocalMission(mission: mission)
+        }
+    }
+}

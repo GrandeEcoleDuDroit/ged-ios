@@ -1,5 +1,4 @@
 import SwiftUI
-import Combine
 
 struct ConversationDestination: View {
     let onCreateConversationClick: () -> Void
@@ -16,15 +15,6 @@ struct ConversationDestination: View {
             onConversationClick: onConversationClick,
             onDeleteConversationClick: viewModel.deleteConversation
         )
-        .navigationTitle(getString(.messages))
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(
-                    action: onCreateConversationClick,
-                    label: { Image(systemName: "plus") }
-                )
-            }
-        }
         .onReceive(viewModel.$event) { event in
             if let errorEvent = event as? ErrorEvent {
                 errorMessage = errorEvent.message
@@ -36,7 +26,7 @@ struct ConversationDestination: View {
             isPresented: $showErrorAlert,
             actions: {
                 Button(
-                    getString(.ok),
+                    stringResource(.ok),
                     action: { showErrorAlert = false }
                 )
             }
@@ -50,7 +40,7 @@ private struct ConversationView: View {
     let onConversationClick: (ConversationUi) -> Void
     let onDeleteConversationClick: (Conversation) -> Void
     
-    @State private var selectedConversation: ConversationUi? = nil
+    @State private var clickedConversation: ConversationUi? = nil
     @State private var showBottomSheet: Bool = false
     @State private var isBottomSheetItemClicked: Bool = false
     @State private var showDeleteAlert: Bool = false
@@ -60,29 +50,29 @@ private struct ConversationView: View {
             if let conversationsUi {
                 if conversationsUi.isEmpty {
                     VStack {
-                        Text(getString(.noConversation))
+                        Text(stringResource(.noConversation))
                             .font(.callout)
                             .foregroundColor(.secondary)
                         
                         Button(
-                            getString(.newConversation),
+                            stringResource(.newConversation),
                             action: onCreateConversationClick
                         )
                         .fontWeight(.semibold)
                         .font(.callout)
                         .foregroundColor(.gedPrimary)
                     }
-                    .padding(.top, GedSpacing.medium)
-                    .padding(.horizontal, GedSpacing.extraSmall)
+                    .padding(.top, Dimens.mediumPadding)
+                    .padding(.horizontal, Dimens.extraSmallPadding)
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 0) {
-                            ForEach(conversationsUi, id: \.id) { conversation in
+                            ForEach(conversationsUi) { conversationUi in
                                 ConversationItem(
-                                    conversation: conversation,
-                                    onClick: { onConversationClick(conversation) },
+                                    conversationUi: conversationUi,
+                                    onClick: { onConversationClick(conversationUi) },
                                     onLongClick: {
-                                        selectedConversation = conversation
+                                        clickedConversation = conversationUi
                                         showBottomSheet = true
                                     }
                                 )
@@ -93,7 +83,7 @@ private struct ConversationView: View {
                         BottomSheetContainer(fraction: 0.10) {
                             ClickableTextItem(
                                 icon: Image(systemName: "trash"),
-                                text: Text(getString(.delete))
+                                text: Text(stringResource(.delete))
                             ) {
                                 showBottomSheet = false
                                 showDeleteAlert = true
@@ -108,21 +98,30 @@ private struct ConversationView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .navigationTitle(stringResource(.messages))
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(
+                    action: onCreateConversationClick,
+                    label: { Image(systemName: "plus") }
+                )
+            }
+        }
         .alert(
-            getString(.deleteConversationAlertTitle),
+            stringResource(.deleteConversationAlertTitle),
             isPresented: $showDeleteAlert,
             actions: {
-                Button(getString(.cancel), role: .cancel) {
+                Button(stringResource(.cancel), role: .cancel) {
                     showDeleteAlert = false
                 }
-                Button(getString(.delete), role: .destructive) {
-                    if let selectedConversation {
-                        onDeleteConversationClick(selectedConversation.toConversation())
+                Button(stringResource(.delete), role: .destructive) {
+                    if let clickedConversation {
+                        onDeleteConversationClick(clickedConversation.toConversation())
                     }
                     showDeleteAlert = false
                 }
             },
-            message: { Text(getString(.deleteConversationAlertMessage)) }
+            message: { Text(stringResource(.deleteConversationAlertMessage)) }
         )
     }
 }
@@ -135,5 +134,6 @@ private struct ConversationView: View {
             onConversationClick: {_ in},
             onDeleteConversationClick: {_ in}
         )
+        .background(Color.background)
     }
 }

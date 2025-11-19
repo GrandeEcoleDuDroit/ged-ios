@@ -65,6 +65,7 @@
 "internet_connection_lost_error" = "La connexion Internet a été perdue.";
 "disabled_user_error" = "Votre compte a été désactivé. Veuillez contacter le support.";
 "current_user_not_found_error" = "Utilisateur actuel non trouvé. Veuillez vous réauthentifier.";
+"sending_error" = "Erreur d'envoi";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";
@@ -108,7 +109,7 @@
 "content" = "Contenu";
 "post" = "Poster";
 "no_announcement" = "Aucune annonce";
-"delete_announcement_alert_message" = "Voulez-vous vraiment supprimer cette annonce ?";
+"delete_announcement_alert_message" = "Voulez-vous supprimer cette annonce ?";
 "see_all" = "Voir tout";
 "all_announcements" = "Toutes les annonces";
 
@@ -124,3 +125,9 @@
 "new_messages" = "Nouveau messages";
 "delete_message_alert_content" = "Voulez-vous supprimer ce message ?";
 "chat_blocked_user_indicator_text" = "Vous ne pouvez pas envoyer de messages à cet utilisateur à moins que vous ne le débloquiez.";
+
+// Mission
+"mission" = "Mission";
+"participant_number" = "%d/%d";
+"no_mission" = "No mission";
+"delete_mission_alert_message" = "Voulez-vous supprimer cette mission ?";

@@ -16,8 +16,8 @@ struct ReportBottomSheet<T: CustomStringConvertible>: View {
     }
     
     var body: some View {
-        VStack(spacing: GedSpacing.large) {
-            Text(getString(.report))
+        VStack(spacing: Dimens.largePadding) {
+            Text(stringResource(.report))
                 .font(.titleMedium)
                 .frame(maxWidth: .infinity, alignment: .center)
             

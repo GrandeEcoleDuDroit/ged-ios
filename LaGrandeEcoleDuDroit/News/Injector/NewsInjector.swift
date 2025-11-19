@@ -61,13 +61,6 @@ class NewsInjector: Injector {
                 blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self)
             )
         }
-        
-        // ViewModels
-        container.register(NewsNavigationViewModel.self) { resolver in
-            NewsNavigationViewModel(
-                routeRepository: CommonInjector.shared.resolve(RouteRepository.self)
-            )
-        }
     }
     
     func resolve<T>(_ type: T.Type) -> T {

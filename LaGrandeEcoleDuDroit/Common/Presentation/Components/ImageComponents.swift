@@ -8,23 +8,13 @@ struct ProfilePicture: View {
         if let url {
             AsyncImage(url: URL(string: url)) { phase in
                 switch phase {
-                    case .empty:
-                        ProgressView()
-                            .frame(
-                                width: GedNumber.defaultImageSize * scale,
-                                height: GedNumber.defaultImageSize * scale
-                            )
-                            .background(.profilePictureLoading)
-                            .clipShape(Circle())
+                    case .empty: LoadingImage(scale: scale).clipShape(Circle())
                         
-                    case .success(let image):
-                        image.fitCircle(scale: scale)
+                    case let .success(image): image.fit(scale: scale).clipShape(Circle())
                         
-                    case .failure:
-                        ProfilePictureError(scale: scale)
+                    case .failure: ErrorImage(scale: scale).clipShape(Circle())
                         
-                    @unknown default:
-                        DefaultProfilePicture(scale: scale)
+                    default: DefaultProfilePicture(scale: scale)
                 }
             }
         } else {
@@ -48,24 +38,24 @@ struct ClickableProfilePicture: View {
                                 ProgressView()
                             }
                             .frame(
-                                width: GedNumber.defaultImageSize * scale,
-                                height: GedNumber.defaultImageSize * scale
+                                width: Dimens.defaultImageSize * scale,
+                                height: Dimens.defaultImageSize * scale
                             )
-                            .background(.profilePictureLoading)
+                            .background(.imageLoading)
                             .clipShape(Circle())
                         }
                         .clipShape(Circle())
                         
                     case .success(let image):
                         Clickable(action: onClick) {
-                            image.fitCircle(scale: scale)
+                            image.fit(scale: scale).clipShape(Circle())
+
                         }
                         .clipShape(Circle())
                         
                     case .failure:
                         Clickable(action: onClick) {
-                            ProfilePictureError(scale: scale)
-                                .clipShape(Circle())
+                            ErrorImage(scale: scale).clipShape(Circle())
                         }
                         .clipShape(Circle())
                         
@@ -92,8 +82,8 @@ struct ClickableProfilePictureImage: View {
                     .aspectRatio(contentMode: .fit)
                     .scaledToFill()
                     .frame(
-                        width: GedNumber.defaultImageSize * scale,
-                        height: GedNumber.defaultImageSize * scale
+                        width: Dimens.defaultImageSize * scale,
+                        height: Dimens.defaultImageSize * scale
                     )
                     .clipShape(Circle())
             }
@@ -103,12 +93,32 @@ struct ClickableProfilePictureImage: View {
     }
 }
 
+struct SimpleAsyncImage: View {
+    let url: String
+    var scale: CGFloat = 1.0
+
+    var body: some View {
+        AsyncImage(url: URL(string: url)) { phase in
+            switch phase {
+                case .empty: LoadingImage(scale: scale)
+
+                case .success(let image): image.fit(scale: scale)
+
+                case .failure: ErrorImage(scale: scale)
+                    
+                default: DefaultProfilePicture(scale: scale)
+            }
+        }
+    }
+}
+
 private struct DefaultProfilePicture: View {
     var scale: CGFloat = 1.0
     
     var body: some View {
         Image(ImageResource.defaultProfilePicture)
-            .fitCircle(scale: scale)
+            .fit(scale: scale)
+            .clipShape(Circle())
     }
 }
 
@@ -119,43 +129,59 @@ private struct ClickableDefaultProfilePicture: View {
     var body: some View {
         Clickable(action: onClick) {
             Image(ImageResource.defaultProfilePicture)
-                .fitCircle(scale: scale)
+                .fit(scale: scale)
+                .clipShape(Circle())
         }
         .clipShape(Circle())
     }
 }
 
-private struct ProfilePictureError: View {
+private struct LoadingImage: View {
     var scale: CGFloat = 1.0
     
     var body: some View {
-        Circle()
+        ProgressView()
             .frame(
-                width: GedNumber.defaultImageSize * scale,
-                height: GedNumber.defaultImageSize * scale
+                width: Dimens.defaultImageSize * scale,
+                height: Dimens.defaultImageSize * scale
             )
-            .foregroundStyle(.profilePictureLoading)
+            .background(.imageLoading)
+    }
+}
+
+private struct ErrorImage: View {
+    var scale: CGFloat = 1.0
+    
+    var body: some View {
+        Rectangle()
+            .frame(
+                width: Dimens.defaultImageSize * scale,
+                height: Dimens.defaultImageSize * scale
+            )
+            .foregroundStyle(.imageLoading)
     }
 }
 
 #Preview {
     ScrollView {
-        VStack(spacing: GedSpacing.medium) {
-            Text("Default profile picture")
-                .font(.caption)
-            DefaultProfilePicture()
+        VStack(spacing: Dimens.mediumPadding) {
+            SimpleAsyncImage(url: "https://cdn.britannica.com/16/234216-050-C66F8665/beagle-hound-dog.jpg")
+            Text("Simple async image").font(.caption)
             
-            Text("Loading picture")
-                .font(.caption)
+            LoadingImage()
+            Text("Loading image").font(.caption)
+            
+            ErrorImage()
+            Text("Error image").font(.caption)
+            
             ProfilePicture(url: "")
+            Text("Profile picture").font(.caption)
             
-            Text("Error picture")
-                .font(.caption)
-            ProfilePictureError()
+            DefaultProfilePicture()
+            Text("Default profile picture").font(.caption)
             
-            Text("Clickable default profile picture")
-                .font(.caption)
             ClickableDefaultProfilePicture(onClick: {})
+            Text("Clickable default profile picture").font(.caption)
         }
     }
 }

@@ -92,12 +92,6 @@ class AppInjector: Injector {
             )
         }
         
-        container.register(ProfileNavigationViewModel.self) { resolver in
-            ProfileNavigationViewModel(
-                routeRepository: CommonInjector.shared.resolve(RouteRepository.self)
-            )
-        }
-        
         // Others
         container.register(NotificationMediator.self) { resolver in
             NotificationMediatorImpl(

@@ -25,10 +25,10 @@ extension View {
             .opacity(isLoading ? 0.5 : 1)
             .overlay {
                 if isLoading {
-                    ProgressView(getString(.loading))
+                    ProgressView(stringResource(.loading))
                         .padding()
                         .background(.ultraThinMaterial)
-                        .cornerRadius(GedSpacing.small)
+                        .cornerRadius(Dimens.smallPadding)
                         .shadow(radius: 1)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                         .ignoresSafeArea()

@@ -22,7 +22,7 @@ class BlockedUsersViewModel: ViewModel {
     
     func unblockUser(userId: String) {
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
         guard let currentUserId = userRepository.currentUser?.id else {
             return
