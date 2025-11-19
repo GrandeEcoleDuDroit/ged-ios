@@ -39,7 +39,7 @@ class AllAnnouncementsViewModel: ViewModel {
     
     func resendAnnouncement(announcement: Announcement) {
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
         
         uiState.loading = true
@@ -66,7 +66,7 @@ class AllAnnouncementsViewModel: ViewModel {
     
     func reportAnnouncement(report: AnnouncementReport) {
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
         
         uiState.loading = true

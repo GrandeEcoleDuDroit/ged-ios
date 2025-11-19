@@ -38,7 +38,7 @@ struct ThirdRegistrationDestination: View {
             errorMessage,
             isPresented: $showErrorAlert,
             actions: {
-                Button(getString(.ok), role: .cancel) {
+                Button(stringResource(.ok), role: .cancel) {
                     showErrorAlert = false
                 }
             }
@@ -60,7 +60,7 @@ private struct ThirdRegistrationView: View {
     @FocusState private var focusState: Field?
 
     var body: some View {
-        VStack(spacing: GedSpacing.medium) {
+        VStack(spacing: Dimens.mediumPadding) {
             ThirdRegistrationForm(
                 email: $email,
                 password: $password,
@@ -84,7 +84,7 @@ private struct ThirdRegistrationView: View {
         .onTapGesture { focusState = nil }
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text(getString(.registration))
+                Text(stringResource(.registration))
             }
             
             ToolbarItem(placement: .topBarTrailing) {
@@ -92,10 +92,10 @@ private struct ThirdRegistrationView: View {
                     action: onRegisterClick,
                     label: {
                         if loading {
-                            Text(getString(.next))
+                            Text(stringResource(.next))
                                 .fontWeight(.semibold)
                         } else {
-                            Text(getString(.next))
+                            Text(stringResource(.next))
                                 .fontWeight(.semibold)
                                 .foregroundStyle(.gedPrimary)
                         }

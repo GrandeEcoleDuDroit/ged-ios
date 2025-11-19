@@ -22,11 +22,11 @@ private struct PrivacyView: View {
     var body: some View {
         List {
             MenuItem(
-                title: getString(.blockedUsers),
+                title: stringResource(.blockedUsers),
                 onClick: onBlockedUsersClick
             )
         }
-        .navigationTitle(getString(.privacy))
+        .navigationTitle(stringResource(.privacy))
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .scrollContentBackground(.hidden)

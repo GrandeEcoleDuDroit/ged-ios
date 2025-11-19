@@ -27,7 +27,6 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
     
     private func listenDataChanges() {
         announcementLocalDataSource.listenDataChange()
-            .receive(on: DispatchQueue.global(qos: .background))
             .sink { [weak self] _ in
                 self?.loadAnnouncements()
             }.store(in: &cancellables)

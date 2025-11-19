@@ -10,13 +10,13 @@ struct RecentAnnouncementSection: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack(alignment: .center) {
-                Text(getString(.recentAnnouncements))
+                Text(stringResource(.recentAnnouncements))
                     .font(.titleMedium)
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Button(
-                    getString(.seeAll),
+                    stringResource(.seeAll),
                     action: onSeeAllAnnouncementClick
                 )
                 .foregroundStyle(.gedPrimary)
@@ -27,7 +27,7 @@ struct RecentAnnouncementSection: View {
             
             List {
                 if announcements.isEmpty {
-                    Text(getString(.noAnnouncement))
+                    Text(stringResource(.noAnnouncement))
                         .foregroundStyle(.informationText)
                         .padding()
                         .listRowBackground(Color.background)

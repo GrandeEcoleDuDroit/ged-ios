@@ -28,7 +28,7 @@ struct AuthenticationDestination: View {
             errorMessage,
             isPresented: $showErrorAlert,
             actions: {
-                Button(getString(.ok), role: .cancel) {
+                Button(stringResource(.ok), role: .cancel) {
                     showErrorAlert = false
                 }
             }
@@ -49,7 +49,7 @@ private struct AuthenticationView: View {
     @FocusState private var focusState: Field?
         
     var body: some View {
-        VStack(spacing: GedSpacing.large) {
+        VStack(spacing: Dimens.largePadding) {
             HeaderSection()
             
             CredentialsInputs(
@@ -61,7 +61,7 @@ private struct AuthenticationView: View {
                 errorMessage: errorMessage,
                 focusState: _focusState
             )
-            .padding(.top, GedSpacing.medium)
+            .padding(.top, Dimens.mediumPadding)
             
             Buttons(
                 loading: loading,
@@ -81,19 +81,19 @@ private struct HeaderSection: View {
     private let imageHeight = UIScreen.main.bounds.height * 0.2
     
     var body: some View {
-        VStack(spacing: GedSpacing.small) {
+        VStack(spacing: Dimens.smallPadding) {
             Image(.gedLogo)
                 .resizable()
                 .scaledToFit()
                 .frame(width: imageWidth, height: imageHeight)
             
-            Text(getString(.appName))
+            Text(stringResource(.appName))
                 .font(.title)
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, alignment: .center)
             
-            Text(getString(.authenticationPageSubtitle))
+            Text(stringResource(.authenticationPageSubtitle))
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, alignment: .center)
@@ -111,9 +111,9 @@ private struct CredentialsInputs: View {
     @FocusState var focusState: Field?
     
     var body: some View {
-        VStack(alignment: .leading, spacing: GedSpacing.medium) {
+        VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
             OutlineTextField(
-                label: getString(.email),
+                label: stringResource(.email),
                 text: $email,
                 isDisable: loading,
                 errorMessage: emailError,
@@ -125,7 +125,7 @@ private struct CredentialsInputs: View {
             .textInputAutocapitalization(.never)
             
             OutlinePasswordTextField(
-                label: getString(.password),
+                label: stringResource(.password),
                 text: $password,
                 isDisable: loading,
                 errorMessage: passwordError,
@@ -148,21 +148,21 @@ private struct Buttons: View {
     let onRegisterClick: () -> Void
     
     var body: some View {
-        VStack(spacing: GedSpacing.medium) {
+        VStack(spacing: Dimens.mediumPadding) {
             LoadingButton(
-                label: getString(.login),
+                label: stringResource(.login),
                 onClick: onLoginClick,
                 isLoading: loading
             )
             
             HStack {
-                Text(getString(.notRegisterYet))
+                Text(stringResource(.notRegisterYet))
                     .foregroundStyle(Color.primary)
                 
                 Button(
                     action: onRegisterClick,
                     label: {
-                        Text(getString(.register))
+                        Text(stringResource(.register))
                             .foregroundColor(.gedPrimary)
                             .fontWeight(.semibold)
                     }

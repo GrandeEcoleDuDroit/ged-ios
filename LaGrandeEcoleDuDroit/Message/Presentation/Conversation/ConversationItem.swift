@@ -3,7 +3,7 @@ import SwiftUI
 private let previewTextFont: Font = .callout
 
 struct ConversationItem: View {
-    let conversation: ConversationUi
+    let conversationUi: ConversationUi
     let onClick: () -> Void
     let onLongClick: () -> Void
     private let lastMessage: Message
@@ -12,23 +12,23 @@ struct ConversationItem: View {
     private let isNotSender: Bool
     
     init(
-        conversation: ConversationUi,
+        conversationUi: ConversationUi,
         onClick: @escaping () -> Void,
         onLongClick: @escaping () -> Void
     ) {
-        self.conversation = conversation
+        self.conversationUi = conversationUi
         self.onClick = onClick
         self.onLongClick = onLongClick
-        self.lastMessage = conversation.lastMessage
-        self.interlocutor = conversation.interlocutor
-        self.text = lastMessage.state == .sending ? getString(.sending) : lastMessage.content
+        self.lastMessage = conversationUi.lastMessage
+        self.interlocutor = conversationUi.interlocutor
+        self.text = lastMessage.state == .sending ? stringResource(.sending) : lastMessage.content
         self.isNotSender = lastMessage.senderId == interlocutor.id
     }
     
     var body: some View {
         SwitchConversationItem(
             interlocutor: interlocutor,
-            conversationState: conversation.state,
+            conversationState: conversationUi.state,
             lastMessage: lastMessage,
             isUnread: isNotSender && !lastMessage.seen,
             text: text,
@@ -69,7 +69,7 @@ private struct SwitchConversationItem: View {
         self.onLongClick = onLongClick
         self.elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
         self.loading = self.conversationState == .creating || self.conversationState == .deleting
-        self.interlocutorName = interlocutor.state == .deleted ? getString(.deletedUser) : interlocutor.fullName
+        self.interlocutorName = interlocutor.state == .deleted ? stringResource(.deletedUser) : interlocutor.fullName
     }
     
     var body: some View {
@@ -139,7 +139,7 @@ private struct ConversationItemStructure<Content: View>: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
-            .padding(.vertical, GedSpacing.smallMedium)
+            .padding(.vertical, Dimens.smallMediumPadding)
             .contentShape(Rectangle())
             .onLongPressGesture {
                 onLongClick()
@@ -195,7 +195,7 @@ private struct DefaultConversationItemContent: View {
     var fontWeight: Font.Weight = .regular
     
     var body: some View {
-        VStack(alignment: .leading, spacing: GedSpacing.extraSmall) {
+        VStack(alignment: .leading, spacing: Dimens.extraSmallPadding) {
             HStack {
                 Text(interlocutorName)
                     .fontWeight(fontWeight)
@@ -219,10 +219,10 @@ private struct EmptyConversationItem: View {
     let interlocutorName: String
     
     var body: some View {
-        VStack(alignment: .leading, spacing: GedSpacing.extraSmall) {
+        VStack(alignment: .leading, spacing: Dimens.extraSmallPadding) {
             Text(interlocutorName)
             
-            Text(getString(.tapToChat))
+            Text(stringResource(.tapToChat))
                 .font(previewTextFont)
                 .foregroundStyle(.textPreview)
                 .lineLimit(1)
@@ -239,15 +239,15 @@ private func updateElapsedTimeText(for date: Date) -> String {
 private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String {
     switch elapsedTime {
         case .now(_):
-            getString(.now)
+            stringResource(.now)
         case.minute(let minutes):
-            getString(.minutesAgoShort, minutes)
+            stringResource(.minutesAgoShort, minutes)
         case .hour(let hours):
-            getString(.hoursAgoShort, hours)
+            stringResource(.hoursAgoShort, hours)
         case .day(let days):
-            getString(.daysAgoShort, days)
+            stringResource(.daysAgoShort, days)
         case .week(let weeks):
-            getString(.weeksAgoShort, weeks)
+            stringResource(.weeksAgoShort, weeks)
         default:
             date.formatted(.dateTime.year().month().day())
     }

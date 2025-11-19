@@ -24,7 +24,7 @@ class AuthenticationViewModel: ViewModel {
         }
         
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
         
         uiState.loading = true
@@ -48,9 +48,9 @@ class AuthenticationViewModel: ViewModel {
     
     private func validateEmail(email: String) -> String? {
         if email.isBlank() {
-            getString(.mandatoryFieldError)
+            stringResource(.mandatoryFieldError)
         } else if !VerifyEmailFormatUseCase.execute(email) {
-            getString(.incorrectEmailFormatError)
+            stringResource(.incorrectEmailFormatError)
         } else {
             nil
         }
@@ -58,7 +58,7 @@ class AuthenticationViewModel: ViewModel {
     
     private func validatePassword(password: String) -> String? {
         if password.isBlank() {
-            getString(.mandatoryFieldError)
+            stringResource(.mandatoryFieldError)
         } else {
             nil
         }
@@ -68,12 +68,12 @@ class AuthenticationViewModel: ViewModel {
         mapNetworkErrorMessage(e) {
             if let authError = e as? AuthenticationError {
                 switch authError {
-                    case .invalidCredentials: getString(.incorrectCredentialsError)
-                    case .userDisabled: getString(.disabledUserError)
-                    default: getString(.unknownError)
+                    case .invalidCredentials: stringResource(.incorrectCredentialsError)
+                    case .userDisabled: stringResource(.disabledUserError)
+                    default: stringResource(.unknownError)
                 }
             } else {
-                getString(.unknownError)
+                stringResource(.unknownError)
             }
         }
     }

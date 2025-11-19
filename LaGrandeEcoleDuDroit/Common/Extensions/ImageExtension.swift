@@ -1,11 +1,14 @@
 import SwiftUI
 
 extension Image {
-    func fitCircle(scale: CGFloat = 1) -> some View {
+    func fit(scale: CGFloat = 1) -> some View {
         self
             .resizable()
             .scaledToFill()
-            .frame(width: GedNumber.defaultImageSize * scale, height: GedNumber.defaultImageSize * scale)
-            .clipShape(Circle())
+            .frame(
+                width: Dimens.defaultImageSize * scale,
+                height: Dimens.defaultImageSize * scale
+            )
+            .clipped()
     }
 }

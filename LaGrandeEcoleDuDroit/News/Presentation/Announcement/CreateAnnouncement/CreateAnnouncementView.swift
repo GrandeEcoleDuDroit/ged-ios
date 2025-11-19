@@ -51,7 +51,7 @@ private struct CreateAnnouncementView: View {
             focusState: $focusState
         )
         .onTapGesture { focusState = nil }
-        .navigationTitle(getString(.newAnnouncement))
+        .navigationTitle(stringResource(.newAnnouncement))
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
@@ -61,10 +61,10 @@ private struct CreateAnnouncementView: View {
                     action: onCreateClick,
                     label: {
                         if !enableCreate {
-                            Text(getString(.post))
+                            Text(stringResource(.post))
                                 .fontWeight(.semibold)
                         } else {
-                            Text(getString(.post))
+                            Text(stringResource(.post))
                                 .foregroundColor(.gedPrimary)
                                 .fontWeight(.semibold)
                         }

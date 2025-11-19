@@ -1,19 +1,3 @@
-extension FirestoreUser {
-    func toUser() -> User {
-        User(
-            id: userId,
-            firstName: firstName.uppercaseFirstLetter(),
-            lastName: lastName.uppercaseFirstLetter(),
-            email: email,
-            schoolLevel: SchoolLevel.fromNumber(schoolLevel),
-            admin: admin,
-            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName),
-            state: User.UserState(rawValue: state) ?? .active,
-            tester: tester
-        )
-    }
-}
-
 extension User {
     func toServerUser() -> ServerUser {
         ServerUser(
@@ -21,7 +5,7 @@ extension User {
             userFirstName: firstName.lowercased(),
             userLastName: lastName.lowercased(),
             userEmail: email,
-            userSchoolLevel: schoolLevel.rawValue,
+            userSchoolLevel: schoolLevel.number,
             userAdmin: admin ? 1 : 0,
             userProfilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
             userState: state.rawValue,
@@ -68,6 +52,38 @@ extension LocalUser {
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel)!,
             admin: userAdmin,
             profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: userProfilePictureFileName),
+        )
+    }
+}
+
+extension FirestoreUser {
+    func toUser() -> User {
+        User(
+            id: userId,
+            firstName: firstName.uppercaseFirstLetter(),
+            lastName: lastName.uppercaseFirstLetter(),
+            email: email,
+            schoolLevel: SchoolLevel.fromNumber(schoolLevel),
+            admin: admin,
+            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName),
+            state: User.UserState(rawValue: state) ?? .active,
+            tester: tester
+        )
+    }
+}
+
+extension ServerUser {
+    func toUser() -> User {
+        User(
+            id: userId,
+            firstName: userFirstName,
+            lastName: userLastName,
+            email: userEmail,
+            schoolLevel: SchoolLevel.fromNumber(userSchoolLevel),
+            admin: userAdmin == 1,
+            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: userProfilePictureFileName),
+            state: User.UserState(rawValue: userState) ?? .active,
+            tester: userTester == 1
         )
     }
 }

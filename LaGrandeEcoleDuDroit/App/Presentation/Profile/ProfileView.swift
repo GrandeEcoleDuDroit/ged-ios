@@ -37,7 +37,7 @@ private struct ProfileView: View {
                         ) {
                             HStack(
                                 alignment: .center,
-                                spacing: GedSpacing.medium
+                                spacing: Dimens.mediumPadding
                             ) {
                                 ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
                                 
@@ -62,13 +62,13 @@ private struct ProfileView: View {
                     Section {
                         MenuItem(
                             icon: Image(systemName: "key"),
-                            title: getString(.account),
+                            title: stringResource(.account),
                             onClick: onAccountClick
                         )
                         
                         MenuItem(
                             icon: Image(systemName: "lock"),
-                            title: getString(.privacy),
+                            title: stringResource(.privacy),
                             onClick: onPrivacyClick
                         )
                     }
@@ -76,7 +76,7 @@ private struct ProfileView: View {
                     Section {
                         ClickableTextItem(
                             icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
-                            text: Text(getString(.logout)),
+                            text: Text(stringResource(.logout)),
                             onClick: { showLogoutAlert = true }
                         )
                         .foregroundStyle(.red)
@@ -87,17 +87,17 @@ private struct ProfileView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             }
         }
-        .navigationTitle(getString(.profile))
+        .navigationTitle(stringResource(.profile))
         .alert(
-            getString(.logoutAlertMessage),
+            stringResource(.logoutAlertMessage),
             isPresented: $showLogoutAlert,
             actions: {
-                Button(getString(.cancel), role: .cancel) {
+                Button(stringResource(.cancel), role: .cancel) {
                     showLogoutAlert = false
                 }
                 
                 Button(
-                    getString(.logout), role: .destructive,
+                    stringResource(.logout), role: .destructive,
                     action: onLogoutClick
                 )
             }

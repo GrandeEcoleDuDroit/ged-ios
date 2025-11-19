@@ -34,12 +34,12 @@ private struct FirstRegistrationView: View {
     @FocusState private var focusState: Field?
     
     var body: some View {
-        VStack(alignment: .leading, spacing: GedSpacing.medium) {
-            Text(getString(.enterNames))
+        VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+            Text(stringResource(.enterNames))
                 .font(.title3)
             
             OutlineTextField(
-                label: getString(.firstName),
+                label: stringResource(.firstName),
                 text: Binding(
                     get: { firstName },
                     set: onFirstNameChange
@@ -50,7 +50,7 @@ private struct FirstRegistrationView: View {
             )
             
             OutlineTextField(
-                label: getString(.lastName),
+                label: stringResource(.lastName),
                 text: Binding(
                     get: { lastName },
                     set: onLastNameChange
@@ -67,7 +67,7 @@ private struct FirstRegistrationView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text(getString(.registration))
+                Text(stringResource(.registration))
             }
             
             ToolbarItem(placement: .topBarTrailing) {
@@ -75,7 +75,7 @@ private struct FirstRegistrationView: View {
                     action: {
                         onNextClick(firstName, lastName)
                     }, label: {
-                        Text(getString(.next))
+                        Text(stringResource(.next))
                             .foregroundStyle(.gedPrimary)
                             .fontWeight(.semibold)
                     }

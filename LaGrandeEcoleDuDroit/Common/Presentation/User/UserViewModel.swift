@@ -28,7 +28,7 @@ class UserViewModel: ViewModel {
     
     func reportUser(report: UserReport) {
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
         
         uiState.loading = true
@@ -46,7 +46,7 @@ class UserViewModel: ViewModel {
     
     func blockUser(userId: String) {
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
         guard let currentUserId = userRepository.currentUser?.id else {
             return
@@ -67,7 +67,7 @@ class UserViewModel: ViewModel {
     
     func unblockUser(userId: String) {
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
         guard let currentUserId = userRepository.currentUser?.id else {
             return

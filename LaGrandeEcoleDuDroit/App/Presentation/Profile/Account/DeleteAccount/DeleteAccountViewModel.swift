@@ -21,7 +21,7 @@ class DeleteAccountViewModel: ViewModel {
     
     func deleteUserAccount() {
         guard let currentUser = userRepository.currentUser else {
-            return event = ErrorEvent(message: getString(.currentUserNotFoundError))
+            return event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
         }
         let password = uiState.password
         
@@ -30,7 +30,7 @@ class DeleteAccountViewModel: ViewModel {
         }
         
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
         
         uiState.loading = true
@@ -53,7 +53,7 @@ class DeleteAccountViewModel: ViewModel {
     
     private func validatePassword(password: String) -> String? {
         if password.isBlank() {
-            getString(.emptyInputsError)
+            stringResource(.emptyInputsError)
         } else {
             nil
         }
@@ -63,12 +63,12 @@ class DeleteAccountViewModel: ViewModel {
         mapNetworkErrorMessage(e) {
             if let authError = e as? AuthenticationError {
                 switch authError {
-                    case .invalidCredentials: getString(.incorrectPasswordError)
-                    case .userDisabled: getString(.disabledUserError)
-                    default: getString(.unknownError)
+                    case .invalidCredentials: stringResource(.incorrectPasswordError)
+                    case .userDisabled: stringResource(.disabledUserError)
+                    default: stringResource(.unknownError)
                 }
             } else {
-                getString(.unknownError)
+                stringResource(.unknownError)
             }
         }
     }

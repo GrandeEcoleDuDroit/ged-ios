@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788.4" systemVersion="24G84" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="LocalAnnouncement" representedClassName=".LocalAnnouncement" syncable="YES" codeGenerationType="class">
+        <attribute name="announcementAuthorAdmin" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="announcementAuthorEmail" attributeType="String" defaultValueString=""/>
+        <attribute name="announcementAuthorFirstName" attributeType="String" defaultValueString=""/>
+        <attribute name="announcementAuthorId" attributeType="String" defaultValueString=""/>
+        <attribute name="announcementAuthorLastName" attributeType="String" defaultValueString=""/>
+        <attribute name="announcementAuthorProfilePictureFileName" optional="YES" attributeType="String"/>
+        <attribute name="announcementAuthorSchoolLevel" attributeType="String" defaultValueString=""/>
+        <attribute name="announcementAuthorState" optional="YES" attributeType="String"/>
+        <attribute name="announcementAuthorTester" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="announcementContent" attributeType="String" defaultValueString=""/>
+        <attribute name="announcementDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="announcementId" attributeType="String" defaultValueString=""/>
+        <attribute name="announcementState" attributeType="String" customClassName="Announcement"/>
+        <attribute name="announcementTitle" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="LocalConversation" representedClassName="LocalConversation" syncable="YES" codeGenerationType="class">
+        <attribute name="conversationCreatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="conversationDeleteTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="conversationId" attributeType="String"/>
+        <attribute name="conversationInterlocutorAdmin" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="conversationInterlocutorEmail" optional="YES" attributeType="String"/>
+        <attribute name="conversationInterlocutorFirstName" optional="YES" attributeType="String"/>
+        <attribute name="conversationInterlocutorId" optional="YES" attributeType="String"/>
+        <attribute name="conversationInterlocutorLastName" optional="YES" attributeType="String"/>
+        <attribute name="conversationInterlocutorProfilePictureFileName" optional="YES" attributeType="String"/>
+        <attribute name="conversationInterlocutorSchoolLevel" optional="YES" attributeType="String"/>
+        <attribute name="conversationInterlocutorState" optional="YES" attributeType="String"/>
+        <attribute name="conversationInterlocutorTester" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="conversationState" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="LocalMessage" representedClassName="LocalMessage" syncable="YES" codeGenerationType="class">
+        <attribute name="messageContent" attributeType="String"/>
+        <attribute name="messageConversationId" attributeType="String"/>
+        <attribute name="messageId" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="messageRecipientId" optional="YES" attributeType="String"/>
+        <attribute name="messageSeen" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="messageSenderId" attributeType="String"/>
+        <attribute name="messageState" optional="YES" attributeType="String"/>
+        <attribute name="messageTimestamp" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="LocalMission" representedClassName="LocalMission" syncable="YES" codeGenerationType="class">
+        <attribute name="missionDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="missionDescription" attributeType="String"/>
+        <attribute name="missionDuration" optional="YES" attributeType="String"/>
+        <attribute name="missionEndDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="missionId" attributeType="String"/>
+        <attribute name="missionImageReference" optional="YES" attributeType="String"/>
+        <attribute name="missionManagers" attributeType="String"/>
+        <attribute name="missionMaxParticipants" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="missionParticipants" optional="YES" attributeType="String"/>
+        <attribute name="missionSchoolLevels" attributeType="String"/>
+        <attribute name="missionStartDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="missionState" optional="YES" attributeType="String"/>
+        <attribute name="missionTasks" optional="YES" attributeType="String"/>
+        <attribute name="missionTitle" attributeType="String"/>
+    </entity>
+</model>

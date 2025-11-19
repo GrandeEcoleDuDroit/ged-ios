@@ -39,7 +39,7 @@ class NewsViewModel: ViewModel {
     
     func resendAnnouncement(announcement: Announcement) {
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
         
         uiState.loading = true
@@ -51,6 +51,10 @@ class NewsViewModel: ViewModel {
     }
     
     func deleteAnnouncement(announcement: Announcement) {
+        guard networkMonitor.isConnected else {
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
+        }
+        
         uiState.loading = true
         
         Task { @MainActor [weak self] in
@@ -66,7 +70,7 @@ class NewsViewModel: ViewModel {
     
     func reportAnnouncement(report: AnnouncementReport) {
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
         
         uiState.loading = true

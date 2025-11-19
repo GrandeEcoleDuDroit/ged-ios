@@ -77,7 +77,7 @@ struct OutlineTextField: View {
             
             if errorMessage != nil {
                 Text(errorMessage!)
-                    .padding(.leading, GedSpacing.medium)
+                    .padding(.leading, Dimens.mediumPadding)
                     .font(.caption)
                     .foregroundColor(.red)
             }
@@ -197,7 +197,7 @@ struct OutlinePasswordTextField: View {
             
             if errorMessage != nil {
                 Text(errorMessage!)
-                    .padding(.leading, GedSpacing.medium)
+                    .padding(.leading, Dimens.mediumPadding)
                     .font(.caption)
                     .foregroundColor(.red)
             }
@@ -206,7 +206,7 @@ struct OutlinePasswordTextField: View {
 }
 
 #Preview {
-    VStack(spacing: GedSpacing.large) {
+    VStack(spacing: Dimens.largePadding) {
         OutlineTextField(
             label: "Email",
             text: .constant(""),

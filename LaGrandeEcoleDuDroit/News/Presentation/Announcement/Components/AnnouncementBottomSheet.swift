@@ -43,13 +43,13 @@ private struct ErrorAnnouncementBottomSheet: View {
         BottomSheetContainer(fraction: 0.16) {
             ClickableTextItem(
                 icon: Image(systemName: "paperplane"),
-                text: Text(getString(.resend)),
+                text: Text(stringResource(.resend)),
                 onClick: onResendClick
             )
             
             ClickableTextItem(
                 icon: Image(systemName: "trash"),
-                text: Text(getString(.delete)),
+                text: Text(stringResource(.delete)),
                 onClick: onDeleteClick
             )
             .foregroundColor(.red)
@@ -64,13 +64,13 @@ private struct EditableAnnouncementBottomSheetContent: View {
     var body: some View {
         ClickableTextItem(
             icon: Image(systemName: "pencil"),
-            text: Text(getString(.edit)),
+            text: Text(stringResource(.edit)),
             onClick: onEditClick
         )
         
         ClickableTextItem(
             icon: Image(systemName: "trash"),
-            text: Text(getString(.delete)),
+            text: Text(stringResource(.delete)),
             onClick: onDeleteClick
         )
         .foregroundColor(.red)
@@ -83,7 +83,7 @@ private struct NonEditableAnnouncementBottomSheetContent: View {
     var body: some View {
         ClickableTextItem(
             icon: Image(systemName: "exclamationmark.bubble"),
-            text: Text(getString(.report)),
+            text: Text(stringResource(.report)),
             onClick: onReportClick
         )
         .foregroundColor(.red)

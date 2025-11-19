@@ -46,10 +46,10 @@ class AccountInformationViewModel: ViewModel {
     
     func deleteProfilePicture() {
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
         guard let currentUser = uiState.user else {
-            return event = ErrorEvent(message: getString(.currentUserNotFoundError))
+            return event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
         }
         
         uiState.loading = true

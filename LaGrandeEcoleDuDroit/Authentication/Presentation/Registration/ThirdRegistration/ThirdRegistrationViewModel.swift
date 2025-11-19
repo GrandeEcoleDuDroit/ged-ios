@@ -25,10 +25,10 @@ class ThirdRegistrationViewModel: ViewModel {
             return
         }
         guard uiState.legalNoticeChecked else {
-            return uiState.errorMessage = getString(.legalNoticeError)
+            return uiState.errorMessage = stringResource(.legalNoticeError)
         }
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
         
         uiState.loading = true
@@ -61,9 +61,9 @@ class ThirdRegistrationViewModel: ViewModel {
     
     private func validateEmail(email: String) -> String? {
         if email.isBlank() {
-            getString(.mandatoryFieldError)
+            stringResource(.mandatoryFieldError)
         } else if !VerifyEmailFormatUseCase.execute(email) {
-            getString(.incorrectEmailFormatError)
+            stringResource(.incorrectEmailFormatError)
         } else {
             nil
         }
@@ -71,9 +71,9 @@ class ThirdRegistrationViewModel: ViewModel {
     
     private func validatePassword(password: String) -> String? {
         if password.isBlank() {
-            getString(.mandatoryFieldError)
+            stringResource(.mandatoryFieldError)
         } else if password.count < minPasswordLength {
-            getString(.passwordLengthError)
+            stringResource(.passwordLengthError)
         } else {
             nil
         }
@@ -83,16 +83,16 @@ class ThirdRegistrationViewModel: ViewModel {
         mapNetworkErrorMessage(e) {
             if let authError = e as? AuthenticationError {
                  switch authError {
-                     default: getString(.unknownError)
+                     default: stringResource(.unknownError)
                  }
             } else if let networkError = e as? NetworkError {
                 switch networkError {
-                    case .forbidden: getString(.userNotWhiteListedError)
-                    case .dupplicateData: getString(.emailAlreadyAssociatedError)
-                    default: getString(.unknownError)
+                    case .forbidden: stringResource(.userNotWhiteListedError)
+                    case .dupplicateData: stringResource(.emailAlreadyAssociatedError)
+                    default: stringResource(.unknownError)
                 }
             } else {
-                 getString(.unknownError)
+                 stringResource(.unknownError)
              }
         }
     }

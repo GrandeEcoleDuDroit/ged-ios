@@ -70,6 +70,7 @@
 "internet_connection_lost_error" = "The internet connection was lost.";
 "disabled_user_error" = "Your account has been disabled. Please contact the support.";
 "current_user_not_found_error" = "Current user not found. Please re-authenticate.";
+"sending_error" = "Sending error";
 
 // Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";
@@ -130,3 +131,9 @@
 "new_messages" = "New messages";
 "delete_message_alert_content" = "Do you want to delete this message?";
 "chat_blocked_user_indicator_text" = "You cannot send messages to this user unless you unblock them.";
+
+// Mission
+"mission" = "Mission";
+"participant_number" = "%d/%d";
+"no_mission" = "Aucune mission";
+"delete_mission_alert_message" = "Do you want to delete this mission?";

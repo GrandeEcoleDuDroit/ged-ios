@@ -65,10 +65,6 @@ class CommonInjector: Injector {
             )
         }.inObjectScope(.container)
         
-        container.register(NetworkMonitor.self) { _ in
-            NetworkMonitorImpl()
-        }.inObjectScope(.container)
-        
         container.register(ImageRemoteDataSource.self) { resolver in
             ImageRemoteDataSource(imageApi: resolver.resolve(ImageApi.self)!)
         }.inObjectScope(.container)
@@ -150,5 +146,10 @@ class CommonInjector: Injector {
                 userRepository: resolver.resolve(UserRepository.self)!
             )
         }
+        
+        // Others
+        container.register(NetworkMonitor.self) { _ in
+            NetworkMonitorImpl()
+        }.inObjectScope(.container)
     }
 }

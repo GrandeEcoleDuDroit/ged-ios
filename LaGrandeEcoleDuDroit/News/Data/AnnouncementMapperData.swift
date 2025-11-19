@@ -1,31 +1,6 @@
 import Foundation
 import CoreData
 
-extension InboundRemoteAnnouncement {
-    func toAnnouncement() -> Announcement {
-        let user = User(
-            id: userId,
-            firstName: userFirstName.uppercaseFirstLetter(),
-            lastName: userLastName.uppercaseFirstLetter(),
-            email: userEmail,
-            schoolLevel: SchoolLevel.fromNumber(userSchoolLevel),
-            admin: userAdmin == 1,
-            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: userProfilePictureFileName),
-            state: User.UserState(rawValue: userState) ?? .active,
-            tester: userTester == 1
-        )
-        
-        return Announcement(
-            id: announcementId,
-            title: announcementTitle ?? "",
-            content: announcementContent,
-            date: announcementDate.toDate(),
-            author: user,
-            state: .published
-        )
-    }
-}
-
 extension Announcement {    
     func toRemote() -> OutbondRemoteAnnouncement {
         OutbondRemoteAnnouncement(
@@ -103,6 +78,31 @@ extension LocalAnnouncement {
         announcementAuthorProfilePictureFileName == UrlUtils.extractFileName(url: announcement.author.profilePictureUrl) &&
         announcementAuthorState == announcement.author.state.rawValue &&
         announcementAuthorTester == announcement.author.tester
+    }
+}
+
+extension InboundRemoteAnnouncement {
+    func toAnnouncement() -> Announcement {
+        let user = User(
+            id: userId,
+            firstName: userFirstName.uppercaseFirstLetter(),
+            lastName: userLastName.uppercaseFirstLetter(),
+            email: userEmail,
+            schoolLevel: SchoolLevel.fromNumber(userSchoolLevel),
+            admin: userAdmin == 1,
+            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: userProfilePictureFileName),
+            state: User.UserState(rawValue: userState) ?? .active,
+            tester: userTester == 1
+        )
+        
+        return Announcement(
+            id: announcementId,
+            title: announcementTitle ?? "",
+            content: announcementContent,
+            date: announcementDate.toDate(),
+            author: user,
+            state: .published
+        )
     }
 }
 
