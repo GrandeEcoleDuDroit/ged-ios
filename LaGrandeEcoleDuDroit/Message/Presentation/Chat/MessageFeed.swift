@@ -83,7 +83,7 @@ private struct Content: View {
         if condition.isOldestMessage || !condition.sameDay {
             Text(formatDate(date: message.date))
                 .foregroundStyle(.gray)
-                .padding(.vertical, GedSpacing.large)
+                .padding(.vertical, Dimens.largePadding)
                 .font(.footnote)
                 .frame(maxWidth: .infinity, alignment: .center)
         }
@@ -131,11 +131,11 @@ private extension View {
             if smallPadding {
                 self.padding(.top, 2)
             } else if mediumPadding {
-                self.padding(.top, GedSpacing.smallMedium)
+                self.padding(.top, Dimens.smallMediumPadding)
             } else if noPadding {
                 self.padding(.top, 0)
             } else {
-                self.padding(.top, GedSpacing.medium)
+                self.padding(.top, Dimens.mediumPadding)
             }
         }
     }

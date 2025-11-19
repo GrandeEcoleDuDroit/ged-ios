@@ -35,7 +35,7 @@ struct UserDestination: View {
                 errorMessage,
                 isPresented: $showErrorAlert,
                 actions: {
-                    Button(getString(.ok)) {
+                    Button(stringResource(.ok)) {
                         showErrorAlert = false
                     }
                 }
@@ -78,11 +78,11 @@ private struct UserView: View {
         self.onReportClick = onReportClick
         self.onBlockUserClick = onBlockUserClick
         self.onUnblockUserClick = onUnblockUserClick
-        self.userName = user.state == .deleted ? getString(.deletedUser) : user.fullName
+        self.userName = user.state == .deleted ? stringResource(.deletedUser) : user.fullName
     }
 
     var body: some View {
-        VStack(spacing: GedSpacing.medium) {
+        VStack(spacing: Dimens.mediumPadding) {
             ProfilePicture(
                 url: user.profilePictureUrl,
                 scale: 1.6
@@ -145,32 +145,32 @@ private struct UserView: View {
             }
         }
         .alert(
-            getString(.blockUserAlertTitle),
+            stringResource(.blockUserAlertTitle),
             isPresented: $showBlockAlert,
             actions: {
                 Button(
-                    getString(.cancel),
+                    stringResource(.cancel),
                     role: .cancel,
                     action: { showBlockAlert = false }
                 )
-                Button(getString(.block)) {
+                Button(stringResource(.block)) {
                     onBlockUserClick(user.id)
                 }
             },
             message: {
-                Text(getString(.blockUserAlertMessage))
+                Text(stringResource(.blockUserAlertMessage))
             }
         )
         .alert(
-            getString(.unblockUserAlertMessage),
+            stringResource(.unblockUserAlertMessage),
             isPresented: $showUnblockAlert,
             actions: {
                 Button(
-                    getString(.cancel),
+                    stringResource(.cancel),
                     role: .cancel,
                     action: { showUnblockAlert = false }
                 )
-                Button(getString(.unblock)) {
+                Button(stringResource(.unblock)) {
                     onUnblockUserClick(user.id)
                 }
             }
@@ -191,20 +191,20 @@ private struct UserBottomSheet: View {
             if isUserBlocked {
                 ClickableTextItem(
                     icon: Image(systemName: "nosign"),
-                    text: Text(getString(.unblock)),
+                    text: Text(stringResource(.unblock)),
                     onClick: onUnblockClick
                 )
             } else {
                 ClickableTextItem(
                     icon: Image(systemName: "nosign"),
-                    text: Text(getString(.block)),
+                    text: Text(stringResource(.block)),
                     onClick: onBlockClick
                 )
             }
             
             ClickableTextItem(
                 icon: Image(systemName: "exclamationmark.bubble"),
-                text: Text(getString(.report)),
+                text: Text(stringResource(.report)),
                 onClick: onReportClick
             )
             .foregroundColor(.error)

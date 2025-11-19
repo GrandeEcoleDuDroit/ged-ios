@@ -35,7 +35,7 @@ struct NewsDestination: View {
                 errorMessage,
                 isPresented: $showErrorAlert,
                 actions: {
-                    Button(getString(.ok)) {
+                    Button(stringResource(.ok)) {
                         showErrorAlert = false
                     }
                 }
@@ -78,7 +78,6 @@ private struct NewsView: View {
                     onAnnouncementOptionClick: {
                         clickedAnnouncement = $0
                         showAnnouncementBottomSheet = true
-                        
                     },
                     onSeeAllAnnouncementClick: onSeeAllAnnouncementClick
                 )
@@ -89,7 +88,7 @@ private struct NewsView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .refreshable { await onRefreshAnnouncements() }
-        .padding(.top, GedSpacing.medium)
+        .padding(.top, Dimens.mediumPadding)
         .loading(loading)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -100,7 +99,7 @@ private struct NewsView: View {
                         .scaledToFit()
                         .frame(width: 38, height: 38)
                     
-                    Text(getString(.appName))
+                    Text(stringResource(.appName))
                         .font(.title2)
                         .fontWeight(.semibold)
                 }
@@ -116,7 +115,7 @@ private struct NewsView: View {
             }
         }
         .sheet(isPresented: $showAnnouncementBottomSheet) {
-            Sheet(
+            BottomSheet(
                 user: user,
                 clickedAnnouncement: $clickedAnnouncement,
                 onResendAnnouncementClick: {
@@ -164,14 +163,14 @@ private struct NewsView: View {
             )
         }
         .alert(
-            getString(.deleteAnnouncementAlertMessage),
+            stringResource(.deleteAnnouncementAlertMessage),
             isPresented: $showDeleteAnnouncementAlert,
             actions: {
-                Button(getString(.cancel), role: .cancel) {
+                Button(stringResource(.cancel), role: .cancel) {
                     showDeleteAnnouncementAlert = false
                 }
                 
-                Button(getString(.delete), role: .destructive) {
+                Button(stringResource(.delete), role: .destructive) {
                     if let clickedAnnouncement {
                         onDeleteAnnouncementClick(clickedAnnouncement)
                     }
@@ -182,7 +181,7 @@ private struct NewsView: View {
     }
 }
 
-private struct Sheet: View {
+private struct BottomSheet: View {
     let user: User
     @Binding var clickedAnnouncement: Announcement?
     let onResendAnnouncementClick: (Announcement) -> Void
@@ -201,8 +200,8 @@ private struct Sheet: View {
                 onReportClick: onReportAnnouncementClick
             )
         } else {
-            BottomSheetContainer(fraction: 0.16) {
-                Text(getString(.unknownError))
+            BottomSheetContainer(fraction: 0.12) {
+                Text(stringResource(.unknownError))
                     .foregroundColor(.error)
             }
         }

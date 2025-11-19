@@ -40,7 +40,7 @@ struct EditAnnouncementDestination: View {
             errorMessage,
             isPresented: $showErrorAlert,
             actions: {
-                Button(getString(.ok)) {
+                Button(stringResource(.ok)) {
                     showErrorAlert = false
                 }
             }
@@ -71,12 +71,12 @@ private struct EditAnnouncementView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
         .loading(loading)
-        .navigationTitle(getString(.editAnnouncement))
+        .navigationTitle(stringResource(.editAnnouncement))
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button(getString(.cancel)) {
+                Button(stringResource(.cancel)) {
                    onBackClick()
                 }
             }
@@ -86,10 +86,10 @@ private struct EditAnnouncementView: View {
                     action: onUpdateAnnouncementClick,
                     label: {
                         if !editButtonEnable || loading {
-                            Text(getString(.save))
+                            Text(stringResource(.save))
                                 .fontWeight(.semibold)
                         } else {
-                            Text(getString(.save))
+                            Text(stringResource(.save))
                                 .foregroundStyle(.gedPrimary)
                                 .fontWeight(.semibold)
                         }

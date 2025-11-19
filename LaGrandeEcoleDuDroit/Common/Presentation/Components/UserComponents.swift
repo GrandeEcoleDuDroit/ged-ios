@@ -11,7 +11,7 @@ struct UserItem<TrailingContent: View>: View {
     ) {
         self.user = user
         self.trailingContent = trailingContent
-        self.userName = user.state == .deleted ? getString(.deletedUser) : user.fullName
+        self.userName = user.state == .deleted ? stringResource(.deletedUser) : user.fullName
     }
     
     var body: some View {
@@ -27,7 +27,7 @@ struct UserItem<TrailingContent: View>: View {
 
             trailingContent()
         }
-        .padding(.vertical, GedSpacing.small)
+        .padding(.vertical, Dimens.smallPadding)
         .padding(.horizontal)
         .frame(maxWidth: .infinity, alignment: .leading)
     }

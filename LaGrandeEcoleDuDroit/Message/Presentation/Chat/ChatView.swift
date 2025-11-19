@@ -57,7 +57,7 @@ struct ChatDestination: View {
             isPresented: $showErrorAlert,
             actions: {
                 Button(
-                    getString(.ok),
+                    stringResource(.ok),
                     action: { showErrorAlert = false }
                 )
             }
@@ -126,11 +126,11 @@ private struct ChatView: View {
         self.onDeleteChatClick = onDeleteChatClick
         self.onUnblockUserClick = onUnblockUserClick
         self.onInterlocutorProfilePictureClick = onInterlocutorProfilePictureClick
-        self.interlocutorName = conversation.interlocutor.state == .deleted ? getString(.deletedUser) : conversation.interlocutor.fullName
+        self.interlocutorName = conversation.interlocutor.state == .deleted ? stringResource(.deletedUser) : conversation.interlocutor.fullName
     }
 
     var body: some View {
-        VStack(spacing: GedSpacing.smallMedium) {
+        VStack(spacing: Dimens.smallMediumPadding) {
             MessageFeed(
                 messages: messages,
                 conversation: conversation,
@@ -207,14 +207,14 @@ private struct ChatView: View {
             )
         }
         .alert(
-            getString(.deleteMessageAlertContent),
+            stringResource(.deleteMessageAlertContent),
             isPresented: $showDeleteAnnouncementAlert,
             actions: {
-                Button(getString(.cancel), role: .cancel) {
+                Button(stringResource(.cancel), role: .cancel) {
                     showDeleteAnnouncementAlert = false
                 }
                 
-                Button(getString(.delete), role: .destructive) {
+                Button(stringResource(.delete), role: .destructive) {
                     if let clickedMessage {
                         onDeleteErrorMessageClick(clickedMessage)
                     }
@@ -223,17 +223,17 @@ private struct ChatView: View {
             }
         )
         .alert(
-            getString(.deleteConversationAlertTitle),
+            stringResource(.deleteConversationAlertTitle),
             isPresented: $showDeleteChatAlert,
             actions: {
                 Button(
-                    getString(.cancel),
+                    stringResource(.cancel),
                     role: .cancel,
                     action: { showUnblockAlert = false }
                 )
                 
                 Button(
-                    getString(.unblock),
+                    stringResource(.unblock),
                     role: .destructive,
                     action: {
                         showDeleteChatAlert = false
@@ -241,20 +241,20 @@ private struct ChatView: View {
                     }
                 )
             },
-            message: { Text(getString(.deleteConversationAlertMessage)) }
+            message: { Text(stringResource(.deleteConversationAlertMessage)) }
         )
         .alert(
-            getString(.unblockUserAlertMessage),
+            stringResource(.unblockUserAlertMessage),
             isPresented: $showUnblockAlert,
             actions: {
                 Button(
-                    getString(.cancel),
+                    stringResource(.cancel),
                     role: .cancel,
                     action: { showUnblockAlert = false }
                 )
                 
                 Button(
-                    getString(.unblock),
+                    stringResource(.unblock),
                     action: {
                         showUnblockAlert = false
                         onUnblockUserClick(conversation.interlocutor.id)
@@ -264,7 +264,7 @@ private struct ChatView: View {
         )
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                HStack(spacing: GedSpacing.smallMedium) {
+                HStack(spacing: Dimens.smallMediumPadding) {
                     ProfilePicture(
                         url: conversation.interlocutor.profilePictureUrl,
                         scale: 0.3
@@ -289,13 +289,13 @@ private struct SentMessageBottomSheet: View {
         BottomSheetContainer(fraction: 0.16) {
             ClickableTextItem(
                 icon: Image(systemName: "paperplane"),
-                text: Text(getString(.resend)),
+                text: Text(stringResource(.resend)),
                 onClick: onResendMessage
             )
                             
             ClickableTextItem(
                 icon: Image(systemName: "trash"),
-                text: Text(getString(.delete)),
+                text: Text(stringResource(.delete)),
                 onClick: onDeleteMessage
             )
             .foregroundColor(.red)
@@ -310,7 +310,7 @@ private struct ReceivedMessageBottomSheet: View {
         BottomSheetContainer(fraction: 0.1) {
             ClickableTextItem(
                 icon: Image(systemName: "exclamationmark.bubble"),
-                text: Text(getString(.report)),
+                text: Text(stringResource(.report)),
                 onClick: onReportClick
             )
             .foregroundColor(.red)

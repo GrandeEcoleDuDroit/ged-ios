@@ -115,7 +115,7 @@ struct CheckBox: View {
 #Preview {
     VStack(
         alignment: .leading,
-        spacing: GedSpacing.medium
+        spacing: Dimens.mediumPadding
     ) {
         TextItem(
             icon: Image(systemName: "key"),

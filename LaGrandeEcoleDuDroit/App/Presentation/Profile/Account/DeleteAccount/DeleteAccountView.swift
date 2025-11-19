@@ -22,7 +22,7 @@ struct DeleteAccountDestination: View {
             errorMessage,
             isPresented: $showErrorAlert,
             actions: {
-                Button(getString(.ok)) {
+                Button(stringResource(.ok)) {
                     showErrorAlert = false
                 }
             }
@@ -40,15 +40,15 @@ private struct DeleteAccountView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(getString(.deleteAccountText))
-                .padding(.horizontal, GedSpacing.mediumLarge)
+            Text(stringResource(.deleteAccountText))
+                .padding(.horizontal, Dimens.mediumLargePadding)
             
             Form {
-                Section(getString(.enterPassword)) {
+                Section(stringResource(.enterPassword)) {
                     if showPassword {
                         HStack {
                             TextField(
-                                getString(.password),
+                                stringResource(.password),
                                 text: $password
                             )
                             .textContentType(.password)
@@ -62,7 +62,7 @@ private struct DeleteAccountView: View {
                     } else {
                         HStack {
                             SecureField(
-                                getString(.password),
+                                stringResource(.password),
                                 text: $password
                             )
                             .textContentType(.password)
@@ -83,25 +83,25 @@ private struct DeleteAccountView: View {
                 Text(errorMessage)
                     .font(.callout)
                     .foregroundStyle(.error)
-                    .padding(.horizontal, GedSpacing.mediumLarge)
+                    .padding(.horizontal, Dimens.mediumLargePadding)
             }
             
             Button(
                 action: onDeleteAccountClick,
                 label: {
-                    Text(getString(.deleteAccount))
+                    Text(stringResource(.deleteAccount))
                         .frame(maxWidth: .infinity)
-                        .padding(GedSpacing.smallMedium)
+                        .padding(Dimens.smallMediumPadding)
                 }
             )
             .background(.listRowBackground)
             .foregroundStyle(.red)
             .clipShape(.rect(cornerRadius: 10))
-            .padding(.horizontal, GedSpacing.mediumLarge)
-            .padding(.vertical, GedSpacing.small)
+            .padding(.horizontal, Dimens.mediumLargePadding)
+            .padding(.vertical, Dimens.smallPadding)
         }
         .contentShape(Rectangle())
-        .navigationTitle(getString(.deleteAccount))
+        .navigationTitle(stringResource(.deleteAccount))
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(.listBackground)

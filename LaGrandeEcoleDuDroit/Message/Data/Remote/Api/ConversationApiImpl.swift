@@ -12,7 +12,7 @@ class ConversationApiImpl: ConversationApi {
         let subject = PassthroughSubject<RemoteConversation, Error>()
         
         let listener = conversationCollection
-            .whereField(ConversationDataFields.participants, arrayContains: userId)
+            .whereField(ConversationField.Remote.participants, arrayContains: userId)
             .addSnapshotListener(includeMetadataChanges: true) { snapshot, error in
                 if let error {
                     subject.send(completion: .failure(error))

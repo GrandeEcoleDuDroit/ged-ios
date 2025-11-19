@@ -53,7 +53,7 @@ struct ReadAnnouncementDestination: View {
             errorMessage,
             isPresented: $showErrorAlert,
             actions: {
-                Button(getString(.ok)) {
+                Button(stringResource(.ok)) {
                     showErrorAlert = false
                 }
             }
@@ -76,7 +76,7 @@ private struct ReadAnnouncementView: View {
     
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: GedSpacing.medium) {
+            VStack(spacing: Dimens.mediumPadding) {
                 AnnouncementHeader(
                     announcement: announcement,
                     onAuthorClick: { onAuthorClick(announcement.author) },
@@ -98,7 +98,7 @@ private struct ReadAnnouncementView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding(.horizontal)
         .loading(loading)
-        .navigationTitle(getString(.announcement))
+        .navigationTitle(stringResource(.announcement))
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showAnnouncementBottomSheet) {
             AnnouncementBottomSheet(
@@ -143,16 +143,16 @@ private struct ReadAnnouncementView: View {
             )
         }
         .alert(
-            getString(.deleteAnnouncementAlertMessage),
+            stringResource(.deleteAnnouncementAlertMessage),
             isPresented: $showDeleteAnnouncementAlert,
             actions: {
                 Button(
-                    getString(.cancel),
+                    stringResource(.cancel),
                     role: .cancel,
                     action: { showDeleteAnnouncementAlert = false }
                 )
                 Button(
-                    getString(.delete), role: .destructive,
+                    stringResource(.delete), role: .destructive,
                     action: onDeleteAnnouncementClick
                 )
             }

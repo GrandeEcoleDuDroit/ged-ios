@@ -32,6 +32,12 @@ class AppMainThreadInjector: MainThreadInjector {
             )
         }
         
+        container.register(ProfileNavigationViewModel.self) { resolver in
+            ProfileNavigationViewModel(
+                routeRepository: CommonInjector.shared.resolve(RouteRepository.self)
+            )
+        }
+        
         container.register(AccountInformationViewModel.self) { resolver in
             AccountInformationViewModel(
                 updateProfilePictureUseCase: CommonInjector.shared.resolve(UpdateProfilePictureUseCase.self),

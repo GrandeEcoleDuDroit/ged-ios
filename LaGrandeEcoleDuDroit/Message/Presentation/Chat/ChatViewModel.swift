@@ -139,7 +139,7 @@ class ChatViewModel: ViewModel {
     
     func reportMessage(_ report: MessageReport) {
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: getString(.noInternetConectionError))
+            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
         
         uiState.loading = true

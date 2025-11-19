@@ -45,7 +45,7 @@ private struct DefaultItem: View {
     let onAuthorClick: () -> Void
     
     var body: some View {
-        VStack(spacing: GedSpacing.medium) {
+        VStack(spacing: Dimens.mediumPadding) {
             AnnouncementHeader(
                 announcement: announcement,
                 onAuthorClick: onAuthorClick,
@@ -95,10 +95,10 @@ private struct ErrorItem: View {
     
     var body: some View {
         Clickable(action: onClick) {
-            VStack(spacing: GedSpacing.medium) {
+            VStack(spacing: Dimens.mediumPadding) {
                 HStack(
                     alignment: .center,
-                    spacing: GedSpacing.smallMedium
+                    spacing: Dimens.smallMediumPadding
                 ) {
                     Image(systemName: "exclamationmark.circle")
                         .foregroundStyle(.red)

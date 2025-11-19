@@ -20,7 +20,7 @@ class CreateAnnouncementViewModel: ViewModel {
     
     func createAnnouncement() {
         guard let currentUser else {
-            return event = ErrorEvent(message: getString(.currentUserNotFoundError))
+            return event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
         }
         
         let title: String? = !uiState.title.isBlank() ? uiState.title : nil

@@ -30,7 +30,7 @@ struct AccountInformationDestination: View {
                 errorMessage,
                 isPresented: $showErrorAlert,
                 actions: {
-                    Button(getString(.ok)) {
+                    Button(stringResource(.ok)) {
                         showErrorAlert = false
                     }
                 }
@@ -55,7 +55,7 @@ private struct AccountInformationView: View {
     @State private var showBottomSheet: Bool = false
     @State private var showPhotosPicker: Bool = false
     @State private var isBottomSheetItemClicked: Bool = false
-    @State private var navigationTitle = getString(.accountInfos)
+    @State private var navigationTitle = stringResource(.accountInfos)
     @State private var showDeleteAlert: Bool = false
     @State private var bottomSheetItemSize: CGFloat
     
@@ -81,7 +81,7 @@ private struct AccountInformationView: View {
 
     var body: some View {
         ZStack {
-            VStack(spacing: GedSpacing.medium) {
+            VStack(spacing: Dimens.mediumPadding) {
                 if let profilePictureImage {
                     ClickableProfilePictureImage(
                         image: profilePictureImage,
@@ -115,9 +115,9 @@ private struct AccountInformationView: View {
             if newState == .read {
                 profilePictureImage = nil
                 selectedPhoto = nil
-                navigationTitle = getString(.accountInfos)
+                navigationTitle = stringResource(.accountInfos)
             } else {
-                navigationTitle = getString(.editProfile)
+                navigationTitle = stringResource(.editProfile)
             }
         }
         .padding(.horizontal)
@@ -129,7 +129,7 @@ private struct AccountInformationView: View {
             BottomSheetContainer(fraction: bottomSheetItemSize) {
                 ClickableTextItem(
                     icon: Image(systemName: "photo"),
-                    text: Text(getString(.newProfilePicture))
+                    text: Text(stringResource(.newProfilePicture))
                 ) {
                     showPhotosPicker = true
                     showBottomSheet = false
@@ -138,7 +138,7 @@ private struct AccountInformationView: View {
                 if user.profilePictureUrl != nil {
                     ClickableTextItem(
                         icon: Image(systemName: "trash"),
-                        text: Text(getString(.delete))
+                        text: Text(stringResource(.delete))
                     ) {
                         showBottomSheet = false
                         showDeleteAlert = true
@@ -148,13 +148,13 @@ private struct AccountInformationView: View {
             }
         }
         .alert(
-            getString(.deleteProfilePictureAlertMessage),
+            stringResource(.deleteProfilePictureAlertMessage),
             isPresented: $showDeleteAlert,
             actions: {
-                Button(getString(.cancel), role: .cancel) {
+                Button(stringResource(.cancel), role: .cancel) {
                     showDeleteAlert = false
                 }
-                Button(getString(.delete), role: .destructive) {
+                Button(stringResource(.delete), role: .destructive) {
                     onDeleteProfilePictureClick()
                     showDeleteAlert = false
                 }
@@ -163,7 +163,7 @@ private struct AccountInformationView: View {
         .toolbar {
             if screenState == .edit {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button(getString(.cancel)) {
+                    Button(stringResource(.cancel)) {
                         onScreenStateChange(.read)
                         profilePictureImage = nil
                         selectedPhoto = nil
@@ -178,7 +178,7 @@ private struct AccountInformationView: View {
                             }
                         },
                         label: {
-                            Text(getString(.save))
+                            Text(stringResource(.save))
                                 .bold()
                                 .foregroundStyle(.gedPrimary)
                         }

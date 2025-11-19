@@ -20,10 +20,10 @@ struct SentMessageItem: View {
                 .clipShape(.rect(cornerRadius: 24))
                 
                 if showSeen {
-                    Text(getString(.seen))
+                    Text(stringResource(.seen))
                         .foregroundStyle(.gray)
                         .font(.caption)
-                        .padding(.trailing, GedSpacing.smallMedium)
+                        .padding(.trailing, Dimens.smallMediumPadding)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
@@ -45,7 +45,7 @@ struct SentMessageItem: View {
                     EmptyView()
             }
         }
-        .padding(.leading, GedSpacing.veryExtraLarge)
+        .padding(.leading, Dimens.veryExtraLargePadding)
         .frame(maxWidth: .infinity, alignment: .trailing)
     }
 }
@@ -80,7 +80,7 @@ struct ReceiveMessageItem: View {
                 onLongClick()
             }
         }
-        .padding(.trailing, GedSpacing.veryExtraLarge)
+        .padding(.trailing, Dimens.veryExtraLargePadding)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -102,7 +102,7 @@ private struct MessageBubble: View {
                 .font(.caption)
         }
         .padding(.vertical, 10)
-        .padding(.horizontal, GedSpacing.medium)
+        .padding(.horizontal, Dimens.mediumPadding)
         .background(backgroundColor)
         .clipShape(.rect(cornerRadius: 24))
     }
@@ -125,7 +125,7 @@ struct MessageInput: View {
                 axis: .vertical
             )
             .lineLimit(6)
-            .padding(.vertical, GedSpacing.small)
+            .padding(.vertical, Dimens.smallPadding)
             
             if !text.isBlank() {
                 Button(
@@ -136,27 +136,27 @@ struct MessageInput: View {
                             .frame(width: 20, height: 20)
                     }
                 )
-                .padding(.horizontal, GedSpacing.medium)
+                .padding(.horizontal, Dimens.mediumPadding)
                 .padding(.vertical, 8)
                 .background(.gedPrimary)
                 .foregroundStyle(.white)
                 .clipShape(.rect(cornerRadius: 20))
             }
         }
-        .padding(.leading, GedSpacing.medium)
-        .padding(.trailing, GedSpacing.small)
-        .padding(.vertical, GedSpacing.extraSmall)
+        .padding(.leading, Dimens.mediumPadding)
+        .padding(.trailing, Dimens.smallPadding)
+        .padding(.vertical, Dimens.extraSmallPadding)
         .background(.chatInputBackground)
         .clipShape(.rect(cornerRadius: 30))
-        .padding(.bottom, GedSpacing.small)
+        .padding(.bottom, Dimens.smallPadding)
     }
     
     var messagePlaceholder: Text {
         if #available(iOS 17.0, *) {
-            Text(getString(.messagePlaceholder))
+            Text(stringResource(.messagePlaceholder))
                 .foregroundStyle(.chatInputForeground)
         } else {
-            Text(getString(.messagePlaceholder))
+            Text(stringResource(.messagePlaceholder))
                 .foregroundColor(.chatInputForeground)
         }
     }
@@ -168,12 +168,12 @@ struct NewMessageIndicator: View {
     var body: some View {
         Clickable(action: onClick) {
             ZStack {
-                Text(getString(.newMessages))
+                Text(stringResource(.newMessages))
                     .foregroundStyle(.black)
                     .font(.footnote)
                     .fontWeight(.medium)
-                    .padding(.horizontal, GedSpacing.large)
-                    .padding(.vertical, GedSpacing.smallMedium)
+                    .padding(.horizontal, Dimens.largePadding)
+                    .padding(.vertical, Dimens.smallMediumPadding)
             }
             .background(.white)
             .clipShape(.rect(cornerRadius: 8))
@@ -187,25 +187,25 @@ struct MessageBlockedUserIndicator: View {
     let onUnblockUserClick: () -> Void
     
     var body: some View {
-        VStack(spacing: GedSpacing.medium) {
-            VStack(spacing: GedSpacing.small) {
-                Text(getString(.blockedUser))
+        VStack(spacing: Dimens.mediumPadding) {
+            VStack(spacing: Dimens.smallPadding) {
+                Text(stringResource(.blockedUser))
                     .font(.titleSmall)
                 
-                Text(getString(.chatBlockedUserIndicatorText))
+                Text(stringResource(.chatBlockedUserIndicatorText))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.informationText)
                     .font(.bodySmall)
             }
                 
             HStack {
-                Button(getString(.delete)) {
+                Button(stringResource(.delete)) {
                     onDeleteChatClick()
                 }
                 .foregroundStyle(.red)
                 .frame(maxWidth: .infinity, alignment: .center)
                 
-                Button(getString(.unblock)) {
+                Button(stringResource(.unblock)) {
                     onUnblockUserClick()
                 }
                 .foregroundStyle(.gedPrimary)
@@ -216,7 +216,7 @@ struct MessageBlockedUserIndicator: View {
 }
 
 #Preview {
-    VStack(spacing: GedSpacing.medium) {
+    VStack(spacing: Dimens.mediumPadding) {
         ReceiveMessageItem(
             message: messageFixture,
             profilePictureUrl: nil,
