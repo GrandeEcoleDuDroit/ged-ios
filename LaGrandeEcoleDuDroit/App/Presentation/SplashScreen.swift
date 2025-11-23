@@ -5,7 +5,7 @@ struct SplashScreen: View {
 
     var body: some View {
         Image(.gedLogo)
-            .fit(scale: 2)
+            .resize(scale: 2)
             .scaleEffect(isAnimating ? 1 : 0.9)
             .onAppear() {
                 withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {

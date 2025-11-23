@@ -18,7 +18,7 @@ private struct DefaultImage: View {
     
     var body: some View {
         Image(systemName: "target")
-            .fit(scale: scale)
+            .resize(scale: scale)
             .foregroundStyle(.defaultImageForeground)
             .padding(Dimens.mediumPadding)
             .frame(maxWidth: .infinity, maxHeight: .infinity)

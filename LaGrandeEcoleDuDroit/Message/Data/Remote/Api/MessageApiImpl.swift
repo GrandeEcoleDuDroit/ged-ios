@@ -58,7 +58,7 @@ class MessageApiImpl: MessageApi {
         try await conversationCollection
             .document(remoteMessage.conversationId)
             .collection(messageTableName)
-            .document(remoteMessage.messageId.toString())
+            .document(remoteMessage.messageId)
             .updateData([MessageField.Remote.seen: remoteMessage.seen])
     }
     

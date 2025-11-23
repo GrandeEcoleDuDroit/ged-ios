@@ -33,7 +33,7 @@ class DeleteAccountUseCase {
         try await userRepository.updateRemoteUser(user: deletedUser)
         if let profilePictureUrl = user.profilePictureUrl,
             let fileName = UrlUtils.extractFileName(url: profilePictureUrl) {
-            try await imageRepository.deleteImage(fileName: fileName)
+            try await imageRepository.deleteRemoteImage(fileName: fileName)
         }
         userRepository.deleteLocalUser()
     }

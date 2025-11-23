@@ -40,14 +40,14 @@ class EditAnnouncementViewModel: ViewModel {
         }
         
         uiState.loading = true
-        let title = uiState.title.trimmingCharacters(in: .whitespacesAndNewlines)
-        let content = uiState.content.trimmingCharacters(in: .whitespacesAndNewlines)
+        let title = uiState.title.trim()
+        let content = uiState.content.trim()
                                                          
         Task { @MainActor [weak self] in
             do {
                 guard let announcement = self?.announcement.copy({
-                    $0.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
-                    $0.content = content.trimmingCharacters(in: .whitespacesAndNewlines)
+                    $0.title = title.trim()
+                    $0.content = content.trim()
                 }) else {
                     return
                 }

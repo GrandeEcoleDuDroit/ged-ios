@@ -40,10 +40,8 @@ private struct FirstRegistrationView: View {
             
             OutlineTextField(
                 label: stringResource(.firstName),
-                text: Binding(
-                    get: { firstName },
-                    set: onFirstNameChange
-                ),
+                text: firstName,
+                onTextChange: onFirstNameChange,
                 errorMessage: firstNameError,
                 focusState: _focusState,
                 field: .firstName
@@ -51,10 +49,8 @@ private struct FirstRegistrationView: View {
             
             OutlineTextField(
                 label: stringResource(.lastName),
-                text: Binding(
-                    get: { lastName },
-                    set: onLastNameChange
-                ),
+                text: lastName,
+                onTextChange: onLastNameChange,
                 errorMessage: lastNameError,
                 focusState: _focusState,
                 field: .lastName

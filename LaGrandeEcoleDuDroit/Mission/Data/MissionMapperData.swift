@@ -24,9 +24,9 @@ extension Mission {
         
         let imageReference: String? = switch state {
             case .draft: nil
-            case .publishing(let imagePath): imagePath
-            case .published(let imageUrl): imageUrl
-            case .error(let imagePath): imagePath
+            case let .publishing(imageFileName):imageFileName
+            case let .published(imageUrl): imageUrl
+            case let .error(imageFileName): imageFileName
         }
         
         let localMission = LocalMission()
@@ -127,19 +127,15 @@ extension LocalMission {
         ) ?? []
         
         let state: Mission.MissionState = switch missionState {
-            case _ where missionState == Mission.MissionState.MissionStateType.draft.rawValue:
-                    .draft(imageUri: missionImageReference)
+            case _ where missionState == Mission.MissionState.MissionStateType.draft.rawValue: .draft
                 
             case _ where missionState == Mission.MissionState.MissionStateType.publishing.rawValue:
-                    .publishing(imagePath: missionImageReference)
-                
-            case _ where missionState == Mission.MissionState.MissionStateType.publishing.rawValue:
-                    .publishing(imagePath: missionImageReference)
+                    .publishing(imageFileName: missionImageReference)
                 
             case _ where missionState == Mission.MissionState.MissionStateType.published.rawValue:
                     .published(imageUrl: missionImageReference)
                 
-            default: Mission.MissionState.error(imagePath: missionImageReference)
+            default: Mission.MissionState.error(imageFileName: missionImageReference)
         }
         
         return Mission(
@@ -173,9 +169,9 @@ extension LocalMission {
         
         let imageReference: String? = switch mission.state {
             case .draft: nil
-            case .publishing(let imagePath): imagePath
-            case .published(let imageUrl): imageUrl
-            case .error(let imagePath): imagePath
+            case let .publishing(imageFileName): imageFileName
+            case let .published(imageUrl): imageUrl
+            case let .error(imageFileName): imageFileName
         }
         
         missionId = mission.id
@@ -224,9 +220,9 @@ extension LocalMission {
         
         let imageReference: String? = switch mission.state {
             case .draft: nil
-            case .publishing(let imagePath): imagePath
-            case .published(let imageUrl): imageUrl
-            case .error(let imagePath): imagePath
+            case let .publishing(imageFileName): imageFileName
+            case let .published(imageUrl): imageUrl
+            case let .error(imageFileName): imageFileName
         }
         
         let sameSchoolLevels = if let data = schoolLevelNumbersJsonData {

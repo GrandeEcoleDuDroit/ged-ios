@@ -2,7 +2,7 @@ import SwiftUI
 
 extension Color {
     init(_ hex: String) {
-        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        var hexSanitized = hex.trim()
         if hexSanitized.hasPrefix("#") {
             hexSanitized.removeFirst()
         }

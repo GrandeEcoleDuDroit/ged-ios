@@ -3,6 +3,7 @@ import Combine
 
 class CreateAnnouncementViewModel: ViewModel {
     private let userRepository: UserRepository
+    private let generateIdUseCase: GenerateIdUseCase
     private let createAnnouncementUseCase: CreateAnnouncementUseCase
     
     @Published var uiState: CreateAnnouncementUiState = CreateAnnouncementUiState()
@@ -11,10 +12,12 @@ class CreateAnnouncementViewModel: ViewModel {
 
     init(
         createAnnouncementUseCase: CreateAnnouncementUseCase,
+        generateIdUseCase: GenerateIdUseCase,
         userRepository: UserRepository
     ) {
         self.createAnnouncementUseCase = createAnnouncementUseCase
         self.userRepository = userRepository
+        self.generateIdUseCase = generateIdUseCase
         self.currentUser = userRepository.currentUser
     }
     
@@ -26,9 +29,9 @@ class CreateAnnouncementViewModel: ViewModel {
         let title: String? = !uiState.title.isBlank() ? uiState.title : nil
         
         let announcement = Announcement(
-            id: GenerateIdUseCase.stringId(),
+            id: generateIdUseCase.execute(),
             title: title,
-            content: uiState.content.trimmingCharacters(in: .whitespacesAndNewlines),
+            content: uiState.content.trim(),
             date: Date(),
             author: currentUser,
             state: .draft
@@ -64,7 +67,6 @@ class CreateAnnouncementViewModel: ViewModel {
     struct CreateAnnouncementUiState {
         var title: String = ""
         var content: String = ""
-        fileprivate(set) var loading: Bool = false
         fileprivate(set) var enableCreate: Bool = false
     }
 }

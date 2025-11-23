@@ -16,7 +16,7 @@ class ImageApiImpl: ImageApi {
         
         var body = Data()
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"image\"; fileName=\"\(fileName)\"\r\n".data(using: .utf8)!)
         body.append("Content-Type: image/\(fileExtension)\r\n\r\n".data(using: .utf8)!)
         body.append(imageData)
         body.append("\r\n".data(using: .utf8)!)

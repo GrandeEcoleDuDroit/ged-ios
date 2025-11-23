@@ -69,8 +69,8 @@ class MissionViewModel: ViewModel {
     }
     
     struct MissionUiState {
-        var user: User? = nil
-        var missions: [Mission] = []
-        var loading: Bool = false
+        fileprivate(set) var user: User? = nil
+        fileprivate(set) var missions: [Mission] = []
+        fileprivate(set) var loading: Bool = false
     }
 }

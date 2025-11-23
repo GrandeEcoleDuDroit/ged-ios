@@ -132,19 +132,14 @@ private struct ConversationItemStructure<Content: View>: View {
     }
     
     var body: some View {
-        Clickable(action: onClick) {
-            HStack(alignment: .center) {
-                ProfilePicture(url: interlocutor.profilePictureUrl, scale: 0.45)
-                content
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal)
-            .padding(.vertical, Dimens.smallMediumPadding)
-            .contentShape(Rectangle())
-            .onLongPressGesture {
-                onLongClick()
-            }
+        HStack(alignment: .center) {
+            ProfilePicture(url: interlocutor.profilePictureUrl, scale: 0.45)
+            content
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal)
+        .padding(.vertical, Dimens.smallMediumPadding)
+        .contentShape(Rectangle())
     }
 }
 
@@ -199,7 +194,6 @@ private struct DefaultConversationItemContent: View {
             HStack {
                 Text(interlocutorName)
                     .fontWeight(fontWeight)
-                    .truncationMode(.tail)
                 
                 Text(elapsedTimeText)
                     .foregroundStyle(textColor)
@@ -210,7 +204,6 @@ private struct DefaultConversationItemContent: View {
                 .fontWeight(fontWeight)
                 .foregroundStyle(textColor)
                 .lineLimit(1)
-                .truncationMode(.tail)
         }
     }
 }
@@ -240,51 +233,52 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String 
     switch elapsedTime {
         case .now(_):
             stringResource(.now)
+            
         case.minute(let minutes):
             stringResource(.minutesAgoShort, minutes)
+            
         case .hour(let hours):
             stringResource(.hoursAgoShort, hours)
+            
         case .day(let days):
             stringResource(.daysAgoShort, days)
+            
         case .week(let weeks):
             stringResource(.weeksAgoShort, weeks)
+            
         default:
             date.formatted(.dateTime.year().month().day())
     }
 }
 
 #Preview {
-    VStack(alignment: .leading, spacing: 0) {
-        SwitchConversationItem(
-            interlocutor: userFixture,
-            conversationState: .created,
-            lastMessage: messageFixture,
-            isUnread: false,
-            text: messageFixture.content,
-            onClick: {},
-            onLongClick: {}
-        )
-        
-        SwitchConversationItem(
-            interlocutor: userFixture,
-            conversationState: .created,
-            lastMessage: messageFixture,
-            isUnread: true,
-            text: messageFixture.content,
-            onClick: {},
-            onLongClick: {}
-        )
-        
-        SwitchConversationItem(
-            interlocutor: userFixture,
-            conversationState: .creating,
-            lastMessage: messageFixture,
-            isUnread: false,
-            text: messageFixture.content,
-            onClick: {},
-            onLongClick: {}
-        )
-    }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .background(Color.background)
+    SwitchConversationItem(
+        interlocutor: userFixture,
+        conversationState: .created,
+        lastMessage: messageFixture,
+        isUnread: false,
+        text: messageFixture.content,
+        onClick: {},
+        onLongClick: {}
+    )
+    
+    SwitchConversationItem(
+        interlocutor: userFixture,
+        conversationState: .created,
+        lastMessage: messageFixture,
+        isUnread: true,
+        text: messageFixture.content,
+        onClick: {},
+        onLongClick: {}
+    )
+    
+    SwitchConversationItem(
+        interlocutor: userFixture,
+        conversationState: .creating,
+        lastMessage: messageFixture,
+        isUnread: false,
+        text: messageFixture.content,
+        onClick: {},
+        onLongClick: {}
+    )
 }

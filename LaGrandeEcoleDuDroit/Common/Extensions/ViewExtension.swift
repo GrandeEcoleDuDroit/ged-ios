@@ -13,7 +13,7 @@ extension View {
                 }
             )
             .background(
-                Color(.click)
+                Color(.highlight)
                     .opacity(isClicked.wrappedValue ? 1 : 0)
                     .animation(.easeInOut(duration: 0.1), value: isClicked.wrappedValue)
             )
@@ -34,5 +34,15 @@ extension View {
                         .ignoresSafeArea()
                 }
             }
+    }
+    
+    func outlined(borderColor: Color = .outline) -> some View {
+        self
+            .padding()
+            .overlay(
+                RoundedRectangle(cornerRadius: 5)
+                    .stroke(borderColor, lineWidth: 2)
+            )
+            .cornerRadius(5)
     }
 }

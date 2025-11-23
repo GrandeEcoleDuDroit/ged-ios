@@ -1,10 +1,18 @@
 extension String {
+    func trim() -> String {
+        self.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
     func isBlank() -> Bool {
-        self.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        self.trim().isEmpty
+    }
+    
+    func isNotBlank() -> Bool {
+        !self.trim().isEmpty
     }
     
     func trimmedAndCapitalizedFirstLetter() -> String {
-        let trimmedText = self.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedText = self.trim()
         
         guard !trimmedText.isEmpty else {
             return ""
@@ -20,6 +28,18 @@ extension String {
         let firstLetter = self.prefix(1).uppercased()
         let remainingText = self.dropFirst()
         return firstLetter + remainingText
+    }
+    
+    func toInt() -> Int {
+        Int(self)!
+    }
+    
+    func toIntOrDefault(_ value: Int) -> Int {
+        Int(self) ?? value
+    }
+    
+    func take(_ n: Int) -> String {
+        String(self.prefix(n))
     }
 }
 

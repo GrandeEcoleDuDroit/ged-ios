@@ -3,24 +3,23 @@ import SwiftUI
 struct MissionNavigation: View {
     private var viewModel = MissionMainThreadInjector.shared.resolve(MissionNavigationViewModel.self)
     @EnvironmentObject private var tabBarVisibility: TabBarVisibility
-    @State var path: [MissionRoute] = []
+    @State private var path: [MissionRoute] = []
 
     var body: some View {
         NavigationStack(path: $path) {
             MissionDestination(
-                onMissionClick: { missionId in
-                    path.append(.mission(missionId: missionId))
-                }
+                onMissionClick: { _ in },
+                onCreateMissionClick: { path.append(.createMission) }
             )
             .onAppear {
                 tabBarVisibility.show = true
-                viewModel.setCurrentRoute(MessageMainRoute.conversation)
+                viewModel.setCurrentRoute(MissionMainRoute.mission)
             }
             .background(Color.background)
             .navigationDestination(for: MissionRoute.self) { route in
                 switch route {
-                    case .mission:
-                        EmptyView()
+                    case .createMission:
+                        CreateMissionDestination(onBackClick: { path.removeLast() })
                             .onAppear {
                                 tabBarVisibility.show = false
                                 viewModel.setCurrentRoute(route)
@@ -33,7 +32,7 @@ struct MissionNavigation: View {
 }
 
 enum MissionRoute: Route {
-    case mission(missionId: String)
+    case createMission
 }
 
 enum MissionMainRoute: MainRoute {

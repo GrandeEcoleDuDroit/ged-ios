@@ -93,7 +93,7 @@ actor MessageCoreDataActor {
         try await context.perform {
             let request = LocalMessage.fetchRequest()
             request.predicate = NSPredicate(
-                format: "%K == %lld",
+                format: "%K == %@",
                 MessageField.Local.messageId, message.id
             )
             let localMessages = try self.context.fetch(request)
@@ -115,7 +115,7 @@ actor MessageCoreDataActor {
         try await context.perform {
             let request = LocalMessage.fetchRequest()
             request.predicate = NSPredicate(
-                format: "%K == %lld",
+                format: "%K == %@",
                 MessageField.Local.messageId, message.id
             )
             
@@ -145,11 +145,11 @@ actor MessageCoreDataActor {
         }
     }
     
-    func deleteMessage(messageId: Int64) async throws -> Message? {
+    func deleteMessage(messageId: String) async throws -> Message? {
         try await context.perform {
             let request = LocalMessage.fetchRequest()
             request.predicate = NSPredicate(
-                format: "%K == %lld",
+                format: "%K == %@",
                 MessageField.Local.messageId, messageId
             )
             

@@ -2,7 +2,7 @@ import SwiftUI
 import Combine
 
 class FirstRegistrationViewModel: ViewModel {
-    @Published var uiState: FirstRegistrationUiState = FirstRegistrationUiState()
+    @Published private(set) var uiState = FirstRegistrationUiState()
     
     func onFirstNameChanged(_ firstName: String) {
         uiState.firstName = validName(firstName)
@@ -26,8 +26,8 @@ class FirstRegistrationViewModel: ViewModel {
     }
     
     struct FirstRegistrationUiState {
-        var firstName: String = ""
-        var lastName: String = ""
+        fileprivate(set) var firstName: String = ""
+        fileprivate(set) var lastName: String = ""
         fileprivate(set) var firstNameError: String? = nil
         fileprivate(set) var lastNameError: String? = nil
     }

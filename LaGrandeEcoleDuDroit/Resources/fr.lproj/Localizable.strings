@@ -37,6 +37,9 @@
 "resend" = "Renvoyer";
 "loading" = "Chargement";
 "send" = "Envoyer";
+"publish" = "Publier";
+"add" = "Ajouter";
+"search" = "Rechercher";
 "minutes_ago_short" = "%d min";
 "hours_ago_short" = "%d h";
 "days_ago_short" = "%d j";
@@ -50,6 +53,7 @@
 "block_user_alert_title" = "Bloquer utilisateur ?";
 "block_user_alert_message" = "Vous ne verrez plus aucun de ses contenus.";
 "unblock_user_alert_message" = "Voulez-vous débloquer cet utilisateur ?";
+"no_user" = "Aucun utilisateur";
 
 // Common error
 "mandatory_field_error" = "Champs obligatoire.";
@@ -107,7 +111,6 @@
 "edit_announcement" = "Editer Annonce";
 "title" = "Titre";
 "content" = "Contenu";
-"post" = "Poster";
 "no_announcement" = "Aucune annonce";
 "delete_announcement_alert_message" = "Voulez-vous supprimer cette annonce ?";
 "see_all" = "Voir tout";
@@ -128,6 +131,21 @@
 
 // Mission
 "mission" = "Mission";
+"new_mission" = "Nouvelle mission";
 "participant_number" = "%d/%d";
 "no_mission" = "No mission";
 "delete_mission_alert_message" = "Voulez-vous supprimer cette mission ?";
+"add_image" = "Ajouter image";
+"mission_title_field" = "Titre";
+"mission_description_field" = "Description";
+"information" = "Information";
+"mission_start_date_field" = "Date de début";
+"mission_end_date_field" = "Date de fin";
+"everyone" = "Tout le monde";
+"mission_max_participants_field" = "Participants max";
+"mission_duration_field" = "Durée (optionnel)";
+"managers" = "Gérants";
+"add_manager" = "Ajouter gérant";
+"tasks" = "Tâches";
+"add_task" = "Ajouter tâche";
+"enter_task" = "Entrer tâche";

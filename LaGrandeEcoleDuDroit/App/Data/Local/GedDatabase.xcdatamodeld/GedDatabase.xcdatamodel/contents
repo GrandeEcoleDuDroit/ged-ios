@@ -34,7 +34,7 @@
     <entity name="LocalMessage" representedClassName="LocalMessage" syncable="YES" codeGenerationType="class">
         <attribute name="messageContent" attributeType="String"/>
         <attribute name="messageConversationId" attributeType="String"/>
-        <attribute name="messageId" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="messageId" attributeType="String"/>
         <attribute name="messageRecipientId" optional="YES" attributeType="String"/>
         <attribute name="messageSeen" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="messageSenderId" attributeType="String"/>
