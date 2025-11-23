@@ -154,10 +154,10 @@ struct MessageInput: View {
     var messagePlaceholder: Text {
         if #available(iOS 17.0, *) {
             Text(stringResource(.messagePlaceholder))
-                .foregroundStyle(.chatInputForeground)
+                .foregroundStyle(.onSurfaceVariant)
         } else {
             Text(stringResource(.messagePlaceholder))
-                .foregroundColor(.chatInputForeground)
+                .foregroundColor(.onSurfaceVariant)
         }
     }
 }

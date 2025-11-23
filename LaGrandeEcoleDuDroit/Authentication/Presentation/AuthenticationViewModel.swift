@@ -6,7 +6,7 @@ class AuthenticationViewModel: ViewModel {
     private let networkMonitor: NetworkMonitor
     private var cancellables: Set<AnyCancellable> = []
 
-    @Published var uiState: AuthenticationUiState = AuthenticationUiState()
+    @Published private(set) var uiState: AuthenticationUiState = AuthenticationUiState()
     @Published private(set) var event: SingleUiEvent? = nil
     
     init(
@@ -38,6 +38,14 @@ class AuthenticationViewModel: ViewModel {
                 self?.uiState.password = ""
             }
         }
+    }
+    
+    func onEmailChange(_ email: String) {
+        uiState.email = email
+    }
+    
+    func onPasswordChange(_ password: String) {
+        uiState.password = password
     }
     
     private func validateInputs(email: String, password: String) -> Bool {
@@ -79,11 +87,11 @@ class AuthenticationViewModel: ViewModel {
     }
     
     struct AuthenticationUiState {
-        var email: String = ""
-        var password: String = ""
-        var emailError: String? = nil
-        var passwordError: String? = nil
-        var errorMessage: String? = nil
-        var loading: Bool = false
+        fileprivate(set) var email: String = ""
+        fileprivate(set) var password: String = ""
+        fileprivate(set) var emailError: String? = nil
+        fileprivate(set) var passwordError: String? = nil
+        fileprivate(set) var errorMessage: String? = nil
+        fileprivate(set) var loading: Bool = false
     }
 }

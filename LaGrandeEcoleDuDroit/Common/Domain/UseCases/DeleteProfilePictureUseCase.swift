@@ -13,7 +13,7 @@ class DeleteProfilePictureUseCase {
     func execute(userId: String, profilePictureUrl: String) async throws {
         try await userRepository.deleteProfilePictureFileName(userId: userId)
         if let fileName = profilePictureUrl.split(separator: "/").last {
-            try await imageRepository.deleteImage(fileName: String(fileName))
+            try await imageRepository.deleteRemoteImage(fileName: String(fileName))
         }
     }
 }

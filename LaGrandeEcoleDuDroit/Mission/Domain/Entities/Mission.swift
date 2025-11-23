@@ -25,10 +25,10 @@ struct Mission: Copyable, Identifiable, Hashable {
     }
  
     enum MissionState: Hashable {
-        case draft(imageUri: String? = nil)
-        case publishing(imagePath: String? = nil)
+        case draft
+        case publishing(imageFileName: String? = nil)
         case published(imageUrl: String? = nil)
-        case error(imagePath: String? = nil)
+        case error(imageFileName: String? = nil)
 
         enum MissionStateType: String {
             case draft = "DRAFT"

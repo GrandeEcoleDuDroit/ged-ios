@@ -10,7 +10,7 @@ struct ProfilePicture: View {
                 switch phase {
                     case .empty: LoadingImage(scale: scale).clipShape(Circle())
                         
-                    case let .success(image): image.fit(scale: scale).clipShape(Circle())
+                    case let .success(image): image.resize(scale: scale).clipShape(Circle())
                         
                     case .failure: ErrorImage(scale: scale).clipShape(Circle())
                         
@@ -48,7 +48,7 @@ struct ClickableProfilePicture: View {
                         
                     case .success(let image):
                         Clickable(action: onClick) {
-                            image.fit(scale: scale).clipShape(Circle())
+                            image.resize(scale: scale).clipShape(Circle())
 
                         }
                         .clipShape(Circle())
@@ -102,7 +102,7 @@ struct SimpleAsyncImage: View {
             switch phase {
                 case .empty: LoadingImage(scale: scale)
 
-                case .success(let image): image.fit(scale: scale)
+                case .success(let image): image.resize(scale: scale)
 
                 case .failure: ErrorImage(scale: scale)
                     
@@ -117,7 +117,7 @@ private struct DefaultProfilePicture: View {
     
     var body: some View {
         Image(ImageResource.defaultProfilePicture)
-            .fit(scale: scale)
+            .resize(scale: scale)
             .clipShape(Circle())
     }
 }
@@ -129,7 +129,7 @@ private struct ClickableDefaultProfilePicture: View {
     var body: some View {
         Clickable(action: onClick) {
             Image(ImageResource.defaultProfilePicture)
-                .fit(scale: scale)
+                .resize(scale: scale)
                 .clipShape(Circle())
         }
         .clipShape(Circle())

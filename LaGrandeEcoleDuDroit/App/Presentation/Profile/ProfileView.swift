@@ -32,13 +32,8 @@ private struct ProfileView: View {
             if let user {
                 List {
                     Section {
-                        Button(
-                            action: onAccountInfosClick
-                        ) {
-                            HStack(
-                                alignment: .center,
-                                spacing: Dimens.mediumPadding
-                            ) {
+                        Button(action: onAccountInfosClick) {
+                            HStack(spacing: Dimens.mediumPadding) {
                                 ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
                                 
                                 VStack(alignment: .leading) {
@@ -50,9 +45,8 @@ private struct ProfileView: View {
                                         .font(.footnote)
                                         .foregroundStyle(.secondary)
                                 }
-                                
-                                Spacer()
-                                
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                                                
                                 Image(systemName: "chevron.right")
                                     .foregroundStyle(.gray)
                             }
@@ -60,17 +54,19 @@ private struct ProfileView: View {
                     }
                     
                     Section {
-                        MenuItem(
-                            icon: Image(systemName: "key"),
-                            title: stringResource(.account),
-                            onClick: onAccountClick
-                        )
+                        Button(action: onAccountClick) {
+                            ListItem(
+                                image: Image(systemName: "key"),
+                                text: Text(stringResource(.account))
+                            )
+                        }
                         
-                        MenuItem(
-                            icon: Image(systemName: "lock"),
-                            title: stringResource(.privacy),
-                            onClick: onPrivacyClick
-                        )
+                        Button(action: onPrivacyClick) {
+                            ListItem(
+                                image: Image(systemName: "lock"),
+                                text: Text(stringResource(.privacy))
+                            )
+                        }
                     }
                     
                     Section {

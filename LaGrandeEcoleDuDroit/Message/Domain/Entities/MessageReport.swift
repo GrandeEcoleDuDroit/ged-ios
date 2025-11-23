@@ -1,6 +1,6 @@
 struct MessageReport {
     let conversationId: String
-    let messageId: Int64
+    let messageId: String
     let recipientInfo: UserInfo
     let reason: Reason
     

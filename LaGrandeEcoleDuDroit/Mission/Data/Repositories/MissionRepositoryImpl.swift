@@ -1,4 +1,5 @@
 import Combine
+import Foundation
 
 class MissionRepositoryImpl: MissionRepository {
     private let missionLocalDataSource: MissionLocalDataSource
@@ -40,6 +41,11 @@ class MissionRepositoryImpl: MissionRepository {
     
     func getRemoteMissions() async throws -> [Mission] {
         try await missionRemoteDataSource.getMissions()
+    }
+    
+    func createMission(mission: Mission, imageFileName: String?, imageData: Data?) async throws {
+        try await missionLocalDataSource.upsertMission(mission: mission)
+        try await missionRemoteDataSource.createMission(mission: mission, imageFileName: imageFileName, imageData: imageData)
     }
     
     func upsertLocalMission(mission: Mission) async throws {

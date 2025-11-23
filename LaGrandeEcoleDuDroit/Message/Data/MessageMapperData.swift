@@ -22,7 +22,7 @@ extension Message {
     }
     
     func buildLocal(localMessage: LocalMessage) {
-        localMessage.messageId = Int64(id)
+        localMessage.messageId = id
         localMessage.messageConversationId = conversationId
         localMessage.messageSenderId = senderId
         localMessage.messageRecipientId = recipientId
@@ -35,7 +35,8 @@ extension Message {
 
 extension LocalMessage {
     func toMessage() -> Message? {
-        guard let messageContent = messageContent,
+        guard let messageId = messageId,
+              let messageContent = messageContent,
               let messageTimestamp = messageTimestamp,
               let messageSenderId = messageSenderId,
               let messageRecipientId = messageRecipientId,

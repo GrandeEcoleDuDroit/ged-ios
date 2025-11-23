@@ -1,17 +1,19 @@
 import SwiftUI
 
-struct OutlineTextField: View {
+struct OutlineTextField<Leading: View>: View {
     let label: String
-    @Binding var text: String
-    let isDisabled: Bool
+    let text: String
+    let onTextChange: (String) -> Void
+    let disabled: Bool
     let errorMessage: String?
     @FocusState var focusState: Field?
-    let field: Field
+    let field: Field?
+    let leading: Leading
     
     private var borderColor: Color {
         if errorMessage != nil {
             .error
-        } else if isDisabled {
+        } else if disabled {
             .disableBorder
         } else {
             .outline
@@ -26,16 +28,16 @@ struct OutlineTextField: View {
         }
     }
     
-    private var labelColor: Color {
-        if isDisabled {
+    private var placeHolderColor: Color {
+        if disabled {
             .disableText
         } else {
-            .outline
+            .onSurfaceVariant
         }
     }
     
     private var textColor: Color {
-        if isDisabled {
+        if disabled {
             .disableText
         } else {
             .primary
@@ -44,36 +46,42 @@ struct OutlineTextField: View {
     
     init(
         label: String,
-        text: Binding<String>,
-        isDisable: Bool = false,
+        text: String,
+        onTextChange: @escaping (String) -> Void,
+        disabled: Bool = false,
         errorMessage: String? = nil,
-        focusState: FocusState<Field?>,
-        field: Field
+        focusState: FocusState<Field?>? = nil,
+        field: Field? = nil,
+        @ViewBuilder leading: () -> Leading = { EmptyView() }
     ) {
         self.label = label
-        self._text = text
-        self.isDisabled = isDisable
+        self.text = text
+        self.onTextChange = onTextChange
+        self.disabled = disabled
         self.errorMessage = errorMessage
-        self._focusState = focusState
+        self._focusState = focusState ?? FocusState()
         self.field = field
+        self.leading = leading()
     }
     
     var body: some View {
         VStack(alignment: .leading) {
-            TextField(
-                "",
-                text: $text,
-                prompt: Text(label).foregroundColor(labelColor)
-            )
-            .foregroundStyle(textColor)
-            .focused($focusState, equals: field)
-            .padding()
-            .overlay(
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(borderColor, lineWidth: 2)
-            )
-            .cornerRadius(5)
-            .disabled(isDisabled)
+            HStack(spacing: Dimens.leadingIconSpacing) {
+                leading.foregroundStyle(placeHolderColor)
+                
+                TextField(
+                    "",
+                    text: Binding(
+                        get: { text },
+                        set: onTextChange
+                    ),
+                    prompt: Text(label).foregroundColor(placeHolderColor),
+                )
+                .foregroundStyle(textColor)
+                .focused($focusState, equals: field)
+            }
+            .outlined(borderColor: borderColor)
+            .disabled(disabled)
             
             if errorMessage != nil {
                 Text(errorMessage!)
@@ -87,7 +95,8 @@ struct OutlineTextField: View {
 
 struct OutlinePasswordTextField: View {
     let label: String
-    @Binding var text: String
+    let text: String
+    let onTextChange: (String) -> Void
     let isDisabled: Bool
     let errorMessage: String?
     @FocusState var focusState: Field?
@@ -117,11 +126,11 @@ struct OutlinePasswordTextField: View {
         showPassword ? 15.5 : 16
     }
     
-    private var labelColor: Color {
+    private var placeHolderColor: Color {
         if isDisabled {
             .disableText
         } else {
-            .outline
+            .onSurfaceVariant
         }
     }
     
@@ -135,14 +144,16 @@ struct OutlinePasswordTextField: View {
     
     init(
         label: String,
-        text: Binding<String>,
+        text: String,
+        onTextChange: @escaping (String) -> Void,
         isDisable: Bool = false,
         errorMessage: String? = nil,
         focusState: FocusState<Field?>,
         field: Field
     ) {
         self.label = label
-        self._text = text
+        self.text = text
+        self.onTextChange = onTextChange
         self.isDisabled = isDisable
         self.errorMessage = errorMessage
         self._focusState = focusState
@@ -155,8 +166,11 @@ struct OutlinePasswordTextField: View {
                 if(!showPassword) {
                     SecureField(
                         "",
-                        text: $text,
-                        prompt: Text(label).foregroundColor(labelColor)
+                        text: Binding(
+                            get: { text },
+                            set: onTextChange
+                        ),
+                        prompt: Text(label).foregroundColor(placeHolderColor)
                     )
                     .foregroundColor(textColor)
                     .textInputAutocapitalization(.never)
@@ -164,15 +178,18 @@ struct OutlinePasswordTextField: View {
                     .focused($focusState, equals: field)
                     
                     Image(systemName: "eye.slash")
-                        .foregroundColor(.iconInput)
+                        .foregroundColor(placeHolderColor)
                         .onTapGesture {
                             showPassword = true
                         }
                 } else {
                     TextField(
                         "",
-                        text: $text,
-                        prompt: Text(label).foregroundColor(labelColor)
+                        text: Binding(
+                            get: { text },
+                            set: onTextChange
+                        ),
+                        prompt: Text(label).foregroundColor(placeHolderColor)
                     )
                     .foregroundColor(textColor)
                     .textInputAutocapitalization(.never)
@@ -180,7 +197,7 @@ struct OutlinePasswordTextField: View {
                     .focused($focusState, equals: field)
                 
                     Image(systemName: "eye")
-                        .foregroundColor(.iconInput)
+                        .foregroundColor(placeHolderColor)
                         .onTapGesture {
                             showPassword = false
                         }
@@ -206,23 +223,21 @@ struct OutlinePasswordTextField: View {
 }
 
 #Preview {
-    VStack(spacing: Dimens.largePadding) {
-        OutlineTextField(
-            label: "Email",
-            text: .constant(""),
-            isDisable: false,
-            errorMessage: nil,
-            focusState: FocusState<Field?>(),
-            field: .email
-        )
-        
-        OutlinePasswordTextField(
-            label: "Password",
-            text: .constant(""),
-            isDisable: false,
-            errorMessage: nil,
-            focusState: FocusState<Field?>(),
-            field: .password
-        )
-    }.padding()
+    OutlineTextField(
+        label: "Email",
+        text: "",
+        onTextChange: { _ in },
+        disabled: false,
+        errorMessage: nil
+    )
+    
+    OutlinePasswordTextField(
+        label: "Password",
+        text: "",
+        onTextChange: { _ in },
+        isDisable: false,
+        errorMessage: nil,
+        focusState: FocusState<Field?>(),
+        field: .password
+    )
 }

@@ -21,10 +21,11 @@ private struct PrivacyView: View {
     
     var body: some View {
         List {
-            MenuItem(
-                title: stringResource(.blockedUsers),
-                onClick: onBlockedUsersClick
-            )
+            Button(action: onBlockedUsersClick) {
+                ListItem(
+                    text: Text(stringResource(.blockedUsers))
+                )
+            }
         }
         .navigationTitle(stringResource(.privacy))
         .navigationBarTitleDisplayMode(.inline)

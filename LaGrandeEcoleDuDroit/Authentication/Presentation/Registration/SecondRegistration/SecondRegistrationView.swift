@@ -38,12 +38,12 @@ private struct SecondRegistrationView: View {
                     stringResource(.selectSchoolLevel),
                     selection: $schoolLevel
                 ) {
-                    ForEach(SchoolLevel.allCases) { level in
+                    ForEach(schoolLevels) { level in
                         Text(level.rawValue).tag(level)
                     }
                 }
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, Dimens.mediumPadding)
             .padding(.vertical, 10)
             .overlay(
                 RoundedRectangle(cornerRadius: 5)

@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct ThirdRegistrationForm: View {
-    @Binding var email: String
-    @Binding var password: String
+    let email: String
+    let onEmailChange: (String) -> Void
+    let password: String
+    let onPasswordChange: (String) -> Void
     let loading: Bool
     let emailError: String?
     let passwordError: String?
@@ -20,8 +22,9 @@ struct ThirdRegistrationForm: View {
             
             OutlineTextField(
                 label: stringResource(.email),
-                text: $email,
-                isDisable: loading,
+                text: email,
+                onTextChange: onEmailChange,
+                disabled: loading,
                 errorMessage: emailError,
                 focusState: _focusState,
                 field: .email
@@ -31,7 +34,8 @@ struct ThirdRegistrationForm: View {
             
             OutlinePasswordTextField(
                 label: stringResource(.password),
-                text: $password,
+                text: password,
+                onTextChange: onPasswordChange,
                 isDisable: loading,
                 errorMessage: passwordError,
                 focusState: _focusState,
@@ -41,9 +45,10 @@ struct ThirdRegistrationForm: View {
             
             HStack {
                 CheckBox(
-                    checked: legalNoticeChecked,
-                    onCheckedChange: onLegalNoticeCheckedChange
-                )
+                    checked: legalNoticeChecked
+                ).onTapGesture {
+                    onLegalNoticeCheckedChange(!legalNoticeChecked)
+                }
                 
                 Group {
                     Text(stringResource(.agreeTermsPrivacyBeginningText))
@@ -67,8 +72,10 @@ struct ThirdRegistrationForm: View {
 
 #Preview {
     ThirdRegistrationForm(
-        email: .constant(""),
-        password: .constant(""),
+        email: "",
+        onEmailChange: { _ in },
+        password: "",
+        onPasswordChange: { _ in },
         loading: false,
         emailError: nil,
         passwordError: nil,
