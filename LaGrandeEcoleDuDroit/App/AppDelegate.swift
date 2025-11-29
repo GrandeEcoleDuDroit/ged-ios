@@ -1,5 +1,5 @@
 import FirebaseCore
-import SwiftUICore
+import SwiftUI
 import Firebase
 import FirebaseMessaging
 
