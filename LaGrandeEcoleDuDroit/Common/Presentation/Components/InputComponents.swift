@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct OutlineTextField<Leading: View>: View {
+struct OutlinedTextField<Leading: View>: View {
     private let initialText: String
     private let onTextChange: (String) -> String
     private let placeHolder: String
@@ -96,60 +96,7 @@ struct OutlineTextField<Leading: View>: View {
     }
 }
 
-extension OutlineTextField {
-    func setTextFieldFocusState(focusState: FocusState<Field?>, field: Field) -> Self {
-        var copy = self
-        copy._focusState = focusState
-        copy.field = field
-        return copy
-    }
-}
-
-struct TransparentTextField: View {
-    let text: String
-    let onTextChange: (String) -> String
-    let placeHolder: String
-    
-    init(
-        initialText: String,
-        onTextChange: @escaping (String) -> String,
-        placeHolder: String
-    ) {
-        self.text = initialText
-        self.onTextChange = onTextChange
-        self.placeHolder = placeHolder
-        
-        currentText = initialText
-    }
-    
-    @FocusState private var focusState: Field?
-    private var field: Field?
-    @State private var currentText: String
-
-    var body: some View {
-        TextField(
-            "",
-            text: $currentText,
-            prompt: Text(placeHolder).foregroundColor(.onSurfaceVariant),
-            axis: .vertical
-        )
-        .focused($focusState, equals: field)
-        .onChange(of: currentText) {
-            currentText = onTextChange($0)
-        }
-    }
-}
-
-extension TransparentTextField {
-    func setTextFieldFocusState(focusState: FocusState<Field?>, field: Field) -> Self {
-        var copy = self
-        copy._focusState = focusState
-        copy.field = field
-        return copy
-    }
-}
-
-struct OutlinePasswordTextField: View {
+struct OutlinedPasswordTextField: View {
     let label: String
     let text: String
     let onTextChange: (String) -> Void
@@ -278,15 +225,104 @@ struct OutlinePasswordTextField: View {
     }
 }
 
+extension OutlinedTextField {
+    func setTextFieldFocusState(focusState: FocusState<Field?>, field: Field) -> Self {
+        var copy = self
+        copy._focusState = focusState
+        copy.field = field
+        return copy
+    }
+}
+
+struct TransparentTextField: View {
+    let text: String
+    let onTextChange: (String) -> String
+    let placeHolder: String
+    
+    init(
+        initialText: String,
+        onTextChange: @escaping (String) -> String,
+        placeHolder: String
+    ) {
+        self.text = initialText
+        self.onTextChange = onTextChange
+        self.placeHolder = placeHolder
+        
+        currentText = initialText
+    }
+    
+    @FocusState private var focusState: Field?
+    private var field: Field?
+    @State private var currentText: String
+
+    var body: some View {
+        TextField(
+            "",
+            text: $currentText,
+            prompt: Text(placeHolder).foregroundColor(.onSurfaceVariant),
+            axis: .vertical
+        )
+        .focused($focusState, equals: field)
+        .onChange(of: currentText) {
+            currentText = onTextChange($0)
+        }
+    }
+}
+
+extension TransparentTextField {
+    func setTextFieldFocusState(focusState: FocusState<Field?>, field: Field) -> Self {
+        var copy = self
+        copy._focusState = focusState
+        copy.field = field
+        return copy
+    }
+}
+
+struct TransparentTextFieldArea: View {
+    let text: String
+    let onTextChange: (String) -> String
+    let placeHolder: String
+    
+    init(
+        initialText: String,
+        onTextChange: @escaping (String) -> String,
+        placeHolder: String
+    ) {
+        self.text = initialText
+        self.onTextChange = onTextChange
+        self.placeHolder = placeHolder
+        
+        currentText = initialText
+    }
+    
+    @State private var currentText: String
+
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            TextEditor(text: $currentText)
+            
+            if currentText.isEmpty {
+                Text(placeHolder)
+                    .foregroundColor(.onSurfaceVariant)
+                    .padding(.horizontal, Dimens.extraSmallPadding)
+                    .padding(.vertical, Dimens.smallPadding)
+            }
+        }
+        .onChange(of: currentText) {
+            currentText = onTextChange($0)
+        }
+    }
+}
+
 #Preview {
-    OutlineTextField(
+    OutlinedTextField(
         initialText: "",
         onTextChange: { _ in "" },
-        placeHolder: "Email",
+        placeHolder: "Outlined text field",
     )
     
-    OutlinePasswordTextField(
-        label: "Password",
+    OutlinedPasswordTextField(
+        label: "Outlined password text field",
         text: "",
         onTextChange: { _ in },
         isDisable: false,
@@ -294,4 +330,17 @@ struct OutlinePasswordTextField: View {
         focusState: FocusState<Field?>(),
         field: .password
     )
+    
+    TransparentTextField(
+        initialText: "",
+        onTextChange: { _ in "" },
+        placeHolder: "Transparent text field"
+    )
+    
+    TransparentTextFieldArea(
+        initialText: "",
+        onTextChange: { _ in "" },
+        placeHolder: "Transparent text field area"
+    )
+    .frame(maxWidth: .infinity, maxHeight: 200)
 }

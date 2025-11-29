@@ -38,7 +38,7 @@ private struct FirstRegistrationView: View {
             Text(stringResource(.enterNames))
                 .font(.title3)
             
-            OutlineTextField(
+            OutlinedTextField(
                 initialText: firstName,
                 onTextChange: onFirstNameChange,
                 placeHolder: stringResource(.firstName),
@@ -46,7 +46,7 @@ private struct FirstRegistrationView: View {
             )
             .setTextFieldFocusState(focusState: _focusState, field: .firstName)
             
-            OutlineTextField(
+            OutlinedTextField(
                 initialText: lastName,
                 onTextChange: onLastNameChange,
                 placeHolder: stringResource(.lastName),

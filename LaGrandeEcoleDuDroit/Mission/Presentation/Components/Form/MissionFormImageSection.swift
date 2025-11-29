@@ -53,7 +53,7 @@ private struct EmptyImage: View {
         }
         .foregroundStyle(.onSurfaceVariant)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(UIColor.systemGray4))
+        .background(.emptyImageBackground)
     }
 }
 

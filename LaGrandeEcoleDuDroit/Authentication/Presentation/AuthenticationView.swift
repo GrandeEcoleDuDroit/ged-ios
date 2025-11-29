@@ -120,7 +120,7 @@ private struct CredentialsInputs: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
-            OutlineTextField(
+            OutlinedTextField(
                 initialText: email,
                 onTextChange: onEmailChange,
                 placeHolder: stringResource(.email),
@@ -132,7 +132,7 @@ private struct CredentialsInputs: View {
             .textContentType(.emailAddress)
             .textInputAutocapitalization(.never)
             
-            OutlinePasswordTextField(
+            OutlinedPasswordTextField(
                 label: stringResource(.password),
                 text: password,
                 onTextChange: onPasswordChange,
