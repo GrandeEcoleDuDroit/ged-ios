@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MissionDestination: View {
     let onMissionClick: (String) -> Void
+    let onCreateMissionClick: () -> Void
     
     @StateObject private var viewModel = MissionMainThreadInjector.shared.resolve(MissionViewModel.self)
     @State private var errorMessage: String = ""
@@ -14,6 +15,7 @@ struct MissionDestination: View {
                 missions: viewModel.uiState.missions,
                 loading: viewModel.uiState.loading,
                 onMissionClick: onMissionClick,
+                onCreateMissionClick: onCreateMissionClick,
                 onDeleteMissionClick: viewModel.deleteMission,
                 onRefreshMissions: viewModel.refreshMissions
             )
@@ -44,6 +46,7 @@ private struct MissionView: View {
     let missions: [Mission]?
     let loading: Bool
     let onMissionClick: (String) -> Void
+    let onCreateMissionClick: () -> Void
     let onDeleteMissionClick: (Mission) -> Void
     let onRefreshMissions: () async -> Void
     
@@ -53,10 +56,6 @@ private struct MissionView: View {
     
     var body: some View {
         VStack {
-            Rectangle()
-                .fill(Color.background)
-                .frame(height: 0)
-            
             if let missions {
                 List {
                     if missions.isEmpty {
@@ -96,12 +95,22 @@ private struct MissionView: View {
                 .refreshable { await onRefreshMissions() }
             } else {
                 ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
             
         }
         .loading(loading)
         .navigationTitle(stringResource(.mission))
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                if user.admin {
+                    Button(
+                        action: onCreateMissionClick,
+                        label: { Image(systemName: "plus") }
+                    )
+                }
+            }
+        }
         .sheet(isPresented: $showMissionBottomSheet) {
             BottomSheet(
                 user: user,
@@ -159,9 +168,11 @@ private struct BottomSheet: View {
             missions: missionsFixture,
             loading: false,
             onMissionClick: { _ in },
+            onCreateMissionClick: {},
             onDeleteMissionClick: { _ in },
             onRefreshMissions: {}
         )
         .background(Color.background)
+        .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
     }
 }

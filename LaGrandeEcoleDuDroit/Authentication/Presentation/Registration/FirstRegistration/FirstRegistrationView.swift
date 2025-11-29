@@ -27,8 +27,8 @@ private struct FirstRegistrationView: View {
     let lastName: String
     let firstNameError: String?
     let lastNameError: String?
-    let onFirstNameChange: (String) -> Void
-    let onLastNameChange: (String) -> Void
+    let onFirstNameChange: (String) -> String
+    let onLastNameChange: (String) -> String
     let onNextClick: (String, String) -> Void
     
     @FocusState private var focusState: Field?
@@ -38,27 +38,21 @@ private struct FirstRegistrationView: View {
             Text(stringResource(.enterNames))
                 .font(.title3)
             
-            OutlineTextField(
-                label: stringResource(.firstName),
-                text: Binding(
-                    get: { firstName },
-                    set: onFirstNameChange
-                ),
-                errorMessage: firstNameError,
-                focusState: _focusState,
-                field: .firstName
+            OutlinedTextField(
+                initialText: firstName,
+                onTextChange: onFirstNameChange,
+                placeHolder: stringResource(.firstName),
+                errorMessage: firstNameError
             )
+            .setTextFieldFocusState(focusState: _focusState, field: .firstName)
             
-            OutlineTextField(
-                label: stringResource(.lastName),
-                text: Binding(
-                    get: { lastName },
-                    set: onLastNameChange
-                ),
-                errorMessage: lastNameError,
-                focusState: _focusState,
-                field: .lastName
+            OutlinedTextField(
+                initialText: lastName,
+                onTextChange: onLastNameChange,
+                placeHolder: stringResource(.lastName),
+                errorMessage: lastNameError
             )
+            .setTextFieldFocusState(focusState: _focusState, field: .lastName)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
@@ -92,8 +86,8 @@ private struct FirstRegistrationView: View {
             lastName: "",
             firstNameError: nil,
             lastNameError: nil,
-            onFirstNameChange: {_ in},
-            onLastNameChange: {_ in},
+            onFirstNameChange: {_ in "" },
+            onLastNameChange: {_ in "" },
             onNextClick: {_, _ in}
         )
     }

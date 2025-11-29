@@ -5,7 +5,7 @@ struct TextIcon<Icon: View, Text: View>: View {
     let text: () -> Text
     
     var body: some View {
-        HStack(alignment: .center, spacing: Dimens.smallPadding) {
+        HStack(alignment: .center, spacing: Dimens.extraSmallPadding) {
             icon()
             text()
         }

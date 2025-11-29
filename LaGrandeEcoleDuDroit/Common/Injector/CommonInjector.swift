@@ -65,6 +65,10 @@ class CommonInjector: Injector {
             )
         }.inObjectScope(.container)
         
+        container.register(ImageLocalDataSource.self) { resolver in
+            ImageLocalDataSource()
+        }.inObjectScope(.container)
+        
         container.register(ImageRemoteDataSource.self) { resolver in
             ImageRemoteDataSource(imageApi: resolver.resolve(ImageApi.self)!)
         }.inObjectScope(.container)
@@ -90,7 +94,10 @@ class CommonInjector: Injector {
         }.inObjectScope(.container)
         
         container.register(ImageRepository.self) { resolver in
-            ImageRepositoryImpl(imageRemoteDataSource: resolver.resolve(ImageRemoteDataSource.self)!)
+            ImageRepositoryImpl(
+                imageLocalDataSource: resolver.resolve(ImageLocalDataSource.self)!,
+                imageRemoteDataSource: resolver.resolve(ImageRemoteDataSource.self)!
+            )
         }.inObjectScope(.container)
         
         container.register(WhiteListRepository.self) { resolver in
@@ -145,6 +152,10 @@ class CommonInjector: Injector {
                 blockedUserRepository: resolver.resolve(BlockedUserRepository.self)!,
                 userRepository: resolver.resolve(UserRepository.self)!
             )
+        }
+        
+        container.register(GetUsersUseCase.self) { resolver in
+            GetUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
         }
         
         // Others

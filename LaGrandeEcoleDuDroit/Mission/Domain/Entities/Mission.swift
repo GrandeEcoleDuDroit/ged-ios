@@ -25,7 +25,7 @@ struct Mission: Copyable, Identifiable, Hashable {
     }
  
     enum MissionState: Hashable {
-        case draft(imageUri: String? = nil)
+        case draft
         case publishing(imagePath: String? = nil)
         case published(imageUrl: String? = nil)
         case error(imagePath: String? = nil)

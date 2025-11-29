@@ -10,4 +10,5 @@ struct Dimens {
     static let extraLargePadding: CGFloat = 32
     static let veryExtraLargePadding: CGFloat = 64
     static let defaultImageSize: CGFloat = 100
+    static let leadingIconSpacing: CGFloat = 16
 }

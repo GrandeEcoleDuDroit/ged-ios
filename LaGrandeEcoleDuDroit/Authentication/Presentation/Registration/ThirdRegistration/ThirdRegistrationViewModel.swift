@@ -5,7 +5,7 @@ class ThirdRegistrationViewModel: ViewModel {
     private let registerUseCase: RegisterUseCase
     private let networkMonitor: NetworkMonitor
     
-    @Published var uiState: ThirdRegistrationUiState = ThirdRegistrationUiState()
+    @Published private(set) var uiState: ThirdRegistrationUiState = ThirdRegistrationUiState()
     @Published private(set) var event: SingleUiEvent? = nil
     private let minPasswordLength: Int = 8
     
@@ -19,7 +19,7 @@ class ThirdRegistrationViewModel: ViewModel {
     
     func register(firstName: String, lastName: String, schoolLevel: SchoolLevel) {
         uiState.errorMessage = nil
-        let email = uiState.email.trimmingCharacters(in: .whitespacesAndNewlines)
+        let email = uiState.email.trim()
         let password = uiState.password
         guard (validateInputs(email: email, password: password)) else {
             return
@@ -51,6 +51,15 @@ class ThirdRegistrationViewModel: ViewModel {
     
     func onLegalNoticeCheckedChange(checked: Bool) {
         uiState.legalNoticeChecked = checked
+    }
+    
+    func onEmailChange(_ email: String) -> String {
+        uiState.email = email
+        return email
+    }
+    
+    func onPasswordChange(_ password: String) {
+        uiState.password = password
     }
     
     private func validateInputs(email: String, password: String) -> Bool {
@@ -98,8 +107,8 @@ class ThirdRegistrationViewModel: ViewModel {
     }
     
     struct ThirdRegistrationUiState {
-        var email: String = ""
-        var password: String = ""
+        fileprivate(set) var email: String = ""
+        fileprivate(set) var password: String = ""
         fileprivate(set) var legalNoticeChecked: Bool = false
         fileprivate(set) var loading: Bool = false
         fileprivate(set) var emailError: String? = nil

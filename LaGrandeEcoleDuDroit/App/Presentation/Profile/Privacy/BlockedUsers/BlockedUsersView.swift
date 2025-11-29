@@ -47,41 +47,41 @@ private struct BlockedUsersView: View {
     @State private var clickedUser: User?
 
     var body: some View {
-        ScrollView {
+        List {
             if blockedUsers.isEmpty {
                 Text(stringResource(.noBlockedUser))
-                    .foregroundColor(.informationText)
-                    .padding()
+                    .foregroundStyle(.informationText)
                     .frame(maxWidth: .infinity, alignment: .top)
             } else {
-                LazyVStack(spacing: 0) {
-                    ForEach(blockedUsers) { user in
-                        Clickable(
-                            action: { onAccountClick(user) },
-                            content: {
-                                UserItem(
-                                    user: user,
-                                    trailingContent: {
-                                        Button(
-                                            action: {
-                                                showUnblockAlert = true
-                                                clickedUser = user
-                                            },
-                                            label: {
-                                                Text(stringResource(.unblock))
-                                                    .foregroundStyle(.gedPrimary)
-                                                    .fontWeight(.medium)
-                                            }
-                                        )
+                ForEach(blockedUsers) { user in
+                    Button(action: { onAccountClick(user) }) {
+                        UserItem(
+                            user: user,
+                            trailingContent: {
+                                Button(
+                                    action: {
+                                        showUnblockAlert = true
+                                        clickedUser = user
+                                    },
+                                    label: {
+                                        Text(stringResource(.unblock))
+                                            .foregroundStyle(.gedPrimary)
+                                            .fontWeight(.medium)
                                     }
                                 )
+                                .buttonStyle(.plain)
                             }
                         )
                     }
-                    .fixedSize(horizontal: false, vertical: true)
+                    .buttonStyle(ClickStyle())
+                    .listRowInsets(.init())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.background)
                 }
             }
         }
+        .listStyle(.plain)
+        .listRowSeparator(.hidden)
         .scrollIndicators(.hidden)
         .loading(loading)
         .navigationTitle(stringResource(.blockedUsers))

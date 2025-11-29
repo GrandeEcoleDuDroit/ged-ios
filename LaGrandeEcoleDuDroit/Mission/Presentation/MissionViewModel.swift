@@ -34,10 +34,6 @@ class MissionViewModel: ViewModel {
     }
     
     func deleteMission(mission: Mission) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
-        }
-        
         uiState.loading = true
         
         Task { @MainActor [weak self] in
@@ -46,7 +42,12 @@ class MissionViewModel: ViewModel {
                 self?.uiState.loading = false
             } catch {
                 self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
+                self?.event = ErrorEvent(
+                    message: mapNetworkErrorMessage(
+                        error,
+                        specificMap: { stringResource(.unknownError) }
+                    )
+                )
             }
         }
     }
@@ -69,8 +70,8 @@ class MissionViewModel: ViewModel {
     }
     
     struct MissionUiState {
-        var user: User? = nil
-        var missions: [Mission] = []
-        var loading: Bool = false
+        fileprivate(set) var user: User? = nil
+        fileprivate(set) var missions: [Mission] = []
+        fileprivate(set) var loading: Bool = false
     }
 }

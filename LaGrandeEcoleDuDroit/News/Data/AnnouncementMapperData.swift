@@ -58,7 +58,7 @@ extension LocalAnnouncement {
         announcementAuthorEmail = announcement.author.email
         announcementAuthorSchoolLevel = announcement.author.schoolLevel.rawValue
         announcementAuthorAdmin = announcement.author.admin
-        announcementAuthorProfilePictureFileName = UrlUtils.extractFileName(url: announcement.author.profilePictureUrl)
+        announcementAuthorProfilePictureFileName = UrlUtils.extractFileNameFromUrl(url: announcement.author.profilePictureUrl)
         announcementAuthorState = announcement.author.state.rawValue
         announcementAuthorTester = announcement.author.tester
     }
@@ -75,7 +75,7 @@ extension LocalAnnouncement {
         announcementAuthorEmail == announcement.author.email &&
         announcementAuthorSchoolLevel == announcement.author.schoolLevel.rawValue &&
         announcementAuthorAdmin == announcement.author.admin &&
-        announcementAuthorProfilePictureFileName == UrlUtils.extractFileName(url: announcement.author.profilePictureUrl) &&
+        announcementAuthorProfilePictureFileName == UrlUtils.extractFileNameFromUrl(url: announcement.author.profilePictureUrl) &&
         announcementAuthorState == announcement.author.state.rawValue &&
         announcementAuthorTester == announcement.author.tester
     }

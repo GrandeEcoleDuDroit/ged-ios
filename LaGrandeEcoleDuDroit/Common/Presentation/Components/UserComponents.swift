@@ -16,11 +16,12 @@ struct UserItem<TrailingContent: View>: View {
     
     var body: some View {
         HStack(alignment: .center) {
-            HStack {
+            HStack(spacing: Dimens.mediumPadding) {
                 ProfilePicture(
                     url: user.profilePictureUrl,
                     scale: 0.5
                 )
+                
                 Text(userName)
             }
             .frame(maxWidth: .infinity, alignment: .leading)

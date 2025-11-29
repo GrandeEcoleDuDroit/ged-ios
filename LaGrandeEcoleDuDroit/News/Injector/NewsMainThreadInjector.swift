@@ -42,6 +42,7 @@ class NewsMainThreadInjector: MainThreadInjector {
         container.register(CreateAnnouncementViewModel.self) { resolver in
             CreateAnnouncementViewModel(
                 createAnnouncementUseCase: NewsInjector.shared.resolve(CreateAnnouncementUseCase.self),
+                generateIdUseCase: CommonInjector.shared.resolve(GenerateIdUseCase.self),
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
             )
         }

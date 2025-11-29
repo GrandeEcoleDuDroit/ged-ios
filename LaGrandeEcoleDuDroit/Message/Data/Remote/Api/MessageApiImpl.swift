@@ -58,7 +58,7 @@ class MessageApiImpl: MessageApi {
         try await conversationCollection
             .document(remoteMessage.conversationId)
             .collection(messageTableName)
-            .document(remoteMessage.messageId.toString())
+            .document(remoteMessage.messageId)
             .updateData([MessageField.Remote.seen: remoteMessage.seen])
     }
     
@@ -80,10 +80,10 @@ class MessageServerApi {
     }
     
     func reportMessage(report: RemoteMessageReport) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "report")
-        let session = RequestUtils.getSession()
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "report")
+        let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.formatPostRequest(
+        let request = try RequestUtils.simplePostRequest(
             dataToSend: report,
             url: url,
             authToken: authToken

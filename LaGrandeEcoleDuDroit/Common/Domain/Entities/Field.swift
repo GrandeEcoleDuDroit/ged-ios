@@ -5,4 +5,5 @@ enum Field: Hashable {
     case content
     case firstName
     case lastName
+    case duration
 }

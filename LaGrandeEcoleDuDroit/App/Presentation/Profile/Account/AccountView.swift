@@ -13,10 +13,9 @@ private struct AccountView: View {
         
     var body: some View {
         List {
-            MenuItem(
-                title: stringResource(.deleteAccount),
-                onClick: onDeleteAccountClick
-            )
+            Button(action: onDeleteAccountClick) {
+                ListItem(text: Text(stringResource(.deleteAccount)))
+            }
         }
         .navigationTitle(stringResource(.account))
         .navigationBarTitleDisplayMode(.inline)

@@ -40,7 +40,7 @@ private struct CreateConversationView: View {
             else {
                 if users.isEmpty {
                     Text(stringResource(.userNotFound))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.informationText)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical)
                 } else {

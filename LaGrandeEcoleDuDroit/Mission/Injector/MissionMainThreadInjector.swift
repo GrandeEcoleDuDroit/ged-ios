@@ -26,5 +26,14 @@ class MissionMainThreadInjector: MainThreadInjector {
                 networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
             )
         }
+        
+        container.register(CreateMissionViewModel.self) { _ in
+            CreateMissionViewModel(
+                userRepository: CommonInjector.shared.resolve(UserRepository.self),
+                createMissionUseCase: MissionInjector.shared.resolve(CreateMissionUseCase.self),
+                getUsersUseCase: CommonInjector.shared.resolve(GetUsersUseCase.self),
+                generateIdUseCase: CommonInjector.shared.resolve(GenerateIdUseCase.self)
+            )
+        }
     }
 }

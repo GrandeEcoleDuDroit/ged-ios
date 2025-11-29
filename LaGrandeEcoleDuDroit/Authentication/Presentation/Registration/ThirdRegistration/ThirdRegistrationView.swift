@@ -12,8 +12,10 @@ struct ThirdRegistrationDestination: View {
     
     var body: some View {
         ThirdRegistrationView(
-            email: $viewModel.uiState.email,
-            password: $viewModel.uiState.password,
+            email: viewModel.uiState.email,
+            onEmailChange: viewModel.onEmailChange,
+            password: viewModel.uiState.password,
+            onPasswordChange: viewModel.onPasswordChange,
             legalNoticeChecked: viewModel.uiState.legalNoticeChecked,
             onLegalNoticeCheckedChange: viewModel.onLegalNoticeCheckedChange,
             loading: viewModel.uiState.loading,
@@ -47,8 +49,10 @@ struct ThirdRegistrationDestination: View {
 }
 
 private struct ThirdRegistrationView: View {
-    @Binding var email: String
-    @Binding var password: String
+    let email: String
+    let onEmailChange: (String) -> String
+    let password: String
+    let onPasswordChange: (String) -> Void
     let legalNoticeChecked: Bool
     let onLegalNoticeCheckedChange: (Bool) -> Void
     let loading: Bool
@@ -62,8 +66,10 @@ private struct ThirdRegistrationView: View {
     var body: some View {
         VStack(spacing: Dimens.mediumPadding) {
             ThirdRegistrationForm(
-                email: $email,
-                password: $password,
+                email: email,
+                onEmailChange: onEmailChange,
+                password: password,
+                onPasswordChange: onPasswordChange,
                 loading: loading,
                 emailError: emailError,
                 passwordError: passwordError,
@@ -110,8 +116,10 @@ private struct ThirdRegistrationView: View {
 #Preview {
     NavigationStack {
         ThirdRegistrationView(
-            email: .constant(""),
-            password: .constant(""),
+            email: "",
+            onEmailChange: { _ in "" },
+            password: "",
+            onPasswordChange: { _ in },
             legalNoticeChecked: false,
             onLegalNoticeCheckedChange: { _ in },
             loading: false,

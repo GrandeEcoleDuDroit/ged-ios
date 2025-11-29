@@ -9,14 +9,13 @@ class ImageApiImpl: ImageApi {
     }
 
     func uploadImage(imageData: Data, fileName: String) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "upload")
-        
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "upload")
         let fileExtension = (fileName as NSString).pathExtension
         let boundary = "Boundary-\(UUID().uuidString)"
-        
         var body = Data()
+        
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"image\"; fileName=\"\(fileName)\"\r\n".data(using: .utf8)!)
         body.append("Content-Type: image/\(fileExtension)\r\n\r\n".data(using: .utf8)!)
         body.append(imageData)
         body.append("\r\n".data(using: .utf8)!)
@@ -31,17 +30,16 @@ class ImageApiImpl: ImageApi {
             request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
         
-        let session = RequestUtils.getSession()
-        
+        let session = RequestUtils.getDefaultSession()
         return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
     func deleteImage(fileName: String) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: fileName)
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: fileName)
         
-        let session = RequestUtils.getSession()
+        let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = RequestUtils.formatDeleteRequest(
+        let request = RequestUtils.simpleDeleteRequest(
             url: url,
             authToken: authToken
         )

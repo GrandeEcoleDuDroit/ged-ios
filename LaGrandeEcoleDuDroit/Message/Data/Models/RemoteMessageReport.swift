@@ -1,6 +1,6 @@
 struct RemoteMessageReport: Encodable {
     let conversationId: String
-    let messageId: Int64
+    let messageId: String
     let recipientInfo: RemoteUserInfo
     let reason: String
     

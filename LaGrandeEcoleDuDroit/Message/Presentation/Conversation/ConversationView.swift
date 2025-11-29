@@ -25,10 +25,9 @@ struct ConversationDestination: View {
             errorMessage,
             isPresented: $showErrorAlert,
             actions: {
-                Button(
-                    stringResource(.ok),
-                    action: { showErrorAlert = false }
-                )
+                Button(stringResource(.ok)) {
+                    showErrorAlert = false
+                }
             }
         )
     }
@@ -40,10 +39,8 @@ private struct ConversationView: View {
     let onConversationClick: (ConversationUi) -> Void
     let onDeleteConversationClick: (Conversation) -> Void
     
-    @State private var clickedConversation: ConversationUi? = nil
-    @State private var showBottomSheet: Bool = false
-    @State private var isBottomSheetItemClicked: Bool = false
     @State private var showDeleteAlert: Bool = false
+    @State private var clickedConversationUi: ConversationUi?
     
     var body: some View {
         ZStack {
@@ -51,53 +48,45 @@ private struct ConversationView: View {
                 if conversationsUi.isEmpty {
                     VStack {
                         Text(stringResource(.noConversation))
-                            .font(.callout)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.informationText)
                         
                         Button(
                             stringResource(.newConversation),
                             action: onCreateConversationClick
                         )
                         .fontWeight(.semibold)
-                        .font(.callout)
-                        .foregroundColor(.gedPrimary)
+                        .foregroundStyle(.gedPrimary)
                     }
                     .padding(.top, Dimens.mediumPadding)
-                    .padding(.horizontal, Dimens.extraSmallPadding)
+                    .padding(.horizontal, Dimens.mediumPadding)
                 } else {
-                    ScrollView {
-                        LazyVStack(spacing: 0) {
-                            ForEach(conversationsUi) { conversationUi in
-                                ConversationItem(
-                                    conversationUi: conversationUi,
-                                    onClick: { onConversationClick(conversationUi) },
-                                    onLongClick: {
-                                        clickedConversation = conversationUi
-                                        showBottomSheet = true
-                                    }
+                    List(conversationsUi) { conversationUi in
+                        Button(action: { onConversationClick(conversationUi) }) {
+                            ConversationItem(conversationUi: conversationUi)
+                                .simultaneousGesture(
+                                    LongPressGesture()
+                                        .onEnded { _ in
+                                            let generator = UIImpactFeedbackGenerator(style: .medium)
+                                            generator.impactOccurred()
+                                            clickedConversationUi = conversationUi
+                                        }
                                 )
-                            }
                         }
+                        .buttonStyle(ClickStyle())
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(.init())
                     }
-                    .sheet(isPresented: $showBottomSheet) {
-                        BottomSheetContainer(fraction: 0.10) {
-                            ClickableTextItem(
-                                icon: Image(systemName: "trash"),
-                                text: Text(stringResource(.delete))
-                            ) {
-                                showBottomSheet = false
-                                showDeleteAlert = true
-                            }
-                            .foregroundStyle(.red)
-                        }
-                    }
+                    .scrollIndicators(.hidden)
+                    .listStyle(.plain)
                 }
             } else {
                 ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(Color.background)
         .navigationTitle(stringResource(.messages))
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -110,19 +99,32 @@ private struct ConversationView: View {
         .alert(
             stringResource(.deleteConversationAlertTitle),
             isPresented: $showDeleteAlert,
-            actions: {
+            presenting: clickedConversationUi,
+            actions: { conversationUi in
                 Button(stringResource(.cancel), role: .cancel) {
                     showDeleteAlert = false
                 }
                 Button(stringResource(.delete), role: .destructive) {
-                    if let clickedConversation {
-                        onDeleteConversationClick(clickedConversation.toConversation())
-                    }
+                    onDeleteConversationClick(conversationUi.toConversation())
                     showDeleteAlert = false
                 }
             },
-            message: { Text(stringResource(.deleteConversationAlertMessage)) }
+            message: { _ in
+                Text(stringResource(.deleteConversationAlertMessage))
+            }
         )
+        .sheet(item: $clickedConversationUi) { conversationUi in
+            BottomSheetContainer(fraction: 0.10) {
+                ClickableTextItem(
+                    icon: Image(systemName: "trash"),
+                    text: Text(stringResource(.delete))
+                ) {
+                    clickedConversationUi = conversationUi
+                    showDeleteAlert = true
+                }
+                .foregroundStyle(.red)
+            }
+        }
     }
 }
 
@@ -134,6 +136,5 @@ private struct ConversationView: View {
             onConversationClick: {_ in},
             onDeleteConversationClick: {_ in}
         )
-        .background(Color.background)
     }
 }

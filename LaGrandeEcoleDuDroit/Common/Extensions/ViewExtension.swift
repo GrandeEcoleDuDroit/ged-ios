@@ -35,4 +35,14 @@ extension View {
                 }
             }
     }
+    
+    func outlined(borderColor: Color = .outline) -> some View {
+        self
+            .padding()
+            .overlay(
+                RoundedRectangle(cornerRadius: 5)
+                    .stroke(borderColor, lineWidth: 2)
+            )
+            .cornerRadius(5)
+    }
 }
