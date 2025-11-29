@@ -3,13 +3,13 @@ import Foundation
 class RequestUtils {
     private init() {}
     
-    static func getSession() -> URLSession {
+    static func getDefaultSession() -> URLSession {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 20
         return URLSession(configuration: config)
     }
     
-    static func getUrl(base: String, endPoint: String) throws -> URL {
+    static func formatOracleUrl(base: String, endPoint: String) throws -> URL {
         if let url = URL.oracleUrl(path: "/\(base)/\(endPoint)") {
             return url
         } else {
@@ -17,7 +17,7 @@ class RequestUtils {
         }
     }
     
-    static func formatGetRequest(
+    static func simpleGetRequest(
         url: URL,
         authToken: String? = nil
     ) -> URLRequest {
@@ -29,31 +29,31 @@ class RequestUtils {
         return request
     }
     
-    static func formatPostRequest(
+    static func simplePostRequest(
         dataToSend: Encodable,
         url: URL,
         authToken: String? = nil
     ) throws -> URLRequest {
-        try formatWriteRequest(method: "POST", url: url, authToken: authToken, data: dataToSend)
+        try simpleWriteRequest(method: "POST", url: url, authToken: authToken, data: dataToSend)
     }
     
-    static func formatPutRequest(
+    static func simplePutRequest(
         dataToSend: Encodable,
         url: URL,
         authToken: String? = nil
     ) throws -> URLRequest {
-        try formatWriteRequest(method: "PUT", url: url, authToken: authToken, data: dataToSend)
+        try simpleWriteRequest(method: "PUT", url: url, authToken: authToken, data: dataToSend)
     }
     
-    static func formatPatchRequest(
+    static func simplePatchRequest(
         dataToSend: Encodable,
         url: URL,
         authToken: String? = nil
     ) throws -> URLRequest {
-       try formatWriteRequest(method: "PATCH", url: url, authToken: authToken, data: dataToSend)
+       try simpleWriteRequest(method: "PATCH", url: url, authToken: authToken, data: dataToSend)
     }
     
-    static func formatDeleteRequest(url: URL, authToken: String? = nil) -> URLRequest {
+    static func simpleDeleteRequest(url: URL, authToken: String? = nil) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
         if let authToken {
@@ -68,7 +68,7 @@ class RequestUtils {
         return (response, serverResponse)
     }
     
-    private static func formatWriteRequest(
+    private static func simpleWriteRequest(
         method: String,
         url: URL,
         authToken: String?,

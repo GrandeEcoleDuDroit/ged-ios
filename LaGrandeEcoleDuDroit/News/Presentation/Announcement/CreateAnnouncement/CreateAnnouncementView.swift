@@ -11,7 +11,6 @@ struct CreateAnnouncementDestination: View {
         CreateAnnouncementView(
             title: viewModel.uiState.title,
             content: viewModel.uiState.content,
-            loading: viewModel.uiState.loading,
             enableCreate: viewModel.uiState.enableCreate,
             onTitleChange: viewModel.onTitleChange,
             onContentChange: viewModel.onContentChange,
@@ -34,7 +33,6 @@ struct CreateAnnouncementDestination: View {
 private struct CreateAnnouncementView: View {
     let title: String
     let content: String
-    let loading: Bool
     let enableCreate: Bool
     let onTitleChange: (String) -> Void
     let onContentChange: (String) -> Void
@@ -57,20 +55,17 @@ private struct CreateAnnouncementView: View {
         .padding()
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button(
-                    action: onCreateClick,
-                    label: {
-                        if !enableCreate {
-                            Text(stringResource(.post))
-                                .fontWeight(.semibold)
-                        } else {
-                            Text(stringResource(.post))
-                                .foregroundColor(.gedPrimary)
-                                .fontWeight(.semibold)
-                        }
+                Button(action: onCreateClick) {
+                    if !enableCreate {
+                        Text(stringResource(.publish))
+                            .fontWeight(.semibold)
+                    } else {
+                        Text(stringResource(.publish))
+                            .foregroundColor(.gedPrimary)
+                            .fontWeight(.semibold)
                     }
-                )
-                .disabled(!enableCreate || loading)
+                }
+                .disabled(!enableCreate)
             }
         }
         .onAppear {
@@ -87,7 +82,6 @@ private struct CreateAnnouncementView: View {
         CreateAnnouncementView(
             title: "",
             content: "",
-            loading: false,
             enableCreate: false,
             onTitleChange: { _ in },
             onContentChange: { _ in },

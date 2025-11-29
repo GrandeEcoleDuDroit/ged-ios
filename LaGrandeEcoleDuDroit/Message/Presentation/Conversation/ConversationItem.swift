@@ -3,22 +3,14 @@ import SwiftUI
 private let previewTextFont: Font = .callout
 
 struct ConversationItem: View {
-    let conversationUi: ConversationUi
-    let onClick: () -> Void
-    let onLongClick: () -> Void
+    private let conversationUi: ConversationUi
     private let lastMessage: Message
     private let interlocutor: User
     private let text: String
     private let isNotSender: Bool
     
-    init(
-        conversationUi: ConversationUi,
-        onClick: @escaping () -> Void,
-        onLongClick: @escaping () -> Void
-    ) {
+    init(conversationUi: ConversationUi) {
         self.conversationUi = conversationUi
-        self.onClick = onClick
-        self.onLongClick = onLongClick
         self.lastMessage = conversationUi.lastMessage
         self.interlocutor = conversationUi.interlocutor
         self.text = lastMessage.state == .sending ? stringResource(.sending) : lastMessage.content
@@ -31,9 +23,7 @@ struct ConversationItem: View {
             conversationState: conversationUi.state,
             lastMessage: lastMessage,
             isUnread: isNotSender && !lastMessage.seen,
-            text: text,
-            onClick: onClick,
-            onLongClick: onLongClick
+            text: text
         )
     }
 }
@@ -44,8 +34,6 @@ private struct SwitchConversationItem: View {
     let lastMessage: Message
     let isUnread: Bool
     let text: String
-    let onClick: () -> Void
-    let onLongClick: () -> Void
     
     @State private var elapsedTimeText: String
     @State private var loading: Bool
@@ -56,51 +44,44 @@ private struct SwitchConversationItem: View {
         conversationState: ConversationState,
         lastMessage: Message,
         isUnread: Bool,
-        text: String,
-        onClick: @escaping () -> Void,
-        onLongClick: @escaping () -> Void
+        text: String
     ) {
         self.interlocutor = interlocutor
         self.conversationState = conversationState
         self.lastMessage = lastMessage
         self.isUnread = isUnread
         self.text = text
-        self.onClick = onClick
-        self.onLongClick = onLongClick
         self.elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
         self.loading = self.conversationState == .creating || self.conversationState == .deleting
         self.interlocutorName = interlocutor.state == .deleted ? stringResource(.deletedUser) : interlocutor.fullName
     }
     
     var body: some View {
-        ConversationItemStructure(
-            interlocutor: interlocutor,
-            onClick: onClick,
-            onLongClick: onLongClick
-        ) {
+        ZStack {
             if loading {
-                ReadConversationItemContent(
-                    interlocutorName: interlocutorName,
+                LoadingConversationItem(
+                    interlocutor: interlocutor,
                     text: text,
                     elapsedTimeText: elapsedTimeText
-                ).opacity(0.5)
+                )
             } else {
                 if isUnread {
-                    UnreadConversationItemContent(
-                        interlocutorName: interlocutorName,
+                    UnreadConversationItem(
+                        interlocutor: interlocutor,
                         text: text,
                         elapsedTimeText: elapsedTimeText
                     )
                 } else {
-                    ReadConversationItemContent(
-                        interlocutorName: interlocutorName,
+                    DefaultConversationItem(
+                        interlocutor: interlocutor,
                         text: text,
                         elapsedTimeText: elapsedTimeText
                     )
                 }
             }
         }
-        .opacity(loading ? 0.5 : 1.0)
+        .padding(.horizontal)
+        .padding(.vertical, Dimens.smallMediumPadding)
         .onAppear {
             elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
         }
@@ -113,71 +94,52 @@ private struct SwitchConversationItem: View {
     }
 }
 
-private struct ConversationItemStructure<Content: View>: View {
+private struct DefaultConversationItem: View {
     let interlocutor: User
-    let onClick: () -> Void
-    let onLongClick: () -> Void
-    let content: Content
-
-    init(
-        interlocutor: User,
-        onClick: @escaping () -> Void,
-        onLongClick: @escaping () -> Void,
-        @ViewBuilder content: () -> Content
-    ) {
-        self.interlocutor = interlocutor
-        self.onClick = onClick
-        self.onLongClick = onLongClick
-        self.content = content()
-    }
-    
-    var body: some View {
-        Clickable(action: onClick) {
-            HStack(alignment: .center) {
-                ProfilePicture(url: interlocutor.profilePictureUrl, scale: 0.45)
-                content
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal)
-            .padding(.vertical, Dimens.smallMediumPadding)
-            .contentShape(Rectangle())
-            .onLongPressGesture {
-                onLongClick()
-            }
-        }
-    }
-}
-
-private struct ReadConversationItemContent: View {
-    let interlocutorName: String
     let text: String
     let elapsedTimeText: String
+    var textColor: Color = .textPreview
+    var fontWeight: Font.Weight = .regular
     
     var body: some View {
-        DefaultConversationItemContent(
-            interlocutorName: interlocutorName,
-            text: text,
-            elapsedTimeText: elapsedTimeText
-        )
+        HStack(spacing: Dimens.mediumPadding) {
+            ProfilePicture(url: interlocutor.profilePictureUrl, scale: 0.5)
+            
+            VStack(alignment: .leading, spacing: Dimens.extraSmallPadding) {
+                HStack {
+                    Text(interlocutor.fullName)
+                        .fontWeight(fontWeight)
+                        .lineLimit(1)
+                    
+                    Text(elapsedTimeText)
+                        .foregroundStyle(textColor)
+                        .font(.bodySmall)
+                }
+                
+                Text(text)
+                    .fontWeight(fontWeight)
+                    .foregroundStyle(textColor)
+                    .lineLimit(1)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
-
-private struct UnreadConversationItemContent: View {
-    let interlocutorName: String
+    
+private struct UnreadConversationItem: View {
+    let interlocutor: User
     let text: String
     let elapsedTimeText: String
     
     var body: some View {
         HStack {
-            DefaultConversationItemContent(
-                interlocutorName: interlocutorName,
+            DefaultConversationItem(
+                interlocutor: interlocutor,
                 text: text,
                 elapsedTimeText: elapsedTimeText,
                 textColor: .primary,
                 fontWeight: .semibold
             )
-            
-            Spacer()
             
             Circle()
                 .fill(.red)
@@ -186,51 +148,24 @@ private struct UnreadConversationItemContent: View {
     }
 }
 
-
-private struct DefaultConversationItemContent: View {
-    let interlocutorName: String
+private struct LoadingConversationItem: View {
+    let interlocutor: User
     let text: String
     let elapsedTimeText: String
     var textColor: Color = .textPreview
     var fontWeight: Font.Weight = .regular
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.extraSmallPadding) {
-            HStack {
-                Text(interlocutorName)
-                    .fontWeight(fontWeight)
-                    .truncationMode(.tail)
-                
-                Text(elapsedTimeText)
-                    .foregroundStyle(textColor)
-                    .font(previewTextFont)
-            }
-            
-            Text(text)
-                .fontWeight(fontWeight)
-                .foregroundStyle(textColor)
-                .lineLimit(1)
-                .truncationMode(.tail)
-        }
+        DefaultConversationItem(
+            interlocutor: interlocutor,
+            text: text,
+            elapsedTimeText: elapsedTimeText,
+            textColor: .primary,
+            fontWeight: .semibold
+        ).opacity(0.5)
     }
 }
-
-private struct EmptyConversationItem: View {
-    let interlocutorName: String
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.extraSmallPadding) {
-            Text(interlocutorName)
-            
-            Text(stringResource(.tapToChat))
-                .font(previewTextFont)
-                .foregroundStyle(.textPreview)
-                .lineLimit(1)
-                .truncationMode(.tail)
-        }
-    }
-}
-
 private func updateElapsedTimeText(for date: Date) -> String {
     let elapsedTime = GetElapsedTimeUseCase.execute(date: date)
     return getElapsedTimeText(elapsedTime: elapsedTime, date: date)
@@ -240,51 +175,40 @@ private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String 
     switch elapsedTime {
         case .now(_):
             stringResource(.now)
+            
         case.minute(let minutes):
             stringResource(.minutesAgoShort, minutes)
+            
         case .hour(let hours):
             stringResource(.hoursAgoShort, hours)
+            
         case .day(let days):
             stringResource(.daysAgoShort, days)
+            
         case .week(let weeks):
             stringResource(.weeksAgoShort, weeks)
+            
         default:
             date.formatted(.dateTime.year().month().day())
     }
 }
 
 #Preview {
-    VStack(alignment: .leading, spacing: 0) {
-        SwitchConversationItem(
-            interlocutor: userFixture,
-            conversationState: .created,
-            lastMessage: messageFixture,
-            isUnread: false,
-            text: messageFixture.content,
-            onClick: {},
-            onLongClick: {}
-        )
-        
-        SwitchConversationItem(
-            interlocutor: userFixture,
-            conversationState: .created,
-            lastMessage: messageFixture,
-            isUnread: true,
-            text: messageFixture.content,
-            onClick: {},
-            onLongClick: {}
-        )
-        
-        SwitchConversationItem(
-            interlocutor: userFixture,
-            conversationState: .creating,
-            lastMessage: messageFixture,
-            isUnread: false,
-            text: messageFixture.content,
-            onClick: {},
-            onLongClick: {}
-        )
-    }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .background(Color.background)
+    DefaultConversationItem(
+        interlocutor: userFixture,
+        text: "Read message",
+        elapsedTimeText: "Now"
+    )
+    
+    UnreadConversationItem(
+        interlocutor: userFixture,
+        text: "Unread message",
+        elapsedTimeText: "Now"
+    )
+    
+    LoadingConversationItem(
+        interlocutor: userFixture,
+        text: "Loading..",
+        elapsedTimeText: "Now"
+    )
 }

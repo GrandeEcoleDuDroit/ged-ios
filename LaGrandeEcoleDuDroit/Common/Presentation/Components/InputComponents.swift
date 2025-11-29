@@ -1,17 +1,22 @@
 import SwiftUI
 
-struct OutlineTextField: View {
-    let label: String
-    @Binding var text: String
-    let isDisabled: Bool
-    let errorMessage: String?
-    @FocusState var focusState: Field?
-    let field: Field
+struct OutlinedTextField<Leading: View>: View {
+    private let initialText: String
+    private let onTextChange: (String) -> String
+    private let placeHolder: String
+    private let axis: Axis
+    private let disabled: Bool
+    private let errorMessage: String?
+    private let leading: Leading
+    
+    @FocusState private var focusState: Field?
+    private var field: Field?
+    @State private var currentText: String = ""
     
     private var borderColor: Color {
         if errorMessage != nil {
             .error
-        } else if isDisabled {
+        } else if disabled {
             .disableBorder
         } else {
             .outline
@@ -26,16 +31,16 @@ struct OutlineTextField: View {
         }
     }
     
-    private var labelColor: Color {
-        if isDisabled {
+    private var placeHolderColor: Color {
+        if disabled {
             .disableText
         } else {
-            .outline
+            .onSurfaceVariant
         }
     }
     
     private var textColor: Color {
-        if isDisabled {
+        if disabled {
             .disableText
         } else {
             .primary
@@ -43,37 +48,40 @@ struct OutlineTextField: View {
     }
     
     init(
-        label: String,
-        text: Binding<String>,
-        isDisable: Bool = false,
+        initialText: String,
+        onTextChange: @escaping (String) -> String,
+        placeHolder: String,
+        axis: Axis = .horizontal,
+        disabled: Bool = false,
         errorMessage: String? = nil,
-        focusState: FocusState<Field?>,
-        field: Field
+        @ViewBuilder leading: () -> Leading = { EmptyView() }
     ) {
-        self.label = label
-        self._text = text
-        self.isDisabled = isDisable
+        self.initialText = initialText
+        self.onTextChange = onTextChange
+        self.placeHolder = placeHolder
+        self.axis = axis
+        self.disabled = disabled
         self.errorMessage = errorMessage
-        self._focusState = focusState
-        self.field = field
+        self.leading = leading()
+        
+        currentText = initialText
     }
     
     var body: some View {
         VStack(alignment: .leading) {
-            TextField(
-                "",
-                text: $text,
-                prompt: Text(label).foregroundColor(labelColor)
-            )
-            .foregroundStyle(textColor)
-            .focused($focusState, equals: field)
-            .padding()
-            .overlay(
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(borderColor, lineWidth: 2)
-            )
-            .cornerRadius(5)
-            .disabled(isDisabled)
+            HStack(spacing: Dimens.leadingIconSpacing) {
+                leading.foregroundStyle(placeHolderColor)
+                
+                TextField(
+                    "",
+                    text: $currentText,
+                    prompt: Text(placeHolder).foregroundColor(placeHolderColor),
+                )
+                .foregroundStyle(textColor)
+                .focused($focusState, equals: field)
+            }
+            .outlined(borderColor: borderColor)
+            .disabled(disabled)
             
             if errorMessage != nil {
                 Text(errorMessage!)
@@ -82,12 +90,16 @@ struct OutlineTextField: View {
                     .foregroundColor(.red)
             }
         }
+        .onChange(of: currentText) {
+            currentText = onTextChange($0)
+        }
     }
 }
 
-struct OutlinePasswordTextField: View {
+struct OutlinedPasswordTextField: View {
     let label: String
-    @Binding var text: String
+    let text: String
+    let onTextChange: (String) -> Void
     let isDisabled: Bool
     let errorMessage: String?
     @FocusState var focusState: Field?
@@ -117,11 +129,11 @@ struct OutlinePasswordTextField: View {
         showPassword ? 15.5 : 16
     }
     
-    private var labelColor: Color {
+    private var placeHolderColor: Color {
         if isDisabled {
             .disableText
         } else {
-            .outline
+            .onSurfaceVariant
         }
     }
     
@@ -135,14 +147,16 @@ struct OutlinePasswordTextField: View {
     
     init(
         label: String,
-        text: Binding<String>,
+        text: String,
+        onTextChange: @escaping (String) -> Void,
         isDisable: Bool = false,
         errorMessage: String? = nil,
         focusState: FocusState<Field?>,
         field: Field
     ) {
         self.label = label
-        self._text = text
+        self.text = text
+        self.onTextChange = onTextChange
         self.isDisabled = isDisable
         self.errorMessage = errorMessage
         self._focusState = focusState
@@ -155,8 +169,11 @@ struct OutlinePasswordTextField: View {
                 if(!showPassword) {
                     SecureField(
                         "",
-                        text: $text,
-                        prompt: Text(label).foregroundColor(labelColor)
+                        text: Binding(
+                            get: { text },
+                            set: onTextChange
+                        ),
+                        prompt: Text(label).foregroundColor(placeHolderColor)
                     )
                     .foregroundColor(textColor)
                     .textInputAutocapitalization(.never)
@@ -164,15 +181,18 @@ struct OutlinePasswordTextField: View {
                     .focused($focusState, equals: field)
                     
                     Image(systemName: "eye.slash")
-                        .foregroundColor(.iconInput)
+                        .foregroundColor(placeHolderColor)
                         .onTapGesture {
                             showPassword = true
                         }
                 } else {
                     TextField(
                         "",
-                        text: $text,
-                        prompt: Text(label).foregroundColor(labelColor)
+                        text: Binding(
+                            get: { text },
+                            set: onTextChange
+                        ),
+                        prompt: Text(label).foregroundColor(placeHolderColor)
                     )
                     .foregroundColor(textColor)
                     .textInputAutocapitalization(.never)
@@ -180,7 +200,7 @@ struct OutlinePasswordTextField: View {
                     .focused($focusState, equals: field)
                 
                     Image(systemName: "eye")
-                        .foregroundColor(.iconInput)
+                        .foregroundColor(placeHolderColor)
                         .onTapGesture {
                             showPassword = false
                         }
@@ -205,24 +225,122 @@ struct OutlinePasswordTextField: View {
     }
 }
 
-#Preview {
-    VStack(spacing: Dimens.largePadding) {
-        OutlineTextField(
-            label: "Email",
-            text: .constant(""),
-            isDisable: false,
-            errorMessage: nil,
-            focusState: FocusState<Field?>(),
-            field: .email
-        )
+extension OutlinedTextField {
+    func setTextFieldFocusState(focusState: FocusState<Field?>, field: Field) -> Self {
+        var copy = self
+        copy._focusState = focusState
+        copy.field = field
+        return copy
+    }
+}
+
+struct TransparentTextField: View {
+    let text: String
+    let onTextChange: (String) -> String
+    let placeHolder: String
+    
+    init(
+        initialText: String,
+        onTextChange: @escaping (String) -> String,
+        placeHolder: String
+    ) {
+        self.text = initialText
+        self.onTextChange = onTextChange
+        self.placeHolder = placeHolder
         
-        OutlinePasswordTextField(
-            label: "Password",
-            text: .constant(""),
-            isDisable: false,
-            errorMessage: nil,
-            focusState: FocusState<Field?>(),
-            field: .password
+        currentText = initialText
+    }
+    
+    @FocusState private var focusState: Field?
+    private var field: Field?
+    @State private var currentText: String
+
+    var body: some View {
+        TextField(
+            "",
+            text: $currentText,
+            prompt: Text(placeHolder).foregroundColor(.onSurfaceVariant),
+            axis: .vertical
         )
-    }.padding()
+        .focused($focusState, equals: field)
+        .onChange(of: currentText) {
+            currentText = onTextChange($0)
+        }
+    }
+}
+
+extension TransparentTextField {
+    func setTextFieldFocusState(focusState: FocusState<Field?>, field: Field) -> Self {
+        var copy = self
+        copy._focusState = focusState
+        copy.field = field
+        return copy
+    }
+}
+
+struct TransparentTextFieldArea: View {
+    let text: String
+    let onTextChange: (String) -> String
+    let placeHolder: String
+    
+    init(
+        initialText: String,
+        onTextChange: @escaping (String) -> String,
+        placeHolder: String
+    ) {
+        self.text = initialText
+        self.onTextChange = onTextChange
+        self.placeHolder = placeHolder
+        
+        currentText = initialText
+    }
+    
+    @State private var currentText: String
+
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            TextEditor(text: $currentText)
+            
+            if currentText.isEmpty {
+                Text(placeHolder)
+                    .foregroundColor(.onSurfaceVariant)
+                    .padding(.horizontal, Dimens.extraSmallPadding)
+                    .padding(.vertical, Dimens.smallPadding)
+            }
+        }
+        .onChange(of: currentText) {
+            currentText = onTextChange($0)
+        }
+    }
+}
+
+#Preview {
+    OutlinedTextField(
+        initialText: "",
+        onTextChange: { _ in "" },
+        placeHolder: "Outlined text field",
+    )
+    
+    OutlinedPasswordTextField(
+        label: "Outlined password text field",
+        text: "",
+        onTextChange: { _ in },
+        isDisable: false,
+        errorMessage: nil,
+        focusState: FocusState<Field?>(),
+        field: .password
+    )
+    
+    TransparentTextField(
+        initialText: "",
+        onTextChange: { _ in "" },
+        placeHolder: "Transparent text field"
+    )
+    
+    TransparentTextFieldArea(
+        initialText: "",
+        onTextChange: { _ in "" },
+        placeHolder: "Transparent text field area"
+    )
+    .frame(maxWidth: .infinity, maxHeight: 200)
 }

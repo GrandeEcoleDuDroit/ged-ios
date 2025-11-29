@@ -1,7 +1,7 @@
 import FirebaseFirestore
 
 struct RemoteMessage: Codable {
-    let messageId: Int64
+    let messageId: String
     let conversationId: String
     let senderId: String
     let recipientId: String

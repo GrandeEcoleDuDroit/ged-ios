@@ -22,7 +22,7 @@ class MessageRemoteDataSource {
                 let data = message.toRemote().toMap()
                 try await messageApi.createMessage(
                     conversationId: message.conversationId,
-                    messageId: message.id.toString(),
+                    messageId: message.id,
                     data: data
                 )
             },

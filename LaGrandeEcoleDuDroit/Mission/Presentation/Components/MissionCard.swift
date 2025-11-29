@@ -7,50 +7,47 @@ struct MissionCard: View {
     
     var body: some View {
         switch mission.state {
-            case .published(let imageUrl):
+            case .published:
                 Clickable(action: onClick) {
                     DefaultMissionCard(
                         mission: mission,
-                        imageModel: imageUrl,
                         onOptionClick: onOptionClick
                     )
                 }
                 .clipShape(ShapeDefaults.medium)
                 
-            case .publishing(let imagePath):
+            case .error:
+                Clickable(action: onClick) {
+                    ErrorMissionCard(mission: mission)
+                }
+                .clipShape(ShapeDefaults.medium)
+                
+            default:
                 Clickable(action: onClick) {
                     PublishingMissionCard(
                         mission: mission,
-                        imageModel: imagePath,
                         onOptionClick: onOptionClick
                     )
-                }.clipShape(ShapeDefaults.medium)
-                
-            case .error(let imagePath):
-                Clickable(action: onClick) {
-                    ErrorMissionCard(
-                        mission: mission,
-                        imageModel: imagePath
-                    )
-                }.clipShape(ShapeDefaults.medium)
-                
-            default: EmptyView()
+                }
+                .clipShape(ShapeDefaults.medium)
         }
     }
 }
 
 private struct DefaultMissionCard: View {
     let mission: Mission
-    let imageModel: String?
     let onOptionClick: () -> Void
     
     var body: some View {
-        VStack(spacing: Dimens.mediumPadding) {
+        VStack(spacing: Dimens.smallMediumPadding + 2) {
             ZStack {
-                MissionImage(model: imageModel)
+                MissionImage(missionState: mission.state)
+                    .frame(height: 180)
+                    .clipped()
                 
                 OptionButton(action: onOptionClick)
                     .padding()
+                    .padding(Dimens.extraSmallPadding)
                     .frame(
                         maxWidth: .infinity,
                         maxHeight: .infinity,
@@ -77,19 +74,18 @@ private struct DefaultMissionCard: View {
             ShapeDefaults.medium
                 .stroke(.outlineVariant, lineWidth: 2)
         )
+        .contentShape(ShapeDefaults.medium)
         .clipShape(ShapeDefaults.medium)
     }
 }
 
 private struct PublishingMissionCard: View {
     let mission: Mission
-    let imageModel: String?
     let onOptionClick: () -> Void
     
     var body: some View {
         DefaultMissionCard(
             mission: mission,
-            imageModel: imageModel,
             onOptionClick: onOptionClick
         )
         .opacity(0.5)
@@ -98,13 +94,13 @@ private struct PublishingMissionCard: View {
 
 private struct ErrorMissionCard: View {
     let mission: Mission
-    let imageModel: String?
     
     var body: some View {
-        VStack {
+        VStack(spacing: Dimens.smallMediumPadding + 2) {
             ZStack {
-                MissionImage(model: imageModel)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                MissionImage(missionState: mission.state)
+                    .frame(height: 180)
+                    .clipped()
                 
                 ErrorBanner()
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -121,12 +117,14 @@ private struct ErrorMissionCard: View {
                     CardFooter(schoolLevels: mission.schoolLevels)
                 }
             }
-            .padding()
+            .padding(.horizontal)
+            .padding(.bottom)
         }
         .overlay(
             ShapeDefaults.medium
                 .stroke(.outlineVariant, lineWidth: 2)
         )
+        .contentShape(ShapeDefaults.medium)
         .clipShape(ShapeDefaults.medium)
     }
 }
@@ -138,13 +136,13 @@ private struct CardHeader: View {
         VStack(alignment: .leading, spacing: Dimens.smallPadding) {
             HStack(alignment: .top, spacing: Dimens.smallPadding) {
                 Text(mission.title)
-                    .font(.title)
+                    .font(.titleLarge)
                     .fixedSize(horizontal: false, vertical: true)
                     .lineLimit(2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 TextIcon(
-                    icon: { Image(systemName: "person.3") },
+                    icon: { Image(systemName: "person.2") },
                     text: {
                         Text(
                             stringResource(
@@ -156,7 +154,7 @@ private struct CardHeader: View {
                     }
                 )
                 .font(.bodyMedium)
-                .padding(.top, Dimens.smallPadding)
+                .padding(.top, Dimens.extraSmallPadding)
             }
             
             Text(MissionFormatter.formatDate(startDate: mission.startDate, endDate: mission.endDate))
@@ -199,7 +197,7 @@ private struct ErrorBanner: View {
         )
         .font(.callout)
         .foregroundStyle(.error)
-        .padding(.vertical, Dimens.smallPadding + 2)
+        .padding(.vertical, Dimens.smallMediumPadding)
         .padding(.horizontal, Dimens.mediumPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.background.opacity(0.8))
@@ -211,19 +209,20 @@ private struct ErrorBanner: View {
         VStack(spacing: Dimens.mediumPadding) {
             DefaultMissionCard(
                 mission: missionFixture,
-                imageModel: nil,
                 onOptionClick: {}
             )
             
             PublishingMissionCard(
-                mission: missionFixture,
-                imageModel: nil,
+                mission: missionFixture.copy {
+                    $0.state = .publishing()
+                },
                 onOptionClick: {}
             )
             
             ErrorMissionCard(
-                mission: missionFixture,
-                imageModel: nil
+                mission: missionFixture.copy {
+                    $0.state = .error()
+                }
             )
         }
         .padding()

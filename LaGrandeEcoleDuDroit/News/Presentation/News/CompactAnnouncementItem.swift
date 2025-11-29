@@ -2,18 +2,15 @@ import SwiftUI
 
 struct CompactAnnouncementItem: View {
     let announcement: Announcement
-    let onClick: () -> Void
     let onOptionClick: () -> Void
     
     private let elapsedTimeText: String
     
     init(
         announcement: Announcement,
-        onClick: @escaping () -> Void,
         onOptionClick: @escaping () -> Void
     ) {
         self.announcement = announcement
-        self.onClick = onClick
         self.onOptionClick = onOptionClick
         
         elapsedTimeText = getElapsedTimeText(
@@ -23,36 +20,33 @@ struct CompactAnnouncementItem: View {
     }
     
     var body: some View {
-        switch (announcement.state) {
-            case .published, .draft:
-                Clickable(action: onClick) {
+        ZStack {
+            switch (announcement.state) {
+                case .published, .draft:
                     DefaultItem(
                         announcement: announcement,
                         elapsedTimeText: elapsedTimeText,
                         onOptionClick: onOptionClick
                     )
-                    .padding(.horizontal)
-                    .padding(.vertical, Dimens.smallMediumPadding)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
-                }
-                
-            case .publishing:
-                PublishingItem(
-                    announcement: announcement,
-                    elapsedTimeText: elapsedTimeText,
-                    onClick: onClick,
-                    onOptionClick: onOptionClick
-                )
-                
-            case .error:
-                ErrorItem(
-                    announcement: announcement,
-                    elapsedTimeText: elapsedTimeText,
-                    onClick: onClick,
-                    onOptionClick: onOptionClick
-                )
+                    
+                case .publishing:
+                    PublishingItem(
+                        announcement: announcement,
+                        elapsedTimeText: elapsedTimeText,
+                        onOptionClick: onOptionClick
+                    )
+                    
+                case .error:
+                    ErrorItem(
+                        announcement: announcement,
+                        elapsedTimeText: elapsedTimeText,
+                        onOptionClick: onOptionClick
+                    )
+            }
         }
+        .contentShape(Rectangle())
+        .padding(.horizontal)
+        .padding(.vertical, Dimens.smallMediumPadding)
     }
 }
 
@@ -60,11 +54,9 @@ private struct DefaultItem: View {
     let announcement: Announcement
     let elapsedTimeText: String
     let onOptionClick: () -> Void
-    
-    @State private var isClicked: Bool = false
-    
+        
     var body: some View {
-        HStack(spacing: Dimens.smallMediumPadding) {
+        HStack(spacing: Dimens.mediumPadding) {
             ProfilePicture(
                 url: announcement.author.profilePictureUrl,
                 scale: 0.5
@@ -73,10 +65,8 @@ private struct DefaultItem: View {
             VStack(alignment: .leading, spacing: Dimens.extraSmallPadding) {
                 HStack {
                     Text(announcement.author.fullName)
-                        .font(.titleSmall)
                         .fontWeight(.medium)
-                        .lineLimit(2)
-                        .truncationMode(.tail)
+                        .lineLimit(1)
                     
                     Text(elapsedTimeText)
                         .foregroundStyle(.textPreview)
@@ -88,13 +78,11 @@ private struct DefaultItem: View {
                         .foregroundStyle(.textPreview)
                         .font(.bodyMedium)
                         .lineLimit(1)
-                        .truncationMode(.tail)
                 } else {
                     Text(announcement.content)
                         .foregroundStyle(.textPreview)
                         .font(.bodyMedium)
                         .lineLimit(1)
-                        .truncationMode(.tail)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -108,78 +96,53 @@ private struct DefaultItem: View {
 private struct PublishingItem: View {
     let announcement: Announcement
     let elapsedTimeText: String
-    let onClick: () -> Void
     let onOptionClick: () -> Void
     
-    @State private var isClicked: Bool = false
-
     var body: some View {
-        Clickable(action: onClick) {
-            DefaultItem(
-                announcement: announcement,
-                elapsedTimeText: elapsedTimeText,
-                onOptionClick: onOptionClick
-            )
-            .opacity(0.5)
-            .padding(.horizontal)
-            .padding(.vertical, Dimens.smallMediumPadding)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Rectangle())
-        }
+        DefaultItem(
+            announcement: announcement,
+            elapsedTimeText: elapsedTimeText,
+            onOptionClick: onOptionClick
+        )
+        .opacity(0.5)
     }
 }
 
 private struct ErrorItem: View {
     let announcement: Announcement
     let elapsedTimeText: String
-    let onClick: () -> Void
     let onOptionClick: () -> Void
     
-    @State private var isClicked: Bool = false
-
     var body: some View {
-        Clickable(action: onClick) {
-            HStack(alignment: .center, spacing: Dimens.smallMediumPadding) {
-                Image(systemName: "exclamationmark.circle")
-                    .foregroundStyle(.red)
-                
-                DefaultItem(
-                    announcement: announcement,
-                    elapsedTimeText: elapsedTimeText,
-                    onOptionClick: onOptionClick
-                )
-            }
-            .padding(.horizontal)
-            .padding(.vertical, Dimens.smallMediumPadding)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Rectangle())
+        HStack(alignment: .center, spacing: Dimens.mediumPadding) {
+            Image(systemName: "exclamationmark.circle")
+                .foregroundStyle(.red)
+            
+            DefaultItem(
+                announcement: announcement,
+                elapsedTimeText: elapsedTimeText,
+                onOptionClick: onOptionClick
+            )
         }
     }
 }
 
 #Preview {
-    VStack {
-        Clickable(action: {}) {
-            DefaultItem(
-                announcement: announcementFixture,
-                elapsedTimeText: "Now",
-                onOptionClick: {}
-            )
-            .padding()
-        }
-        
-        PublishingItem(
-            announcement: announcementFixture,
-            elapsedTimeText: "5m",
-            onClick: {},
-            onOptionClick: {}
-        )
-        
-        ErrorItem(
-            announcement: announcementFixture,
-            elapsedTimeText: "1h",
-            onClick: {},
-            onOptionClick: {}
-        )
-    }
+    DefaultItem(
+        announcement: announcementFixture,
+        elapsedTimeText: "Now",
+        onOptionClick: {}
+    )
+    
+    PublishingItem(
+        announcement: announcementFixture,
+        elapsedTimeText: "5m",
+        onOptionClick: {}
+    )
+    
+    ErrorItem(
+        announcement: announcementFixture,
+        elapsedTimeText: "1h",
+        onOptionClick: {}
+    )
 }

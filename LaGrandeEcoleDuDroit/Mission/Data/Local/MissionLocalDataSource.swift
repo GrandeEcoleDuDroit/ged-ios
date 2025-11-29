@@ -33,8 +33,17 @@ class MissionLocalDataSource {
             .flatMap { objectIds in
                 Future<CoreDataChange<Mission>, Never> { promise in
                     Task { [weak self] in
-                        let inserted = await self?.missionActor.resolve(objectIds.inserted) ?? []
-                        let updated = await self?.missionActor.resolve(objectIds.updated) ?? []
+                        let inserted = await self?.missionActor
+                            .resolve(objectIds.inserted)
+                            .compactMap { localMission in
+                                localMission.toMission(getImagePath: { self?.getImagePath($0) })
+                            } ?? []
+                        
+                        let updated = await self?.missionActor
+                            .resolve(objectIds.updated)
+                            .compactMap { localMission in
+                                localMission.toMission(getImagePath: { self?.getImagePath($0) })
+                            } ?? []
                         
                         promise(.success(CoreDataChange(inserted: inserted, updated: updated)))
                     }
@@ -44,7 +53,7 @@ class MissionLocalDataSource {
     }
     
     func getMissions() async throws -> [Mission] {
-        try await missionActor.getMissions()
+        try await missionActor.getMissions().compactMap { $0.toMission(getImagePath: getImagePath) }
     }
     
     func upsertMission(mission: Mission) async throws {
@@ -53,5 +62,15 @@ class MissionLocalDataSource {
     
     func deleteMission(missionId: String) async throws {
         try await missionActor.delete(missionId: missionId)
+    }
+    
+    private func getImagePath(_ fileName: String) -> String? {
+        FileManager.default.urls(
+            for: .documentDirectory,
+            in: .userDomainMask
+        )
+        .first?
+        .appendingPathComponent(MissionUtils.folderName)
+        .appendingPathComponent(fileName).path()
     }
 }

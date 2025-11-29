@@ -2,21 +2,21 @@ import SwiftUI
 
 struct PrimaryButton: View {
     private let label: String
-    private let onClick: () -> Void
+    private let action: () -> Void
     private let width: CGFloat
     
     init(
         label: String,
-        onClick: @escaping () -> Void,
+        action: @escaping () -> Void,
         width: CGFloat = .infinity
     ) {
         self.label = label
-        self.onClick = onClick
+        self.action = action
         self.width = width
     }
     
     var body: some View {
-        Button(action: onClick) {
+        Button(action: action) {
             Text(label)
                 .frame(maxWidth: width)
                 .padding(10)
@@ -29,22 +29,22 @@ struct PrimaryButton: View {
 
 struct LoadingButton: View {
     private let label: String
-    private let onClick: () -> Void
+    private let action: () -> Void
     private var isLoading: Bool
     
     init(
         label: String,
-        onClick: @escaping () -> Void,
+        action: @escaping () -> Void,
         isLoading: Bool
     ) {
         self.label = label
-        self.onClick = onClick
+        self.action = action
         self.isLoading = isLoading
     }
     
     var body: some View {
         if isLoading {
-            Button(action: onClick) {
+            Button(action: action) {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     .frame(maxWidth: .infinity)
@@ -54,7 +54,7 @@ struct LoadingButton: View {
                     .clipShape(.rect(cornerRadius: 30))
             }
         } else {
-            PrimaryButton(label: label, onClick: onClick, width: .infinity)
+            PrimaryButton(label: label, action: action, width: .infinity)
         }
     }
 }
@@ -83,16 +83,12 @@ struct Clickable<Content: View>: View {
     }
 }
 
-private struct ClickStyle: ButtonStyle {
+struct ClickStyle: ButtonStyle {
     var backgroundColor: Color = .click
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .background(
-                backgroundColor
-                    .opacity(configuration.isPressed ? 1 : 0)
-                    .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
-            )
+            .background(configuration.isPressed ? backgroundColor : .clear)
     }
 }
 
@@ -106,14 +102,54 @@ struct OptionButton : View {
     }
 }
 
-#Preview {
-    VStack(spacing: Dimens.largePadding) {
-        LoadingButton(
-            label: "Loading button",
-            onClick: {},
-            isLoading : false
+struct RemoveButton: View {
+    let action: () -> Void
+    
+    var body: some View {
+        Button(
+            action: action,
+            label: {
+                Image(systemName: "xmark")
+            }
         )
-        
+    }
+}
+
+struct TextButton: View {
+    let text: String
+    let onClick: () -> Void
+    let enabled: Bool
+    
+    var body: some View {
+        Button(
+            action: onClick,
+            label: {
+                if enabled {
+                    Text(text).foregroundStyle(.gedPrimary)
+                } else {
+                    Text(text)
+                }
+            }
+        )
+        .fontWeight(.semibold)
+        .disabled(!enabled)
+    }
+}
+
+#Preview {
+    LoadingButton(
+        label: "Loading button",
+        action: {},
+        isLoading : false
+    )
+    
+    HStack {
+        Text("Option button")
         OptionButton(action: {})
-    }.padding()
+    }
+    
+    HStack {
+        Text("Remove button")
+        RemoveButton(action: {})
+    }
 }

@@ -33,8 +33,18 @@ class MissionInjector: Injector {
         }.inObjectScope(.container)
         
         // Use cases
+        container.register(CreateMissionUseCase.self) { resolver in
+            CreateMissionUseCase(
+                missionRepository: resolver.resolve(MissionRepository.self)!,
+                imageRepository: CommonInjector.shared.resolve(ImageRepository.self)
+            )
+        }
+        
         container.register(DeleteMissionUseCase.self) { resolver in
-            DeleteMissionUseCase(missionRepository: resolver.resolve(MissionRepository.self)!)
+            DeleteMissionUseCase(
+                missionRepository: resolver.resolve(MissionRepository.self)!,
+                imageRepository: CommonInjector.shared.resolve(ImageRepository.self)
+            )
         }
         
         container.register(SynchronizeMissionsUseCase.self) { resolver in

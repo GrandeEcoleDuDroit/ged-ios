@@ -9,8 +9,10 @@ struct AuthenticationDestination: View {
     
     var body: some View {
         AuthenticationView(
-            email: $viewModel.uiState.email,
-            password: $viewModel.uiState.password,
+            email: viewModel.uiState.email,
+            onEmailChange: viewModel.onEmailChange,
+            password: viewModel.uiState.password,
+            onPasswordChange: viewModel.onPasswordChange,
             loading: viewModel.uiState.loading,
             emailError: viewModel.uiState.emailError,
             passwordError: viewModel.uiState.passwordError,
@@ -37,8 +39,10 @@ struct AuthenticationDestination: View {
 }
 
 private struct AuthenticationView: View {
-    @Binding var email: String
-    @Binding var password: String
+    let email: String
+    let onEmailChange: (String) -> String
+    let password: String
+    let onPasswordChange: (String) -> Void
     let loading: Bool
     let emailError: String?
     let passwordError: String?
@@ -53,8 +57,10 @@ private struct AuthenticationView: View {
             HeaderSection()
             
             CredentialsInputs(
-                email: $email,
-                password: $password,
+                email: email,
+                onEmailChange: onEmailChange,
+                password: password,
+                onPasswordChange: onPasswordChange,
                 loading: loading,
                 emailError: emailError,
                 passwordError: passwordError,
@@ -102,8 +108,10 @@ private struct HeaderSection: View {
 }
 
 private struct CredentialsInputs: View {
-    @Binding var email: String
-    @Binding var password: String
+    let email: String
+    let onEmailChange: (String) -> String
+    let password: String
+    let onPasswordChange: (String) -> Void
     let loading: Bool
     let emailError: String?
     let passwordError: String?
@@ -112,21 +120,22 @@ private struct CredentialsInputs: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
-            OutlineTextField(
-                label: stringResource(.email),
-                text: $email,
-                isDisable: loading,
-                errorMessage: emailError,
-                focusState: _focusState,
-                field: .email
+            OutlinedTextField(
+                initialText: email,
+                onTextChange: onEmailChange,
+                placeHolder: stringResource(.email),
+                disabled: loading,
+                errorMessage: emailError
             )
+            .setTextFieldFocusState(focusState: _focusState, field: .email)
             .keyboardType(.emailAddress)
             .textContentType(.emailAddress)
             .textInputAutocapitalization(.never)
             
-            OutlinePasswordTextField(
+            OutlinedPasswordTextField(
                 label: stringResource(.password),
-                text: $password,
+                text: password,
+                onTextChange: onPasswordChange,
                 isDisable: loading,
                 errorMessage: passwordError,
                 focusState: _focusState,
@@ -151,7 +160,7 @@ private struct Buttons: View {
         VStack(spacing: Dimens.mediumPadding) {
             LoadingButton(
                 label: stringResource(.login),
-                onClick: onLoginClick,
+                action: onLoginClick,
                 isLoading: loading
             )
             
@@ -174,8 +183,10 @@ private struct Buttons: View {
 
 #Preview {
     AuthenticationView(
-        email: .constant(""),
-        password: .constant(""),
+        email: "",
+        onEmailChange: { _ in "" },
+        password: "",
+        onPasswordChange: { _ in },
         loading: false,
         emailError: nil,
         passwordError: nil,

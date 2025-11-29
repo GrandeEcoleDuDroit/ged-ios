@@ -1,14 +1,18 @@
 import SwiftUI
 
 extension Image {
-    func fit(scale: CGFloat = 1) -> some View {
+    func resize(
+        width: CGFloat = Dimens.defaultImageSize,
+        height: CGFloat = Dimens.defaultImageSize,
+        scale: CGFloat = 1.0
+    ) -> some View {
         self
             .resizable()
             .scaledToFill()
             .frame(
-                width: Dimens.defaultImageSize * scale,
-                height: Dimens.defaultImageSize * scale
+                width: width * scale,
+                height: height * scale
             )
             .clipped()
-    }
+    }    
 }

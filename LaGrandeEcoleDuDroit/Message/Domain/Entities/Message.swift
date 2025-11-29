@@ -1,7 +1,7 @@
 import Foundation
 
 struct Message: Hashable, Codable, Copyable {
-    var id: Int64
+    var id: String
     var senderId: String
     var recipientId: String
     var conversationId: String

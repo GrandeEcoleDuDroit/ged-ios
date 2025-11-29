@@ -42,7 +42,8 @@ struct NewsDestination: View {
             )
         } else {
             ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .padding(.top)
         }
     }
 }
@@ -60,37 +61,33 @@ private struct NewsView: View {
     let onReportAnnouncementClick: (AnnouncementReport) -> Void
     let onSeeAllAnnouncementClick: () -> Void
     
-    @State private var showAnnouncementBottomSheet: Bool = false
-    @State private var showAnnouncementReportBottomSheet: Bool = false
     @State private var showDeleteAnnouncementAlert: Bool = false
-    @State private var clickedAnnouncement: Announcement?
+    @State private var announcementBottomSheetType:  AnnouncementBottomSheetType?
+    @State private var alertAnnouncement: Announcement?
     
     var body: some View {
-        HStack {
+        ZStack {
             if let announcements {
                 RecentAnnouncementSection(
                     announcements: announcements,
                     onAnnouncementClick: onAnnouncementClick,
                     onUncreatedAnnouncementClick: {
-                        clickedAnnouncement = $0
-                        showAnnouncementBottomSheet = true
+                        announcementBottomSheetType = .announcement(announcement: $0)
                     },
                     onAnnouncementOptionClick: {
-                        clickedAnnouncement = $0
-                        showAnnouncementBottomSheet = true
+                        announcementBottomSheetType = .announcement(announcement: $0)
                     },
                     onSeeAllAnnouncementClick: onSeeAllAnnouncementClick
                 )
             } else {
                 ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .refreshable { await onRefreshAnnouncements() }
-        .padding(.top, Dimens.mediumPadding)
+        .padding(.top)
         .loading(loading)
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 HStack {
@@ -114,66 +111,63 @@ private struct NewsView: View {
                 }
             }
         }
-        .sheet(isPresented: $showAnnouncementBottomSheet) {
-            BottomSheet(
-                user: user,
-                clickedAnnouncement: $clickedAnnouncement,
-                onResendAnnouncementClick: {
-                    showAnnouncementBottomSheet = false
-                    onResendAnnouncementClick($0)
-                },
-                onDeleteAnnouncementClick: {
-                    showAnnouncementBottomSheet = false
-                    showDeleteAnnouncementAlert = true
-                },
-                onEditAnnouncementClick: {
-                    showAnnouncementBottomSheet = false
-                    onEditAnnouncementClick($0)
-                },
-                onReportAnnouncementClick: {
-                    showAnnouncementBottomSheet = false
-                    showAnnouncementReportBottomSheet = true
-                }
-            )
-        }
-        .sheet(isPresented: $showAnnouncementReportBottomSheet) {
-            ReportBottomSheet(
-                items: AnnouncementReport.Reason.allCases,
-                fraction: 0.45,
-                onReportClick: { reason in
-                    showAnnouncementReportBottomSheet = false
+        .sheet(item: $announcementBottomSheetType) {
+            switch $0 {
+                case let .announcement(announcement):
+                    BottomSheet(
+                        user: user,
+                        announcement: announcement,
+                        onResendAnnouncementClick: {
+                            onResendAnnouncementClick($0)
+                        },
+                        onDeleteAnnouncementClick: {
+                            alertAnnouncement = announcement
+                            showDeleteAnnouncementAlert = true
+                        },
+                        onEditAnnouncementClick: {
+                            onEditAnnouncementClick($0)
+                        },
+                        onReportAnnouncementClick: {
+                            announcementBottomSheetType = .report(announcement: announcement)
+                        }
+                    )
                     
-                    if let clickedAnnouncement {
-                        onReportAnnouncementClick(
-                            AnnouncementReport(
-                                announcementId: clickedAnnouncement.id,
-                                authorInfo: AnnouncementReport.UserInfo(
-                                    fullName: user.fullName,
-                                    email: user.email
-                                ),
-                                userInfo: AnnouncementReport.UserInfo(
-                                    fullName: clickedAnnouncement.author.fullName,
-                                    email: clickedAnnouncement.author.email
-                                ),
-                                reason: reason
+                case let .report(announcement):
+                    ReportBottomSheet(
+                        items: AnnouncementReport.Reason.allCases,
+                        fraction: 0.45,
+                        onReportClick: { reason in
+                            onReportAnnouncementClick(
+                                AnnouncementReport(
+                                    announcementId: announcement.id,
+                                    authorInfo: AnnouncementReport.UserInfo(
+                                        fullName: user.fullName,
+                                        email: user.email
+                                    ),
+                                    userInfo: AnnouncementReport.UserInfo(
+                                        fullName: announcement.author.fullName,
+                                        email: announcement.author.email
+                                    ),
+                                    reason: reason
+                                )
                             )
-                        )
-                    }
-                }
-            )
+                        }
+                    )
+            }
         }
         .alert(
             stringResource(.deleteAnnouncementAlertMessage),
             isPresented: $showDeleteAnnouncementAlert,
-            actions: {
+            presenting: alertAnnouncement,
+            actions: { announcement in
                 Button(stringResource(.cancel), role: .cancel) {
+                    alertAnnouncement = nil
                     showDeleteAnnouncementAlert = false
                 }
                 
                 Button(stringResource(.delete), role: .destructive) {
-                    if let clickedAnnouncement {
-                        onDeleteAnnouncementClick(clickedAnnouncement)
-                    }
+                    onDeleteAnnouncementClick(announcement)
+                    alertAnnouncement = nil
                     showDeleteAnnouncementAlert = false
                 }
             }
@@ -183,27 +177,32 @@ private struct NewsView: View {
 
 private struct BottomSheet: View {
     let user: User
-    @Binding var clickedAnnouncement: Announcement?
+    let announcement: Announcement
     let onResendAnnouncementClick: (Announcement) -> Void
     let onDeleteAnnouncementClick: () -> Void
     let onEditAnnouncementClick: (Announcement) -> Void
     let onReportAnnouncementClick: () -> Void
     
     var body: some View {
-        if let clickedAnnouncement {
-            AnnouncementBottomSheet(
-                announcement: clickedAnnouncement,
-                isEditable: user.admin && clickedAnnouncement.author.id == user.id,
-                onEditClick: { onEditAnnouncementClick(clickedAnnouncement) },
-                onResendClick: { onResendAnnouncementClick(clickedAnnouncement) },
-                onDeleteClick: onDeleteAnnouncementClick,
-                onReportClick: onReportAnnouncementClick
-            )
-        } else {
-            BottomSheetContainer(fraction: 0.12) {
-                Text(stringResource(.unknownError))
-                    .foregroundColor(.error)
-            }
+        AnnouncementBottomSheet(
+            announcement: announcement,
+            isEditable: user.admin && announcement.author.id == user.id,
+            onEditClick: { onEditAnnouncementClick(announcement) },
+            onResendClick: { onResendAnnouncementClick(announcement) },
+            onDeleteClick: onDeleteAnnouncementClick,
+            onReportClick: onReportAnnouncementClick
+        )
+    }
+}
+
+private enum AnnouncementBottomSheetType: Identifiable {
+    case announcement(announcement: Announcement)
+    case report(announcement: Announcement)
+    
+    var id: Int {
+        switch self {
+            case .announcement: 1
+            case .report: 2
         }
     }
 }

@@ -37,6 +37,9 @@ enum Strings: String {
     case resend = "resend"
     case loading = "loading"
     case send = "send"
+    case publish = "publish"
+    case add = "add"
+    case search = "search"
     case minutesAgoShort = "minutes_ago_short"
     case hoursAgoShort = "hours_ago_short"
     case daysAgoShort = "days_ago_short"
@@ -51,6 +54,7 @@ enum Strings: String {
     case blockUserAlertTitle = "block_user_alert_title"
     case blockUserAlertMessage = "block_user_alert_message"
     case unblockUserAlertMessage = "unblock_user_alert_message"
+    case noUser = "no_user"
     
     // Common errors
     case mandatoryFieldError = "mandatory_field_error"
@@ -107,7 +111,6 @@ enum Strings: String {
     case editAnnouncement = "edit_announcement"
     case title = "title"
     case content = "content"
-    case post = "post"
     case announcementCreated = "announcement_created"
     case noAnnouncement = "no_announcement"
     case deleteAnnouncementAlertMessage = "delete_announcement_alert_message"
@@ -129,7 +132,21 @@ enum Strings: String {
     
     // Mission
     case mission = "mission"
+    case newMission = "new_mission"
     case participantNumber = "participant_number"
     case noMission = "no_mission"
     case deleteMissionAlertMessage = "delete_mission_alert_message"
+    case addImage = "add_image"
+    case missionDescriptionField = "mission_description_field"
+    case information = "information"
+    case missionStartDateField = "mission_start_date_field"
+    case missionEndDateField = "mission_end_date_field"
+    case everyone = "everyone"
+    case missionMaxParticipantsField = "mission_max_participants_field"
+    case missionDurationField = "mission_duration_field"
+    case managers = "managers"
+    case addManager = "add_manager"
+    case tasks = "tasks"
+    case addTask = "add_task"
+    case enterTask = "enter_task"
 }

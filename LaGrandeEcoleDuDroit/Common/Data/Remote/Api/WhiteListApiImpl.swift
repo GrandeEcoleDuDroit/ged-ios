@@ -4,14 +4,14 @@ class WhiteListApiImpl: WhiteListApi {
     private let base = "white-list"
     
     func isUserWhiteListed(email: String) async throws -> (URLResponse, Bool) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "user")
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "user")
         
         let dataToSend: [String: String] = [
             UserField.Server.userEmail: email
         ]
         
-        let session = RequestUtils.getSession()
-        let request = try RequestUtils.formatPostRequest(
+        let session = RequestUtils.getDefaultSession()
+        let request = try RequestUtils.simplePostRequest(
             dataToSend: dataToSend,
             url: url
         )

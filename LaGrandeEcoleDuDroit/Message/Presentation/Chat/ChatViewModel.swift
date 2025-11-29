@@ -9,10 +9,11 @@ class ChatViewModel: ViewModel {
     private let notificationMessageManager: MessageNotificationManager
     private let networkMonitor: NetworkMonitor
     private let blockedUserRepository: BlockedUserRepository
+    private let generateIdUseCase: GenerateIdUseCase
     
     @Published var uiState: ChatUiState = ChatUiState()
     @Published private(set) var event: SingleUiEvent? = nil
-    private var messagesDict: [Int64:Message] = [:]
+    private var messagesDict: [String:Message] = [:]
     private var conversation: Conversation
     private let currentUser: User?
     private var cancellables: Set<AnyCancellable> = []
@@ -25,7 +26,8 @@ class ChatViewModel: ViewModel {
         sendMessageUseCase: SendMessageUseCase,
         notificationMessageManager: MessageNotificationManager,
         networkMonitor: NetworkMonitor,
-        blockedUserRepository: BlockedUserRepository
+        blockedUserRepository: BlockedUserRepository,
+        generateIdUseCase: GenerateIdUseCase
     ) {
         self.conversation = conversation
         self.userRepository = userRepository
@@ -35,6 +37,7 @@ class ChatViewModel: ViewModel {
         self.notificationMessageManager = notificationMessageManager
         self.networkMonitor = networkMonitor
         self.blockedUserRepository = blockedUserRepository
+        self.generateIdUseCase = generateIdUseCase
         
         currentUser = userRepository.currentUser
         getMessages(offset: 0)
@@ -90,7 +93,7 @@ class ChatViewModel: ViewModel {
         guard !uiState.messageText.isEmpty, let currentUser else { return }
         
         let message = Message(
-            id: GenerateIdUseCase.intId(),
+            id: generateIdUseCase.execute(),
             senderId: currentUser.id,
             recipientId: conversation.interlocutor.id,
             conversationId: conversation.id,

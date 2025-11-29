@@ -108,7 +108,7 @@ class NewsViewModel: ViewModel {
     }
     
     private func transform(_ announcement: Announcement) -> Announcement {
-        let trimmedTitle = announcement.title?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedTitle = announcement.title?.trim()
         let newTitle = trimmedTitle.flatMap { !$0.isEmpty ? String($0.prefix(100)) : nil }
         let newContent = String(announcement.content.prefix(100))
         

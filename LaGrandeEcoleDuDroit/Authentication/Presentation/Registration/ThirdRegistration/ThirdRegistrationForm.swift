@@ -1,14 +1,17 @@
 import SwiftUI
 
 struct ThirdRegistrationForm: View {
-    @Binding var email: String
-    @Binding var password: String
+    let email: String
+    let onEmailChange: (String) -> String
+    let password: String
+    let onPasswordChange: (String) -> Void
     let loading: Bool
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
     let legalNoticeChecked: Bool
     let onLegalNoticeCheckedChange: (Bool) -> Void
+    
     @FocusState var focusState: Field?
     
     private let legalNoticeUrl = "https://grandeecoledudroit.github.io/ged-website/legal-notice.html"
@@ -18,20 +21,21 @@ struct ThirdRegistrationForm: View {
             Text(stringResource(.enterEmailPassword))
                 .font(.title3)
             
-            OutlineTextField(
-                label: stringResource(.email),
-                text: $email,
-                isDisable: loading,
-                errorMessage: emailError,
-                focusState: _focusState,
-                field: .email
+            OutlinedTextField(
+                initialText: email,
+                onTextChange: onEmailChange,
+                placeHolder: stringResource(.email),
+                disabled: loading,
+                errorMessage: emailError
             )
+            .setTextFieldFocusState(focusState: _focusState, field: .email)
             .textContentType(.emailAddress)
             .textInputAutocapitalization(.never)
             
-            OutlinePasswordTextField(
+            OutlinedPasswordTextField(
                 label: stringResource(.password),
-                text: $password,
+                text: password,
+                onTextChange: onPasswordChange,
                 isDisable: loading,
                 errorMessage: passwordError,
                 focusState: _focusState,
@@ -41,15 +45,15 @@ struct ThirdRegistrationForm: View {
             
             HStack {
                 CheckBox(
-                    checked: legalNoticeChecked,
-                    onCheckedChange: onLegalNoticeCheckedChange
-                )
+                    checked: legalNoticeChecked
+                ).onTapGesture {
+                    onLegalNoticeCheckedChange(!legalNoticeChecked)
+                }
                 
                 Group {
                     Text(stringResource(.agreeTermsPrivacyBeginningText))
                     + Text(" ")
-                    + Text(.init("[\(stringResource(.termsAndPrivacy))](\(legalNoticeUrl))"))
-                        .underline()
+                    + Text(.init("[\(stringResource(.termsAndPrivacy))](\(legalNoticeUrl))")).underline()
                     + Text(".")
                 }
                 .font(.footnote)
@@ -67,8 +71,10 @@ struct ThirdRegistrationForm: View {
 
 #Preview {
     ThirdRegistrationForm(
-        email: .constant(""),
-        password: .constant(""),
+        email: "",
+        onEmailChange: { _ in "" },
+        password: "",
+        onPasswordChange: { _ in },
         loading: false,
         emailError: nil,
         passwordError: nil,
