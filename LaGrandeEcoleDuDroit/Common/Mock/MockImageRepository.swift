@@ -8,4 +8,6 @@ class MockImageRepository: ImageRepository {
     func deleteRemoteImage(fileName: String) async throws {}
     
     func deleteLocalImage(folderName: String, fileName: String) async throws {}
+    
+    func deleteLocalImage(imagePath: String) async throws {}
 }

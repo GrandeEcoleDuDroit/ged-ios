@@ -14,19 +14,19 @@ class DeleteMissionUseCase {
         switch mission.state {
             case .draft: try await missionRepository.deleteLocalMission(missionId: mission.id)
                 
-            case let .publishing(imageFileName):
+            case let .publishing(imagePath):
                 try await missionRepository.deleteLocalMission(missionId: mission.id)
-                if let imageFileName {
-                    try await imageRepository.deleteLocalImage(folderName: MissionUtils.folderName, fileName: imageFileName)
+                if let imagePath {
+                    try await imageRepository.deleteLocalImage(imagePath: imagePath)
                 }
                 
             case let .published(imageUrl):
                 try await missionRepository.deleteMission(mission: mission, imageUrl: imageUrl)
             
-            case let .error(imageFileName):
+            case let .error(imagePath):
                 try await missionRepository.deleteLocalMission(missionId: mission.id)
-                if let imageFileName {
-                    try await imageRepository.deleteLocalImage(folderName: MissionUtils.folderName, fileName: imageFileName)
+                if let imagePath {
+                    try await imageRepository.deleteLocalImage(imagePath: imagePath)
                 }
         }
     }

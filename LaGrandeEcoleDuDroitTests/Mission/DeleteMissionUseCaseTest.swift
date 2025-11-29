@@ -6,14 +6,15 @@ import Combine
 
 class DeleteMissionUseCaseTest {
     @Test
-    func deleteMissionUseCase_delete_local_mission_when_state_is_draft() async {
+    func deleteMissionUseCase_shoul_delete_local_mission_when_state_is_draft() async {
         // Given
-        let mission = missionFixture.copy { $0.state = .draft() }
+        let mission = missionFixture.copy { $0.state = .draft }
         let missionRepository = MissionRepositoryTest(
             givenMission: mission
         )
         let useCase = DeleteMissionUseCase(
-            missionRepository: missionRepository
+            missionRepository: missionRepository,
+            imageRepository: MockImageRepository()
         )
         
         // When
@@ -24,14 +25,15 @@ class DeleteMissionUseCaseTest {
     }
     
     @Test
-    func deleteMissionUseCase_delete_local_mission_when_state_is_publishing() async {
+    func deleteMissionUseCase_shoul_delete_local_mission_when_state_is_publishing() async {
         // Given
         let mission = missionFixture.copy { $0.state = .publishing() }
         let missionRepository = MissionRepositoryTest(
             givenMission: mission
         )
         let useCase = DeleteMissionUseCase(
-            missionRepository: missionRepository
+            missionRepository: missionRepository,
+            imageRepository: MockImageRepository()
         )
         
         // When
@@ -42,14 +44,15 @@ class DeleteMissionUseCaseTest {
     }
     
     @Test
-    func deleteMissionUseCase_delete_mission_when_state_is_published() async {
+    func deleteMissionUseCase_shoul_delete_mission_when_state_is_published() async {
         // Given
         let mission = missionFixture.copy { $0.state = .published() }
         let missionRepository = MissionRepositoryTest(
             givenMission: mission
         )
         let useCase = DeleteMissionUseCase(
-            missionRepository: missionRepository
+            missionRepository: missionRepository,
+            imageRepository: MockImageRepository()
         )
         
         // When
@@ -60,14 +63,15 @@ class DeleteMissionUseCaseTest {
     }
     
     @Test
-    func deleteMissionUseCase_delete_mission_when_state_is_error() async {
+    func deleteMissionUseCase_shoul_delete_mission_when_state_is_error() async {
         // Given
         let mission = missionFixture.copy { $0.state = .error() }
         let missionRepository = MissionRepositoryTest(
             givenMission: mission
         )
         let useCase = DeleteMissionUseCase(
-            missionRepository: missionRepository
+            missionRepository: missionRepository,
+            imageRepository: MockImageRepository()
         )
         
         // When
@@ -91,7 +95,7 @@ private class MissionRepositoryTest: MockMissionRepository {
         localMissionDeleted = true
     }
     
-    override func deleteMission(mission: Mission) async throws {
+    override func deleteMission(mission: Mission, imageUrl: String?) async throws {
         missionDeleted = true
     }
 }
