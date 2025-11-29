@@ -143,7 +143,7 @@ private struct CreateMissionView: View {
                         },
                         onCancelClick: { missionBottomSheetType = nil }
                     )
-                    .presentationDetents([.medium, .large])
+                    .presentationDetents([.medium])
                     
                 case let .editTask(missionTask):
                     EditMissionTaskBottomSheet(
@@ -154,7 +154,7 @@ private struct CreateMissionView: View {
                         },
                         onCancelClick: { missionBottomSheetType = nil }
                     )
-                    .presentationDetents([.medium, .large])
+                    .presentationDetents([.medium])
                     
                 case .selectManager:
                     SelectManagerBottomSheet(

@@ -38,7 +38,7 @@ struct MissionFormInformationSection: View {
                 allSchoolLevels: allSchoolLevels
             )
             
-            OutlineTextField(
+            OutlinedTextField(
                 initialText: maxParticipants,
                 onTextChange: onMaxParticipantsChange,
                 placeHolder: stringResource(.missionMaxParticipantsField),
@@ -52,7 +52,7 @@ struct MissionFormInformationSection: View {
             )
             .keyboardType(.decimalPad)
             
-            OutlineTextField(
+            OutlinedTextField(
                 initialText: duration,
                 onTextChange: onDurationChange,
                 placeHolder: stringResource(.missionDurationField),

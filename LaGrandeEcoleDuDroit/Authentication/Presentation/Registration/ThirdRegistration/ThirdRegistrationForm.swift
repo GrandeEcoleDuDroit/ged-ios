@@ -21,7 +21,7 @@ struct ThirdRegistrationForm: View {
             Text(stringResource(.enterEmailPassword))
                 .font(.title3)
             
-            OutlineTextField(
+            OutlinedTextField(
                 initialText: email,
                 onTextChange: onEmailChange,
                 placeHolder: stringResource(.email),
@@ -32,7 +32,7 @@ struct ThirdRegistrationForm: View {
             .textContentType(.emailAddress)
             .textInputAutocapitalization(.never)
             
-            OutlinePasswordTextField(
+            OutlinedPasswordTextField(
                 label: stringResource(.password),
                 text: password,
                 onTextChange: onPasswordChange,

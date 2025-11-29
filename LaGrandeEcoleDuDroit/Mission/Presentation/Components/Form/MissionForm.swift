@@ -19,7 +19,7 @@ struct MissionForm: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: Dimens.largePadding) {
+            VStack(spacing: Dimens.mediumPadding) {
                 MissionFormImageSection(
                     imageData: value.imageData,
                     onImageClick: onImageClick,

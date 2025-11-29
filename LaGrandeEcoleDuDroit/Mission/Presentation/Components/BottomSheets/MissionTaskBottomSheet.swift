@@ -83,7 +83,7 @@ private struct MissionTaskBottomSheet: View {
     
     var body: some View {
         NavigationStack {
-            TransparentTextField(
+            TransparentTextFieldArea(
                 initialText: initialValue,
                 onTextChange: {
                     onValueChange($0)
@@ -97,7 +97,7 @@ private struct MissionTaskBottomSheet: View {
                 maxHeight: .infinity,
                 alignment: .topLeading
             )
-            .padding()
+            .padding(.horizontal, Dimens.smallMediumPadding)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: onCancelClick) {
