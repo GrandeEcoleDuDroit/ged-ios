@@ -40,7 +40,7 @@ struct AuthenticationDestination: View {
 
 private struct AuthenticationView: View {
     let email: String
-    let onEmailChange: (String) -> Void
+    let onEmailChange: (String) -> String
     let password: String
     let onPasswordChange: (String) -> Void
     let loading: Bool
@@ -109,7 +109,7 @@ private struct HeaderSection: View {
 
 private struct CredentialsInputs: View {
     let email: String
-    let onEmailChange: (String) -> Void
+    let onEmailChange: (String) -> String
     let password: String
     let onPasswordChange: (String) -> Void
     let loading: Bool
@@ -121,14 +121,13 @@ private struct CredentialsInputs: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
             OutlineTextField(
-                label: stringResource(.email),
-                text: email,
+                initialText: email,
                 onTextChange: onEmailChange,
+                placeHolder: stringResource(.email),
                 disabled: loading,
-                errorMessage: emailError,
-                focusState: _focusState,
-                field: .email
+                errorMessage: emailError
             )
+            .setTextFieldFocusState(focusState: _focusState, field: .email)
             .keyboardType(.emailAddress)
             .textContentType(.emailAddress)
             .textInputAutocapitalization(.never)
@@ -185,7 +184,7 @@ private struct Buttons: View {
 #Preview {
     AuthenticationView(
         email: "",
-        onEmailChange: { _ in },
+        onEmailChange: { _ in "" },
         password: "",
         onPasswordChange: { _ in },
         loading: false,

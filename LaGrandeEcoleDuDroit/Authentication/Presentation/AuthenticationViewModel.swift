@@ -40,8 +40,9 @@ class AuthenticationViewModel: ViewModel {
         }
     }
     
-    func onEmailChange(_ email: String) {
+    func onEmailChange(_ email: String) -> String {
         uiState.email = email
+        return email
     }
     
     func onPasswordChange(_ password: String) {

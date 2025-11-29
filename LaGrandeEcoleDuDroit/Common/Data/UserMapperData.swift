@@ -7,7 +7,7 @@ extension User {
             userEmail: email,
             userSchoolLevel: schoolLevel.number,
             userAdmin: admin ? 1 : 0,
-            userProfilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
+            userProfilePictureFileName: UrlUtils.extractFileNameFromUrl(url: profilePictureUrl),
             userState: state.rawValue,
             userTester: tester ? 1 : 0
         )
@@ -21,7 +21,7 @@ extension User {
             email: email,
             schoolLevel: schoolLevel.number,
             admin: admin,
-            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
+            profilePictureFileName: UrlUtils.extractFileNameFromUrl(url: profilePictureUrl),
             state: state.rawValue,
             tester: tester
         )
@@ -35,7 +35,7 @@ extension User {
             userEmail: email,
             userSchoolLevel: schoolLevel.rawValue,
             userAdmin: admin,
-            userProfilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
+            userProfilePictureFileName: UrlUtils.extractFileNameFromUrl(url: profilePictureUrl),
             userState: state.rawValue,
             userTester: tester
         )

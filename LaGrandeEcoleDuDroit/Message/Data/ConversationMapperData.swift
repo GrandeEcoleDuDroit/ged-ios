@@ -14,7 +14,7 @@ extension Conversation {
         localConversation.conversationInterlocutorEmail = interlocutor.email
         localConversation.conversationInterlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
         localConversation.conversationInterlocutorAdmin = interlocutor.admin
-        localConversation.conversationInterlocutorProfilePictureFileName = UrlUtils.extractFileName(url: interlocutor.profilePictureUrl)
+        localConversation.conversationInterlocutorProfilePictureFileName = UrlUtils.extractFileNameFromUrl(url: interlocutor.profilePictureUrl)
         localConversation.conversationInterlocutorState = interlocutor.state.rawValue
         localConversation.conversationInterlocutorTester = interlocutor.tester
         return localConversation
@@ -48,7 +48,7 @@ extension Conversation {
         localConversation.conversationInterlocutorEmail = interlocutor.email
         localConversation.conversationInterlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
         localConversation.conversationInterlocutorAdmin = interlocutor.admin
-        localConversation.conversationInterlocutorProfilePictureFileName = UrlUtils.extractFileName(url: interlocutor.profilePictureUrl)
+        localConversation.conversationInterlocutorProfilePictureFileName = UrlUtils.extractFileNameFromUrl(url: interlocutor.profilePictureUrl)
         localConversation.conversationInterlocutorState = interlocutor.state.rawValue
         localConversation.conversationInterlocutorTester = interlocutor.tester
     }
@@ -100,7 +100,7 @@ extension LocalConversation {
         conversationInterlocutorEmail = conversation.interlocutor.email
         conversationInterlocutorSchoolLevel = conversation.interlocutor.schoolLevel.rawValue
         conversationInterlocutorAdmin = conversation.interlocutor.admin
-        conversationInterlocutorProfilePictureFileName = UrlUtils.extractFileName(url: conversation.interlocutor.profilePictureUrl)
+        conversationInterlocutorProfilePictureFileName = UrlUtils.extractFileNameFromUrl(url: conversation.interlocutor.profilePictureUrl)
         conversationInterlocutorState = conversation.interlocutor.state.rawValue
         conversationInterlocutorTester = conversation.interlocutor.tester
     }
@@ -116,7 +116,7 @@ extension LocalConversation {
         conversationInterlocutorEmail == conversation.interlocutor.email &&
         conversationInterlocutorSchoolLevel == conversation.interlocutor.schoolLevel.rawValue &&
         conversationInterlocutorAdmin == conversation.interlocutor.admin &&
-        conversationInterlocutorProfilePictureFileName == UrlUtils.extractFileName(url: conversation.interlocutor.profilePictureUrl) &&
+        conversationInterlocutorProfilePictureFileName == UrlUtils.extractFileNameFromUrl(url: conversation.interlocutor.profilePictureUrl) &&
         conversationInterlocutorState == conversation.interlocutor.state.rawValue &&
         conversationInterlocutorTester == conversation.interlocutor.tester
     }
@@ -154,7 +154,7 @@ private extension User {
             email: email,
             schoolLevel: schoolLevel.rawValue,
             admin: admin,
-            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
+            profilePictureFileName: UrlUtils.extractFileNameFromUrl(url: profilePictureUrl),
             state: state.rawValue,
             tester: tester
         )

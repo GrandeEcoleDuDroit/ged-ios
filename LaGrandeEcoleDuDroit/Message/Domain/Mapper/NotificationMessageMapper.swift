@@ -98,7 +98,7 @@ private extension User {
             email: email,
             schoolLevel: schoolLevel.rawValue,
             admin: admin,
-            profilePictureFileName: UrlUtils.extractFileName(url: profilePictureUrl),
+            profilePictureFileName: UrlUtils.extractFileNameFromUrl(url: profilePictureUrl),
             state: state.rawValue,
             tester: tester
         )

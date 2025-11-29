@@ -4,12 +4,16 @@ import Combine
 class FirstRegistrationViewModel: ViewModel {
     @Published private(set) var uiState = FirstRegistrationUiState()
     
-    func onFirstNameChanged(_ firstName: String) {
-        uiState.firstName = validName(firstName)
+    func onFirstNameChanged(_ firstName: String) -> String {
+        let firstName = validName(firstName)
+        uiState.firstName = firstName
+        return firstName
     }
     
-    func onLastNameChanged(_ lastName: String) {
-        uiState.lastName = validName(lastName)
+    func onLastNameChanged(_ lastName: String) -> String {
+        let lastName = validName(lastName)
+        uiState.lastName = lastName
+        return lastName
     }
     
     func validateInputs() -> Bool {

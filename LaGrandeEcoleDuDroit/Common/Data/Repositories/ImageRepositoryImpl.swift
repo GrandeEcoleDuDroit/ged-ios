@@ -12,8 +12,8 @@ class ImageRepositoryImpl: ImageRepository {
         self.imageRemoteDataSource = imageRemoteDataSource
     }
     
-    func createLocalImage(imageData: Data, fileName: String) async throws {
-        try await imageLocalDataSource.createLocalImage(imageData: imageData, fileName: fileName)
+    func createLocalImage(imageData: Data, folderName: String, fileName: String) async throws -> String? {
+        try await imageLocalDataSource.createLocalImage(folderName: folderName, fileName: fileName, imageData: imageData)
     }
     
     func uploadImage(imageData: Data, fileName: String) async throws {
@@ -31,7 +31,7 @@ class ImageRepositoryImpl: ImageRepository {
         }
     }
     
-    func deleteLocalImage(fileName: String) async throws {
-        try await imageLocalDataSource.deleteLocalImage(fileName: fileName)
+    func deleteLocalImage(folderName: String, fileName: String) async throws {
+        try await imageLocalDataSource.deleteLocalImage(folderName:folderName, fileName: fileName)
     }
 }

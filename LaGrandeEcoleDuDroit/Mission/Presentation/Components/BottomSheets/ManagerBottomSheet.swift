@@ -5,7 +5,8 @@ struct SelectManagerBottomSheet: View {
     let selectedManagers: Set<User>
     let userQuery: String
     let onUserQueryChange: (String) -> Void
-    let onSaveClick: ([User]) -> Void
+    let onSaveManagersClick: ([User]) -> Void
+    let onCancelClick: () -> Void
     
     @State private var currentSelectedManagers: Set<User>
     @State private var saveEnabled: Bool = false
@@ -15,21 +16,20 @@ struct SelectManagerBottomSheet: View {
         selectedManagers: Set<User>,
         userQuery: String,
         onUserQueryChange: @escaping (String) -> Void,
-        onSaveClick: @escaping ([User]) -> Void
+        onSaveManagersClick: @escaping ([User]) -> Void,
+        onCancelClick: @escaping () -> Void
     ) {
         self.users = users
         self.selectedManagers = selectedManagers
         self.userQuery = userQuery
         self.onUserQueryChange = onUserQueryChange
-        self.onSaveClick = onSaveClick
+        self.onSaveManagersClick = onSaveManagersClick
         self.currentSelectedManagers = selectedManagers
+        self.onCancelClick = onCancelClick
     }
     
     var body: some View {
-        VStack(spacing: .zero) {
-            SearchBar(query: userQuery, onQueryChange: onUserQueryChange)
-                .padding(.horizontal)
-            
+        NavigationStack {
             List {
                 if users.isEmpty {
                     Text(stringResource(.noUser))
@@ -52,8 +52,8 @@ struct SelectManagerBottomSheet: View {
                                 }
                                 
                                 saveEnabled =
-                                    !currentSelectedManagers.isEmpty &&
-                                    currentSelectedManagers != selectedManagers
+                                !currentSelectedManagers.isEmpty &&
+                                currentSelectedManagers != selectedManagers
                             }
                         )
                         .listRowSeparator(.hidden)
@@ -64,8 +64,33 @@ struct SelectManagerBottomSheet: View {
             .scrollIndicators(.hidden)
             .listRowBackground(Color.background)
             .listStyle(.plain)
+            .searchable(
+                text: Binding(
+                    get: { userQuery },
+                    set: onUserQueryChange
+                ),
+                placement: .navigationBarDrawer(displayMode: .always)
+            )
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: onCancelClick) {
+                        Text(stringResource(.cancel))
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: { onSaveManagersClick(currentSelectedManagers.toList()) }) {
+                        if !saveEnabled {
+                            Text(stringResource(.save))
+                        } else {
+                            Text(stringResource(.save))
+                                .foregroundColor(.gedPrimary)
+                        }
+                    }
+                    .disabled(!saveEnabled)
+                }
+            }
         }
-        .padding(.top)
     }
 }
 
@@ -90,11 +115,14 @@ private struct SelectableManagerItem: View {
 }
 
 #Preview {
-    SelectManagerBottomSheet(
-        users: usersFixture,
-        selectedManagers: [userFixture],
-        userQuery: "",
-        onUserQueryChange: { _ in },
-        onSaveClick: { _ in }
-    )
+    NavigationStack {
+        SelectManagerBottomSheet(
+            users: usersFixture,
+            selectedManagers: [userFixture],
+            userQuery: "",
+            onUserQueryChange: { _ in },
+            onSaveManagersClick: { _ in },
+            onCancelClick: {}
+        )
+    }.environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

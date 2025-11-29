@@ -1,71 +1,32 @@
 import Foundation
 
 extension Mission {
-    func toLocal() -> LocalMission? {
+    func toRemote() -> OutboundRemoteMission? {
         let schoolevelNumbers = schoolLevels.map { $0.number }
         guard let schoolLevelNumbersJson = try? JSONEncoder().encode(schoolevelNumbers) else {
             return nil
         }
         
-        let localManagers = managers.map { $0.toLocal() }
-        guard let localManagersJson = try? JSONEncoder().encode(localManagers) else {
-            return nil
-        }
-        
-        let localParticipants = participants.map { $0.toLocal() }
-        guard let localParticipantsJson = try? JSONEncoder().encode(localParticipants) else {
-            return nil
-        }
-        
-        let localMissionTasks = tasks.map { $0.toLocal() }
-        guard let localMissionTasksJson = try? JSONEncoder().encode(localMissionTasks) else {
-            return nil
-        }
-        
-        let imageReference: String? = switch state {
-            case .draft: nil
-            case let .publishing(imageFileName):imageFileName
-            case let .published(imageUrl): imageUrl
-            case let .error(imageFileName): imageFileName
-        }
-        
-        let localMission = LocalMission()
-        localMission.missionId = id
-        localMission.missionTitle = title
-        localMission.missionDescription = description
-        localMission.missionSchoolLevels = String(data: schoolLevelNumbersJson, encoding: .utf8)
-        localMission.missionDate = date
-        localMission.missionStartDate = startDate
-        localMission.missionEndDate = endDate
-        localMission.missionDuration = duration
-        localMission.missionManagers = String(data: localManagersJson, encoding: .utf8)
-        localMission.missionParticipants = String(data: localParticipantsJson, encoding: .utf8)
-        localMission.missionMaxParticipants = Int32(maxParticipants)
-        localMission.missionTasks = String(data: localMissionTasksJson, encoding: .utf8)
-        localMission.missionImageReference = imageReference
-        localMission.missionState = state.description
-        return localMission
-    }
-    
-    func toRemote(imageFileName: String?) -> OutboundRemoteMission? {
-        let schoolevelNumbers = schoolLevels.map { $0.number }
-        guard let schoolLevelNumbersJson = try? JSONEncoder().encode(schoolevelNumbers) else {
-            return nil
-        }
-        
-        let managersIds = managers.map { $0.toServerUser() }
+        let managersIds = managers.map { $0.id }
         guard let managersIdsJson = try? JSONEncoder().encode(managersIds) else {
             return nil
         }
         
-        let participantIds = participants.map { $0.toLocal() }
+        let participantIds = participants.map { $0.id }
         guard let participantIdsJson = try? JSONEncoder().encode(participantIds) else {
             return nil
         }
         
-        let remoteMissionTasks = tasks.map { $0.toLocal() }
+        let remoteMissionTasks = tasks.map { $0.toRemote() }
         guard let remoteMissionTasksJson = try? JSONEncoder().encode(remoteMissionTasks) else {
             return nil
+        }
+        
+        let imageFileName: String? = switch state {
+            case .draft: nil
+            case let .publishing(imagePath): UrlUtils.extractFileNameFromPath(path: imagePath)
+            case let .published(imageUrl): UrlUtils.extractFileNameFromUrl(url: imageUrl)
+            case let .error(imagePath): UrlUtils.extractFileNameFromPath(path: imagePath)
         }
         
         return OutboundRemoteMission(
@@ -87,7 +48,7 @@ extension Mission {
 }
 
 extension LocalMission {
-    func toMission() -> Mission? {
+    func toMission(getImagePath: (String) -> String?) -> Mission? {
         guard let missionId = missionId,
               let missionTitle = missionTitle,
               let missionDescription = missionDescription,
@@ -126,16 +87,22 @@ extension LocalMission {
             )
         ) ?? []
         
+        let imagePath: String? = if let missionImageFileName {
+            getImagePath(missionImageFileName)
+        } else {
+            nil
+        }
+        
         let state: Mission.MissionState = switch missionState {
             case _ where missionState == Mission.MissionState.MissionStateType.draft.rawValue: .draft
                 
             case _ where missionState == Mission.MissionState.MissionStateType.publishing.rawValue:
-                    .publishing(imageFileName: missionImageReference)
+                    .publishing(imagePath: imagePath)
                 
             case _ where missionState == Mission.MissionState.MissionStateType.published.rawValue:
-                    .published(imageUrl: missionImageReference)
+                    .published(imageUrl: UrlUtils.formatOracleBucketUrl(fileName: missionImageFileName))
                 
-            default: Mission.MissionState.error(imageFileName: missionImageReference)
+            default: Mission.MissionState.error(imagePath: imagePath)
         }
         
         return Mission(
@@ -167,11 +134,11 @@ extension LocalMission {
         let localMissionTasks = mission.tasks.map { $0.toLocal() }
         let localMissionTasksJsonData = try? JSONEncoder().encode(localMissionTasks)
         
-        let imageReference: String? = switch mission.state {
+        let imageFileName: String? = switch mission.state {
             case .draft: nil
-            case let .publishing(imageFileName): imageFileName
-            case let .published(imageUrl): imageUrl
-            case let .error(imageFileName): imageFileName
+            case let .publishing(imagePath): UrlUtils.extractFileNameFromPath(path: imagePath)
+            case let .published(imageUrl): UrlUtils.extractFileNameFromUrl(url: imageUrl)
+            case let .error(imagePath): UrlUtils.extractFileNameFromPath(path: imagePath)
         }
         
         missionId = mission.id
@@ -195,13 +162,13 @@ extension LocalMission {
             missionParticipants = String(data: data, encoding: .utf8) ?? missionParticipants
         }
 
-        missionMaxParticipants = Int32(mission.maxParticipants)
+        missionMaxParticipants = Int32(truncatingIfNeeded: mission.maxParticipants)
         
         if let data = localMissionTasksJsonData {
             missionTasks = String(data: data, encoding: .utf8) ?? missionTasks
         }
         
-        missionImageReference = imageReference
+        missionImageFileName = imageFileName
         missionState = mission.state.description
     }
     
@@ -218,11 +185,11 @@ extension LocalMission {
         let localMissionTasks = mission.tasks.map { $0.toLocal() }
         let localMissionTasksJsonData = try? JSONEncoder().encode(localMissionTasks)
         
-        let imageReference: String? = switch mission.state {
+        let imageFileName: String? = switch mission.state {
             case .draft: nil
-            case let .publishing(imageFileName): imageFileName
-            case let .published(imageUrl): imageUrl
-            case let .error(imageFileName): imageFileName
+            case let .publishing(imagePath): UrlUtils.extractFileNameFromPath(path: imagePath)
+            case let .published(imageUrl): UrlUtils.extractFileNameFromUrl(url: imageUrl)
+            case let .error(imagePath): UrlUtils.extractFileNameFromPath(path: imagePath)
         }
         
         let sameSchoolLevels = if let data = schoolLevelNumbersJsonData {
@@ -260,9 +227,9 @@ extension LocalMission {
             missionDuration == mission.duration &&
             sameManagers &&
             sameParticipants &&
-            missionMaxParticipants == Int32(mission.maxParticipants) &&
+            missionMaxParticipants == Int32(truncatingIfNeeded: mission.maxParticipants) &&
             sameMissionTasks &&
-            missionImageReference == imageReference &&
+            missionImageFileName == imageFileName &&
             missionState == mission.state.description
         )
     }

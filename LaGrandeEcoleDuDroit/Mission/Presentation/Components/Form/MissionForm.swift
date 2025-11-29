@@ -4,19 +4,19 @@ struct MissionForm: View {
     let value: MissionFormValue
     let onImageClick: () -> Void
     let onRemoveImageClick: () -> Void
-    let onTitleChange: (String) -> Void
-    let onDescriptionChange: (String) -> Void
+    let onTitleChange: (String) -> String
+    let onDescriptionChange: (String) -> String
     let onStartDateChange: (Date) -> Void
     let onEndDateChange: (Date) -> Void
     let onSchoolLevelChange: (SchoolLevel) -> Void
-    let onMaxParticipantsChange: (String) -> Void
-    let onDurationChange: (String) -> Void
+    let onMaxParticipantsChange: (String) -> String
+    let onDurationChange: (String) -> String
     let onShowManagerListClick: () -> Void
     let onRemoveManagerClick: (User) -> Void
     let onAddTaskClick: () -> Void
     let onEditTaskClick: (MissionTask) -> Void
     let onRemoveTaskClick: (MissionTask) -> Void
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: Dimens.largePadding) {
@@ -120,13 +120,13 @@ struct MissionFormValue {
         ),
         onImageClick: {},
         onRemoveImageClick: {},
-        onTitleChange: { _ in },
-        onDescriptionChange: { _ in },
+        onTitleChange: { _ in "" },
+        onDescriptionChange: { _ in "" },
         onStartDateChange: { _ in },
         onEndDateChange: { _ in },
         onSchoolLevelChange: { _ in },
-        onMaxParticipantsChange: { _ in },
-        onDurationChange: { _ in },
+        onMaxParticipantsChange: { _ in "" },
+        onDurationChange: { _ in "" },
         onShowManagerListClick: {},
         onRemoveManagerClick: { _ in },
         onAddTaskClick: {},

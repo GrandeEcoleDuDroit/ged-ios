@@ -21,8 +21,11 @@ struct MissionFormManagerSection: View {
                 ForEach(managers) { manager in
                     MissionUserItem(
                         user: manager,
+                        imageScale: 0.4,
                         trailingContent: {
-                            RemoveButton(action: { onRemoveManagerClick(manager) })
+                            if managers.count > 1 {
+                                RemoveButton(action: { onRemoveManagerClick(manager) })
+                            }
                         }
                     )
                 }

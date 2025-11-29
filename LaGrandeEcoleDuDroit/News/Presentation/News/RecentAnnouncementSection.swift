@@ -8,7 +8,7 @@ struct RecentAnnouncementSection: View {
     let onSeeAllAnnouncementClick: () -> Void
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: .zero) {
             HStack(alignment: .center) {
                 Text(stringResource(.recentAnnouncements))
                     .font(.titleMedium)
@@ -36,21 +36,25 @@ struct RecentAnnouncementSection: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                 } else {
                     ForEach(announcements) { announcement in
-                        CompactAnnouncementItem(
-                            announcement: announcement,
-                            onClick: {
+                        Button(
+                            action: {
                                 if announcement.state == .published {
                                     onAnnouncementClick(announcement.id)
                                 } else {
                                     onUncreatedAnnouncementClick(announcement)
                                 }
-                            },
-                            onOptionClick: { onAnnouncementOptionClick(announcement) }
-                        )
+                            }
+                        ) {
+                            CompactAnnouncementItem(
+                                announcement: announcement,
+                                onOptionClick: { onAnnouncementOptionClick(announcement) }
+                            )
+                        }
+                        .buttonStyle(ClickStyle())
                         .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets())
+                        .listRowInsets(.init())
                     }
-                    .listRowBackground(Color.background)
+                    .listRowBackground(Color.clear)
                 }
             }
             .scrollIndicators(.hidden)
@@ -67,5 +71,4 @@ struct RecentAnnouncementSection: View {
         onAnnouncementOptionClick: { _ in },
         onSeeAllAnnouncementClick: {}
     )
-    .background(Color.background)
 }

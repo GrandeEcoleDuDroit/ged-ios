@@ -45,7 +45,6 @@
 		5EDC1C052E47A2D000A3C603 /* Exceptions for "LaGrandeEcoleDuDroit" folder in "LaGrandeEcoleDuDroit" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Common/Domain/Entities/Untitled.swift,
 				Info.plist,
 			);
 			target = 5EB5784C2CB3CCD3004524AD /* LaGrandeEcoleDuDroit */;

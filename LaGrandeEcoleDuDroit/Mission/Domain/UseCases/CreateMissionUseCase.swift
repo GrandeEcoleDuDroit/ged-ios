@@ -15,16 +15,20 @@ class CreateMissionUseCase {
     func execute(mission: Mission, imageData: Data?) {
         Task {
             var imageFileName: String?
+            var imagePath: String?
             
             if let data = imageData, let imageExtension = data.imageExtension() {
                 imageFileName = "\(MissionUtils.formatImageFileName(missionId: mission.id)).\(imageExtension)"
-                try? await imageRepository.createLocalImage(imageData: data, fileName: imageFileName!)
+                imagePath = try? await imageRepository.createLocalImage(
+                    imageData: data,
+                    folderName: MissionUtils.folderName,
+                    fileName: imageFileName!
+                )
             }
             
             do {
                 try await missionRepository.createMission(
-                    mission: mission.copy { $0.state = .publishing(imageFileName: imageFileName) },
-                    imageFileName: imageFileName,
+                    mission: mission.copy { $0.state = .publishing(imagePath: imagePath) },
                     imageData: imageData
                 )
                 
@@ -33,11 +37,11 @@ class CreateMissionUseCase {
                 )
                 
                 if let imageFileName {
-                    try await imageRepository.deleteLocalImage(fileName: imageFileName)
+                    try await imageRepository.deleteLocalImage(folderName: MissionUtils.folderName, fileName: imageFileName)
                 }
             } catch {
                 try? await missionRepository.upsertLocalMission(
-                    mission: mission.copy { $0.state = .error(imageFileName: imageFileName) }
+                    mission: mission.copy { $0.state = .error(imagePath: imagePath) }
                 )
             }
         }

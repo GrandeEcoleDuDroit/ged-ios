@@ -1,14 +1,17 @@
 import SwiftUI
 
 struct OutlineTextField<Leading: View>: View {
-    let label: String
-    let text: String
-    let onTextChange: (String) -> Void
-    let disabled: Bool
-    let errorMessage: String?
-    @FocusState var focusState: Field?
-    let field: Field?
-    let leading: Leading
+    private let initialText: String
+    private let onTextChange: (String) -> String
+    private let placeHolder: String
+    private let axis: Axis
+    private let disabled: Bool
+    private let errorMessage: String?
+    private let leading: Leading
+    
+    @FocusState private var focusState: Field?
+    private var field: Field?
+    @State private var currentText: String = ""
     
     private var borderColor: Color {
         if errorMessage != nil {
@@ -45,23 +48,23 @@ struct OutlineTextField<Leading: View>: View {
     }
     
     init(
-        label: String,
-        text: String,
-        onTextChange: @escaping (String) -> Void,
+        initialText: String,
+        onTextChange: @escaping (String) -> String,
+        placeHolder: String,
+        axis: Axis = .horizontal,
         disabled: Bool = false,
         errorMessage: String? = nil,
-        focusState: FocusState<Field?>? = nil,
-        field: Field? = nil,
         @ViewBuilder leading: () -> Leading = { EmptyView() }
     ) {
-        self.label = label
-        self.text = text
+        self.initialText = initialText
         self.onTextChange = onTextChange
+        self.placeHolder = placeHolder
+        self.axis = axis
         self.disabled = disabled
         self.errorMessage = errorMessage
-        self._focusState = focusState ?? FocusState()
-        self.field = field
         self.leading = leading()
+        
+        currentText = initialText
     }
     
     var body: some View {
@@ -71,11 +74,8 @@ struct OutlineTextField<Leading: View>: View {
                 
                 TextField(
                     "",
-                    text: Binding(
-                        get: { text },
-                        set: onTextChange
-                    ),
-                    prompt: Text(label).foregroundColor(placeHolderColor),
+                    text: $currentText,
+                    prompt: Text(placeHolder).foregroundColor(placeHolderColor),
                 )
                 .foregroundStyle(textColor)
                 .focused($focusState, equals: field)
@@ -90,6 +90,62 @@ struct OutlineTextField<Leading: View>: View {
                     .foregroundColor(.red)
             }
         }
+        .onChange(of: currentText) {
+            currentText = onTextChange($0)
+        }
+    }
+}
+
+extension OutlineTextField {
+    func setTextFieldFocusState(focusState: FocusState<Field?>, field: Field) -> Self {
+        var copy = self
+        copy._focusState = focusState
+        copy.field = field
+        return copy
+    }
+}
+
+struct TransparentTextField: View {
+    let text: String
+    let onTextChange: (String) -> String
+    let placeHolder: String
+    
+    init(
+        initialText: String,
+        onTextChange: @escaping (String) -> String,
+        placeHolder: String
+    ) {
+        self.text = initialText
+        self.onTextChange = onTextChange
+        self.placeHolder = placeHolder
+        
+        currentText = initialText
+    }
+    
+    @FocusState private var focusState: Field?
+    private var field: Field?
+    @State private var currentText: String
+
+    var body: some View {
+        TextField(
+            "",
+            text: $currentText,
+            prompt: Text(placeHolder).foregroundColor(.onSurfaceVariant),
+            axis: .vertical
+        )
+        .focused($focusState, equals: field)
+        .onChange(of: currentText) {
+            currentText = onTextChange($0)
+        }
+    }
+}
+
+extension TransparentTextField {
+    func setTextFieldFocusState(focusState: FocusState<Field?>, field: Field) -> Self {
+        var copy = self
+        copy._focusState = focusState
+        copy.field = field
+        return copy
     }
 }
 
@@ -224,11 +280,9 @@ struct OutlinePasswordTextField: View {
 
 #Preview {
     OutlineTextField(
-        label: "Email",
-        text: "",
-        onTextChange: { _ in },
-        disabled: false,
-        errorMessage: nil
+        initialText: "",
+        onTextChange: { _ in "" },
+        placeHolder: "Email",
     )
     
     OutlinePasswordTextField(

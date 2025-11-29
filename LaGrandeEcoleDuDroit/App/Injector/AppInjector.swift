@@ -68,6 +68,7 @@ class AppInjector: Injector {
             SynchronizeDataUseCase(
                 synchronizeBlockedUsersUseCase: CommonInjector.shared.resolve(SynchronizeBlockedUsersUseCase.self),
                 synchronizeAnnouncementsUseCase: NewsInjector.shared.resolve(SynchronizeAnnouncementsUseCase.self),
+                synchronizeMissionsUseCase: MissionInjector.shared.resolve(SynchronizeMissionsUseCase.self),
                 networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
             )
         }
