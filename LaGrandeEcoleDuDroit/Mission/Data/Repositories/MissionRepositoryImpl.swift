@@ -4,15 +4,15 @@ import Foundation
 class MissionRepositoryImpl: MissionRepository {
     private let missionLocalDataSource: MissionLocalDataSource
     private let missionRemoteDataSource: MissionRemoteDataSource
-    
+    private var cancellables: Set<AnyCancellable> = []
     private var missionsSubject = CurrentValueSubject<[Mission], Never>([])
+    
     var missions: AnyPublisher<[Mission], Never> {
         missionsSubject.eraseToAnyPublisher()
     }
     var currentMissions: [Mission] {
         missionsSubject.value
     }
-    private var cancellables: Set<AnyCancellable> = []
     
     init(
         missionLocalDataSource: MissionLocalDataSource,
@@ -43,16 +43,18 @@ class MissionRepositoryImpl: MissionRepository {
         try await missionRemoteDataSource.getMissions()
     }
     
-    func createMission(mission: Mission, imageFileName: String?, imageData: Data?) async throws {
+    func createMission(mission: Mission, imageData: Data?) async throws {
         try await missionLocalDataSource.upsertMission(mission: mission)
-        try await missionRemoteDataSource.createMission(mission: mission, imageFileName: imageFileName, imageData: imageData)
+        try await missionRemoteDataSource.createMission(mission: mission, imageData: imageData)
     }
     
     func upsertLocalMission(mission: Mission) async throws {
         try await missionLocalDataSource.upsertMission(mission: mission)
     }
     
-    func deleteMission(mission: Mission) async throws {
+    func deleteMission(mission: Mission, imageUrl: String?) async throws {
+        let imageFileName = UrlUtils.extractFileNameFromUrl(url: imageUrl)
+        try await missionRemoteDataSource.deleteMission(missionId: mission.id, imageFileName: imageFileName)
         try await missionLocalDataSource.deleteMission(missionId: mission.id)
     }
     

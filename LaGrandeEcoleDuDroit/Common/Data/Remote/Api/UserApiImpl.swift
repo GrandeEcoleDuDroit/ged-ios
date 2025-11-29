@@ -127,10 +127,10 @@ class UserServerApi {
     }
     
     func createUser(serverUser: ServerUser) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "create")
-        let session = RequestUtils.getSession()
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "create")
+        let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.formatPostRequest(
+        let request = try RequestUtils.simplePostRequest(
             dataToSend: serverUser,
             url: url,
             authToken: authToken
@@ -140,11 +140,11 @@ class UserServerApi {
     }
     
     func updateUser(serverUser: ServerUser) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "\(serverUser.userId)")
-        let session = RequestUtils.getSession()
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "\(serverUser.userId)")
+        let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         
-        let request = try RequestUtils.formatPutRequest(
+        let request = try RequestUtils.simplePutRequest(
             dataToSend: serverUser,
             url: url,
             authToken: authToken
@@ -154,15 +154,15 @@ class UserServerApi {
     }
     
     func updateProfilePictureFileName(userId: String, fileName: String) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "profile-picture-file-name")
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "profile-picture-file-name")
         let dataToSend: [String: String] = [
             UserField.Server.userId: userId,
             UserField.Server.userProfilePictureFileName: fileName
         ]
-        let session = RequestUtils.getSession()
+        let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         
-        let request = try RequestUtils.formatPatchRequest(
+        let request = try RequestUtils.simplePatchRequest(
             dataToSend: dataToSend,
             url: url,
             authToken: authToken
@@ -172,10 +172,10 @@ class UserServerApi {
     }
     
     func deleteProfilePictureFileName(userId: String) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "profile-picture-file-name/\(userId)")
-        let session = RequestUtils.getSession()
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "profile-picture-file-name/\(userId)")
+        let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = RequestUtils.formatDeleteRequest(
+        let request = RequestUtils.simpleDeleteRequest(
             url: url,
             authToken: authToken
         )
@@ -184,10 +184,10 @@ class UserServerApi {
     }
     
     func reportUser(report: RemoteUserReport) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "report")
-        let session = RequestUtils.getSession()
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "report")
+        let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.formatPostRequest(
+        let request = try RequestUtils.simplePostRequest(
             dataToSend: report,
             url: url,
             authToken: authToken

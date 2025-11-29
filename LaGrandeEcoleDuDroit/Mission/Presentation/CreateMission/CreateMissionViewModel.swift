@@ -46,20 +46,22 @@ class CreateMissionViewModel: ViewModel {
         createMissionUseCase.execute(mission: mission, imageData: imageData)
     }
     
-    func onTitleChange(_ title: String) {
+    func onTitleChange(_ title: String) -> String {
         let truncatedTitle = title.take(MissionConstants.maxTitleLength)
         uiState = uiState.copy {
             $0.title = truncatedTitle
             $0.createEnabled = validateCreate(title: truncatedTitle)
         }
+        return truncatedTitle
     }
     
-    func onDescriptionChange(_ description: String) {
+    func onDescriptionChange(_ description: String) -> String {
         let truncatedDescription = description.take(MissionConstants.maxDescriptionLength)
         uiState = uiState.copy {
             $0.description = truncatedDescription
             $0.createEnabled = validateCreate(description: truncatedDescription)
         }
+        return truncatedDescription
     }
     
     func onStartDateChange(_ startDate: Date) {
@@ -90,20 +92,22 @@ class CreateMissionViewModel: ViewModel {
         uiState.schoolLevels = schoolLevels
     }
     
-    func onMaxParticipantsChange(_ maxParticipants: String) {
+    func onMaxParticipantsChange(_ maxParticipants: String) -> String {
         let value = switch maxParticipants {
             case _ where maxParticipants.isEmpty: ""
-            case _ where maxParticipants.toIntOrDefault(-1) > 0: maxParticipants.toInt().description
+            case _ where maxParticipants.toInt32OrDefault(-1) > 0: maxParticipants
             default: uiState.maxParticipants
         }
         
         uiState.maxParticipants = value
         uiState.createEnabled = validateCreate(maxParticipants: value)
+        return value
     }
     
-    func onDurationChange(_ duration: String) {
+    func onDurationChange(_ duration: String) -> String {
         let truncatedDuration = duration.take(MissionConstants.maxDurationLength)
         uiState.duration = truncatedDuration
+        return truncatedDuration
     }
     
     func onSaveManagers(_ managers: [User]) {
@@ -208,7 +212,7 @@ class CreateMissionViewModel: ViewModel {
         fileprivate(set) var schoolLevels: [SchoolLevel] = []
         fileprivate(set) var duration: String = ""
         fileprivate(set) var managers: [User] = []
-        var maxParticipants: String = ""
+        fileprivate(set) var maxParticipants: String = ""
         fileprivate(set) var missionTasks: [MissionTask] = []
         fileprivate(set) var users: [User] = []
         fileprivate(set) var userQuery: String = ""

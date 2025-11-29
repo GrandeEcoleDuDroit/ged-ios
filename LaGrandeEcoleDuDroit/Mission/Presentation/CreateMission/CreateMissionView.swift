@@ -56,13 +56,13 @@ private struct CreateMissionView: View {
     let userQuery: String
     let missionTasks: [MissionTask]
     let createEnabled: Bool
-    let onTitleChange: (String) -> Void
-    let onDescriptionChange: (String) -> Void
+    let onTitleChange: (String) -> String
+    let onDescriptionChange: (String) -> String
     let onStartDateChange: (Date) -> Void
     let onEndDateChange: (Date) -> Void
     let onSchoolLevelChange: (SchoolLevel) -> Void
-    let onMaxParticipantsChange: (String) -> Void
-    let onDurationChange: (String) -> Void
+    let onMaxParticipantsChange: (String) -> String
+    let onDurationChange: (String) -> String
     let onSaveManagersClick: ([User]) -> Void
     let onRemoveManagerClick: (User) -> Void
     let onUserQueryChange: (String) -> Void
@@ -75,7 +75,6 @@ private struct CreateMissionView: View {
     @State private var selectedImage: PhotosPickerItem?
     @State private var showPhotosPicker: Bool = false
     @State private var missionBottomSheetType: MissionBottomSheetType?
-    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         MissionForm(
@@ -137,17 +136,25 @@ private struct CreateMissionView: View {
         .sheet(item: $missionBottomSheetType) { type in
             switch type {
                 case .addTask:
-                    AddMissionTaskBottomSheet(onAddClick: onAddTaskClick)
-                        .presentationDetents([.fraction(0.20), .medium, .large])
-                        .presentationContentInteraction(.resizes)
+                    AddMissionTaskBottomSheet(
+                        onAddTaskClick: {
+                            onAddTaskClick($0)
+                            missionBottomSheetType = nil
+                        },
+                        onCancelClick: { missionBottomSheetType = nil }
+                    )
+                    .presentationDetents([.medium, .large])
                     
                 case let .editTask(missionTask):
                     EditMissionTaskBottomSheet(
                         missionTask: missionTask,
-                        onEditClick: onEditTaskClick
+                        onEditTaskClick: {
+                            onEditTaskClick($0)
+                            missionBottomSheetType = nil
+                        },
+                        onCancelClick: { missionBottomSheetType = nil }
                     )
-                    .presentationDetents([.fraction(0.20), .medium, .large])
-                    .presentationContentInteraction(.resizes)
+                    .presentationDetents([.medium, .large])
                     
                 case .selectManager:
                     SelectManagerBottomSheet(
@@ -155,10 +162,11 @@ private struct CreateMissionView: View {
                         selectedManagers: managers.toSet(),
                         userQuery: userQuery,
                         onUserQueryChange: onUserQueryChange,
-                        onSaveClick: {
+                        onSaveManagersClick: {
                             onSaveManagersClick($0)
-                            dismiss()
-                        }
+                            missionBottomSheetType = nil
+                        },
+                        onCancelClick: { missionBottomSheetType = nil }
                     )
             }
         }
@@ -181,13 +189,13 @@ private struct CreateMissionView: View {
             userQuery: "",
             missionTasks: [missionTaskFixture],
             createEnabled: false,
-            onTitleChange: { _ in },
-            onDescriptionChange: { _ in },
+            onTitleChange: { _ in "" },
+            onDescriptionChange: { _ in "" },
             onStartDateChange: { _ in },
             onEndDateChange: { _ in },
             onSchoolLevelChange: { _ in },
-            onMaxParticipantsChange: { _ in },
-            onDurationChange: { _ in },
+            onMaxParticipantsChange: { _ in "" },
+            onDurationChange: { _ in "" },
             onSaveManagersClick: { _ in },
             onRemoveManagerClick: { _ in },
             onUserQueryChange: { _ in },

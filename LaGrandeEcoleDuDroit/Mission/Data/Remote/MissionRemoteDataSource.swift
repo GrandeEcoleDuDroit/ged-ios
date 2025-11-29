@@ -16,17 +16,26 @@ class MissionRemoteDataSource {
         ).map { $0.toMission() }
     }
     
-    func createMission(mission: Mission, imageFileName: String?, imageData: Data?) async throws {
+    func createMission(mission: Mission, imageData: Data?) async throws {
         try await mapServerError(
             block: {
                 try await missionApi.createMission(
-                    remoteMission: mission.toRemote(imageFileName: imageFileName)!,
-                    imageFileName: imageFileName,
+                    remoteMission: mission.toRemote()!,
                     imageData: imageData
                 )
             },
             tag: tag,
             message: "Failed to create remote missions"
+        )
+    }
+    
+    func deleteMission(missionId: String, imageFileName: String?) async throws {
+        try await mapServerError(
+            block: {
+                try await missionApi.deleteMission(missionId: missionId, imageFileName: imageFileName)
+            },
+            tag: tag,
+            message: "Failed to delete remote missions"
         )
     }
 }

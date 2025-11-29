@@ -8,7 +8,7 @@ struct MissionUserItem<TrailingContent: View>: View {
     
     init(
         user: User,
-        imageScale: CGFloat = 0.4,
+        imageScale: CGFloat,
         showAdminIndicator: Bool = true,
         @ViewBuilder trailingContent: () -> TrailingContent = { EmptyView() }
     ) {
@@ -45,5 +45,5 @@ struct MissionUserItem<TrailingContent: View>: View {
 }
 
 #Preview {
-    MissionUserItem(user: userFixture)
+    MissionUserItem(user: userFixture, imageScale: 0.4)
 }

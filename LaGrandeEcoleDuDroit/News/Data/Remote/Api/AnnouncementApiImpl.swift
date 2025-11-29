@@ -10,11 +10,11 @@ class AnnouncementApiImpl: AnnouncementApi {
     }
     
     func getAnnouncements() async throws -> (URLResponse, [InboundRemoteAnnouncement]) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "")
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "")
         
-        let session = RequestUtils.getSession()
+        let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = RequestUtils.formatGetRequest(
+        let request = RequestUtils.simpleGetRequest(
             url: url,
             authToken: authToken
         )
@@ -25,11 +25,11 @@ class AnnouncementApiImpl: AnnouncementApi {
     }
     
     func createAnnouncement(remoteAnnouncement: OutbondRemoteAnnouncement) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "create")
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "create")
 
-        let session = RequestUtils.getSession()
+        let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.formatPostRequest(
+        let request = try RequestUtils.simplePostRequest(
             dataToSend: remoteAnnouncement,
             url: url,
             authToken: authToken
@@ -39,11 +39,11 @@ class AnnouncementApiImpl: AnnouncementApi {
     }
     
     func updateAnnouncement(remoteAnnouncement: OutbondRemoteAnnouncement) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "update")
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "update")
 
-        let session = RequestUtils.getSession()
+        let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.formatPostRequest(
+        let request = try RequestUtils.simplePostRequest(
             dataToSend: remoteAnnouncement,
             url: url,
             authToken: authToken
@@ -53,12 +53,12 @@ class AnnouncementApiImpl: AnnouncementApi {
     }
     
     func deleteAnnouncements(userId: String) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "user/\(userId)")
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "user/\(userId)")
 
         
-        let session = RequestUtils.getSession()
+        let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = RequestUtils.formatDeleteRequest(
+        let request = RequestUtils.simpleDeleteRequest(
             url: url,
             authToken: authToken
         )
@@ -67,12 +67,12 @@ class AnnouncementApiImpl: AnnouncementApi {
     }
     
     func deleteAnnouncement(announcementId: String) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: announcementId)
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: announcementId)
 
         
-        let session = RequestUtils.getSession()
+        let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = RequestUtils.formatDeleteRequest(
+        let request = RequestUtils.simpleDeleteRequest(
             url: url,
             authToken: authToken
         )
@@ -81,11 +81,11 @@ class AnnouncementApiImpl: AnnouncementApi {
     }
     
     func reportAnnouncement(report: RemoteAnnouncementReport) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.getUrl(base: base, endPoint: "report")
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "report")
         
-        let session = RequestUtils.getSession()
+        let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.formatPostRequest(
+        let request = try RequestUtils.simplePostRequest(
             dataToSend: report,
             url: url,
             authToken: authToken

@@ -66,7 +66,7 @@ struct Clickable<Content: View>: View {
 
     init(
         action: @escaping () -> Void,
-        backgroundColor: Color = .highlight,
+        backgroundColor: Color = .click,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.action = action
@@ -84,7 +84,7 @@ struct Clickable<Content: View>: View {
 }
 
 struct ClickStyle: ButtonStyle {
-    var backgroundColor: Color = .highlight
+    var backgroundColor: Color = .click
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

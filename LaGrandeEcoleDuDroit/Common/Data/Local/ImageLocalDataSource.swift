@@ -1,37 +1,35 @@
 import Foundation
 
 class ImageLocalDataSource {
-    func createLocalImage(imageData: Data?, fileName: String) async throws {
-        try createFolderIfNeeded()
-        guard let localImageUrl = localImageUrl(fileName: fileName) else { return }
-        try imageData?.write(to: localImageUrl)
+    func createLocalImage(folderName: String, fileName: String, imageData: Data) async throws -> String? {
+        guard let folderUrl = getFolderUrl(folderName: folderName) else {
+            return nil
+        }
+        
+        if !FileManager.default.fileExists(atPath: folderUrl.path()) {
+            try FileManager.default.createDirectory(
+                at: folderUrl,
+                withIntermediateDirectories: true,
+                attributes: nil
+            )
+        }
+        
+        let imageUrl = folderUrl.appendingPathComponent(fileName)
+        try imageData.write(to: imageUrl)
+        return imageUrl.path()
     }
     
-    func deleteLocalImage(fileName: String) async throws {
-        if let localImageUrl = localImageUrl(fileName: fileName) {
-            try FileManager.default.removeItem(at: localImageUrl)
+    func deleteLocalImage(folderName: String, fileName: String) async throws {
+        if let imageUrl = getFolderUrl(folderName: folderName)?.appendingPathComponent(fileName) {
+            try FileManager.default.removeItem(at: imageUrl)
         }
     }
     
-    private func createFolderIfNeeded() throws {
-        guard let folderUrl = localFolderUrl() else { return }
-        if !FileManager.default.fileExists(atPath: folderUrl.path) {
-            try FileManager.default.createDirectory(at: folderUrl, withIntermediateDirectories: true, attributes: nil)
-        }
-    }
-    
-    private func localImageUrl(fileName: String) -> URL? {
-        guard let localFolderUrl = localFolderUrl() else { return nil }
-        return localFolderUrl.appendingPathComponent(fileName)
-    }
-    
-    private func localFolderUrl() -> URL? {
-        let folderName: String = "GedImages_Local"
-        guard let localStorageUrl = FileManager.default.urls(
+    private func getFolderUrl(folderName: String) -> URL? {
+        FileManager.default.urls(
             for: .documentDirectory,
             in: .userDomainMask
-        ).first else { return nil }
-        
-        return localStorageUrl.appendingPathComponent(folderName)
+        )
+        .first?.appendingPathComponent(folderName)
     }
 }

@@ -34,8 +34,8 @@ extension String {
         Int(self)!
     }
     
-    func toIntOrDefault(_ value: Int) -> Int {
-        Int(self) ?? value
+    func toInt32OrDefault(_ value: Int32) -> Int32 {
+        Int32(self) ?? value
     }
     
     func take(_ n: Int) -> String {

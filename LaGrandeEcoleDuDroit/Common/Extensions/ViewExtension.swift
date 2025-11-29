@@ -13,7 +13,7 @@ extension View {
                 }
             )
             .background(
-                Color(.highlight)
+                Color(.click)
                     .opacity(isClicked.wrappedValue ? 1 : 0)
                     .animation(.easeInOut(duration: 0.1), value: isClicked.wrappedValue)
             )

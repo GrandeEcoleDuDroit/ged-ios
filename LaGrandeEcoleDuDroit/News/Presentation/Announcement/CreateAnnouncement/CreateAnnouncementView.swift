@@ -55,19 +55,16 @@ private struct CreateAnnouncementView: View {
         .padding()
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button(
-                    action: onCreateClick,
-                    label: {
-                        if !enableCreate {
-                            Text(stringResource(.publish))
-                                .fontWeight(.semibold)
-                        } else {
-                            Text(stringResource(.publish))
-                                .foregroundColor(.gedPrimary)
-                                .fontWeight(.semibold)
-                        }
+                Button(action: onCreateClick) {
+                    if !enableCreate {
+                        Text(stringResource(.publish))
+                            .fontWeight(.semibold)
+                    } else {
+                        Text(stringResource(.publish))
+                            .foregroundColor(.gedPrimary)
+                            .fontWeight(.semibold)
                     }
-                )
+                }
                 .disabled(!enableCreate)
             }
         }

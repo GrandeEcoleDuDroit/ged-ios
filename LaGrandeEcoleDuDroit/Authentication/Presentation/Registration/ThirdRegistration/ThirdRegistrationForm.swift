@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ThirdRegistrationForm: View {
     let email: String
-    let onEmailChange: (String) -> Void
+    let onEmailChange: (String) -> String
     let password: String
     let onPasswordChange: (String) -> Void
     let loading: Bool
@@ -11,6 +11,7 @@ struct ThirdRegistrationForm: View {
     let errorMessage: String?
     let legalNoticeChecked: Bool
     let onLegalNoticeCheckedChange: (Bool) -> Void
+    
     @FocusState var focusState: Field?
     
     private let legalNoticeUrl = "https://grandeecoledudroit.github.io/ged-website/legal-notice.html"
@@ -21,14 +22,13 @@ struct ThirdRegistrationForm: View {
                 .font(.title3)
             
             OutlineTextField(
-                label: stringResource(.email),
-                text: email,
+                initialText: email,
                 onTextChange: onEmailChange,
+                placeHolder: stringResource(.email),
                 disabled: loading,
-                errorMessage: emailError,
-                focusState: _focusState,
-                field: .email
+                errorMessage: emailError
             )
+            .setTextFieldFocusState(focusState: _focusState, field: .email)
             .textContentType(.emailAddress)
             .textInputAutocapitalization(.never)
             
@@ -53,8 +53,7 @@ struct ThirdRegistrationForm: View {
                 Group {
                     Text(stringResource(.agreeTermsPrivacyBeginningText))
                     + Text(" ")
-                    + Text(.init("[\(stringResource(.termsAndPrivacy))](\(legalNoticeUrl))"))
-                        .underline()
+                    + Text(.init("[\(stringResource(.termsAndPrivacy))](\(legalNoticeUrl))")).underline()
                     + Text(".")
                 }
                 .font(.footnote)
@@ -73,7 +72,7 @@ struct ThirdRegistrationForm: View {
 #Preview {
     ThirdRegistrationForm(
         email: "",
-        onEmailChange: { _ in },
+        onEmailChange: { _ in "" },
         password: "",
         onPasswordChange: { _ in },
         loading: false,

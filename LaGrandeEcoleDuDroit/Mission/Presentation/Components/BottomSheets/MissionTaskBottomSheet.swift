@@ -1,84 +1,134 @@
 import SwiftUI
 
 struct AddMissionTaskBottomSheet: View {
-    let onAddClick: (String) -> Void
+    let onAddTaskClick: (String) -> Void
+    let onCancelClick: () -> Void
     
-    @State private var value: String = ""
+    @State private var createEnbaled = false
     
     var body: some View {
         MissionTaskBottomSheet(
-            value: $value,
-            buttonEnabled: !value.isEmpty,
+            initialValue: "",
+            onValueChange: { value in
+                createEnbaled = !value.isEmpty
+            },
+            enabled: createEnbaled,
             buttonText: stringResource(.add),
-            onButtonClick: { onAddClick(value) }
+            onButtonClick: { onAddTaskClick($0) },
+            onCancelClick: onCancelClick
         )
     }
 }
 
 struct EditMissionTaskBottomSheet: View {
     let missionTask: MissionTask
-    let onEditClick: (MissionTask) -> Void
-    
-    @State private var value: String
+    let onEditTaskClick: (MissionTask) -> Void
+    let onCancelClick: () -> Void
     
     init(
         missionTask: MissionTask,
-        onEditClick: @escaping (MissionTask) -> Void
+        onEditTaskClick: @escaping (MissionTask) -> Void,
+        onCancelClick: @escaping () -> Void
     ) {
         self.missionTask = missionTask
-        self.onEditClick = onEditClick
-        self.value = missionTask.value
+        self.onEditTaskClick = onEditTaskClick
+        self.onCancelClick = onCancelClick
     }
+    
+    @State private var editEnabled = false
     
     var body: some View {
         MissionTaskBottomSheet(
-            value: $value,
-            buttonEnabled: !value.isEmpty && value != missionTask.value,
+            initialValue: missionTask.value,
+            onValueChange: { value in
+                editEnabled = !value.isEmpty && value != missionTask.value
+            },
+            enabled: editEnabled,
             buttonText: stringResource(.save),
-            onButtonClick: {
-                onEditClick(missionTask.copy { $0.value = value })
-            }
+            onButtonClick: { value in
+                onEditTaskClick(missionTask.copy { $0.value = value })
+            },
+            onCancelClick: onCancelClick
         )
     }
 }
 
 private struct MissionTaskBottomSheet: View {
-    @Binding var value: String
-    let buttonEnabled: Bool
+    let initialValue: String
+    let onValueChange: (String) -> Void
+    let enabled: Bool
     let buttonText: String
-    let onButtonClick: () -> Void
+    let onButtonClick: (String) -> Void
+    let onCancelClick: () -> Void
+    
+    @State private var value: String
+    
+    init(
+        initialValue: String,
+        onValueChange: @escaping (String) -> Void,
+        enabled: Bool,
+        buttonText: String,
+        onButtonClick: @escaping (String) -> Void,
+        onCancelClick: @escaping () -> Void
+    ) {
+        self.initialValue = initialValue
+        self.onValueChange = onValueChange
+        self.enabled = enabled
+        self.buttonText = buttonText
+        self.onButtonClick = onButtonClick
+        self.onCancelClick = onCancelClick
+        
+        self.value = initialValue
+    }
     
     var body: some View {
-        VStack {
-            TextField(
-                "",
-                text: $value,
-                prompt: Text(stringResource(.enterTask)).foregroundColor(.onSurfaceVariant),
-                axis: .vertical
+        NavigationStack {
+            TransparentTextField(
+                initialText: initialValue,
+                onTextChange: {
+                    onValueChange($0)
+                    value = $0.take(MissionConstants.maxTaskLength)
+                    return value
+                },
+                placeHolder: stringResource(.enterTask)
             )
             .frame(
                 maxWidth: .infinity,
                 maxHeight: .infinity,
                 alignment: .topLeading
             )
-            
-            TextButton(
-                text: buttonText,
-                onClick: onButtonClick,
-                enabled: buttonEnabled
-            )
-            .frame(maxWidth: .infinity, alignment: .bottomTrailing)
+            .padding()
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: onCancelClick) {
+                        Text(stringResource(.cancel))
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: { onButtonClick(value) }) {
+                        if !enabled {
+                            Text(stringResource(.save))
+                        } else {
+                            Text(stringResource(.save))
+                                .foregroundColor(.gedPrimary)
+                        }
+                    }
+                    .disabled(!enabled)
+                }
+            }
         }
-        .padding()
-        .padding(.top)
     }
 }
 
 #Preview {
     MissionTaskBottomSheet(
-        value: .constant(""),
-        buttonEnabled: true,
+        initialValue: "",
+        onValueChange: { _ in },
+        enabled: true,
         buttonText: stringResource(.save),
-        onButtonClick: {}
+        onButtonClick: { _ in },
+        onCancelClick: {}
     )
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

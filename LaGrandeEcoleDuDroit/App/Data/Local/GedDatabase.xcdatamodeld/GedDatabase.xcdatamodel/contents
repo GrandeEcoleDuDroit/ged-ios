@@ -47,7 +47,7 @@
         <attribute name="missionDuration" optional="YES" attributeType="String"/>
         <attribute name="missionEndDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="missionId" attributeType="String"/>
-        <attribute name="missionImageReference" optional="YES" attributeType="String"/>
+        <attribute name="missionImageFileName" optional="YES" attributeType="String"/>
         <attribute name="missionManagers" attributeType="String"/>
         <attribute name="missionMaxParticipants" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="missionParticipants" optional="YES" attributeType="String"/>

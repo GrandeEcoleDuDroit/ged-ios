@@ -50,7 +50,7 @@ struct ThirdRegistrationDestination: View {
 
 private struct ThirdRegistrationView: View {
     let email: String
-    let onEmailChange: (String) -> Void
+    let onEmailChange: (String) -> String
     let password: String
     let onPasswordChange: (String) -> Void
     let legalNoticeChecked: Bool
@@ -117,7 +117,7 @@ private struct ThirdRegistrationView: View {
     NavigationStack {
         ThirdRegistrationView(
             email: "",
-            onEmailChange: { _ in },
+            onEmailChange: { _ in "" },
             password: "",
             onPasswordChange: { _ in },
             legalNoticeChecked: false,

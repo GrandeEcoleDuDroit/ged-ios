@@ -12,8 +12,8 @@ struct MissionFormInformationSection: View {
     let onStartDateChange: (Date) -> Void
     let onEndDateChange: (Date) -> Void
     let onSchoolLevelChange: (SchoolLevel) -> Void
-    let onMaxParticipantsChange: (String) -> Void
-    let onDurationChange: (String) -> Void
+    let onMaxParticipantsChange: (String) -> String
+    let onDurationChange: (String) -> String
     
     var body: some View {
         VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
@@ -39,9 +39,9 @@ struct MissionFormInformationSection: View {
             )
             
             OutlineTextField(
-                label: stringResource(.missionMaxParticipantsField),
-                text: maxParticipants,
+                initialText: maxParticipants,
                 onTextChange: onMaxParticipantsChange,
+                placeHolder: stringResource(.missionMaxParticipantsField),
                 leading: {
                     Image(systemName: "person.2")
                         .frame(
@@ -53,9 +53,9 @@ struct MissionFormInformationSection: View {
             .keyboardType(.decimalPad)
             
             OutlineTextField(
-                label: stringResource(.missionDurationField),
-                text: duration,
+                initialText: duration,
                 onTextChange: onDurationChange,
+                placeHolder: stringResource(.missionDurationField),
                 leading: {
                     Image(systemName: "clock")
                         .resize(scale: iconScale)
@@ -163,8 +163,8 @@ struct OutlinedSchoolLevelPicker: View {
         onStartDateChange: { _ in },
         onEndDateChange: { _ in },
         onSchoolLevelChange: { _ in },
-        onMaxParticipantsChange: { _ in },
-        onDurationChange: { _ in }
+        onMaxParticipantsChange: { _ in "" },
+        onDurationChange: { _ in "" }
     )
 }
 

@@ -4,7 +4,11 @@ struct UrlUtils {
         return GedConfiguration.oracleBucketUrl + "/" + fileName
     }
     
-    static func extractFileName(url: String?) -> String? {
+    static func extractFileNameFromUrl(url: String?) -> String? {
         url?.components(separatedBy: "/").last
+    }
+    
+    static func extractFileNameFromPath(path: String?) -> String? {
+        path?.components(separatedBy: "/").last
     }
 }

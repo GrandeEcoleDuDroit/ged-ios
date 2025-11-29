@@ -3,32 +3,22 @@ import SwiftUI
 struct MissionFormTitleDescriptionSection: View {
     let title: String
     let description: String
-    let onTitleChange: (String) -> Void
-    let onDescriptionChange: (String) -> Void
+    let onTitleChange: (String) -> String
+    let onDescriptionChange: (String) -> String
     
     var body: some View {
         VStack(spacing: Dimens.mediumPadding) {
-            TextField(
-                "",
-                text: Binding(
-                    get: { title },
-                    set: onTitleChange
-                ),
-                prompt: Text(stringResource(.title))
-                    .foregroundColor(.onSurfaceVariant),
-                axis: .vertical
+            TransparentTextField(
+                initialText: title,
+                onTextChange: onTitleChange,
+                placeHolder: stringResource(.title)
             )
             .font(.title)
             
-            TextField(
-                "",
-                text: Binding(
-                    get: { description },
-                    set: onDescriptionChange
-                ),
-                prompt: Text(stringResource(.missionDescriptionField))
-                    .foregroundColor(.onSurfaceVariant),
-                axis: .vertical
+            TransparentTextField(
+                initialText: description,
+                onTextChange: onDescriptionChange,
+                placeHolder: stringResource(.missionDescriptionField),
             )
             .lineLimit(4...)
         }
@@ -39,7 +29,7 @@ struct MissionFormTitleDescriptionSection: View {
     MissionFormTitleDescriptionSection(
         title: "",
         description: "",
-        onTitleChange: { _ in },
-        onDescriptionChange: { _ in }
+        onTitleChange: { _ in "" },
+        onDescriptionChange: { _ in "" }
     )
 }
