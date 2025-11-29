@@ -34,4 +34,8 @@ class ImageRepositoryImpl: ImageRepository {
     func deleteLocalImage(folderName: String, fileName: String) async throws {
         try await imageLocalDataSource.deleteLocalImage(folderName:folderName, fileName: fileName)
     }
+    
+    func deleteLocalImage(imagePath: String) async throws {
+        try await imageLocalDataSource.deleteLocalImage(imagePath: imagePath)
+    }
 }

@@ -43,7 +43,9 @@ class CreateMissionViewModel: ViewModel {
             state: .draft
         )
         
-        createMissionUseCase.execute(mission: mission, imageData: imageData)
+        Task {
+            await createMissionUseCase.execute(mission: mission, imageData: imageData)
+        }
     }
     
     func onTitleChange(_ title: String) -> String {
