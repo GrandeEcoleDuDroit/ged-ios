@@ -3,6 +3,7 @@ import Foundation
 class ImageRepositoryImpl: ImageRepository {
     private let imageLocalDataSource: ImageLocalDataSource
     private let imageRemoteDataSource: ImageRemoteDataSource
+    private let tag = String(describing: ImageRepositoryImpl.self)
     
     init(
         imageLocalDataSource: ImageLocalDataSource,
@@ -12,27 +13,24 @@ class ImageRepositoryImpl: ImageRepository {
         self.imageRemoteDataSource = imageRemoteDataSource
     }
     
-    func createLocalImage(imageData: Data, folderName: String, fileName: String) async throws -> String? {
-        try await imageLocalDataSource.createLocalImage(folderName: folderName, fileName: fileName, imageData: imageData)
+    func createLocalImage(imageData: Data, imagePath: String) async throws {
+        try await imageLocalDataSource.createLocalImage(imageData: imageData, imagePath: imagePath)
     }
     
-    func uploadImage(imageData: Data, fileName: String) async throws {
-        try await mapServerError {
-            try await imageRemoteDataSource.uploadImage(
-                imageData: imageData,
-                fileName: fileName
-            )
-        }
+    func uploadImage(imageData: Data, imagePath: String) async throws {
+        try await mapServerError(
+            block: { try await imageRemoteDataSource.uploadImage(imageData: imageData, imagePath: imagePath) },
+            tag: tag,
+            message: "Failed to upload remote image: \(imagePath)"
+        )
     }
     
-    func deleteRemoteImage(fileName: String) async throws {
-        try await mapServerError {
-            try await imageRemoteDataSource.deleteImage(fileName: fileName)
-        }
-    }
-    
-    func deleteLocalImage(folderName: String, fileName: String) async throws {
-        try await imageLocalDataSource.deleteLocalImage(folderName:folderName, fileName: fileName)
+    func deleteRemoteImage(imagePath: String) async throws {
+        try await mapServerError(
+            block: { try await imageRemoteDataSource.deleteImage(imagePath: imagePath) },
+            tag: tag,
+            message: "Failed to delete remote image: \(imagePath)"
+        )
     }
     
     func deleteLocalImage(imagePath: String) async throws {

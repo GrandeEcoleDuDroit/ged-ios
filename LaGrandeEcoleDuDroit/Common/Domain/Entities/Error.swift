@@ -12,3 +12,7 @@ enum UserError: Error {
     case currentUserNotFound
     case userNotFound
 }
+
+enum ImageError: Error {
+    case invalidFormat
+}

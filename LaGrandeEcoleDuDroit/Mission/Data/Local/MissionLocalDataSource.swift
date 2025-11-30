@@ -70,7 +70,7 @@ class MissionLocalDataSource {
             in: .userDomainMask
         )
         .first?
-        .appendingPathComponent(MissionUtils.folderName)
+        .appendingPathComponent(MissionUtils.Image.folderName)
         .appendingPathComponent(fileName).path()
     }
 }

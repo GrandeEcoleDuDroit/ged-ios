@@ -267,7 +267,7 @@ private struct ChatView: View {
                 HStack(spacing: Dimens.smallMediumPadding) {
                     ProfilePicture(
                         url: conversation.interlocutor.profilePictureUrl,
-                        scale: 0.4
+                        scale: 0.3
                     )
                     
                     Text(interlocutorName)

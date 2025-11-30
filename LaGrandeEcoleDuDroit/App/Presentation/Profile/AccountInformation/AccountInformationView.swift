@@ -76,7 +76,7 @@ private struct AccountInformationView: View {
         self.onSaveProfilePictureClick = onSaveProfilePictureClick
         self.onDeleteProfilePictureClick = onDeleteProfilePictureClick
         
-        self.bottomSheetItemSize = user.profilePictureUrl != nil ? 0.16 : 0.1
+        self.bottomSheetItemSize = user.profilePictureUrl != nil ? 0.17 : 0.1
     }
 
     var body: some View {
