@@ -53,7 +53,7 @@ class MissionRepositoryImpl: MissionRepository {
     }
     
     func deleteMission(mission: Mission, imageUrl: String?) async throws {
-        let imageFileName = UrlUtils.extractFileNameFromUrl(url: imageUrl)
+        let imageFileName = MissionUtils.Image.extractFileNameFromUrl(url: imageUrl)
         try await missionRemoteDataSource.deleteMission(missionId: mission.id, imageFileName: imageFileName)
         try await missionLocalDataSource.deleteMission(missionId: mission.id)
     }

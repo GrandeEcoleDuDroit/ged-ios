@@ -10,13 +10,9 @@ class MissionApiImpl: MissionApi {
     
     func getMissions() async throws -> (URLResponse, [InboundRemoteMission]) {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "")
-        
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = RequestUtils.simpleGetRequest(
-            url: url,
-            authToken: authToken
-        )
+        let request = RequestUtils.simpleGetRequest(url: url, authToken: authToken)
         
         let (data, urlResponse) = try await session.data(for: request)
         let missions = try JSONDecoder().decode([InboundRemoteMission].self, from: data)
@@ -25,6 +21,7 @@ class MissionApiImpl: MissionApi {
     
     func createMission(remoteMission: OutboundRemoteMission, imageData: Data?) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "create")
+        let session = RequestUtils.getDefaultSession()
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
         
@@ -56,28 +53,21 @@ class MissionApiImpl: MissionApi {
             request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
         
-        let session = RequestUtils.getDefaultSession()
         return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
     func deleteMission(missionId: String, imageFileName: String?) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "delete")
         let session = RequestUtils.getDefaultSession()
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        
-        var components = URLComponents()
-        components.queryItems = []
-        components.queryItems?.append(URLQueryItem(name: MissionField.Remote.missionId, value: missionId))
-        if let imageFileName {
-            components.queryItems?.append(URLQueryItem(name: MissionField.Remote.missionImageFileName, value: imageFileName))
-        }
-        request.httpBody = components.query?.data(using: .utf8)
-        if let authToken = await tokenProvider.getAuthToken() {
-            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-        }
+        let authToken = await tokenProvider.getAuthToken()
+        let request = try RequestUtils.simplePostRequest(
+            url: url,
+            authToken: authToken,
+            dataToSend: [
+                MissionField.Remote.missionId: missionId,
+                MissionField.Remote.missionImageFileName: imageFileName
+            ]
+        )
         
         return try await RequestUtils.sendRequest(session: session, request: request)
     }

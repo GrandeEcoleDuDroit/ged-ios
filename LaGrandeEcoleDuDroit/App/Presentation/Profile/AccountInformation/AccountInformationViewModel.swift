@@ -57,10 +57,7 @@ class AccountInformationViewModel: ViewModel {
         Task { @MainActor [weak self] in
             do {
                 if let url = currentUser.profilePictureUrl {
-                    try await self?.deleteProfilePictureUseCase.execute(
-                        userId: currentUser.id,
-                        profilePictureUrl: url
-                    )
+                    try await self?.deleteProfilePictureUseCase.execute(userId: currentUser.id, profilePictureUrl: url)
                 }
                 self?.resetValues()
             } catch {

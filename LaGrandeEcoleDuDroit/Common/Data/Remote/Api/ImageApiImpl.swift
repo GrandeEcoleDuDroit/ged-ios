@@ -8,17 +8,24 @@ class ImageApiImpl: ImageApi {
         self.tokenProvider = tokenProvider
     }
 
-    func uploadImage(imageData: Data, fileName: String) async throws -> (URLResponse, ServerResponse) {
+    func uploadImage(imageData: Data, imagePath: String) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "upload")
+        let session = RequestUtils.getDefaultSession()
+        let fileName = UrlUtils.extractFileNameFromPath(path: imagePath)!
         let fileExtension = (fileName as NSString).pathExtension
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
+        
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"imagePath\"\r\n\r\n".data(using: .utf8)!)
+        body.append("\(imagePath)\r\n".data(using: .utf8)!)
         
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
         body.append("Content-Disposition: form-data; name=\"image\"; fileName=\"\(fileName)\"\r\n".data(using: .utf8)!)
         body.append("Content-Type: image/\(fileExtension)\r\n\r\n".data(using: .utf8)!)
         body.append(imageData)
         body.append("\r\n".data(using: .utf8)!)
+        
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
         
         var request = URLRequest(url: url)
@@ -30,18 +37,17 @@ class ImageApiImpl: ImageApi {
             request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
         
-        let session = RequestUtils.getDefaultSession()
         return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func deleteImage(fileName: String) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: fileName)
-        
+    func deleteImage(imagePath: String) async throws -> (URLResponse, ServerResponse) {
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "delete")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = RequestUtils.simpleDeleteRequest(
+        let request = try RequestUtils.simplePostRequest(
             url: url,
-            authToken: authToken
+            authToken: authToken,
+            dataToSend: ["imagePath": imagePath]
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)
