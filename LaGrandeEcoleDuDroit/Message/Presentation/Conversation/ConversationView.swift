@@ -43,7 +43,7 @@ private struct ConversationView: View {
     @State private var clickedConversationUi: ConversationUi?
     
     var body: some View {
-        ZStack {
+        List {
             if let conversationsUi {
                 if conversationsUi.isEmpty {
                     VStack {
@@ -57,10 +57,12 @@ private struct ConversationView: View {
                         .fontWeight(.semibold)
                         .foregroundStyle(.gedPrimary)
                     }
-                    .padding(.top, Dimens.mediumPadding)
-                    .padding(.horizontal, Dimens.mediumPadding)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
                 } else {
-                    List(conversationsUi) { conversationUi in
+                    ForEach(conversationsUi) { conversationUi in
                         Button(action: { onConversationClick(conversationUi) }) {
                             ConversationItem(conversationUi: conversationUi)
                                 .simultaneousGesture(
@@ -75,16 +77,18 @@ private struct ConversationView: View {
                         .buttonStyle(ClickStyle())
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
-                        .listRowInsets(.init())
+                        .listRowInsets(EdgeInsets())
                     }
-                    .scrollIndicators(.hidden)
-                    .listStyle(.plain)
                 }
             } else {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets())
             }
         }
+        .scrollIndicators(.hidden)
+        .listStyle(.plain)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color.background)
         .navigationTitle(stringResource(.messages))

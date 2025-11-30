@@ -55,50 +55,52 @@ private struct MissionView: View {
     @State private var clickedMission: Mission?
     
     var body: some View {
-        VStack {
+        List {
             if let missions {
-                List {
-                    if missions.isEmpty {
-                        Text(stringResource(.noMission))
-                            .foregroundStyle(.informationText)
-                            .listRowBackground(Color.background)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets())
-                            .frame(maxWidth: .infinity, alignment: .top)
-                    } else {
-                        ForEach(missions) { mission in
-                            MissionCard(
-                                mission: mission,
-                                onClick: {
-                                    if case .published = mission.state {
-                                        onMissionClick(mission.id)
-                                    } else {
-                                        clickedMission = mission
-                                        showMissionBottomSheet = true
-                                    }
-                                },
-                                onOptionClick: {
+                if missions.isEmpty {
+                    Text(stringResource(.noMission))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                        .foregroundStyle(.informationText)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.background)
+                } else {
+                    ForEach(missions) { mission in
+                        MissionCard(
+                            mission: mission,
+                            onClick: {
+                                if case .published = mission.state {
+                                    onMissionClick(mission.id)
+                                } else {
                                     clickedMission = mission
                                     showMissionBottomSheet = true
                                 }
-                            )
-                            .padding(.horizontal)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets())
-                        }
+                            },
+                            onOptionClick: {
+                                clickedMission = mission
+                                showMissionBottomSheet = true
+                            }
+                        )
+                        .padding(.horizontal)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.background)
                     }
                 }
-                .scrollIndicators(.hidden)
-                .listStyle(.plain)
-                .listRowSpacing(Dimens.largePadding)
-                .refreshable { await onRefreshMissions() }
             } else {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.background)
             }
-            
         }
+        .scrollIndicators(.hidden)
+        .listStyle(.plain)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(Color.background)
+        .listRowSpacing(Dimens.largePadding)
+        .refreshable { await onRefreshMissions() }
         .loading(loading)
         .navigationTitle(stringResource(.mission))
         .toolbar {
@@ -165,7 +167,7 @@ private struct BottomSheet: View {
     NavigationStack {
         MissionView(
             user: userFixture,
-            missions: missionsFixture,
+            missions: [],
             loading: false,
             onMissionClick: { _ in },
             onCreateMissionClick: {},

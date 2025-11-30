@@ -64,7 +64,7 @@ class FcmTokenUseCase {
                 let token = try await Messaging.messaging().token()
                 try await fcmTokenRepository.storeUnsetToken(token: FcmToken(userId: nil, value: token))
             } catch {
-                e(tag, "Error removing Fcm token: \(error)", error)
+                e(tag, "Error removing Fcm token", error)
             }
         }
     }

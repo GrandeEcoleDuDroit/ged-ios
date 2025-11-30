@@ -5,14 +5,14 @@ import Combine
 
 class SynchronizeAnnouncementsUseCaseTest {
     @Test
-    func synchronizeAnnouncementsUseCase_should_upsert_new_remote_announcements() async {
+    func fetchAnnouncementsUseCase_should_upsert_new_remote_announcements() async {
         // Given
         let remoteAnnouncements = announcementsFixture
         let announcementsUpserted = AnnouncementsUpserted(
             declaredCurrentAnnouncements: [],
             declaredRemoteAnnouncements: remoteAnnouncements
         )
-        let useCase = SynchronizeAnnouncementsUseCase(
+        let useCase = FetchAnnouncementsUseCase(
             announcementRepository: announcementsUpserted,
             blockedUserRepository: MockBlockedUserRepository()
         )
@@ -25,14 +25,14 @@ class SynchronizeAnnouncementsUseCaseTest {
     }
     
     @Test
-    func synchronizeAnnouncementsUseCase_should_not_upsert_announcements_from_blocked_users() async {
+    func fetchAnnouncementsUseCase_should_not_upsert_announcements_from_blocked_users() async {
         // Given
         let remoteAnnouncements = announcementsFixture
         let announcementsUpserted = AnnouncementsUpserted(
             declaredCurrentAnnouncements: [],
             declaredRemoteAnnouncements: remoteAnnouncements
         )
-        let useCase = SynchronizeAnnouncementsUseCase(
+        let useCase = FetchAnnouncementsUseCase(
             announcementRepository: announcementsUpserted,
             blockedUserRepository: BlockedUsers(
                 declaredBlockedUserIds: remoteAnnouncements.map { $0.author.id }.toSet()
@@ -47,14 +47,14 @@ class SynchronizeAnnouncementsUseCaseTest {
     }
     
     @Test
-    func synchronizeAnnouncementsUseCase_should_delete_announcements_not_present_in_remote() async {
+    func fetchAnnouncementsUseCase_should_delete_announcements_not_present_in_remote() async {
         // Given
         let currentAnnouncements = announcementsFixture
         let announcementsDeleted = AnnouncementsDeleted(
             declaredCurrentAnnouncements: currentAnnouncements,
             declaredRemoteAnnouncements: []
         )
-        let useCase = SynchronizeAnnouncementsUseCase(
+        let useCase = FetchAnnouncementsUseCase(
             announcementRepository: announcementsDeleted,
             blockedUserRepository: MockBlockedUserRepository()
         )
@@ -67,7 +67,7 @@ class SynchronizeAnnouncementsUseCaseTest {
     }
     
     @Test
-    func synchronizeAnnouncementsUseCase_should_delete_announcements_from_blocked_users() async {
+    func fetchAnnouncementsUseCase_should_delete_announcements_from_blocked_users() async {
         // Given
         let currentAnnouncements = announcementsFixture
         let blockedUserIds = currentAnnouncements.map { $0.author.id }.toSet()
@@ -75,7 +75,7 @@ class SynchronizeAnnouncementsUseCaseTest {
             declaredCurrentAnnouncements: currentAnnouncements,
             declaredRemoteAnnouncements: currentAnnouncements
         )
-        let useCase = SynchronizeAnnouncementsUseCase(
+        let useCase = FetchAnnouncementsUseCase(
             announcementRepository: announcementsDeleted,
             blockedUserRepository: BlockedUsers(declaredBlockedUserIds: blockedUserIds)
         )

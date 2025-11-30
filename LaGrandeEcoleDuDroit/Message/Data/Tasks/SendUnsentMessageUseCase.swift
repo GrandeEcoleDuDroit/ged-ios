@@ -16,7 +16,7 @@ class SendUnsentMessageUseCase {
                 try await messageRepository.updateLocalMessage(message: message.copy { $0.state = .sent })
             }
         } catch {
-            e(tag, "Failed to send unsent messages: \(error.localizedDescription)", error)
+            e(tag, "Failed to send unsent messages", error)
         }
     }
 }

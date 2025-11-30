@@ -64,7 +64,7 @@ class ConversationMessageRepositoryImpl: ConversationMessageRepository {
     private func getConversations() -> Future<[Conversation], Never> {
         Future<[Conversation], Never> { promise in
             Task {
-                let conversations = (try? await self.conversationRepository.getConversations()) ?? []
+                let conversations = (try? await self.conversationRepository.getLocalConversations()) ?? []
                 promise(.success(conversations))
             }
         }

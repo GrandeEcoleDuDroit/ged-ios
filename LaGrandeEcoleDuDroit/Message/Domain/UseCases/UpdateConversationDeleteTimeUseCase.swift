@@ -17,7 +17,7 @@ class UpdateConversationDeleteTimeUseCase {
             return
         }
         
-        guard var conversation = try? await conversationRepository.getConversation(interlocutorId: userId) else {
+        guard var conversation = try? await conversationRepository.getLocalConversation(interlocutorId: userId) else {
             return
         }
         

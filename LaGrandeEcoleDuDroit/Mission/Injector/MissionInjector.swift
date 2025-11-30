@@ -47,12 +47,12 @@ class MissionInjector: Injector {
             )
         }
         
-        container.register(SynchronizeMissionsUseCase.self) { resolver in
-            SynchronizeMissionsUseCase(missionRepository: resolver.resolve(MissionRepository.self)!)
+        container.register(FetchMissionsUseCase.self) { resolver in
+            FetchMissionsUseCase(missionRepository: resolver.resolve(MissionRepository.self)!)
         }
         
         container.register(RefreshMissionsUseCase.self) { resolver in
-            RefreshMissionsUseCase(synchronizeMissionsUseCase: resolver.resolve(SynchronizeMissionsUseCase.self)!)
+            RefreshMissionsUseCase(fetchMissionsUseCase: resolver.resolve(FetchMissionsUseCase.self)!)
         }.inObjectScope(.container)
     }
     

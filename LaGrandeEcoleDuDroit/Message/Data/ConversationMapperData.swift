@@ -58,13 +58,13 @@ extension LocalConversation {
     func toConversation() -> Conversation? {
         guard let id = conversationId,
               let createdAt = conversationCreatedAt,
-              let state = ConversationState(rawValue: conversationState ?? ""),
+              let conversationState = conversationState,
+              let state = ConversationState(rawValue: conversationState),
               let interlocutorId = conversationInterlocutorId,
               let interlocutorFirstName = conversationInterlocutorFirstName,
               let interlocutorLastName = conversationInterlocutorLastName,
               let interlocutorEmail = conversationInterlocutorEmail,
               let interlocutorSchoolLevel = conversationInterlocutorSchoolLevel,
-              let interlocutorProfilePictureFileName = conversationInterlocutorProfilePictureFileName,
               let interlocutorState = conversationInterlocutorState
         else { return nil }
         
@@ -73,9 +73,9 @@ extension LocalConversation {
             firstName: interlocutorFirstName,
             lastName: interlocutorLastName,
             email: interlocutorEmail,
-            schoolLevel: SchoolLevel.init(rawValue: interlocutorSchoolLevel) ?? SchoolLevel.unknown,
+            schoolLevel: SchoolLevel(rawValue: interlocutorSchoolLevel) ?? SchoolLevel.unknown,
             admin: conversationInterlocutorAdmin,
-            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: interlocutorProfilePictureFileName),
+            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: conversationInterlocutorProfilePictureFileName),
             state: User.UserState(rawValue: interlocutorState) ?? .active,
             tester: conversationInterlocutorTester
         )

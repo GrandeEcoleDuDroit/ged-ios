@@ -52,7 +52,7 @@ struct RecentAnnouncementSection: View {
                         }
                         .buttonStyle(ClickStyle())
                         .listRowSeparator(.hidden)
-                        .listRowInsets(.init())
+                        .listRowInsets(EdgeInsets())
                     }
                     .listRowBackground(Color.clear)
                 }

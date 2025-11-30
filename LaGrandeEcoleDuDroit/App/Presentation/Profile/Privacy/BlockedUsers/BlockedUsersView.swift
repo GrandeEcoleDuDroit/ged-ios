@@ -51,7 +51,10 @@ private struct BlockedUsersView: View {
             if blockedUsers.isEmpty {
                 Text(stringResource(.noBlockedUser))
                     .foregroundStyle(.informationText)
-                    .frame(maxWidth: .infinity, alignment: .top)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.background)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             } else {
                 ForEach(blockedUsers) { user in
                     Button(action: { onAccountClick(user) }) {
@@ -69,19 +72,18 @@ private struct BlockedUsersView: View {
                                             .fontWeight(.medium)
                                     }
                                 )
-                                .buttonStyle(.plain)
+                                .buttonStyle(.borderless)
                             }
                         )
                     }
                     .buttonStyle(ClickStyle())
-                    .listRowInsets(.init())
+                    .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.background)
                 }
             }
         }
         .listStyle(.plain)
-        .listRowSeparator(.hidden)
         .scrollIndicators(.hidden)
         .loading(loading)
         .navigationTitle(stringResource(.blockedUsers))

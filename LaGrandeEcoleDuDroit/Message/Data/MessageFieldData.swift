@@ -15,7 +15,7 @@ struct MessageField {
         static let messageSenderId = "messageSenderId"
         static let messageRecipientId = "messageRecipientId"
         static let messageContent = "messageContent"
-        static let messageTimestamp = "messageTimestamp"
+        static let messageDate = "messageDate"
         static let messageSeen = "messageSeen"
         static let messageState = "messageState"
     }

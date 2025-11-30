@@ -17,7 +17,7 @@ open class GedDatabaseContainer {
         
         container.loadPersistentStores { _, error in
             if let error {
-                fatalError("Failed to load local data: \(error.localizedDescription)")
+                fatalError("Failed to load core data: \(error.localizedDescription)")
             }
         }
     }

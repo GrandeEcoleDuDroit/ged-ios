@@ -64,12 +64,12 @@ class AppInjector: Injector {
             )
         }
         
-        container.register(SynchronizeDataUseCase.self) { resolver in
-            SynchronizeDataUseCase(
-                synchronizeBlockedUsersUseCase: CommonInjector.shared.resolve(SynchronizeBlockedUsersUseCase.self),
-                synchronizeAnnouncementsUseCase: NewsInjector.shared.resolve(SynchronizeAnnouncementsUseCase.self),
-                synchronizeMissionsUseCase: MissionInjector.shared.resolve(SynchronizeMissionsUseCase.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
+        container.register(FetchDataUseCase.self) { resolver in
+            FetchDataUseCase(
+                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
+                fetchBlockedUsersUseCase: CommonInjector.shared.resolve(FetchBlockedUsersUseCase.self),
+                fetchAnnouncementsUseCase: NewsInjector.shared.resolve(FetchAnnouncementsUseCase.self),
+                fetchMissionsUseCase: MissionInjector.shared.resolve(FetchMissionsUseCase.self)
             )
         }
         
@@ -88,7 +88,7 @@ class AppInjector: Injector {
                 listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!,
                 listenAuthenticationStateUseCase: AuthenticationInjector.shared.resolve(ListenAuthenticationStateUseCase.self),
-                synchronizeDataUseCase: resolver.resolve(SynchronizeDataUseCase.self)!,
+                fetchDataUseCase: resolver.resolve(FetchDataUseCase.self)!,
                 checkUserValidityUseCase: resolver.resolve(CheckUserValidityUseCase.self)!
             )
         }

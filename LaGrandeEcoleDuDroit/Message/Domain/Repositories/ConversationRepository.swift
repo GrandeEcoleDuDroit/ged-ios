@@ -4,11 +4,11 @@ import Foundation
 protocol ConversationRepository {
     var conversationChanges: AnyPublisher<CoreDataChange<Conversation>, Never> { get }
     
-    func getConversations() async throws -> [Conversation]
+    func getLocalConversations() async throws -> [Conversation]
     
-    func getConversation(interlocutorId: String) async throws -> Conversation?
+    func getLocalConversation(interlocutorId: String) async throws -> Conversation?
     
-    func fetchRemoteConversation(userId: String) -> AnyPublisher<Conversation, Error>
+    func fetchRemoteConversations(userId: String) -> AnyPublisher<Conversation, Error>
     
     func createLocalConversation(conversation: Conversation) async throws
     
