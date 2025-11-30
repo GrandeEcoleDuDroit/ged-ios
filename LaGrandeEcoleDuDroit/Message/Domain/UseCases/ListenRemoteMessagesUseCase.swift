@@ -1,6 +1,8 @@
 import Foundation
 import Combine
 
+private let tag = String(describing: ListenRemoteMessagesUseCase.self)
+
 class ListenRemoteMessagesUseCase {
     private let userRepository: UserRepository
     private let conversationRepository: ConversationRepository
@@ -8,7 +10,6 @@ class ListenRemoteMessagesUseCase {
     private let blockedUserRepository: BlockedUserRepository
 
     private let messageCancellable: MessageCancellable = MessageCancellable()
-    private let tag = String(describing: ListenRemoteMessagesUseCase.self)
     
     init(
         userRepository: UserRepository,
@@ -48,23 +49,23 @@ class ListenRemoteMessagesUseCase {
                 let blockedUserIds = blockedUserRepository.currentBlockedUserIds
                 
                 if !blockedUserIds.contains(conversation.interlocutor.id) {
-                    let cancellable = try await listenRemoteMessages(conversation)
+                    let cancellable = try await listenRemoteMessagesCancellable(conversation)
                     await messageCancellable.set(cancellable, forKey: conversation.id)
                 }
             } catch {
-                e(tag, "Failed to listen remote messages for conversation with \(conversation.interlocutor.fullName): \(error)", error)
+                e(tag, "Failed to listen remote messages for conversation with \(conversation.interlocutor.fullName)", error)
             }
         }
     }
     
-    private func listenRemoteMessages(_ conversation: Conversation) async throws -> AnyCancellable {
+    private func listenRemoteMessagesCancellable(_ conversation: Conversation) async throws -> AnyCancellable {
         let lastMessage = try await messageRepository.getLastMessage(conversationId: conversation.id)
         let offsetTime = getOffsetTime(conversation: conversation, lastMessage: lastMessage)
         
         return messageRepository.fetchRemoteMessages(conversation: conversation, offsetTime: offsetTime)
-            .catch { error -> Empty<Message, Never> in
-                e(self.tag, "Failed to fetch remote message with \(conversation.interlocutor.fullName): \(error)", error)
-                return Empty()
+            .catch { error in
+                e(tag, "Failed to fetch remote message with \(conversation.interlocutor.fullName)", error)
+                return Empty<Message, Never>()
             }
             .sink { [weak self] message in
                 Task {

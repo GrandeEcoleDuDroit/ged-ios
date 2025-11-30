@@ -49,7 +49,7 @@ func e(_ tag: String, _ message: String, _ error: Error? = nil) {
     formatter.timeZone = TimeZone.current
     let date = formatter.string(from: Date())
     
-    logger.critical("🛑 \(date) \(tag)\t\(subsystem)\t [E] \(message)")
+    logger.critical("🛑 \(date) \(tag)\t\(subsystem)\t [E] \(message): \(error)")
     #if DEBUG
     #else
     crashlytics.log("\(date) \(tag)\t\(subsystem)\t E \(message)")

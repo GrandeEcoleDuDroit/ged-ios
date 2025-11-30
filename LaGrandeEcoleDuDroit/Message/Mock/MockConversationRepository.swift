@@ -6,11 +6,11 @@ class MockConversationRepository: ConversationRepository {
         Empty().eraseToAnyPublisher()
     }
     
-    func getConversations() async throws -> [Conversation] { [] }
+    func getLocalConversations() async throws -> [Conversation] { [] }
     
-    func getConversation(interlocutorId: String) async throws -> Conversation? { nil }
+    func getLocalConversation(interlocutorId: String) async throws -> Conversation? { nil }
     
-    func fetchRemoteConversation(userId: String) -> AnyPublisher<Conversation, any Error> {
+    func fetchRemoteConversations(userId: String) -> AnyPublisher<Conversation, any Error> {
         Empty()
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()

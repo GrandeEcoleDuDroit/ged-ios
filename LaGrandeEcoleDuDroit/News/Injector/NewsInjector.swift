@@ -51,12 +51,12 @@ class NewsInjector: Injector {
         
         container.register(RefreshAnnouncementsUseCase.self) { resolver in
             RefreshAnnouncementsUseCase(
-                synchronizeAnnouncementsUseCase: resolver.resolve(SynchronizeAnnouncementsUseCase.self)!
+                fetchAnnouncementsUseCase: resolver.resolve(FetchAnnouncementsUseCase.self)!
             )
         }.inObjectScope(.container)
         
-        container.register(SynchronizeAnnouncementsUseCase.self) { resolver in
-            SynchronizeAnnouncementsUseCase(
+        container.register(FetchAnnouncementsUseCase.self) { resolver in
+            FetchAnnouncementsUseCase(
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
                 blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self)
             )

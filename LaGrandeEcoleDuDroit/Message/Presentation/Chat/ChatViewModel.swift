@@ -11,7 +11,7 @@ class ChatViewModel: ViewModel {
     private let blockedUserRepository: BlockedUserRepository
     private let generateIdUseCase: GenerateIdUseCase
     
-    @Published var uiState: ChatUiState = ChatUiState()
+    @Published private(set) var uiState: ChatUiState = ChatUiState()
     @Published private(set) var event: SingleUiEvent? = nil
     private var messagesDict: [String:Message] = [:]
     private var conversation: Conversation
@@ -41,52 +41,11 @@ class ChatViewModel: ViewModel {
         
         currentUser = userRepository.currentUser
         getMessages(offset: 0)
-        listenMessages()
+        listenMessageChanges()
         listenConversationChanges()
         listenBlockedUserIds()
         seeMessages()
         notificationMessageManager.clearNotifications(conversationId: conversation.id)
-    }
-    
-    private func listenMessages() {
-        messageRepository.messageChanges
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] change in
-                var hasChanged = false
-                
-                change.inserted.forEach { message in
-                    if message.conversationId == self?.conversation.id {
-                        self?.messagesDict[message.id] = message
-                        self?.seeMessage(message)
-                        if !hasChanged {
-                            hasChanged = true
-                        }
-                    }
-                }
-                
-                change.updated.forEach { message in
-                    if message.conversationId == self?.conversation.id {
-                        self?.messagesDict[message.id] = message
-                        self?.seeMessage(message)
-                        if !hasChanged {
-                            hasChanged = true
-                        }
-                    }
-                }
-                
-                change.deleted.forEach { message in
-                    if message.conversationId == self?.conversation.id {
-                        self?.messagesDict.removeValue(forKey: message.id)
-                        if !hasChanged {
-                            hasChanged = true
-                        }
-                    }
-                }
-                
-                if hasChanged {
-                    self?.refreshMessages()
-                }
-            }.store(in: &cancellables)
     }
     
     func sendMessage() {
@@ -214,11 +173,50 @@ class ChatViewModel: ViewModel {
         }
     }
     
+    private func listenMessageChanges() {
+        messageRepository.messageChanges
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] change in
+                var hasChanged = false
+                
+                change.inserted.forEach { message in
+                    if message.conversationId == self?.conversation.id {
+                        self?.messagesDict[message.id] = message
+                        self?.seeMessage(message)
+                        if !hasChanged {
+                            hasChanged = true
+                        }
+                    }
+                }
+                
+                change.updated.forEach { message in
+                    if message.conversationId == self?.conversation.id {
+                        self?.messagesDict[message.id] = message
+                        self?.seeMessage(message)
+                        if !hasChanged {
+                            hasChanged = true
+                        }
+                    }
+                }
+                
+                change.deleted.forEach { message in
+                    if message.conversationId == self?.conversation.id {
+                        self?.messagesDict.removeValue(forKey: message.id)
+                        if !hasChanged {
+                            hasChanged = true
+                        }
+                    }
+                }
+                
+                if hasChanged {
+                    self?.sortMessages()
+                }
+            }.store(in: &cancellables)
+    }
+    
     private func getMessages(offset: Int) {
         Task { @MainActor [weak self] in
-            guard let conversation = self?.conversation else {
-                return
-            }
+            guard let conversation = self?.conversation else { return }
             guard let messages = try? await self?.messageRepository.getMessages(
                 conversationId: conversation.id,
                 offset: offset,
@@ -229,7 +227,7 @@ class ChatViewModel: ViewModel {
             
             if !messages.isEmpty {
                 messages.forEach { self?.messagesDict[$0.id] = $0 }
-                self?.refreshMessages()
+                self?.sortMessages()
             } else {
                 self?.uiState.canLoadMoreMessages = false
             }
@@ -255,7 +253,7 @@ class ChatViewModel: ViewModel {
         }
     }
     
-    private func refreshMessages() {
+    private func sortMessages() {
         uiState.messages = messagesDict.values.sorted { $0.date > $1.date }
     }
     

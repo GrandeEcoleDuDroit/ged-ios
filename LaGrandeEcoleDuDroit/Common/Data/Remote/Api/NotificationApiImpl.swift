@@ -21,7 +21,7 @@ class NotificationApiImpl: NotificationApi {
                 message: "Failed to send notification"
             )
         } catch {
-            e(tag, "Error sending notification: \(error.localizedDescription)", error)
+            e(tag, "Error sending notification", error)
         }
     }
 }

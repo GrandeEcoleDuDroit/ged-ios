@@ -1,19 +1,19 @@
 import Foundation
 
 class RefreshAnnouncementsUseCase {
-    private let synchronizeAnnouncementsUseCase: SynchronizeAnnouncementsUseCase
+    private let fetchAnnouncementsUseCase: FetchAnnouncementsUseCase
     
     private var lastRequestTime: Int64 = 0
     private let debounceInterval: Int64 = 10000
     
-    init(synchronizeAnnouncementsUseCase: SynchronizeAnnouncementsUseCase) {
-        self.synchronizeAnnouncementsUseCase = synchronizeAnnouncementsUseCase
+    init(fetchAnnouncementsUseCase: FetchAnnouncementsUseCase) {
+        self.fetchAnnouncementsUseCase = fetchAnnouncementsUseCase
     }
     
     func execute() async throws {
         let currentTime = Date().toEpochMilli()
         if currentTime - lastRequestTime > debounceInterval {
-            try await synchronizeAnnouncementsUseCase.execute()
+            try await fetchAnnouncementsUseCase.execute()
             lastRequestTime = currentTime
         }
     }
