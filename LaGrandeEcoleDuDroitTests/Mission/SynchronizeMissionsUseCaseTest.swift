@@ -5,14 +5,14 @@ import Combine
 
 class SynchronizeMissionsUseCaseTest {
     @Test
-    func synchronizeMissionsUseCase_should_upsert_new_remote_missions() async {
+    func fetchMissionsUseCase_should_upsert_new_remote_missions() async {
         // Given
         let remoteMissions = missionsFixture
         let missionsUpserted = MissionsUpserted(
             givenCurrentMissions: [],
             givenRemoteMissions: remoteMissions
         )
-        let useCase = SynchronizeMissionsUseCase(
+        let useCase = FetchMissionsUseCase(
             missionRepository: missionsUpserted
         )
         
@@ -24,14 +24,14 @@ class SynchronizeMissionsUseCaseTest {
     }
     
     @Test
-    func synchronizeMissionsUseCase_should_delete_missions_not_present_in_remote() async {
+    func fetchMissionsUseCase_should_delete_missions_not_present_in_remote() async {
         // Given
         let currentMissions = missionsFixture
         let missionsDeleted = MissionsDeleted(
             givenCurrentMissions: currentMissions,
             givenRemoteMissions: []
         )
-        let useCase = SynchronizeMissionsUseCase(
+        let useCase = FetchMissionsUseCase(
             missionRepository: missionsDeleted
         )
         

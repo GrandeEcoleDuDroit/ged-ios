@@ -1,4 +1,4 @@
-class SynchronizeMissionsUseCase {
+class FetchMissionsUseCase {
     private let missionRepository: MissionRepository
     
     init(missionRepository: MissionRepository) {

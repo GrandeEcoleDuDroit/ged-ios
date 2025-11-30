@@ -37,7 +37,7 @@ class MessageRepositoryImpl: MessageRepository {
                 limit: limit
             )
         } catch {
-            e(tag, "Error to get local messages for conversation \(conversationId): \(error.localizedDescription)", error)
+            e(tag, "Error to get local messages for conversation \(conversationId)", error)
             throw error
         }
     }
@@ -46,7 +46,7 @@ class MessageRepositoryImpl: MessageRepository {
         do {
             return try await messageLocalDataSource.getLastMessage(conversationId: conversationId)
         } catch {
-            e(tag, "Error to get last local message for conversation \(conversationId): \(error.localizedDescription)", error)
+            e(tag, "Error to get last local message for conversation \(conversationId)", error)
             throw error
         }
     }
@@ -55,7 +55,7 @@ class MessageRepositoryImpl: MessageRepository {
         do {
             return try await messageLocalDataSource.getUnsentMessages()
         } catch {
-            e(tag, "Error to get unsent local messages: \(error.localizedDescription)", error)
+            e(tag, "Error to get unsent local messages", error)
             throw error
         }
     }
@@ -68,7 +68,7 @@ class MessageRepositoryImpl: MessageRepository {
         do {
             try await messageLocalDataSource.insertMessage(message: message)
         } catch {
-            e(tag, "Failed to create local message: \(error.localizedDescription)", error)
+            e(tag, "Failed to create local message", error)
             throw error
         }
     }
@@ -81,7 +81,7 @@ class MessageRepositoryImpl: MessageRepository {
         do {
             try await messageLocalDataSource.updateMessage(message: message)
         } catch {
-            e(tag, "Failed to update local message: \(error.localizedDescription)", error)
+            e(tag, "Failed to update local message", error)
             throw error
         }
     }
@@ -117,7 +117,7 @@ class MessageRepositoryImpl: MessageRepository {
         do {
             try await messageLocalDataSource.upsertMessage(message: message)
         } catch {
-            e(tag, "Failed to upsert local message: \(error.localizedDescription)", error)
+            e(tag, "Failed to upsert local message", error)
             throw error
         }
     }
@@ -128,7 +128,7 @@ class MessageRepositoryImpl: MessageRepository {
                 messageChangesSubject.send(CoreDataChange(deleted: [deletedMessage]))
             }
         } catch {
-            e(tag, "Failed to delete local message: \(error.localizedDescription)", error)
+            e(tag, "Failed to delete local message", error)
             throw error
         }
     }
@@ -138,7 +138,7 @@ class MessageRepositoryImpl: MessageRepository {
             let deletedMessages = try await messageLocalDataSource.deleteMessages(conversationId: conversationId)
             messageChangesSubject.send(CoreDataChange(deleted: deletedMessages))
         } catch {
-            e(tag, "Failed to delete local messages for conversation \(conversationId): \(error.localizedDescription)", error)
+            e(tag, "Failed to delete local messages for conversation \(conversationId)", error)
             throw error
         }
     }
@@ -148,7 +148,7 @@ class MessageRepositoryImpl: MessageRepository {
             let deletedMessages = try await messageLocalDataSource.deleteMessages()
             messageChangesSubject.send(CoreDataChange(deleted: deletedMessages))
         } catch {
-            e(tag, "Failed to delete local messages: \(error.localizedDescription )", error)
+            e(tag, "Failed to delete local messages", error)
             throw error
         }
     }

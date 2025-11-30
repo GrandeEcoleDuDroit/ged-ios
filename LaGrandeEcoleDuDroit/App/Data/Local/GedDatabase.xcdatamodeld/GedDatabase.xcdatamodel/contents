@@ -34,12 +34,12 @@
     <entity name="LocalMessage" representedClassName="LocalMessage" syncable="YES" codeGenerationType="class">
         <attribute name="messageContent" attributeType="String"/>
         <attribute name="messageConversationId" attributeType="String"/>
+        <attribute name="messageDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="messageId" attributeType="String"/>
         <attribute name="messageRecipientId" optional="YES" attributeType="String"/>
         <attribute name="messageSeen" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="messageSenderId" attributeType="String"/>
         <attribute name="messageState" optional="YES" attributeType="String"/>
-        <attribute name="messageTimestamp" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <entity name="LocalMission" representedClassName="LocalMission" syncable="YES" codeGenerationType="class">
         <attribute name="missionDate" attributeType="Date" usesScalarValueType="NO"/>

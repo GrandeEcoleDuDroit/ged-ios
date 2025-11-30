@@ -48,7 +48,9 @@ class SendMessageUseCase {
     private func createDataRemotely(conversation: Conversation, message: Message, userId: String) async throws {
         if conversation.shouldBeCreated() {
             try await conversationRepository.createRemoteConversation(conversation: conversation,userId: userId)
+            try await conversationRepository.updateLocalConversation(conversation: conversation.copy { $0.state = .created })
         }
         try await messageRepository.createRemoteMessage(message: message)
+        try await messageRepository.updateLocalMessage(message: message.copy { $0.state = .sent })
     }
 }

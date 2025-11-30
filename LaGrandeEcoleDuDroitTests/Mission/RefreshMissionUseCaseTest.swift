@@ -6,11 +6,11 @@ import Combine
 
 class RefreshMissionUseCaseTest {
     @Test
-    func refreshMissionsUseCase_should_synchronize_mission_when_debounce_superior_than_10_seconds() async {
+    func refreshMissionsUseCase_should_fetch_mission_when_debounce_superior_than_10_seconds() async {
         // Given
         let missionSyncronized = MissionSyncronized()
         let useCase = RefreshMissionsUseCase(
-            synchronizeMissionsUseCase: missionSyncronized
+            fetchMissionsUseCase: missionSyncronized
         )
         
         // When
@@ -21,11 +21,11 @@ class RefreshMissionUseCaseTest {
     }
     
     @Test
-    func refreshMissionsUseCase_should_not_synchronize_mission_when_debounce_inferior_than_10_seconds() async {
+    func refreshMissionsUseCase_should_not_fetch_mission_when_debounce_inferior_than_10_seconds() async {
         // Given
         let missionSyncronized = MissionSyncronized()
         let useCase = RefreshMissionsUseCase(
-            synchronizeMissionsUseCase: missionSyncronized
+            fetchMissionsUseCase: missionSyncronized
         )
         
         // When

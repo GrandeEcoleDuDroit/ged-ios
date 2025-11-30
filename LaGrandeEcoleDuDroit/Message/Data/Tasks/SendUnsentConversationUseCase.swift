@@ -18,12 +18,9 @@ class SendUnsentConversationUseCase {
     }
     
     func execute() async {
-        guard let userId = self.userRepository.currentUser?.id else {
-            return
-        }
-        
+        guard let userId = self.userRepository.currentUser?.id else { return }
         do {
-            let conversations = try await self.conversationRepository.getConversations()
+            let conversations = try await self.conversationRepository.getLocalConversations()
             for conversation in conversations {
                 switch conversation.state {
                     case .creating:
@@ -43,7 +40,7 @@ class SendUnsentConversationUseCase {
                 }
             }
         } catch {
-            e(self.tag, "Failed to synchronize conversations: \(error.localizedDescription)", error)
+            e(tag, "Failed to send unsent conversations", error)
         }
     }
 }

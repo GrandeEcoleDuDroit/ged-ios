@@ -9,7 +9,7 @@ class SynchronizeBlockedUsersUseCaseTest {
         // Given
         let usersIds = usersFixture.map { $0.id }.toSet()
         let blockedUsers = BlockedUsers(usersIds)
-        let useCase = SynchronizeBlockedUsersUseCase(
+        let useCase = FetchBlockedUsersUseCase(
             blockedUserRepository: blockedUsers,
             userRepository: UserExist()
         )
@@ -26,7 +26,7 @@ class SynchronizeBlockedUsersUseCaseTest {
         // Given
         let usersIds = usersFixture.map { $0.id }.toSet()
         let unblockedUsers = UnblockedUsers(usersIds)
-        let useCase = SynchronizeBlockedUsersUseCase(
+        let useCase = FetchBlockedUsersUseCase(
             blockedUserRepository: unblockedUsers,
             userRepository: UserExist()
         )

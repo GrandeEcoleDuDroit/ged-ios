@@ -1,4 +1,4 @@
-class SynchronizeBlockedUsersUseCase {
+class FetchBlockedUsersUseCase {
     private let blockedUserRepository: BlockedUserRepository
     private let userRepository: UserRepository
     

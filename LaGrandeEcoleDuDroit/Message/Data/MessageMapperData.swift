@@ -27,7 +27,7 @@ extension Message {
         localMessage.messageSenderId = senderId
         localMessage.messageRecipientId = recipientId
         localMessage.messageContent = content
-        localMessage.messageTimestamp = date
+        localMessage.messageDate = date
         localMessage.messageSeen = seen
         localMessage.messageState = state.rawValue
     }
@@ -35,26 +35,25 @@ extension Message {
 
 extension LocalMessage {
     func toMessage() -> Message? {
-        guard let messageId = messageId,
-              let messageContent = messageContent,
-              let messageTimestamp = messageTimestamp,
-              let messageSenderId = messageSenderId,
-              let messageRecipientId = messageRecipientId,
-              let messageConversationId = messageConversationId,
-              let messageState = MessageState(rawValue: messageState ?? "")
-        else {
-            return nil
-        }
+        guard let id = messageId,
+              let senderId = messageSenderId,
+              let recipientId = messageRecipientId,
+              let conversationId = messageConversationId,
+              let content = messageContent,
+              let date = messageDate,
+              let messageState = messageState,
+              let state = MessageState(rawValue: messageState)
+        else { return nil }
         
         return Message(
-            id: messageId,
-            senderId: messageSenderId,
-            recipientId: messageRecipientId,
-            conversationId: messageConversationId,
-            content: messageContent,
-            date: messageTimestamp,
+            id: id,
+            senderId: senderId,
+            recipientId: recipientId,
+            conversationId: conversationId,
+            content: content,
+            date: date,
             seen: messageSeen,
-            state: messageState
+            state: state
         )
     }
     
@@ -69,7 +68,7 @@ extension LocalMessage {
         messageRecipientId == message.recipientId &&
         messageConversationId == message.conversationId &&
         messageContent == message.content &&
-        messageTimestamp == message.date &&
+        messageDate == message.date &&
         messageSeen == message.seen &&
         messageState == message.state.rawValue
     }
@@ -91,13 +90,13 @@ extension RemoteMessage {
     
     func toMap() -> [String: Any] {
         [
-            MessageField.Local.messageId: messageId,
-            MessageField.Local.messageConversationId: conversationId,
-            MessageField.Local.messageSenderId: senderId,
-            MessageField.Local.messageRecipientId: recipientId,
-            MessageField.Local.messageContent: content,
-            MessageField.Local.messageTimestamp: timestamp,
-            MessageField.Local.messageSeen: seen
+            MessageField.Remote.messageId: messageId,
+            MessageField.Remote.conversationId: conversationId,
+            MessageField.Remote.senderId: senderId,
+            MessageField.Remote.recipientId: recipientId,
+            MessageField.Remote.content: content,
+            MessageField.Remote.timestamp: timestamp,
+            MessageField.Remote.seen: seen
         ]
     }
 }
