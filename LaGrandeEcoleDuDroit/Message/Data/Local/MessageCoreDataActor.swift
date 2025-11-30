@@ -15,7 +15,7 @@ actor MessageCoreDataActor {
                 MessageField.Local.messageConversationId, conversationId
             )
             fetchRequest.sortDescriptors = [NSSortDescriptor(
-                key: MessageField.Local.messageTimestamp,
+                key: MessageField.Local.messageDate,
                 ascending: false
             )]
             
@@ -34,7 +34,7 @@ actor MessageCoreDataActor {
                 MessageField.Local.messageConversationId, conversationId
             )
             fetchRequest.sortDescriptors = [NSSortDescriptor(
-                key: MessageField.Local.messageTimestamp,
+                key: MessageField.Local.messageDate,
                 ascending: false
             )]
             fetchRequest.fetchLimit = 1

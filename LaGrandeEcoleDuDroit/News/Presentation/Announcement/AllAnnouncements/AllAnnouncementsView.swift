@@ -67,11 +67,10 @@ private struct AllAnnouncementsView: View {
             if announcements.isEmpty {
                 Text(stringResource(.noAnnouncement))
                     .foregroundStyle(.informationText)
-                    .padding()
                     .listRowBackground(Color.background)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())
-                    .frame(maxWidth: .infinity, alignment: .center)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             } else {
                 ForEach(announcements) { announcement in
                     ExtendedAnnouncementItem(
@@ -92,8 +91,8 @@ private struct AllAnnouncementsView: View {
                     )
                     .listRowInsets(EdgeInsets())
                     .listSectionSeparator(.hidden)
+                    .listRowBackground(Color.background)
                 }
-                .listRowBackground(Color.background)
             }
         }
         .scrollIndicators(.hidden)

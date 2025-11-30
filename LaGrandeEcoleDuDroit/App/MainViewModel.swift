@@ -6,7 +6,7 @@ class MainViewModel: ObservableObject {
     private let listenDataUseCase: ListenDataUseCase
     private let clearDataUseCase: ClearDataUseCase
     private let listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase
-    private let synchronizeDataUseCase: SynchronizeDataUseCase
+    private let fetchDataUseCase: FetchDataUseCase
     private let checkUserValidityUseCase: CheckUserValidityUseCase
     
     private var cancellables: Set<AnyCancellable> = []
@@ -16,14 +16,14 @@ class MainViewModel: ObservableObject {
         listenDataUseCase: ListenDataUseCase,
         clearDataUseCase: ClearDataUseCase,
         listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase,
-        synchronizeDataUseCase: SynchronizeDataUseCase,
+        fetchDataUseCase: FetchDataUseCase,
         checkUserValidityUseCase: CheckUserValidityUseCase
     ) {
         self.userRepository = userRepository
         self.listenDataUseCase = listenDataUseCase
         self.clearDataUseCase = clearDataUseCase
         self.listenAuthenticationStateUseCase = listenAuthenticationStateUseCase
-        self.synchronizeDataUseCase = synchronizeDataUseCase
+        self.fetchDataUseCase = fetchDataUseCase
         self.checkUserValidityUseCase = checkUserValidityUseCase
         
         updateDataOnAuthChange()
@@ -37,7 +37,7 @@ class MainViewModel: ObservableObject {
                     Task {
                         await self?.checkUserValidityUseCase.execute()
                         self?.listenDataUseCase.start()
-                        self?.synchronizeDataUseCase.execute()
+                        self?.fetchDataUseCase.execute()
                     }
                 } else {
                     self?.listenDataUseCase.stop()

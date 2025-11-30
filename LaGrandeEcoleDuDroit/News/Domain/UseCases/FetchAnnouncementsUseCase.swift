@@ -1,4 +1,4 @@
-class SynchronizeAnnouncementsUseCase {
+class FetchAnnouncementsUseCase {
     private let announcementRepository: AnnouncementRepository
     private let blockedUserRepository: BlockedUserRepository
     

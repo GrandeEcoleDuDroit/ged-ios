@@ -17,15 +17,9 @@ class StartupMessageTask {
     
     func run() {
         Task {
-            let isConnected = await networkMonitor.connected
-                .first { $0 }
-                .values
-                .first { $0 == true } ?? false
-
-            if isConnected {
-                await sendUnsentConversationUseCase.execute()
-                await sendUnsentMessageUseCase.execute()
-            }
+            await networkMonitor.connected.values.first { $0 }
+            await sendUnsentConversationUseCase.execute()
+            await sendUnsentMessageUseCase.execute()
         }
     }
 }

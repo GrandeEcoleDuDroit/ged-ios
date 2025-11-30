@@ -147,8 +147,8 @@ class CommonInjector: Injector {
             NavigationRequestUseCase()
         }.inObjectScope(.container)
         
-        container.register(SynchronizeBlockedUsersUseCase.self) { resolver in
-            SynchronizeBlockedUsersUseCase(
+        container.register(FetchBlockedUsersUseCase.self) { resolver in
+            FetchBlockedUsersUseCase(
                 blockedUserRepository: resolver.resolve(BlockedUserRepository.self)!,
                 userRepository: resolver.resolve(UserRepository.self)!
             )
