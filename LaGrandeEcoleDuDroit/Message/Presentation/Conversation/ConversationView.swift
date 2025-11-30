@@ -73,6 +73,8 @@ private struct ConversationView: View {
                                             clickedConversationUi = conversationUi
                                         }
                                 )
+                                .contentShape(.rect)
+                                .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(ClickStyle())
                         .listRowBackground(Color.clear)

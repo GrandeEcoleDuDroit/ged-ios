@@ -9,6 +9,13 @@ extension Date {
         abs(self.timeIntervalSince(other)) < tolerance
     }
     
+    func differenceMinutes(from date: Date) -> Int {
+        let diff = Calendar.current.dateComponents([.minute], from: self, to: date).minute
+            ?? Int(date.timeIntervalSince(self) / 60)
+
+        return abs(diff)
+    }
+    
     func plusMinutes(_ value: Int) -> Date {
         Calendar.current.date(byAdding: .minute, value: value, to: self)
             ?? self.addingTimeInterval(TimeInterval(value * 3600))

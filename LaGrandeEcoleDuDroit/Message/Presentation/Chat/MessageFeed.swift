@@ -11,28 +11,26 @@ struct MessageFeed: View {
     let onInterlocutorProfilePictureClick: () -> Void
 
     var body: some View {
-        List {
-            ForEach(Array(messages.enumerated()), id: \.element) { index, message in
-                    Content(
-                        conversation: conversation,
-                        messages: messages,
-                        message: message,
-                        index: index,
-                        onErrorMessageClick: onErrorMessageClick,
-                        onReceivedMessageLongClick: onReceivedMessageLongClick,
-                        onInterlocutorProfilePictureClick: onInterlocutorProfilePictureClick
-                    )
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets())
-                    .onAppear {
-                        if message == messages.last &&
-                            messages.count >= MessageConstant.loadLimit &&
-                            canLoadMoreMessages
-                        {
-                            loadMoreMessages(index + 1)
-                            print("Load more messages")
-                        }
-                    }
+        List(Array(messages.enumerated()), id: \.element) { index, message in
+            Content(
+                conversation: conversation,
+                messages: messages,
+                message: message,
+                index: index,
+                onErrorMessageClick: onErrorMessageClick,
+                onReceivedMessageLongClick: onReceivedMessageLongClick,
+                onInterlocutorProfilePictureClick: onInterlocutorProfilePictureClick
+            )
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets())
+            .onAppear {
+                if message == messages.last &&
+                    messages.count >= MessageConstant.loadLimit &&
+                    canLoadMoreMessages
+                {
+                    loadMoreMessages(index + 1)
+                    print("Load more messages")
+                }
             }
             .listRowBackground(Color.background)
             .rotationEffect(.degrees(180))
@@ -186,11 +184,7 @@ private struct MessageCondition {
         sameSender = message.senderId == previousSenderId
         showSeenMessage = isNewestMessage && isSender && message.seen
         sameTime = if let previousMessage {
-            Calendar.current.isDate(
-                previousMessage.date,
-                equalTo: message.date,
-                toGranularity: .minute
-            )
+            message.date.differenceMinutes(from: previousMessage.date) <= 1
         } else {
             false
         }
