@@ -37,12 +37,21 @@ private struct ProfileView: View {
                                 ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
                                 
                                 VStack(alignment: .leading) {
-                                    Text(user.fullName)
-                                        .font(.title3)
-                                        .fontWeight(.semibold)
+                                    HStack {
+                                        Text(user.fullName)
+                                            .font(.title3)
+                                            .fontWeight(.semibold)
+                                            .lineLimit(1)
+                                        
+                                        if user.admin {
+                                            Image(systemName: "star.fill")
+                                                .foregroundStyle(.gold)
+                                                .font(.system(size: 14))
+                                        }
+                                    }
                                     
                                     Text(user.email)
-                                        .font(.footnote)
+                                        .font(.subheadline)
                                         .foregroundStyle(.secondary)
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
