@@ -37,7 +37,14 @@ class CreateMissionUseCaseTest {
         await useCase.execute(mission: missionFixture, imageData: pngImageFixture)
         
         // Then
-        #expect(getMission.missionCreated?.state == .publishing(imagePath: imagePath))
+        #expect(getMission.missionCreated?.state.type == Mission.MissionState.publishing().type)
+        
+        let imagePath: String? = if case .publishing(let imagePath) = getMission.missionCreated?.state {
+            imagePath
+        } else {
+            nil
+        }
+        #expect(imagePath != nil)
     }
     
     @Test
@@ -85,25 +92,31 @@ class CreateMissionUseCaseTest {
         
         // When
         await useCase.execute(mission: missionFixture, imageData: pngImageFixture)
-        
+
         // Then
-        #expect(createMissionException.missionUpserted?.state == .error(imagePath: imagePath))
+        #expect(createMissionException.missionUpserted?.state.type == Mission.MissionState.error().type)
+        
+        let imagePath: String? = if case .error(let imagePath) = createMissionException.missionUpserted?.state {
+            imagePath
+        } else {
+            nil
+        }
+        #expect(imagePath != nil)
     }
 }
 
 private class LocalImageCreated: MockImageRepository {
     var createLocalImageCalled = false
     
-    override func createLocalImage(imageData: Data, folderName: String, fileName: String) async throws -> String? {
+    override func createLocalImage(imageData: Data, imagePath: String) async throws {
         createLocalImageCalled = true
-        return imagePath
     }
 }
 
 private class LocalImageDeleted: MockImageRepository {
     var deleteLocalImageCalled = false
     
-    override func deleteLocalImage(folderName: String, fileName: String) async throws {
+    override func deleteLocalImage(imagePath: String) async throws {
         deleteLocalImageCalled = true
     }
 }
