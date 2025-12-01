@@ -63,7 +63,7 @@ private struct MissionView: View {
                         .foregroundStyle(.informationText)
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.background)
+                        .listRowBackground(Color.clear)
                 } else {
                     ForEach(missions) { mission in
                         MissionCard(
@@ -84,7 +84,7 @@ private struct MissionView: View {
                         .padding(.horizontal)
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.background)
+                        .listRowBackground(Color.clear)
                     }
                 }
             } else {
@@ -92,13 +92,12 @@ private struct MissionView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.background)
+                    .listRowBackground(Color.clear)
             }
         }
         .scrollIndicators(.hidden)
         .listStyle(.plain)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(Color.background)
         .listRowSpacing(Dimens.largePadding)
         .refreshable { await onRefreshMissions() }
         .loading(loading)
@@ -132,10 +131,10 @@ private struct MissionView: View {
                 }
                 
                 Button(stringResource(.delete), role: .destructive) {
+                    showDeleteMissionAlert = false
                     if let clickedMission {
                         onDeleteMissionClick(clickedMission)
                     }
-                    showDeleteMissionAlert = false
                 }
             }
         )
@@ -155,7 +154,7 @@ private struct BottomSheet: View {
                 onDeleteClick: onDeleteMissionClick
             )
         } else {
-            BottomSheetContainer(fraction: 0.12) {
+            BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
                 Text(stringResource(.unknownError))
                     .foregroundColor(.error)
             }
@@ -175,6 +174,6 @@ private struct BottomSheet: View {
             onRefreshMissions: {}
         )
         .background(Color.background)
-        .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
     }
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

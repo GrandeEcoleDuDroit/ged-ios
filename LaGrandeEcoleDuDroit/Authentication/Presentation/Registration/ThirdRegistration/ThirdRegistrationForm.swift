@@ -83,4 +83,5 @@ struct ThirdRegistrationForm: View {
         onLegalNoticeCheckedChange: { _ in },
         focusState: FocusState<Field?>()
     )
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

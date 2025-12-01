@@ -46,4 +46,5 @@ struct MissionUserItem<TrailingContent: View>: View {
 
 #Preview {
     MissionUserItem(user: userFixture, imageScale: 0.4)
+        .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

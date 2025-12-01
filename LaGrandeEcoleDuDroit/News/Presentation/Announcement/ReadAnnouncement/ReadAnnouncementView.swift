@@ -122,7 +122,7 @@ private struct ReadAnnouncementView: View {
         .sheet(isPresented: $showAnnouncementReportBottomSheet) {
             ReportBottomSheet(
                 items: AnnouncementReport.Reason.allCases,
-                fraction: 0.45,
+                fraction: Dimens.titleBottomSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
                 onReportClick: { reason in
                     showAnnouncementReportBottomSheet = false
                     onReportAnnouncementClick(
@@ -173,4 +173,5 @@ private struct ReadAnnouncementView: View {
         )
         .background(Color.background)
     }
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

@@ -18,14 +18,14 @@ struct AnnouncementBottomSheet: View {
                 
             default:
                 if isEditable {
-                    BottomSheetContainer(fraction: 0.16) {
+                    BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 2)) {
                         EditableAnnouncementBottomSheetContent(
                             onEditClick: onEditClick,
                             onDeleteClick: onDeleteClick
                         )
                     }
                 } else {
-                    BottomSheetContainer(fraction: 0.1) {
+                    BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
                         NonEditableAnnouncementBottomSheetContent(
                             onReportClick: onReportClick
                         )
@@ -40,7 +40,7 @@ private struct ErrorAnnouncementBottomSheet: View {
     let onDeleteClick: () -> Void
     
     var body: some View {
-        BottomSheetContainer(fraction: 0.16) {
+        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 2)) {
             ClickableTextItem(
                 icon: Image(systemName: "paperplane"),
                 text: Text(stringResource(.resend)),
@@ -91,15 +91,12 @@ private struct NonEditableAnnouncementBottomSheetContent: View {
 }
 
 #Preview {
-    ZStack {}
-        .sheet(isPresented: .constant(true)) {
-            AnnouncementBottomSheet(
-                announcement: announcementFixture,
-                isEditable: true,
-                onEditClick: {},
-                onResendClick: {},
-                onDeleteClick: {},
-                onReportClick: {}
-            )
-        }
+    AnnouncementBottomSheet(
+        announcement: announcementFixture,
+        isEditable: true,
+        onEditClick: {},
+        onResendClick: {},
+        onDeleteClick: {},
+        onReportClick: {}
+    )
 }

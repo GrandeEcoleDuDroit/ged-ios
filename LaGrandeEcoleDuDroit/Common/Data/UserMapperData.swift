@@ -7,7 +7,7 @@ extension User {
             userEmail: email,
             userSchoolLevel: schoolLevel.number,
             userAdmin: admin ? 1 : 0,
-            userProfilePictureFileName: UrlUtils.extractFileNameFromUrl(url: profilePictureUrl),
+            userProfilePictureFileName: UserUtils.ProfilePictureFile.getFileName(url: profilePictureUrl),
             userState: state.rawValue,
             userTester: tester ? 1 : 0
         )
@@ -21,7 +21,7 @@ extension User {
             email: email,
             schoolLevel: schoolLevel.number,
             admin: admin,
-            profilePictureFileName: UrlUtils.extractFileNameFromUrl(url: profilePictureUrl),
+            profilePictureFileName: UserUtils.ProfilePictureFile.getFileName(url: profilePictureUrl),
             state: state.rawValue,
             tester: tester
         )
@@ -35,7 +35,7 @@ extension User {
             userEmail: email,
             userSchoolLevel: schoolLevel.rawValue,
             userAdmin: admin,
-            userProfilePictureFileName: UrlUtils.extractFileNameFromUrl(url: profilePictureUrl),
+            userProfilePictureFileName: UserUtils.ProfilePictureFile.getFileName(url: profilePictureUrl),
             userState: state.rawValue,
             userTester: tester
         )
@@ -43,6 +43,7 @@ extension User {
 }
 
 extension LocalUser {
+    
     func toUser() -> User {
         User(
             id: userId,
@@ -51,21 +52,21 @@ extension LocalUser {
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel)!,
             admin: userAdmin,
-            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: userProfilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: userProfilePictureFileName)
         )
     }
 }
 
 extension FirestoreUser {
     func toUser() -> User {
-        User(
+        return User(
             id: userId,
             firstName: firstName.uppercaseFirstLetter(),
             lastName: lastName.uppercaseFirstLetter(),
             email: email,
             schoolLevel: SchoolLevel.fromNumber(schoolLevel),
             admin: admin,
-            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: profilePictureFileName),
             state: User.UserState(rawValue: state) ?? .active,
             tester: tester
         )
@@ -74,14 +75,14 @@ extension FirestoreUser {
 
 extension ServerUser {
     func toUser() -> User {
-        User(
+        return User(
             id: userId,
             firstName: userFirstName,
             lastName: userLastName,
             email: userEmail,
             schoolLevel: SchoolLevel.fromNumber(userSchoolLevel),
             admin: userAdmin == 1,
-            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: userProfilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: userProfilePictureFileName),
             state: User.UserState(rawValue: userState) ?? .active,
             tester: userTester == 1
         )

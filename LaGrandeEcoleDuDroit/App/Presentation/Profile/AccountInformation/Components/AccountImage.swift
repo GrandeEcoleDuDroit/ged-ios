@@ -38,4 +38,5 @@ struct AccountImage: View {
 
 #Preview {
     AccountImage(url: nil, onClick: {})
+        .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

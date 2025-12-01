@@ -195,4 +195,5 @@ private struct Buttons: View {
         onRegisterClick: {}
     )
     .background(Color.background)
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

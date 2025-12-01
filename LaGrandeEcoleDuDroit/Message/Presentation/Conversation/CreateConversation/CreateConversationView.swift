@@ -80,5 +80,7 @@ private struct CreateConversationView: View {
             onQueryChange: {_ in },
             onUserClick: {_ in }
         )
+        .background(Color.background)
     }
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

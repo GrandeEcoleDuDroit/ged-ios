@@ -24,9 +24,9 @@ extension Mission {
         
         let imageFileName: String? = switch state {
             case .draft: nil
-            case let .publishing(imagePath): UrlUtils.extractFileNameFromPath(path: imagePath)
-            case let .published(imageUrl): UrlUtils.extractFileNameFromUrl(url: imageUrl)
-            case let .error(imagePath): UrlUtils.extractFileNameFromPath(path: imagePath)
+            case let .publishing(imagePath): MissionUtils.ImageFile.getFileNameFromPath(path: imagePath)
+            case let .published(imageUrl): MissionUtils.ImageFile.getFileNameFromUrl(url: imageUrl)
+            case let .error(imagePath): MissionUtils.ImageFile.getFileNameFromPath(path: imagePath)
         }
         
         return OutboundRemoteMission(
@@ -100,7 +100,7 @@ extension LocalMission {
                     .publishing(imagePath: imagePath)
                 
             case _ where missionState == Mission.MissionState.MissionStateType.published.rawValue:
-                    .published(imageUrl: UrlUtils.formatOracleBucketUrl(fileName: missionImageFileName))
+                    .published(imageUrl: MissionUtils.ImageFile.url(fileName: missionImageFileName))
                 
             default: Mission.MissionState.error(imagePath: imagePath)
         }
@@ -136,9 +136,9 @@ extension LocalMission {
         
         let imageFileName: String? = switch mission.state {
             case .draft: nil
-            case let .publishing(imagePath): UrlUtils.extractFileNameFromPath(path: imagePath)
-            case let .published(imageUrl): UrlUtils.extractFileNameFromUrl(url: imageUrl)
-            case let .error(imagePath): UrlUtils.extractFileNameFromPath(path: imagePath)
+            case let .publishing(imagePath): MissionUtils.ImageFile.getFileNameFromPath(path: imagePath)
+            case let .published(imageUrl): MissionUtils.ImageFile.getFileNameFromUrl(url: imageUrl)
+            case let .error(imagePath): MissionUtils.ImageFile.getFileNameFromPath(path: imagePath)
         }
         
         missionId = mission.id
@@ -187,9 +187,9 @@ extension LocalMission {
         
         let imageFileName: String? = switch mission.state {
             case .draft: nil
-            case let .publishing(imagePath): UrlUtils.extractFileNameFromPath(path: imagePath)
-            case let .published(imageUrl): UrlUtils.extractFileNameFromUrl(url: imageUrl)
-            case let .error(imagePath): UrlUtils.extractFileNameFromPath(path: imagePath)
+            case let .publishing(imagePath): MissionUtils.ImageFile.getFileNameFromPath(path: imagePath)
+            case let .published(imageUrl): MissionUtils.ImageFile.getFileNameFromUrl(url: imageUrl)
+            case let .error(imagePath): MissionUtils.ImageFile.getFileNameFromPath(path: imagePath)
         }
         
         let sameSchoolLevels = if let data = schoolLevelNumbersJsonData {
@@ -256,7 +256,7 @@ extension InboundRemoteMission {
             participants: missionParticipants?.map { $0.toUser() } ?? [],
             maxParticipants: missionMaxParticipants,
             tasks: missionTasks?.map { $0.toMissionTask() } ?? [],
-            state: Mission.MissionState.published(imageUrl: UrlUtils.formatOracleBucketUrl(fileName: missionImageFileName))
+            state: Mission.MissionState.published(imageUrl: MissionUtils.ImageFile.url(fileName: missionImageFileName))
         )
     }
 }

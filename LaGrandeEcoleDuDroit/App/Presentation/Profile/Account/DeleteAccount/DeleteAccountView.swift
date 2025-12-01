@@ -104,7 +104,6 @@ private struct DeleteAccountView: View {
         .navigationTitle(stringResource(.deleteAccount))
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(.listBackground)
         .loading(loading)
     }
 }
@@ -117,5 +116,7 @@ private struct DeleteAccountView: View {
             errorMessage: nil,
             onDeleteAccountClick: {}
         )
+        .background(.profileSectionBackground)
     }
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

@@ -40,7 +40,8 @@ private struct ConversationView: View {
     let onDeleteConversationClick: (Conversation) -> Void
     
     @State private var showDeleteAlert: Bool = false
-    @State private var clickedConversationUi: ConversationUi?
+    @State private var sheetConversationUi: ConversationUi?
+    @State private var alertConversationUi: ConversationUi?
     
     var body: some View {
         List {
@@ -70,7 +71,7 @@ private struct ConversationView: View {
                                         .onEnded { _ in
                                             let generator = UIImpactFeedbackGenerator(style: .medium)
                                             generator.impactOccurred()
-                                            clickedConversationUi = conversationUi
+                                            sheetConversationUi = conversationUi
                                         }
                                 )
                                 .contentShape(.rect)
@@ -92,7 +93,6 @@ private struct ConversationView: View {
         .scrollIndicators(.hidden)
         .listStyle(.plain)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(Color.background)
         .navigationTitle(stringResource(.messages))
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -105,27 +105,31 @@ private struct ConversationView: View {
         .alert(
             stringResource(.deleteConversationAlertTitle),
             isPresented: $showDeleteAlert,
-            presenting: clickedConversationUi,
+            presenting: alertConversationUi,
             actions: { conversationUi in
                 Button(stringResource(.cancel), role: .cancel) {
                     showDeleteAlert = false
+                    alertConversationUi = nil
                 }
+                
                 Button(stringResource(.delete), role: .destructive) {
-                    onDeleteConversationClick(conversationUi.toConversation())
                     showDeleteAlert = false
+                    alertConversationUi = nil
+                    onDeleteConversationClick(conversationUi.toConversation())
                 }
             },
             message: { _ in
                 Text(stringResource(.deleteConversationAlertMessage))
             }
         )
-        .sheet(item: $clickedConversationUi) { conversationUi in
-            BottomSheetContainer(fraction: 0.10) {
+        .sheet(item: $sheetConversationUi) { conversationUi in
+            BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
                 ClickableTextItem(
                     icon: Image(systemName: "trash"),
                     text: Text(stringResource(.delete))
                 ) {
-                    clickedConversationUi = conversationUi
+                    sheetConversationUi = nil
+                    alertConversationUi = conversationUi
                     showDeleteAlert = true
                 }
                 .foregroundStyle(.red)
@@ -142,5 +146,7 @@ private struct ConversationView: View {
             onConversationClick: {_ in},
             onDeleteConversationClick: {_ in}
         )
+        .background(Color.background)
     }
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }
