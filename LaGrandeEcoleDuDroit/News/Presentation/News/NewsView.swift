@@ -118,13 +118,16 @@ private struct NewsView: View {
                         user: user,
                         announcement: announcement,
                         onResendAnnouncementClick: {
+                            announcementBottomSheetType = nil
                             onResendAnnouncementClick($0)
                         },
                         onDeleteAnnouncementClick: {
+                            announcementBottomSheetType = nil
                             alertAnnouncement = announcement
                             showDeleteAnnouncementAlert = true
                         },
                         onEditAnnouncementClick: {
+                            announcementBottomSheetType = nil
                             onEditAnnouncementClick($0)
                         },
                         onReportAnnouncementClick: {
@@ -135,8 +138,9 @@ private struct NewsView: View {
                 case let .report(announcement):
                     ReportBottomSheet(
                         items: AnnouncementReport.Reason.allCases,
-                        fraction: 0.45,
+                        fraction: Dimens.titleBottomSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
                         onReportClick: { reason in
+                            announcementBottomSheetType = nil
                             onReportAnnouncementClick(
                                 AnnouncementReport(
                                     announcementId: announcement.id,
@@ -224,4 +228,5 @@ private enum AnnouncementBottomSheetType: Identifiable {
        )
        .background(Color.background)
    }
+   .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

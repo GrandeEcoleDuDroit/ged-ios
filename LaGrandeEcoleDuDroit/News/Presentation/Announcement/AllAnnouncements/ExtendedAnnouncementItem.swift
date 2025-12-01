@@ -52,7 +52,7 @@ private struct DefaultItem: View {
                 onOptionClick: onOptionClick
             )
             
-            if let title = announcement.title {
+            if let title = announcement.title, !title.isEmpty {
                 Text(title)
                     .font(.titleMedium)
                     .fontWeight(.semibold)

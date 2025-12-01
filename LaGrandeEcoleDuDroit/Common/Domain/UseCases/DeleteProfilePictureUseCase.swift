@@ -12,8 +12,8 @@ class DeleteProfilePictureUseCase {
     
     func execute(userId: String, profilePictureUrl: String) async throws {
         try await userRepository.deleteProfilePictureFileName(userId: userId)
-        if let fileName = UserUtils.ProfilePicture.extractFileName(url: profilePictureUrl) {
-            let imagePath = UserUtils.ProfilePicture.folderName + "/" + fileName
+        if let fileName = UserUtils.ProfilePictureFile.getFileName(url: profilePictureUrl) {
+            let imagePath = UserUtils.ProfilePictureFile.relativePath(fileName: fileName)
             try await imageRepository.deleteRemoteImage(imagePath: imagePath)
         }
     }

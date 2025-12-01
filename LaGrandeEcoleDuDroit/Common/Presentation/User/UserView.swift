@@ -116,7 +116,7 @@ private struct UserView: View {
         .sheet(isPresented: $showReportBottomSheet) {
             ReportBottomSheet(
                 items: UserReport.Reason.allCases,
-                fraction: 0.26,
+                fraction: Dimens.titleBottomSheetFraction(itemCount: UserReport.Reason.allCases.count),
                 onReportClick: { reason in
                     showReportBottomSheet = false
                     
@@ -187,7 +187,7 @@ private struct UserBottomSheet: View {
     let onUnblockClick: () -> Void
     
     var body: some View {
-        BottomSheetContainer(fraction: 0.16) {
+        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 2)) {
             if isUserBlocked {
                 ClickableTextItem(
                     icon: Image(systemName: "nosign"),
@@ -223,6 +223,5 @@ private struct UserBottomSheet: View {
             onBlockUserClick: { _ in },
             onUnblockUserClick: { _ in }
         )
-        .background(Color.background)
     }
 }

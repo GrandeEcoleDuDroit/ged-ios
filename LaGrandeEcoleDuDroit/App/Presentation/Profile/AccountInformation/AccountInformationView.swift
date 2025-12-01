@@ -57,7 +57,7 @@ private struct AccountInformationView: View {
     @State private var isBottomSheetItemClicked: Bool = false
     @State private var navigationTitle = stringResource(.accountInfos)
     @State private var showDeleteAlert: Bool = false
-    @State private var bottomSheetItemSize: CGFloat
+    @State private var bottomSheetItemCount: Int
     
     init(
         user: User,
@@ -76,7 +76,7 @@ private struct AccountInformationView: View {
         self.onSaveProfilePictureClick = onSaveProfilePictureClick
         self.onDeleteProfilePictureClick = onDeleteProfilePictureClick
         
-        self.bottomSheetItemSize = user.profilePictureUrl != nil ? 0.17 : 0.1
+        self.bottomSheetItemCount = user.profilePictureUrl != nil ? 2 : 1
     }
 
     var body: some View {
@@ -109,7 +109,7 @@ private struct AccountInformationView: View {
             }
         }
         .onChange(of: user.profilePictureUrl) { profilePictureUrl in
-            bottomSheetItemSize = profilePictureUrl != nil ? 0.18 : 0.1
+            bottomSheetItemCount = profilePictureUrl != nil ? 2 : 1
         }
         .onChange(of: screenState) { newState in
             if newState == .read {
@@ -126,7 +126,7 @@ private struct AccountInformationView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(screenState == .edit)
         .sheet(isPresented: $showBottomSheet) {
-            BottomSheetContainer(fraction: bottomSheetItemSize) {
+            BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: bottomSheetItemCount)) {
                 ClickableTextItem(
                     icon: Image(systemName: "photo"),
                     text: Text(stringResource(.newProfilePicture))
@@ -202,6 +202,7 @@ private struct AccountInformationView: View {
             onSaveProfilePictureClick: { _ in },
             onDeleteProfilePictureClick: {  }
         )
-        .background(Color.background)
+        .background(.profileSectionBackground)
     }
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

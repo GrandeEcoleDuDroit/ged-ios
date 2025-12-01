@@ -32,4 +32,5 @@ struct MissionFormTitleDescriptionSection: View {
         onTitleChange: { _ in "" },
         onDescriptionChange: { _ in "" }
     )
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

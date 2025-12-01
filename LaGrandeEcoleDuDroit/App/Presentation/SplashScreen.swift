@@ -19,4 +19,6 @@ struct SplashScreen: View {
 
 #Preview {
     SplashScreen()
+        .background(Color.background)
+        .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

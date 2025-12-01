@@ -27,12 +27,17 @@ class MissionApiImpl: MissionApi {
         
         if let imageFileName = remoteMission.missionImageFileName, let imageData {
             let fileExtension = (imageFileName as NSString).pathExtension
+            let imagePath = MissionUtils.ImageFile.relativePath(fileName: imageFileName)
             
             body.append("--\(boundary)\r\n".data(using: .utf8)!)
             body.append("Content-Disposition: form-data; name=\"image\"; fileName=\"\(imageFileName)\"\r\n".data(using: .utf8)!)
             body.append("Content-Type: image/\(fileExtension)\r\n\r\n".data(using: .utf8)!)
             body.append(imageData)
             body.append("\r\n".data(using: .utf8)!)
+            
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"imagePath\"\r\n\r\n".data(using: .utf8)!)
+            body.append("\(imagePath)\r\n".data(using: .utf8)!)
         }
         
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
@@ -60,13 +65,14 @@ class MissionApiImpl: MissionApi {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "delete")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
+        var dataToSend: [String: String] = [MissionField.Remote.missionId: missionId]
+        if let imageFileName {
+            dataToSend["imagePath"] = MissionUtils.ImageFile.relativePath(fileName: imageFileName)
+        }
         let request = try RequestUtils.simplePostRequest(
             url: url,
             authToken: authToken,
-            dataToSend: [
-                MissionField.Remote.missionId: missionId,
-                MissionField.Remote.missionImageFileName: imageFileName
-            ]
+            dataToSend: dataToSend
         )
         
         return try await RequestUtils.sendRequest(session: session, request: request)

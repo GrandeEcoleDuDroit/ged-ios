@@ -7,24 +7,24 @@ class ImageApiImpl: ImageApi {
     init(tokenProvider: TokenProvider) {
         self.tokenProvider = tokenProvider
     }
-
+ 
     func uploadImage(imageData: Data, imagePath: String) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "upload")
         let session = RequestUtils.getDefaultSession()
-        let fileName = UrlUtils.extractFileNameFromPath(path: imagePath)!
+        let fileName = imagePath.components(separatedBy: "/").last!
         let fileExtension = (fileName as NSString).pathExtension
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
-        
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"imagePath\"\r\n\r\n".data(using: .utf8)!)
-        body.append("\(imagePath)\r\n".data(using: .utf8)!)
         
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
         body.append("Content-Disposition: form-data; name=\"image\"; fileName=\"\(fileName)\"\r\n".data(using: .utf8)!)
         body.append("Content-Type: image/\(fileExtension)\r\n\r\n".data(using: .utf8)!)
         body.append(imageData)
         body.append("\r\n".data(using: .utf8)!)
+        
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"imagePath\"\r\n\r\n".data(using: .utf8)!)
+        body.append("\(imagePath)\r\n".data(using: .utf8)!)
         
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
         

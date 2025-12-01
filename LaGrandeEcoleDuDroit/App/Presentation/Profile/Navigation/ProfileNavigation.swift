@@ -12,6 +12,7 @@ struct ProfileNavigation: View {
                 onAccountClick: { path.append(.account) },
                 onPrivacyClick: { path.append(.privacy) }
             )
+            .background(.profileSectionBackground)
             .onAppear {
                 tabBarVisibility.show = true
                 viewModel.setCurrentRoute(ProfileMainRoute.profile)
@@ -24,7 +25,7 @@ struct ProfileNavigation: View {
                                 tabBarVisibility.show = false
                                 viewModel.setCurrentRoute(route)
                             }
-                            .background(.listBackground)
+                            .background(.profileSectionBackground)
                         
                     case .account:
                         AccountDestination(
@@ -34,7 +35,7 @@ struct ProfileNavigation: View {
                             tabBarVisibility.show = false
                             viewModel.setCurrentRoute(route)
                         }
-                        .background(.listBackground)
+                        .background(.profileSectionBackground)
                         
                     case .deleteAccount:
                         DeleteAccountDestination()
@@ -42,7 +43,7 @@ struct ProfileNavigation: View {
                                 tabBarVisibility.show = false
                                 viewModel.setCurrentRoute(route)
                             }
-                            .background(.listBackground)
+                            .background(.profileSectionBackground)
                         
                     case .privacy:
                         PrivacyDestination(
@@ -52,7 +53,7 @@ struct ProfileNavigation: View {
                             tabBarVisibility.show = false
                             viewModel.setCurrentRoute(route)
                         }
-                        .background(.listBackground)
+                        .background(.profileSectionBackground)
                         
                     case .blockedUsers:
                         BlockedUserDestination(
@@ -62,7 +63,7 @@ struct ProfileNavigation: View {
                             tabBarVisibility.show = false
                             viewModel.setCurrentRoute(route)
                         }
-                        .background(.listBackground)
+                        .background(.profileSectionBackground)
                         
                     case let .user(user):
                         UserDestination(user: user)
@@ -70,7 +71,7 @@ struct ProfileNavigation: View {
                                 tabBarVisibility.show = false
                                 viewModel.setCurrentRoute(route)
                             }
-                            .background(.listBackground)
+                            .background(.profileSectionBackground)
                 }
             }
         }

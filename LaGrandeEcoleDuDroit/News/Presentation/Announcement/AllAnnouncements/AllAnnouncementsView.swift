@@ -67,7 +67,7 @@ private struct AllAnnouncementsView: View {
             if announcements.isEmpty {
                 Text(stringResource(.noAnnouncement))
                     .foregroundStyle(.informationText)
-                    .listRowBackground(Color.background)
+                    .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -91,7 +91,7 @@ private struct AllAnnouncementsView: View {
                     )
                     .listRowInsets(EdgeInsets())
                     .listSectionSeparator(.hidden)
-                    .listRowBackground(Color.background)
+                    .listRowBackground(Color.clear)
                 }
             }
         }
@@ -127,7 +127,7 @@ private struct AllAnnouncementsView: View {
         .sheet(isPresented: $showAnnouncementReportBottomSheet) {
             ReportBottomSheet(
                 items: AnnouncementReport.Reason.allCases,
-                fraction: 0.45,
+                fraction: Dimens.titleBottomSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
                 onReportClick: { reason in
                     showAnnouncementReportBottomSheet = false
                     
@@ -188,7 +188,7 @@ private struct Sheet: View {
                 onReportClick: onReportAnnouncementClick
             )
         } else {
-            BottomSheetContainer(fraction: 0.16) {
+            BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
                 Text(stringResource(.unknownError))
                     .foregroundColor(.error)
             }
@@ -212,4 +212,5 @@ private struct Sheet: View {
         )
         .background(Color.background)
     }
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

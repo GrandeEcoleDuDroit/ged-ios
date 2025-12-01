@@ -7,7 +7,7 @@ extension User {
             userEmail: email,
             userSchoolLevel: schoolLevel.number,
             userAdmin: admin ? 1 : 0,
-            userProfilePictureFileName: UserUtils.ProfilePicture.extractFileName(url: profilePictureUrl),
+            userProfilePictureFileName: UserUtils.ProfilePictureFile.getFileName(url: profilePictureUrl),
             userState: state.rawValue,
             userTester: tester ? 1 : 0
         )
@@ -21,7 +21,7 @@ extension User {
             email: email,
             schoolLevel: schoolLevel.number,
             admin: admin,
-            profilePictureFileName: UserUtils.ProfilePicture.extractFileName(url: profilePictureUrl),
+            profilePictureFileName: UserUtils.ProfilePictureFile.getFileName(url: profilePictureUrl),
             state: state.rawValue,
             tester: tester
         )
@@ -35,7 +35,7 @@ extension User {
             userEmail: email,
             userSchoolLevel: schoolLevel.rawValue,
             userAdmin: admin,
-            userProfilePictureFileName: UserUtils.ProfilePicture.extractFileName(url: profilePictureUrl),
+            userProfilePictureFileName: UserUtils.ProfilePictureFile.getFileName(url: profilePictureUrl),
             userState: state.rawValue,
             userTester: tester
         )
@@ -52,7 +52,7 @@ extension LocalUser {
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel)!,
             admin: userAdmin,
-            profilePictureUrl: UserUtils.ProfilePicture.formatUrl(fileName: userProfilePictureFileName)
+            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: userProfilePictureFileName)
         )
     }
 }
@@ -66,7 +66,7 @@ extension FirestoreUser {
             email: email,
             schoolLevel: SchoolLevel.fromNumber(schoolLevel),
             admin: admin,
-            profilePictureUrl: UserUtils.ProfilePicture.formatUrl(fileName: profilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: profilePictureFileName),
             state: User.UserState(rawValue: state) ?? .active,
             tester: tester
         )
@@ -82,7 +82,7 @@ extension ServerUser {
             email: userEmail,
             schoolLevel: SchoolLevel.fromNumber(userSchoolLevel),
             admin: userAdmin == 1,
-            profilePictureUrl: UserUtils.ProfilePicture.formatUrl(fileName: userProfilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: userProfilePictureFileName),
             state: User.UserState(rawValue: userState) ?? .active,
             tester: userTester == 1
         )

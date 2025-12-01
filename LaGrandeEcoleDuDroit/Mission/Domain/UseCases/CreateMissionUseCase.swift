@@ -16,8 +16,8 @@ class CreateMissionUseCase {
         var imagePath: String?
         
         if let imageData, let imageExtension = imageData.imageExtension() {
-            let fileName = "\(MissionUtils.Image.generateFileName(missionId: mission.id)).\(imageExtension)"
-            imagePath = MissionUtils.Image.folderName + "/" + fileName
+            let fileName = MissionUtils.ImageFile.generateFileName(missionId: mission.id) + "." + imageExtension
+            imagePath = MissionUtils.ImageFile.relativePath(fileName: fileName)
             try? await imageRepository.createLocalImage(imageData: imageData, imagePath: imagePath!)
         }
         

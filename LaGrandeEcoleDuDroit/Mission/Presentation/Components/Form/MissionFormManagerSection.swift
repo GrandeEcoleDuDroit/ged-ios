@@ -59,4 +59,5 @@ private struct AddManagerItem: View {
         onShowManagerListClick: {},
         onRemoveManagerClick: { _ in }
     )
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

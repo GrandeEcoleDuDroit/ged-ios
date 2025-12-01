@@ -11,7 +11,7 @@ struct MissionBottomSheet: View {
             
             default:
                 if editable {
-                    BottomSheetContainer(fraction: 0.12) {
+                    BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
                         EditableAnnouncementBottomSheetContent(
                             onDeleteClick: onDeleteClick
                         )
@@ -25,7 +25,7 @@ private struct ErrorMissionBottomSheet: View {
     let onDeleteClick: () -> Void
     
     var body: some View {
-        BottomSheetContainer(fraction: 0.12) {
+        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
             ClickableTextItem(
                 icon: Image(systemName: "trash"),
                 text: Text(stringResource(.delete)),
