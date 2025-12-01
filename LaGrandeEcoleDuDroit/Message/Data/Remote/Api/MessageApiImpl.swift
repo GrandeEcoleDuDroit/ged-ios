@@ -83,11 +83,7 @@ class MessageServerApi {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "report")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.simplePostRequest(
-            dataToSend: report,
-            url: url,
-            authToken: authToken
-        )
+        let request = try RequestUtils.simplePostRequest(url: url, authToken: authToken, dataToSend: report)
         
         return try await RequestUtils.sendRequest(session: session, request: request)
     }

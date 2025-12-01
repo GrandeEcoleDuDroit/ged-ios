@@ -28,71 +28,71 @@ private struct ProfileView: View {
     @State private var showLogoutAlert: Bool = false
 
     var body: some View {
-        ZStack {
+        List {
             if let user {
-                List {
-                    Section {
-                        Button(action: onAccountInfosClick) {
-                            HStack(spacing: Dimens.mediumPadding) {
-                                ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
-                                
-                                VStack(alignment: .leading) {
-                                    HStack {
-                                        Text(user.fullName)
-                                            .font(.title3)
-                                            .fontWeight(.semibold)
-                                            .lineLimit(1)
-                                        
-                                        if user.admin {
-                                            Image(systemName: "star.fill")
-                                                .foregroundStyle(.gold)
-                                                .font(.system(size: 14))
-                                        }
-                                    }
+                Section {
+                    Button(action: onAccountInfosClick) {
+                        HStack(spacing: Dimens.mediumPadding) {
+                            ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
+                            
+                            VStack(alignment: .leading) {
+                                HStack {
+                                    Text(user.fullName)
+                                        .font(.title3)
+                                        .fontWeight(.semibold)
+                                        .lineLimit(1)
                                     
-                                    Text(user.email)
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
+                                    if user.admin {
+                                        Image(systemName: "star.fill")
+                                            .foregroundStyle(.gold)
+                                            .font(.system(size: 14))
+                                    }
                                 }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                                                
-                                Image(systemName: "chevron.right")
-                                    .foregroundStyle(.gray)
+                                
+                                Text(user.email)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
                             }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.gray)
                         }
                     }
-                    
-                    Section {
-                        Button(action: onAccountClick) {
-                            ListItem(
-                                image: Image(systemName: "key"),
-                                text: Text(stringResource(.account))
-                            )
-                        }
-                        
-                        Button(action: onPrivacyClick) {
-                            ListItem(
-                                image: Image(systemName: "lock"),
-                                text: Text(stringResource(.privacy))
-                            )
-                        }
-                    }
-                    
-                    Section {
-                        ClickableTextItem(
-                            icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
-                            text: Text(stringResource(.logout)),
-                            onClick: { showLogoutAlert = true }
+                }
+                
+                Section {
+                    Button(action: onAccountClick) {
+                        ListItem(
+                            image: Image(systemName: "key"),
+                            text: Text(stringResource(.account))
                         )
-                        .foregroundStyle(.red)
                     }
+                    
+                    Button(action: onPrivacyClick) {
+                        ListItem(
+                            image: Image(systemName: "lock"),
+                            text: Text(stringResource(.privacy))
+                        )
+                    }
+                }
+                
+                Section {
+                    ClickableTextItem(
+                        icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
+                        text: Text(stringResource(.logout)),
+                        onClick: { showLogoutAlert = true }
+                    )
+                    .foregroundStyle(.red)
                 }
             } else {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .listRowBackground(Color.clear)
             }
         }
         .navigationTitle(stringResource(.profile))
+        .scrollContentBackground(.hidden)
         .alert(
             stringResource(.logoutAlertMessage),
             isPresented: $showLogoutAlert,
@@ -107,8 +107,6 @@ private struct ProfileView: View {
                 )
             }
         )
-        .scrollContentBackground(.hidden)
-        .background(.listBackground)
     }
 }
 
@@ -121,6 +119,7 @@ private struct ProfileView: View {
             onPrivacyClick: {},
             onLogoutClick: {}
         )
-        .background(.listBackground)
+        .background(.profileSectionBackground)
     }
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

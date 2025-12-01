@@ -31,13 +31,13 @@ private struct PrivacyView: View {
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .scrollContentBackground(.hidden)
-        .background(.listBackground)
     }
 }
 
 #Preview {
     NavigationStack {
         PrivacyView(onBlockedUsersClick: {})
-            .background(.listBackground)
+            .background(.profileSectionBackground)
     }
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

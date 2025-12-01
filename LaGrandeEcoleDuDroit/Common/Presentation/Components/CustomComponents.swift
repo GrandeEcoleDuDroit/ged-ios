@@ -90,10 +90,7 @@ struct ListItem: View {
     var body: some View {
         HStack(spacing: Dimens.mediumPadding) {
             image
-            
-            text
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
+            text.frame(maxWidth: .infinity, alignment: .leading)
             Image(systemName: "chevron.right")
                 .foregroundStyle(.gray)
         }
@@ -129,52 +126,6 @@ struct CheckBox: View {
             .foregroundColor(checked ? .gedPrimary : Color.secondary)
     }
 }
-
-//struct SearchBar: View {
-//    let query: String
-//    let onQueryChange: (String) -> Void
-//    
-//    @State private var showCancelButton: Bool = false
-//
-//    var body: some View {
-//        HStack {
-//            HStack {
-//                Image(systemName: "magnifyingglass")
-//                
-//                TextField(
-//                    stringResource(.search),
-//                    text: Binding(
-//                        get: { query },
-//                        set: onQueryChange
-//                    ),
-//                    onEditingChanged: { _ in
-//                        showCancelButton = true
-//                    },
-//                    onCommit: {
-//                        print("onCommit")
-//                    }
-//                )
-//                .foregroundStyle(.primary)
-//                
-//                Button(action: { onQueryChange("") }) {
-//                    Image(systemName: "xmark.circle.fill").opacity(query == "" ? 0 : 1)
-//                }
-//            }
-//            .padding(EdgeInsets(top: 8, leading: 6, bottom: 8, trailing: 6))
-//            .foregroundStyle(.secondary)
-//            .background(Color(.secondarySystemBackground))
-//            .cornerRadius(10.0)
-//            
-//            if showCancelButton  {
-//                Button("Cancel") {
-//                    UIApplication.shared.endEditing(true)
-//                    onQueryChange("")
-//                    showCancelButton = false
-//                }
-//            }
-//        }
-//    }
-//}
 
 struct SearchBar: UIViewRepresentable {
     let query: String

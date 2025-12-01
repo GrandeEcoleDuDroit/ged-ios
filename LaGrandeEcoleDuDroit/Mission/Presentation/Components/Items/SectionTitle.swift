@@ -10,4 +10,5 @@ struct SectionTitle: View {
 
 #Preview {
     SectionTitle(title: "Section title")
+        .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

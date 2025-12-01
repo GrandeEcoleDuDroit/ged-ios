@@ -90,5 +90,7 @@ private struct FirstRegistrationView: View {
             onLastNameChange: {_ in "" },
             onNextClick: {_, _ in}
         )
+        .background(Color.background)
     }
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

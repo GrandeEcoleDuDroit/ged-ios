@@ -7,7 +7,7 @@ struct ReportBottomSheet<T: CustomStringConvertible>: View {
     
     init(
         items: [T],
-        fraction: CGFloat = 0.1,
+        fraction: CGFloat = Dimens.titleBottomSheetFraction(itemCount: 1),
         onReportClick: @escaping (T) -> Void
     ) {
         self.items = items
@@ -36,8 +36,7 @@ struct ReportBottomSheet<T: CustomStringConvertible>: View {
 #Preview {
     ReportBottomSheet(
         items: ["Spam", "Inappropriate content", "Harassment"],
-        fraction: 0.5,
-        onReportClick: { print($0) }
+        onReportClick: { _ in }
     )
     
     OptionButton(action: {})

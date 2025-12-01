@@ -13,20 +13,19 @@ class UpdateProfilePictureUseCase {
     }
     
     func execute(user: User, imageData: Data) async throws {
-        let fileType = getImageType(from: imageData)
-        let fileName = getFileName(userId: user.id) + ".\(fileType)"
-        
-        try await imageRepository.uploadImage(imageData: imageData, fileName: fileName)
-        try await userRepository.updateProfilePictureFileName(userId: user.id, profilePictureFileName: fileName)
-    }
-    
-    func getImageType(from data: Data) -> String {
-        let pngHeader = Data([0x89, 0x50, 0x4E, 0x47])
-        return if data.prefix(4) == pngHeader { "png" } else { "jpeg" }
-    }
-    
-    private func getFileName(userId: String) -> String {
-        let currentTime = Date().toEpochMilli()
-        return "\(userId)-profile-picture-\(currentTime)"
+        if let fileExtension = imageData.imageExtension() {
+            let fileName = UserUtils.ProfilePictureFile.generateFileName(userId: user.id) + "." + fileExtension
+            let imagePath = UserUtils.ProfilePictureFile.relativePath(fileName: fileName)
+            
+            try await imageRepository.uploadImage(imageData: imageData, imagePath: imagePath)
+            try await userRepository.updateProfilePictureFileName(userId: user.id, profilePictureFileName: fileName)
+            
+            if let oldFileName = UserUtils.ProfilePictureFile.getFileName(url: user.profilePictureUrl) {
+                let oldImagePath = UserUtils.ProfilePictureFile.relativePath(fileName: oldFileName)
+                try? await imageRepository.deleteRemoteImage(imagePath: oldImagePath)
+            }
+        } else {
+            throw ImageError.invalidFormat
+        }
     }
 }

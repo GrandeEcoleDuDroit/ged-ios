@@ -258,5 +258,4 @@ struct MessageBlockedUserIndicator: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     .padding(.horizontal)
-    .background(Color.background)
 }

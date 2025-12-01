@@ -30,25 +30,25 @@ class RequestUtils {
     }
     
     static func simplePostRequest(
-        dataToSend: Encodable,
         url: URL,
-        authToken: String? = nil
+        authToken: String? = nil,
+        dataToSend: Encodable,
     ) throws -> URLRequest {
         try simpleWriteRequest(method: "POST", url: url, authToken: authToken, data: dataToSend)
     }
     
     static func simplePutRequest(
-        dataToSend: Encodable,
         url: URL,
-        authToken: String? = nil
+        authToken: String? = nil,
+        dataToSend: Encodable
     ) throws -> URLRequest {
         try simpleWriteRequest(method: "PUT", url: url, authToken: authToken, data: dataToSend)
     }
     
     static func simplePatchRequest(
-        dataToSend: Encodable,
         url: URL,
-        authToken: String? = nil
+        authToken: String? = nil,
+        dataToSend: Encodable
     ) throws -> URLRequest {
        try simpleWriteRequest(method: "PATCH", url: url, authToken: authToken, data: dataToSend)
     }

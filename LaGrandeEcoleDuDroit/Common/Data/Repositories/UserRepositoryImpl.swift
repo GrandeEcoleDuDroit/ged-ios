@@ -59,7 +59,7 @@ class UserRepositoryImpl: UserRepository {
         try await userRemoteDataSource.updateProfilePictureFileName(userId: userId, fileName: profilePictureFileName)
         try? userLocalDataSource.updateProfilePictureFileName(fileName: profilePictureFileName)
         var user = userSubject.value
-        user?.profilePictureUrl = UrlUtils.formatOracleBucketUrl(fileName: profilePictureFileName)
+        user?.profilePictureUrl = UserUtils.ProfilePictureFile.url(fileName: profilePictureFileName)
         userSubject.send(user)
     }
     

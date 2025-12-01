@@ -186,7 +186,7 @@ private struct ChatView: View {
         .sheet(isPresented: $showReportMessageBottomSheet) {
             ReportBottomSheet(
                 items: MessageReport.Reason.allCases,
-                fraction: 0.5,
+                fraction: Dimens.titleBottomSheetFraction(itemCount: MessageReport.Reason.allCases.count),
                 onReportClick: { reason in
                     showReportMessageBottomSheet = false
                     
@@ -215,10 +215,10 @@ private struct ChatView: View {
                 }
                 
                 Button(stringResource(.delete), role: .destructive) {
+                    showDeleteAnnouncementAlert = false
                     if let clickedMessage {
                         onDeleteErrorMessageClick(clickedMessage)
                     }
-                    showDeleteAnnouncementAlert = false
                 }
             }
         )
@@ -267,7 +267,7 @@ private struct ChatView: View {
                 HStack(spacing: Dimens.smallMediumPadding) {
                     ProfilePicture(
                         url: conversation.interlocutor.profilePictureUrl,
-                        scale: 0.4
+                        scale: 0.3
                     )
                     
                     Text(interlocutorName)
@@ -286,7 +286,7 @@ private struct SentMessageBottomSheet: View {
     let onDeleteMessage: () -> Void
     
     var body: some View {
-        BottomSheetContainer(fraction: 0.16) {
+        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 2)) {
             ClickableTextItem(
                 icon: Image(systemName: "paperplane"),
                 text: Text(stringResource(.resend)),
@@ -307,7 +307,7 @@ private struct ReceivedMessageBottomSheet: View {
     let onReportClick: () -> Void
     
     var body: some View {
-        BottomSheetContainer(fraction: 0.1) {
+        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
             ClickableTextItem(
                 icon: Image(systemName: "exclamationmark.bubble"),
                 text: Text(stringResource(.report)),
@@ -362,6 +362,5 @@ private struct MessageBottomSection: View {
             onUnblockUserClick: { _ in },
             onInterlocutorProfilePictureClick: { _ in }
         )
-        .background(Color.background)
     }
 }

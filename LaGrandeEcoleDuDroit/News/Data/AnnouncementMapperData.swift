@@ -33,7 +33,7 @@ extension LocalAnnouncement {
             email: authorEmail,
             schoolLevel: SchoolLevel(rawValue: authorSchoolLevel) ?? SchoolLevel.unknown,
             admin: announcementAuthorAdmin,
-            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: announcementAuthorProfilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: announcementAuthorProfilePictureFileName)
         )
         
         return Announcement(
@@ -58,7 +58,7 @@ extension LocalAnnouncement {
         announcementAuthorEmail = announcement.author.email
         announcementAuthorSchoolLevel = announcement.author.schoolLevel.rawValue
         announcementAuthorAdmin = announcement.author.admin
-        announcementAuthorProfilePictureFileName = UrlUtils.extractFileNameFromUrl(url: announcement.author.profilePictureUrl)
+        announcementAuthorProfilePictureFileName = UserUtils.ProfilePictureFile.getFileName(url: announcement.author.profilePictureUrl)
         announcementAuthorState = announcement.author.state.rawValue
         announcementAuthorTester = announcement.author.tester
     }
@@ -75,7 +75,7 @@ extension LocalAnnouncement {
         announcementAuthorEmail == announcement.author.email &&
         announcementAuthorSchoolLevel == announcement.author.schoolLevel.rawValue &&
         announcementAuthorAdmin == announcement.author.admin &&
-        announcementAuthorProfilePictureFileName == UrlUtils.extractFileNameFromUrl(url: announcement.author.profilePictureUrl) &&
+        announcementAuthorProfilePictureFileName == UserUtils.ProfilePictureFile.getFileName(url: announcement.author.profilePictureUrl) &&
         announcementAuthorState == announcement.author.state.rawValue &&
         announcementAuthorTester == announcement.author.tester
     }
@@ -90,7 +90,7 @@ extension InboundRemoteAnnouncement {
             email: userEmail,
             schoolLevel: SchoolLevel.fromNumber(userSchoolLevel),
             admin: userAdmin == 1,
-            profilePictureUrl: UrlUtils.formatOracleBucketUrl(fileName: userProfilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: userProfilePictureFileName),
             state: User.UserState(rawValue: userState) ?? .active,
             tester: userTester == 1
         )

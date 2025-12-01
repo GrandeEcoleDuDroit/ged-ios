@@ -25,15 +25,15 @@ class DeleteAccountUseCase {
     
     private func deleteUser(user: User) async throws {
         let deletedUser = user.copy {
-            $0.email = "\(user.id)@deleted.com"
+            $0.email = "\(user.id)@deleted.com";
             $0.profilePictureUrl = nil;
             $0.state = .deleted
         }
         
         try await userRepository.updateRemoteUser(user: deletedUser)
-        if let profilePictureUrl = user.profilePictureUrl,
-            let fileName = UrlUtils.extractFileNameFromUrl(url: profilePictureUrl) {
-            try await imageRepository.deleteRemoteImage(fileName: fileName)
+        if let fileName = UserUtils.ProfilePictureFile.getFileName(url: user.profilePictureUrl) {
+            let imagePath = UserUtils.ProfilePictureFile.relativePath(fileName: fileName)
+            try await imageRepository.deleteRemoteImage(imagePath: imagePath)
         }
         userRepository.deleteLocalUser()
     }
