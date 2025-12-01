@@ -30,7 +30,7 @@ struct RecentAnnouncementSection: View {
                     Text(stringResource(.noAnnouncement))
                         .foregroundStyle(.informationText)
                         .padding()
-                        .listRowBackground(Color.background)
+                        .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets())
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -53,8 +53,8 @@ struct RecentAnnouncementSection: View {
                         .buttonStyle(ClickStyle())
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
                     }
-                    .listRowBackground(Color.clear)
                 }
             }
             .scrollIndicators(.hidden)
@@ -71,4 +71,5 @@ struct RecentAnnouncementSection: View {
         onAnnouncementOptionClick: { _ in },
         onSeeAllAnnouncementClick: {}
     )
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

@@ -133,7 +133,6 @@ struct MissionFormValue {
         onEditTaskClick: { _ in },
         onRemoveTaskClick: { _ in }
     )
-    .background(Color.background)
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }
  

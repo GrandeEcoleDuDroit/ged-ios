@@ -11,4 +11,13 @@ struct Dimens {
     static let veryExtraLargePadding: CGFloat = 64
     static let defaultImageSize: CGFloat = 100
     static let leadingIconSpacing: CGFloat = 16
+    
+    private static let defaultBottomSheetFraction: CGFloat = 0.12
+    private static let additionalBottomSheetItemFraction: CGFloat = 0.06
+    static func bottomSheetFraction(itemCount: Int) -> CGFloat {
+        defaultBottomSheetFraction + CGFloat(additionalBottomSheetItemFraction * CGFloat(itemCount - 1))
+    }
+    static func titleBottomSheetFraction(itemCount: Int) -> CGFloat {
+        defaultBottomSheetFraction + CGFloat(additionalBottomSheetItemFraction * CGFloat(itemCount))
+    }
 }

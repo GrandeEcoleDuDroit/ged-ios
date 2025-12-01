@@ -83,5 +83,7 @@ private struct SecondRegistrationView: View {
             schoolLevels: SchoolLevel.allCases,
             onNextClick: {}
         )
+        .background(Color.background)
     }
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

@@ -1,23 +1,18 @@
 import SwiftUI
 
 struct BlockedUserDestination: View {
-    private let onAccountClick: (User) -> Void
+    let onAccountClick: (User) -> Void
     
     @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(BlockedUsersViewModel.self)
     @State private var errorMessage: String = ""
     @State private var showErrorAlert: Bool = false
     
-    init(onAccountClick: @escaping (User) -> Void) {
-        self.onAccountClick = onAccountClick
-    }
-    
-    
     var body: some View {
         BlockedUsersView(
-            onAccountClick: onAccountClick,
-            onUnblockClick: viewModel.unblockUser,
             blockedUsers: viewModel.uiState.blockedUsers,
-            loading: viewModel.uiState.loading
+            loading: viewModel.uiState.loading,
+            onAccountClick: onAccountClick,
+            onUnblockClick: viewModel.unblockUser
         )
         .onReceive(viewModel.$event) { event in
             if let errorEvent = event as? ErrorEvent {
@@ -38,10 +33,10 @@ struct BlockedUserDestination: View {
 }
 
 private struct BlockedUsersView: View {
-    let onAccountClick: (User) -> Void
-    let onUnblockClick: (String) -> Void
     let blockedUsers: [User]
     let loading: Bool
+    let onAccountClick: (User) -> Void
+    let onUnblockClick: (String) -> Void
     
     @State private var showUnblockAlert: Bool = false
     @State private var clickedUser: User?
@@ -53,7 +48,7 @@ private struct BlockedUsersView: View {
                     .foregroundStyle(.informationText)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color.background)
+                    .listRowBackground(Color.clear)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             } else {
                 ForEach(blockedUsers) { user in
@@ -79,7 +74,7 @@ private struct BlockedUsersView: View {
                     .buttonStyle(ClickStyle())
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color.background)
+                    .listRowBackground(Color.clear)
                 }
             }
         }
@@ -112,10 +107,12 @@ private struct BlockedUsersView: View {
 #Preview {
     NavigationStack {
         BlockedUsersView(
-            onAccountClick: { _ in },
-            onUnblockClick: { _ in },
             blockedUsers: usersFixture,
-            loading: false
+            loading: false,
+            onAccountClick: { _ in },
+            onUnblockClick: { _ in }
         )
-    }.background(Color.background)
+        .background(.profileSectionBackground)
+    }
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

@@ -227,4 +227,5 @@ private struct ErrorBanner: View {
         }
         .padding()
     }
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

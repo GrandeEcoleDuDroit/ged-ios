@@ -138,8 +138,8 @@ private struct CreateMissionView: View {
                 case .addTask:
                     AddMissionTaskBottomSheet(
                         onAddTaskClick: {
-                            onAddTaskClick($0)
                             missionBottomSheetType = nil
+                            onAddTaskClick($0)
                         },
                         onCancelClick: { missionBottomSheetType = nil }
                     )
@@ -149,8 +149,8 @@ private struct CreateMissionView: View {
                     EditMissionTaskBottomSheet(
                         missionTask: missionTask,
                         onEditTaskClick: {
-                            onEditTaskClick($0)
                             missionBottomSheetType = nil
+                            onEditTaskClick($0)
                         },
                         onCancelClick: { missionBottomSheetType = nil }
                     )
@@ -163,8 +163,8 @@ private struct CreateMissionView: View {
                         userQuery: userQuery,
                         onUserQueryChange: onUserQueryChange,
                         onSaveManagersClick: {
-                            onSaveManagersClick($0)
                             missionBottomSheetType = nil
+                            onSaveManagersClick($0)
                         },
                         onCancelClick: { missionBottomSheetType = nil }
                     )
@@ -205,6 +205,6 @@ private struct CreateMissionView: View {
             onCreateMissionClick: { _ in }
         )
         .background(Color.background)
-        .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
     }
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

@@ -67,4 +67,5 @@ struct MissionTaskItem: View {
         onAddTaskClick: {},
         onRemoveTaskClick: { _ in }
     )
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

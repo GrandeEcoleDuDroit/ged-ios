@@ -32,7 +32,7 @@ struct MessageFeed: View {
                     print("Load more messages")
                 }
             }
-            .listRowBackground(Color.background)
+            .listRowBackground(Color.clear)
             .rotationEffect(.degrees(180))
             .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
         }
@@ -211,5 +211,4 @@ private struct MessageCondition {
         onReceivedMessageLongClick: { _ in },
         onInterlocutorProfilePictureClick: {}
     )
-    .background(Color.background)
 }
