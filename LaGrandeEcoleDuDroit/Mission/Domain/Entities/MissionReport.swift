@@ -1,15 +1,9 @@
-struct AnnouncementReport: Encodable {
-    let announcementId: String
-    let author: Author
+struct MissionReport {
+    let missionId: String
     let reporter: Reporter
     let reason: Reason
     
-    struct Author: Encodable {
-        let fullName: String
-        let email: String
-    }
-    
-    struct Reporter: Encodable {
+    struct Reporter {
         let fullName: String
         let email: String
     }

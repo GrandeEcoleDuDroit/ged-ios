@@ -138,19 +138,19 @@ private struct NewsView: View {
                 case let .report(announcement):
                     ReportBottomSheet(
                         items: AnnouncementReport.Reason.allCases,
-                        fraction: Dimens.titleBottomSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
+                        fraction: Dimens.reportBottomSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
                         onReportClick: { reason in
                             announcementBottomSheetType = nil
                             onReportAnnouncementClick(
                                 AnnouncementReport(
                                     announcementId: announcement.id,
-                                    authorInfo: AnnouncementReport.UserInfo(
-                                        fullName: user.fullName,
-                                        email: user.email
-                                    ),
-                                    userInfo: AnnouncementReport.UserInfo(
+                                    author: AnnouncementReport.Author(
                                         fullName: announcement.author.fullName,
                                         email: announcement.author.email
+                                    ),
+                                    reporter: AnnouncementReport.Reporter(
+                                        fullName: user.fullName,
+                                        email: user.email
                                     ),
                                     reason: reason
                                 )

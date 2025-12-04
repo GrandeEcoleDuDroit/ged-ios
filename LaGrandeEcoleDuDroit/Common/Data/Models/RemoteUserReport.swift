@@ -1,10 +1,15 @@
 struct RemoteUserReport: Encodable {
     let userId: String
-    let userInfo: RemoteUserInfo
-    let reporterInfo: RemoteUserInfo
+    let reportedUser: RemoteReportedUser
+    let reporter: RemoteReporter
     let reason: String
     
-    struct RemoteUserInfo: Encodable {
+    struct RemoteReportedUser: Encodable {
+        let fullName: String
+        let email: String
+    }
+    
+    struct RemoteReporter: Encodable {
         let fullName: String
         let email: String
     }

@@ -1,10 +1,10 @@
 struct MessageReport {
     let conversationId: String
     let messageId: String
-    let recipientInfo: UserInfo
+    let recipient: Recipient
     let reason: Reason
     
-    struct UserInfo {
+    struct Recipient {
         let fullName: String
         let email: String
     }

@@ -58,4 +58,14 @@ class MissionRemoteDataSource {
             message: "Failed to remove participant from mission"
         )
     }
+    
+    func reportMission(report: MissionReport) async throws {
+        try await mapServerError(
+            block: {
+                try await missionApi.reportMission(report: report.toRemote())
+            },
+            tag: tag,
+            message: "Failed to report mission"
+        )
+    }
 }
