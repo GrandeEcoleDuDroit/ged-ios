@@ -106,15 +106,15 @@ extension MessageReport {
         RemoteMessageReport(
             conversationId: conversationId,
             messageId: messageId,
-            recipientInfo: recipientInfo.toRemote(),
+            recipient: recipient.toRemote(),
             reason: reason.rawValue
         )
     }
 }
 
-extension MessageReport.UserInfo {
-    func toRemote() -> RemoteMessageReport.RemoteUserInfo {
-        RemoteMessageReport.RemoteUserInfo(
+extension MessageReport.Recipient {
+    func toRemote() -> RemoteMessageReport.RemoteRecipient {
+        RemoteMessageReport.RemoteRecipient(
             fullName: fullName,
             email: email
         )

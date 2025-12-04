@@ -17,7 +17,8 @@ struct MissionDestination: View {
                 onMissionClick: onMissionClick,
                 onCreateMissionClick: onCreateMissionClick,
                 onDeleteMissionClick: viewModel.deleteMission,
-                onRefreshMissions: viewModel.refreshMissions
+                onReportMissionClick: viewModel.reportMission,
+                onRefreshMissions: viewModel.refreshMissions,
             )
             .onReceive(viewModel.$event) { event in
                 if let errorEvent = event as? ErrorEvent {
@@ -48,10 +49,12 @@ private struct MissionView: View {
     let onMissionClick: (String) -> Void
     let onCreateMissionClick: () -> Void
     let onDeleteMissionClick: (Mission) -> Void
+    let onReportMissionClick: (MissionReport) -> Void
     let onRefreshMissions: () async -> Void
     
     @State private var showMissionBottomSheet: Bool = false
     @State private var showDeleteMissionAlert: Bool = false
+    @State private var showReportMissionBottomSheet: Bool = false
     @State private var clickedMission: Mission?
     
     var body: some View {
@@ -119,6 +122,32 @@ private struct MissionView: View {
                 onDeleteMissionClick: {
                     showMissionBottomSheet = false
                     showDeleteMissionAlert = true
+                },
+                onReportMissionClick: {
+                    showMissionBottomSheet = false
+                    showReportMissionBottomSheet = true
+                }
+            )
+        }
+        .sheet(isPresented: $showReportMissionBottomSheet) {
+            ReportBottomSheet(
+                items: MissionReport.Reason.allCases,
+                fraction: Dimens.reportBottomSheetFraction(itemCount: MissionReport.Reason.allCases.count),
+                onReportClick: { reason in
+                    showReportMissionBottomSheet = false
+                    
+                    if let clickedMission {
+                        onReportMissionClick(
+                            MissionReport(
+                                missionId: clickedMission.id,
+                                reporter: MissionReport.Reporter(
+                                    fullName: user.fullName,
+                                    email: user.email
+                                ),
+                                reason: reason
+                            )
+                        )
+                    }
                 }
             )
         }
@@ -145,13 +174,15 @@ private struct BottomSheet: View {
     let user: User
     @Binding var mission: Mission?
     let onDeleteMissionClick: () -> Void
-    
+    let onReportMissionClick: () -> Void
+
     var body: some View {
         if let mission {
             MissionBottomSheet(
                 mission: mission,
                 editable: mission.managers.contains(user),
-                onDeleteClick: onDeleteMissionClick
+                onDeleteClick: onDeleteMissionClick,
+                onReportClick: onReportMissionClick
             )
         } else {
             BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
@@ -171,6 +202,7 @@ private struct BottomSheet: View {
             onMissionClick: { _ in },
             onCreateMissionClick: {},
             onDeleteMissionClick: { _ in },
+            onReportMissionClick: { _ in },
             onRefreshMissions: {}
         )
         .background(Color.background)

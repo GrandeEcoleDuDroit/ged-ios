@@ -4,6 +4,7 @@ struct MissionBottomSheet: View {
     let mission: Mission
     let editable: Bool
     let onDeleteClick: () -> Void
+    let onReportClick: () -> Void
     
     var body: some View {
         switch mission.state {
@@ -18,7 +19,7 @@ struct MissionBottomSheet: View {
                     }
                 } else {
                     BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
-                        Text("TODO: report mission sheet item")
+                        NonEditableMissionBottomSheetContent(onReportClick: onReportClick)
                     }
                 }
         }
@@ -48,6 +49,19 @@ private struct EditableAnnouncementBottomSheetContent: View {
             icon: Image(systemName: "trash"),
             text: Text(stringResource(.delete)),
             onClick: onDeleteClick
+        )
+        .foregroundColor(.red)
+    }
+}
+
+private struct NonEditableMissionBottomSheetContent: View {
+    let onReportClick: () -> Void
+    
+    var body: some View {
+        ClickableTextItem(
+            icon: Image(systemName: "exclamationmark.bubble"),
+            text: Text(stringResource(.report)),
+            onClick: onReportClick
         )
         .foregroundColor(.red)
     }

@@ -187,7 +187,7 @@ private struct ChatView: View {
         .sheet(isPresented: $showReportMessageBottomSheet) {
             ReportBottomSheet(
                 items: MessageReport.Reason.allCases,
-                fraction: Dimens.titleBottomSheetFraction(itemCount: MessageReport.Reason.allCases.count),
+                fraction: Dimens.reportBottomSheetFraction(itemCount: MessageReport.Reason.allCases.count),
                 onReportClick: { reason in
                     showReportMessageBottomSheet = false
                     
@@ -196,7 +196,7 @@ private struct ChatView: View {
                             MessageReport(
                                 conversationId: conversation.id,
                                 messageId: clickedMessage.id,
-                                recipientInfo: MessageReport.UserInfo(
+                                recipient: MessageReport.Recipient(
                                     fullName: conversation.interlocutor.fullName,
                                     email: conversation.interlocutor.email
                                 ),
