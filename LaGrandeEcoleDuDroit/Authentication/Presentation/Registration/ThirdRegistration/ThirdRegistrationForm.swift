@@ -37,10 +37,9 @@ struct ThirdRegistrationForm: View {
                 text: password,
                 onTextChange: onPasswordChange,
                 isDisable: loading,
-                errorMessage: passwordError,
-                focusState: _focusState,
-                field: .password
+                errorMessage: passwordError
             )
+            .setTextFieldFocusState(focusState: _focusState, field: .password)
             .textContentType(.password)
             
             HStack {

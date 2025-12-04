@@ -5,6 +5,8 @@ protocol MissionRepository {
     var missions: AnyPublisher<[Mission], Never> { get }
 
     var currentMissions: [Mission] { get }
+    
+    func getMissionPublisher(missionId: String) -> AnyPublisher<Mission, Never>
         
     func getRemoteMissions() async throws -> [Mission]
     
@@ -15,4 +17,8 @@ protocol MissionRepository {
     func deleteMission(mission: Mission, imageUrl: String?) async throws
     
     func deleteLocalMission(missionId: String) async throws
+    
+    func addParticipant(addMissionParticipant: AddMissionParticipant) async throws
+    
+    func removeParticipant(missionId: String, userId: String) async throws
 }

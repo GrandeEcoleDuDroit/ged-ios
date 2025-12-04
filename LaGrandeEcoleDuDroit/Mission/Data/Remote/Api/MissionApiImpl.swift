@@ -77,4 +77,33 @@ class MissionApiImpl: MissionApi {
         
         return try await RequestUtils.sendRequest(session: session, request: request)
     }
+    
+    func addParticipant(remoteAddMissionParticipant: RemoteAddMissionParticipant) async throws -> (URLResponse, ServerResponse) {
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "add-participant")
+        let session = RequestUtils.getDefaultSession()
+        let authToken = await tokenProvider.getAuthToken()
+        let request = try RequestUtils.simplePostRequest(
+            url: url,
+            authToken: authToken,
+            dataToSend: remoteAddMissionParticipant
+        )
+        
+        return try await RequestUtils.sendRequest(session: session, request: request)
+    }
+    
+    func removeParticipant(missionId: String, userId: String) async throws -> (URLResponse, ServerResponse) {
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "remove-participant")
+        let session = RequestUtils.getDefaultSession()
+        let authToken = await tokenProvider.getAuthToken()
+        let request = try RequestUtils.simplePostRequest(
+            url: url,
+            authToken: authToken,
+            dataToSend: [
+                MissionField.Remote.missionId: missionId,
+                UserField.Server.userId: userId
+            ]
+        )
+        
+        return try await RequestUtils.sendRequest(session: session, request: request)
+    }
 }

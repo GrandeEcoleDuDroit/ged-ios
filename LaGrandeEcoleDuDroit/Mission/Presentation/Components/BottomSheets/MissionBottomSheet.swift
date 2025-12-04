@@ -16,6 +16,10 @@ struct MissionBottomSheet: View {
                             onDeleteClick: onDeleteClick
                         )
                     }
+                } else {
+                    BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
+                        Text("TODO: report mission sheet item")
+                    }
                 }
         }
     }

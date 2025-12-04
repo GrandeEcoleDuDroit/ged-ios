@@ -64,6 +64,20 @@ class MissionLocalDataSource {
         try await missionActor.delete(missionId: missionId)
     }
     
+    func addParticipant(missionId: String, user: User) async throws {
+        let localMisison = try await missionActor.getMission(missionId: missionId)
+        var mission = localMisison.toMission(getImagePath: getImagePath)!
+        mission.participants = mission.participants + [user]
+        try await missionActor.upsert(mission: mission)
+    }
+    
+    func removeParticipant(missionId: String, userId: String) async throws {
+        let localMisison = try await missionActor.getMission(missionId: missionId)
+        var mission = localMisison.toMission(getImagePath: getImagePath)!
+        mission.participants = mission.participants.filter { $0.id != userId }
+        try await missionActor.upsert(mission: mission)
+    }
+    
     private func getImagePath(_ fileName: String) -> String? {
         FileManager.default.urls(
             for: .documentDirectory,

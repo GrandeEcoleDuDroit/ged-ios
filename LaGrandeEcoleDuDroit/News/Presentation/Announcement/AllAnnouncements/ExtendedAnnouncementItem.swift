@@ -3,7 +3,7 @@ import SwiftUI
 struct ExtendedAnnouncementItem: View {
     let announcement: Announcement
     let onClick: () -> Void
-    let onOptionClick: () -> Void
+    let onOptionsClick: () -> Void
     let onAuthorClick: () -> Void
     
     var body: some View {
@@ -12,7 +12,7 @@ struct ExtendedAnnouncementItem: View {
                 Clickable(action: onClick) {
                     DefaultItem(
                         announcement: announcement,
-                        onOptionClick: onOptionClick,
+                        onOptionsClick: onOptionsClick,
                         onAuthorClick: onAuthorClick
                     )
                     .padding()
@@ -24,7 +24,7 @@ struct ExtendedAnnouncementItem: View {
                 PublishingItem(
                     announcement: announcement,
                     onClick: onClick,
-                    onOptionClick: onOptionClick,
+                    onOptionsClick: onOptionsClick,
                     onAuthorClick: onAuthorClick
                 )
                 
@@ -32,7 +32,7 @@ struct ExtendedAnnouncementItem: View {
                 ErrorItem(
                     announcement: announcement,
                     onClick: onClick,
-                    onOptionClick: onOptionClick,
+                    onOptionsClick: onOptionsClick,
                     onAuthorClick: onAuthorClick
                 )
         }
@@ -41,7 +41,7 @@ struct ExtendedAnnouncementItem: View {
 
 private struct DefaultItem: View {
     let announcement: Announcement
-    let onOptionClick: () -> Void
+    let onOptionsClick: () -> Void
     let onAuthorClick: () -> Void
     
     var body: some View {
@@ -49,7 +49,7 @@ private struct DefaultItem: View {
             AnnouncementHeader(
                 announcement: announcement,
                 onAuthorClick: onAuthorClick,
-                onOptionClick: onOptionClick
+                onOptionsClick: onOptionsClick
             )
             
             if let title = announcement.title, !title.isEmpty {
@@ -69,14 +69,14 @@ private struct DefaultItem: View {
 private struct PublishingItem: View {
     let announcement: Announcement
     let onClick: () -> Void
-    let onOptionClick: () -> Void
+    let onOptionsClick: () -> Void
     let onAuthorClick: () -> Void
     
     var body: some View {
         Clickable(action: onClick) {
             DefaultItem(
                 announcement: announcement,
-                onOptionClick: onOptionClick,
+                onOptionsClick: onOptionsClick,
                 onAuthorClick: onAuthorClick
             )
             .opacity(0.5)
@@ -90,7 +90,7 @@ private struct PublishingItem: View {
 private struct ErrorItem: View {
     let announcement: Announcement
     let onClick: () -> Void
-    let onOptionClick: () -> Void
+    let onOptionsClick: () -> Void
     let onAuthorClick: () -> Void
     
     var body: some View {
@@ -106,7 +106,7 @@ private struct ErrorItem: View {
                     AnnouncementHeader(
                         announcement: announcement,
                         onAuthorClick: onAuthorClick,
-                        onOptionClick: onOptionClick
+                        onOptionsClick: onOptionsClick
                     )
                 }
                 
@@ -132,21 +132,21 @@ private struct ErrorItem: View {
     ExtendedAnnouncementItem(
         announcement: announcementFixture,
         onClick: {},
-        onOptionClick: {},
+        onOptionsClick: {},
         onAuthorClick: {}
     )
     
     ExtendedAnnouncementItem(
         announcement: announcementFixture.copy { $0.state = .publishing },
         onClick: {},
-        onOptionClick: {},
+        onOptionsClick: {},
         onAuthorClick: {}
     )
     
     ExtendedAnnouncementItem(
         announcement: announcementFixture.copy { $0.state = .error },
         onClick: {},
-        onOptionClick: {},
+        onOptionsClick: {},
         onAuthorClick: {}
     )
 }

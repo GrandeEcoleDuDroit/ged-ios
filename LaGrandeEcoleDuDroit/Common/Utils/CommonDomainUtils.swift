@@ -10,7 +10,3 @@ func stringResource(_ value: Strings, _ args: CVarArg...) -> String {
         arguments: args
     )
 }
-
-func sleep(_ seconds: Float) async {
-    try? await Task.sleep(nanoseconds: UInt64(seconds) * 1_000_000_000)
-}

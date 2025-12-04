@@ -2,16 +2,16 @@ import SwiftUI
 
 struct CompactAnnouncementItem: View {
     let announcement: Announcement
-    let onOptionClick: () -> Void
+    let onOptionsClick: () -> Void
     
     private let elapsedTimeText: String
     
     init(
         announcement: Announcement,
-        onOptionClick: @escaping () -> Void
+        onOptionsClick: @escaping () -> Void
     ) {
         self.announcement = announcement
-        self.onOptionClick = onOptionClick
+        self.onOptionsClick = onOptionsClick
         
         elapsedTimeText = getElapsedTimeText(
             elapsedTime: GetElapsedTimeUseCase.execute(date: announcement.date),
@@ -26,21 +26,21 @@ struct CompactAnnouncementItem: View {
                     DefaultItem(
                         announcement: announcement,
                         elapsedTimeText: elapsedTimeText,
-                        onOptionClick: onOptionClick
+                        onOptionsClick: onOptionsClick
                     )
                     
                 case .publishing:
                     PublishingItem(
                         announcement: announcement,
                         elapsedTimeText: elapsedTimeText,
-                        onOptionClick: onOptionClick
+                        onOptionsClick: onOptionsClick
                     )
                     
                 case .error:
                     ErrorItem(
                         announcement: announcement,
                         elapsedTimeText: elapsedTimeText,
-                        onOptionClick: onOptionClick
+                        onOptionsClick: onOptionsClick
                     )
             }
         }
@@ -53,7 +53,7 @@ struct CompactAnnouncementItem: View {
 private struct DefaultItem: View {
     let announcement: Announcement
     let elapsedTimeText: String
-    let onOptionClick: () -> Void
+    let onOptionsClick: () -> Void
         
     var body: some View {
         HStack(spacing: Dimens.mediumPadding) {
@@ -87,7 +87,7 @@ private struct DefaultItem: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
-            OptionButton(action: onOptionClick)
+            OptionsButton(action: onOptionsClick)
                 .buttonStyle(.borderless)
         }
     }
@@ -96,13 +96,13 @@ private struct DefaultItem: View {
 private struct PublishingItem: View {
     let announcement: Announcement
     let elapsedTimeText: String
-    let onOptionClick: () -> Void
+    let onOptionsClick: () -> Void
     
     var body: some View {
         DefaultItem(
             announcement: announcement,
             elapsedTimeText: elapsedTimeText,
-            onOptionClick: onOptionClick
+            onOptionsClick: onOptionsClick
         )
         .opacity(0.5)
     }
@@ -111,7 +111,7 @@ private struct PublishingItem: View {
 private struct ErrorItem: View {
     let announcement: Announcement
     let elapsedTimeText: String
-    let onOptionClick: () -> Void
+    let onOptionsClick: () -> Void
     
     var body: some View {
         HStack(alignment: .center, spacing: Dimens.mediumPadding) {
@@ -121,7 +121,7 @@ private struct ErrorItem: View {
             DefaultItem(
                 announcement: announcement,
                 elapsedTimeText: elapsedTimeText,
-                onOptionClick: onOptionClick
+                onOptionsClick: onOptionsClick
             )
         }
     }
@@ -131,18 +131,18 @@ private struct ErrorItem: View {
     DefaultItem(
         announcement: announcementFixture,
         elapsedTimeText: "Now",
-        onOptionClick: {}
+        onOptionsClick: {}
     )
     
     PublishingItem(
         announcement: announcementFixture,
         elapsedTimeText: "5m",
-        onOptionClick: {}
+        onOptionsClick: {}
     )
     
     ErrorItem(
         announcement: announcementFixture,
         elapsedTimeText: "1h",
-        onOptionClick: {}
+        onOptionsClick: {}
     )
 }

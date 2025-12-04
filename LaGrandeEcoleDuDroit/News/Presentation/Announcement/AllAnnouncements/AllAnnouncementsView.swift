@@ -83,7 +83,7 @@ private struct AllAnnouncementsView: View {
                                 showAnnouncementBottomSheet = true
                             }
                         },
-                        onOptionClick: {
+                        onOptionsClick: {
                             clickedAnnouncement = announcement
                             showAnnouncementBottomSheet = true
                         },

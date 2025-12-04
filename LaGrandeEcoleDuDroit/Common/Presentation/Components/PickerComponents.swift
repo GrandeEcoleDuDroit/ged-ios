@@ -1,9 +1,9 @@
 import SwiftUI
 
-struct MultiSelectionPicker<LeadingIcon: View>: View {
-    let leadingIcon: (() -> LeadingIcon)?
+struct MultiSelectionPicker: View {
     let text: String
     let items: [String]
+    let leadingIcon: Image?
     let seletctedItems: [String]
     let onItemSelected: (String) -> Void
     
@@ -12,24 +12,24 @@ struct MultiSelectionPicker<LeadingIcon: View>: View {
         items: [String],
         seletctedItems: [String],
         onItemSelected: @escaping (String) -> Void
-    ) where LeadingIcon == EmptyView {
-        self.leadingIcon = nil
+    ) {
         self.text = text
         self.items = items
+        self.leadingIcon = nil
         self.seletctedItems = seletctedItems
         self.onItemSelected = onItemSelected
     }
     
     init(
-        leadingIcon: @escaping () -> LeadingIcon,
         text: String,
         items: [String],
+        leadingIcon: Image,
         seletctedItems: [String],
         onItemSelected: @escaping (String) -> Void
     ) {
-        self.leadingIcon = leadingIcon
         self.text = text
         self.items = items
+        self.leadingIcon = leadingIcon
         self.seletctedItems = seletctedItems
         self.onItemSelected = onItemSelected
     }
@@ -38,20 +38,22 @@ struct MultiSelectionPicker<LeadingIcon: View>: View {
         Menu(
             content: {
                 ForEach(items, id: \.self) { item in
-                    Button(
-                        action: { onItemSelected(item) },
-                        label: {
-                            Label(
-                                title: { Text(item) },
-                                icon: { CheckBox(checked: seletctedItems.contains(item)) }
-                            )
-                        }
-                    )
+                    Button(action: { onItemSelected(item) }) {
+                        Label(
+                            title: { Text(item) },
+                            icon: { CheckBox(checked: seletctedItems.contains(item)) }
+                        )
+                    }
                 }
             },
             label: {
-                HStack(spacing: Dimens.mediumPadding) {
-                    leadingIcon?().foregroundStyle(.onSurfaceVariant)
+                HStack(alignment: .center, spacing: Dimens.leadingIconSpacing) {
+                    leadingIcon?
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: Dimens.inputIconSize, height: Dimens.inputIconSize)
+                        .foregroundStyle(.onSurfaceVariant)
+                    
                     Text(text)
                 }
                 
@@ -61,12 +63,7 @@ struct MultiSelectionPicker<LeadingIcon: View>: View {
             }
         )
         .menuActionDismissBehavior(.disabled)
-        .padding(.horizontal, Dimens.mediumPadding)
-        .padding(.vertical, Dimens.mediumPadding)
-        .overlay(
-            RoundedRectangle(cornerRadius: 5)
-                .stroke(.outline, lineWidth: 1)
-        )
+        .outlined()
     }
 }
 
