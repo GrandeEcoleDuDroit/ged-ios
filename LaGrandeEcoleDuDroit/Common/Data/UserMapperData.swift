@@ -93,16 +93,25 @@ extension UserReport {
     func toRemote() -> RemoteUserReport {
         RemoteUserReport(
             userId: userId,
-            userInfo: userInfo.toRemote(),
-            reporterInfo: reporterInfo.toRemote(),
+            reportedUser: reportedUser.toRemote(),
+            reporter: reporterInfo.toRemote(),
             reason: reason.rawValue
         )
     }
 }
 
-extension UserReport.UserInfo {
-    func toRemote() -> RemoteUserReport.RemoteUserInfo {
-        RemoteUserReport.RemoteUserInfo(
+private extension UserReport.ReportedUser {
+    func toRemote() -> RemoteUserReport.RemoteReportedUser {
+        RemoteUserReport.RemoteReportedUser(
+            fullName: fullName,
+            email: email
+        )
+    }
+}
+
+private extension UserReport.Reporter {
+    func toRemote() -> RemoteUserReport.RemoteReporter {
+        RemoteUserReport.RemoteReporter(
             fullName: fullName,
             email: email
         )

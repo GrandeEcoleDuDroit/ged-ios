@@ -110,16 +110,25 @@ extension AnnouncementReport {
     func toRemote() -> RemoteAnnouncementReport {
         RemoteAnnouncementReport(
             announcementId: announcementId,
-            authorInfo: authorInfo.toRemote(),
-            userInfo: userInfo.toRemote(),
+            author: author.toRemote(),
+            reporter: reporter.toRemote(),
             reason: reason.rawValue
         )
     }
 }
 
-extension AnnouncementReport.UserInfo {
-    func toRemote() -> RemoteAnnouncementReport.RemoteUserInfo {
-        RemoteAnnouncementReport.RemoteUserInfo(
+private extension AnnouncementReport.Author {
+    func toRemote() -> RemoteAnnouncementReport.RemoteAuthor {
+        RemoteAnnouncementReport.RemoteAuthor(
+            fullName: fullName,
+            email: email
+        )
+    }
+}
+
+private extension AnnouncementReport.Reporter {
+    func toRemote() -> RemoteAnnouncementReport.RemoteReporter {
+        RemoteAnnouncementReport.RemoteReporter(
             fullName: fullName,
             email: email
         )

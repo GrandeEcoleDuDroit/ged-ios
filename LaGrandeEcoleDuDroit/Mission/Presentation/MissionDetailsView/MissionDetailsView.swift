@@ -43,7 +43,8 @@ struct MissionDetailsDestination: View {
                 onParticipantClick: onParticipantClick,
                 onRemoveParticipantsClick: viewModel.removeParticipant,
                 onEditMissionClick: onEditMissionClick,
-                onDeleteMissionClick: viewModel.deleteMission
+                onDeleteMissionClick: viewModel.deleteMission,
+                onReportMissionClick: viewModel.reportMission
             )
             .onReceive(viewModel.$event) { event in
                 if let event = event as? MissionDetailsViewModel.MissionDetailsUiEvent,
@@ -85,6 +86,7 @@ private struct MissionDetailsView: View {
     let onRemoveParticipantsClick: (String) -> Void
     let onEditMissionClick: (Mission) -> Void
     let onDeleteMissionClick: () -> Void
+    let onReportMissionClick: (MissionReport) -> Void
     
     @State private var imageTopBar: Bool = true
     @State private var scrollPosition: CGPoint = .zero
@@ -94,9 +96,11 @@ private struct MissionDetailsView: View {
     @State private var showRemoveParticipantAlert: Bool = false
     
     @State private var showMissionBottomSheet: Bool = false
+    @State private var showReportMissionBottomSheet: Bool = false
     @State private var showParticipantBottomSheet: Bool = false
     
     @State private var clickedParticipant: User? = nil
+    @State private var clickedMission: Mission? = nil
 
     var body: some View {
         ZStack {
@@ -210,6 +214,10 @@ private struct MissionDetailsView: View {
                 onDeleteClick: {
                     showMissionBottomSheet = false
                     showDeleteMissionAlert = true
+                },
+                onReportClick: {
+                    showMissionBottomSheet = false
+                    showReportMissionBottomSheet = true
                 }
             )
         }
@@ -227,6 +235,26 @@ private struct MissionDetailsView: View {
                     )
                 }
             }
+        }
+        .sheet(isPresented: $showReportMissionBottomSheet) {
+            ReportBottomSheet(
+                items: MissionReport.Reason.allCases,
+                fraction: Dimens.reportBottomSheetFraction(itemCount: MissionReport.Reason.allCases.count),
+                onReportClick: { reason in
+                    showReportMissionBottomSheet = false
+                    
+                    onReportMissionClick(
+                        MissionReport(
+                            missionId: mission.id,
+                            reporter: MissionReport.Reporter(
+                                fullName: user.fullName,
+                                email: user.email
+                            ),
+                            reason: reason
+                        )
+                    )
+                }
+            )
         }
         .alert(
             stringResource(.deleteMissionAlertMessage),
@@ -333,7 +361,8 @@ private struct ScrollOffsetPreferenceKey: PreferenceKey {
             onParticipantClick: { _ in },
             onRemoveParticipantsClick: { _ in },
             onEditMissionClick: { _ in },
-            onDeleteMissionClick: {}
+            onDeleteMissionClick: {},
+            onReportMissionClick: { _ in }
         )
         .background(Color.background)
     }

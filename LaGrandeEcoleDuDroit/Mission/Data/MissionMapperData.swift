@@ -273,3 +273,22 @@ extension AddMissionParticipant {
         )
     }
 }
+
+extension MissionReport {
+    func toRemote() -> RemoteMissionReport {
+        RemoteMissionReport(
+            missionId: missionId,
+            reporter: reporter.toRemote(),
+            reason: reason.rawValue
+        )
+    }
+}
+
+private extension MissionReport.Reporter {
+    func toRemote() -> RemoteMissionReport.RemoteReporter {
+        RemoteMissionReport.RemoteReporter(
+            fullName: fullName,
+            email: email
+        )
+    }
+}

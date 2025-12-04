@@ -23,4 +23,6 @@ class MockMissionRepository: MissionRepository {
     func addParticipant(addMissionParticipant: AddMissionParticipant) async throws {}
     
     func removeParticipant(missionId: String, userId: String) async throws {}
+    
+    func reportMission(report: MissionReport) async throws {}
 }

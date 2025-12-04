@@ -78,6 +78,12 @@ class MissionDetailsViewModel: ViewModel {
         }
     }
     
+    func reportMission(report: MissionReport) {
+        executeRequest { [weak self] in
+            try await self?.missionRepository.reportMission(report: report)
+        }
+    }
+    
     private func executeRequest(block: @escaping () async throws -> Void) {
         var loadingTask: Task<Void, Error>?
         

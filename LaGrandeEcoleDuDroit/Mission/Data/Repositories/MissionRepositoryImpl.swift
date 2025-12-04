@@ -66,6 +66,10 @@ class MissionRepositoryImpl: MissionRepository {
         try await missionLocalDataSource.removeParticipant(missionId: missionId, userId: userId)
     }
     
+    func reportMission(report: MissionReport) async throws {
+        try await missionRemoteDataSource.reportMission(report: report)
+    }
+    
     private func listenDataChanges() {
         missionLocalDataSource.listenDataChanges()
             .sink { [weak self] _ in
