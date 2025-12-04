@@ -1,10 +1,15 @@
 struct UserReport {
     let userId: String
-    let userInfo: UserInfo
-    let reporterInfo: UserInfo
+    let reportedUser: ReportedUser
+    let reporterInfo: Reporter
     let reason: Reason
     
-    struct UserInfo {
+    struct ReportedUser {
+        let fullName: String
+        let email: String
+    }
+    
+    struct Reporter {
         let fullName: String
         let email: String
     }

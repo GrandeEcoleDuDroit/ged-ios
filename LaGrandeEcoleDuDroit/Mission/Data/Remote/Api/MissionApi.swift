@@ -10,4 +10,6 @@ protocol MissionApi {
     func addParticipant(remoteAddMissionParticipant: RemoteAddMissionParticipant) async throws -> (URLResponse, ServerResponse)
     
     func removeParticipant(missionId: String, userId: String) async throws -> (URLResponse, ServerResponse)
+    
+    func reportMission(report: RemoteMissionReport) async throws -> (URLResponse, ServerResponse)
 }

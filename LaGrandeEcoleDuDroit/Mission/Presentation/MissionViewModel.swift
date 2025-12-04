@@ -52,6 +52,36 @@ class MissionViewModel: ViewModel {
         }
     }
     
+    func reportMission(report: MissionReport) {
+        executeRequest { [weak self] in
+            try await self?.missionRepository.reportMission(report: report)
+        }
+    }
+    
+    private func executeRequest(block: @escaping () async throws -> Void) {
+        var loadingTask: Task<Void, Error>?
+        
+        Task { @MainActor in
+            do {
+                if !networkMonitor.isConnected {
+                    throw NetworkError.noInternetConnection
+                }
+                
+                loadingTask = Task { @MainActor in
+                    try await Task.sleep(for: .milliseconds(300))
+                    uiState.loading = true
+                }
+                
+                try await block()
+            } catch {
+                event = ErrorEvent(message: mapNetworkErrorMessage(error))
+            }
+            
+            loadingTask?.cancel()
+            uiState.loading = false
+        }
+    }
+    
     private func listenMissions() {
         missionRepository.missions
             .receive(on: DispatchQueue.main)

@@ -7,7 +7,7 @@ struct ReportBottomSheet<T: CustomStringConvertible>: View {
     
     init(
         items: [T],
-        fraction: CGFloat = Dimens.titleBottomSheetFraction(itemCount: 1),
+        fraction: CGFloat = Dimens.reportBottomSheetFraction(itemCount: 1),
         onReportClick: @escaping (T) -> Void
     ) {
         self.items = items

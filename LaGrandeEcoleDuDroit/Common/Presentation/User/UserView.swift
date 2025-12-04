@@ -116,18 +116,18 @@ private struct UserView: View {
         .sheet(isPresented: $showReportBottomSheet) {
             ReportBottomSheet(
                 items: UserReport.Reason.allCases,
-                fraction: Dimens.titleBottomSheetFraction(itemCount: UserReport.Reason.allCases.count),
+                fraction: Dimens.reportBottomSheetFraction(itemCount: UserReport.Reason.allCases.count),
                 onReportClick: { reason in
                     showReportBottomSheet = false
                     
                     onReportClick(
                         UserReport(
                             userId: user.id,
-                            userInfo: UserReport.UserInfo(
+                            reportedUser: UserReport.ReportedUser(
                                 fullName: user.fullName,
                                 email: user.email
                             ),
-                            reporterInfo: UserReport.UserInfo(
+                            reporterInfo: UserReport.Reporter(
                                 fullName: currentUser.fullName,
                                 email: currentUser.email
                             ),

@@ -24,7 +24,7 @@ struct Dimens {
     static func bottomSheetFraction(itemCount: Int) -> CGFloat {
         defaultBottomSheetFraction + CGFloat(additionalBottomSheetItemFraction * CGFloat(itemCount - 1))
     }
-    static func titleBottomSheetFraction(itemCount: Int) -> CGFloat {
+    static func reportBottomSheetFraction(itemCount: Int) -> CGFloat {
         defaultBottomSheetFraction + CGFloat(additionalBottomSheetItemFraction * CGFloat(itemCount))
     }
 }

@@ -127,7 +127,7 @@ private struct AllAnnouncementsView: View {
         .sheet(isPresented: $showAnnouncementReportBottomSheet) {
             ReportBottomSheet(
                 items: AnnouncementReport.Reason.allCases,
-                fraction: Dimens.titleBottomSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
+                fraction: Dimens.reportBottomSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
                 onReportClick: { reason in
                     showAnnouncementReportBottomSheet = false
                     
@@ -135,13 +135,13 @@ private struct AllAnnouncementsView: View {
                         onReportAnnouncementClick(
                             AnnouncementReport(
                                 announcementId: clickedAnnouncement.id,
-                                authorInfo: AnnouncementReport.UserInfo(
-                                    fullName: user.fullName,
-                                    email: user.email
-                                ),
-                                userInfo: AnnouncementReport.UserInfo(
+                                author: AnnouncementReport.Author(
                                     fullName: clickedAnnouncement.author.fullName,
                                     email: clickedAnnouncement.author.email
+                                ),
+                                reporter: AnnouncementReport.Reporter(
+                                    fullName: user.fullName,
+                                    email: user.email
                                 ),
                                 reason: reason
                             )
