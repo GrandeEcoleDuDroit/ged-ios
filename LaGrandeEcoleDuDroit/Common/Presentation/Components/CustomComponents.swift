@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct TextItem: View {
-    let image: Image
     let text: Text
+    let image: Image
     
     var body: some View {
         HStack(spacing: Dimens.mediumPadding) {
@@ -51,9 +51,9 @@ struct PlainListItem<
     let trailingContent: TrailingContent
     
     init(
-        @ViewBuilder headlineContent: () -> HeadlineContent = { EmptyView() },
-        @ViewBuilder leadingContent: () -> LeadingContent = { EmptyView() },
-        @ViewBuilder trailingContent: () -> TrailingContent = { EmptyView() }
+        headlineContent: () -> HeadlineContent = { EmptyView() },
+        leadingContent: () -> LeadingContent = { EmptyView() },
+        trailingContent: () -> TrailingContent = { EmptyView() }
     ) {
         self.headlineContent = headlineContent()
         self.leadingContent = leadingContent()
@@ -61,9 +61,9 @@ struct PlainListItem<
     }
     
     var body: some View {
-        HStack(alignment: .center) {
+        HStack(alignment: .center, spacing: .zero) {
             leadingContent
-                .padding(.trailing, Dimens.smallPadding)
+                .padding(.trailing, Dimens.mediumPadding)
             
             headlineContent
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -177,32 +177,35 @@ struct SearchBar: UIViewRepresentable {
 }
 
 #Preview {
-    TextItem(
-        image: Image(systemName: "key"),
-        text: Text("Item with icon")
-    )
-    
-    ClickableTextItem(
-        icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
-        text: Text("Clickable text item"),
-        onClick: {}
-    )
-    
-    PlainListItem(
-        headlineContent: { Text("List item") },
-        leadingContent: { Image(systemName: "star") },
-        trailingContent: { Image(systemName: "chevron.right") }
-    )
-    
-    HStack {
-        Text("Checkbox")
-        CheckBox(
-            checked: true
+    VStack(alignment: .leading, spacing: 20) {
+        TextItem(
+            text: Text("Item with icon"),
+            image: Image(systemName: "key")
+        )
+        
+        ClickableTextItem(
+            icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
+            text: Text("Clickable text item"),
+            onClick: {}
+        )
+        
+        PlainListItem(
+            headlineContent: { Text("Plain list item") },
+            leadingContent: { Image(systemName: "star") },
+            trailingContent: { Image(systemName: "chevron.right") }
+        )
+        
+        HStack {
+            Text("Checkbox")
+            CheckBox(
+                checked: true
+            )
+        }
+        
+        SearchBar(
+            query: "",
+            onQueryChange: { _ in }
         )
     }
-    
-    SearchBar(
-        query: "",
-        onQueryChange: { _ in }
-    )
+    .frame(maxWidth: .infinity)
 }

@@ -143,6 +143,7 @@ private struct ChatView: View {
                     }
                 },
                 onReceivedMessageLongClick: {
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                     clickedMessage = $0
                     showReceivedMessageBottomSheet = true
                 },

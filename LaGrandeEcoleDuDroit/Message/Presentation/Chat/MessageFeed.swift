@@ -69,7 +69,10 @@ private struct Content: View {
             displayProfilePicture: condition.displayProfilePicture,
             profilePictureUrl: conversation.interlocutor.profilePictureUrl,
             onErrorMessageClick: onErrorMessageClick,
-            onLongClick: { onReceivedMessageLongClick(message) },
+            onLongClick: {
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                onReceivedMessageLongClick(message)
+            },
             onInterlocutorProfilePictureClick: onInterlocutorProfilePictureClick
         )
         .messageItemPadding(

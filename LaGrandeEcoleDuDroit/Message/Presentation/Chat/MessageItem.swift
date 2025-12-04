@@ -75,8 +75,7 @@ struct ReceiveMessageItem: View {
                 textColor: .primary,
                 dateColor: .gray
             ).onLongPressGesture {
-                let generator = UIImpactFeedbackGenerator(style: .medium)
-                generator.impactOccurred()
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 onLongClick()
             }
         }

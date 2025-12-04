@@ -137,10 +137,10 @@ private struct CredentialsInputs: View {
                 text: password,
                 onTextChange: onPasswordChange,
                 isDisable: loading,
-                errorMessage: passwordError,
-                focusState: _focusState,
-                field: .password
+                errorMessage: passwordError
             )
+            .setTextFieldFocusState(focusState: _focusState, field: .password)
+            .textContentType(.password)
             
             if let errorMessage {
                 Text(errorMessage)
@@ -160,8 +160,8 @@ private struct Buttons: View {
         VStack(spacing: Dimens.mediumPadding) {
             LoadingButton(
                 label: stringResource(.login),
-                action: onLoginClick,
-                isLoading: loading
+                loading: loading,
+                action: onLoginClick
             )
             
             HStack {

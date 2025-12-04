@@ -8,7 +8,7 @@ struct MissionNavigation: View {
     var body: some View {
         NavigationStack(path: $path) {
             MissionDestination(
-                onMissionClick: { _ in },
+                onMissionClick: { path.append(.missionDetails(missionId: $0)) },
                 onCreateMissionClick: { path.append(.createMission) }
             )
             .onAppear {
@@ -25,6 +25,31 @@ struct MissionNavigation: View {
                                 viewModel.setCurrentRoute(route)
                             }
                             .background(Color.background)
+                        
+                    case let .missionDetails(missionId):
+                        MissionDetailsDestination(
+                            missionId: missionId,
+                            onBackClick: { path.removeLast() },
+                            onEditMissionClick: { _ in },
+                            onManagerClick: { path.append(.userProfile(user: $0)) },
+                            onParticipantClick: { path.append(.userProfile(user: $0)) }
+                        ).onAppear {
+                            tabBarVisibility.show = false
+                            viewModel.setCurrentRoute(route)
+                            EnableSwipeBack.enabled = true
+                        }
+                        .onDisappear {
+                            EnableSwipeBack.enabled = false
+                        }
+                        .background(Color.background)
+                        
+                    case let .userProfile(user):
+                        UserDestination(user: user)
+                        .onAppear {
+                            tabBarVisibility.show = false
+                            viewModel.setCurrentRoute(route)
+                        }
+                        .background(Color.background)
                 }
             }
         }
@@ -33,6 +58,8 @@ struct MissionNavigation: View {
 
 enum MissionRoute: Route {
     case createMission
+    case missionDetails(missionId: String)
+    case userProfile(user: User)
 }
 
 enum MissionMainRoute: MainRoute {

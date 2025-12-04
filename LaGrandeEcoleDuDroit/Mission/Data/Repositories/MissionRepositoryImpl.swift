@@ -24,19 +24,13 @@ class MissionRepositoryImpl: MissionRepository {
         listenDataChanges()
     }
     
-    private func listenDataChanges() {
-        missionLocalDataSource.listenDataChanges()
-            .sink { [weak self] _ in
-                self?.loadMissions()
-            }.store(in: &cancellables)
-    }
-    
-    private func loadMissions() {
-        Task {
-            if let missions = try? await missionLocalDataSource.getMissions() {
-                missionsSubject.send(missions)
+    func getMissionPublisher(missionId: String) -> AnyPublisher<Mission, Never> {
+        missionsSubject.compactMap { missions in
+            missions.first {
+                $0.id == missionId
             }
         }
+        .eraseToAnyPublisher()
     }
     
     func getRemoteMissions() async throws -> [Mission] {
@@ -60,5 +54,30 @@ class MissionRepositoryImpl: MissionRepository {
     
     func deleteLocalMission(missionId: String) async throws {
         try await missionLocalDataSource.deleteMission(missionId: missionId)
+    }
+    
+    func addParticipant(addMissionParticipant: AddMissionParticipant) async throws {
+        try await missionRemoteDataSource.addParticipant(addMissionParticipant: addMissionParticipant)
+        try await missionLocalDataSource.addParticipant(missionId: addMissionParticipant.missionId, user: addMissionParticipant.user)
+    }
+    
+    func removeParticipant(missionId: String, userId: String) async throws {
+        try await missionRemoteDataSource.removeParticipant(missionId: missionId, userId: userId)
+        try await missionLocalDataSource.removeParticipant(missionId: missionId, userId: userId)
+    }
+    
+    private func listenDataChanges() {
+        missionLocalDataSource.listenDataChanges()
+            .sink { [weak self] _ in
+                self?.loadMissions()
+            }.store(in: &cancellables)
+    }
+    
+    private func loadMissions() {
+        Task {
+            if let missions = try? await missionLocalDataSource.getMissions() {
+                missionsSubject.send(missions)
+            }
+        }
     }
 }

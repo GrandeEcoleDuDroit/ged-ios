@@ -76,7 +76,7 @@ private struct MissionView: View {
                                     showMissionBottomSheet = true
                                 }
                             },
-                            onOptionClick: {
+                            onOptionsClick: {
                                 clickedMission = mission
                                 showMissionBottomSheet = true
                             }
