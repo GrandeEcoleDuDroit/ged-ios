@@ -10,7 +10,7 @@ struct MissionUserItem<TrailingContent: View>: View {
         user: User,
         imageScale: CGFloat,
         showAdminIndicator: Bool = true,
-        @ViewBuilder trailingContent: () -> TrailingContent = { EmptyView() }
+        trailingContent: () -> TrailingContent = { EmptyView() }
     ) {
         self.user = user
         self.imageScale = imageScale

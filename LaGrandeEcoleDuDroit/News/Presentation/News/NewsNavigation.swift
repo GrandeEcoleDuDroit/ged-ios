@@ -15,7 +15,7 @@ struct NewsNavigation: View {
                 onEditAnnouncementClick: { announcement in
                     path.append(.editAnnouncement(announcement: announcement))
                 },
-                onSeeAllAnnouncementClick: { path.append(.seeAllAnnouncements) }
+                onSeeAllAnnouncementClick: { path.append(.allAnnouncements) }
             )
             .onAppear {
                 tabBarVisibility.show = true
@@ -28,7 +28,7 @@ struct NewsNavigation: View {
                         ReadAnnouncementDestination(
                             announcementId: announcementId,
                             onAuthorClick: { user in
-                                path.append(.seeAuthor(user: user))
+                                path.append(.authorProfile(user: user))
                             },
                             onEditAnnouncementClick: { announcement in
                                 path.append(.editAnnouncement(announcement: announcement))
@@ -62,7 +62,7 @@ struct NewsNavigation: View {
                         }
                         .background(Color.background)
                         
-                    case let .seeAuthor(user):
+                    case let .authorProfile(user):
                         UserDestination(user: user)
                         .onAppear {
                             tabBarVisibility.show = false
@@ -70,7 +70,7 @@ struct NewsNavigation: View {
                         }
                         .background(Color.background)
                         
-                    case .seeAllAnnouncements:
+                    case .allAnnouncements:
                         AllAnnouncementsDestination(
                             onAnnouncementClick: { announcementId in
                                 path.append(.readAnnouncement(announcementId: announcementId))
@@ -79,7 +79,7 @@ struct NewsNavigation: View {
                                 path.append(.editAnnouncement(announcement: announcement))
                             },
                             onAuthorClick: { user in
-                                path.append(.seeAuthor(user: user))
+                                path.append(.authorProfile(user: user))
                             }
                         )
                         .onAppear {
@@ -97,8 +97,8 @@ enum NewsRoute: Route {
     case readAnnouncement(announcementId: String)
     case editAnnouncement(announcement: Announcement)
     case createAnnouncement
-    case seeAuthor(user: User)
-    case seeAllAnnouncements
+    case authorProfile(user: User)
+    case allAnnouncements
 }
 
 enum NewsMainRoute: MainRoute {

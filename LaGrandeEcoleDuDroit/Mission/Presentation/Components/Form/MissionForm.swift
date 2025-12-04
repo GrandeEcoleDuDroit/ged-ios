@@ -34,7 +34,8 @@ struct MissionForm: View {
                 )
                 .padding(.horizontal)
                 
-                FormDivider()
+                HorizontalDivider()
+                    .padding(.horizontal)
                 
                 MissionFormInformationSection(
                     startDate: value.startDate,
@@ -51,7 +52,8 @@ struct MissionForm: View {
                )
                .padding(.horizontal)
                 
-                FormDivider()
+                HorizontalDivider()
+                    .padding(.horizontal)
                 
                 MissionFormManagerSection(
                     managers: value.managers,
@@ -59,7 +61,8 @@ struct MissionForm: View {
                     onRemoveManagerClick: onRemoveManagerClick
                 )
                 
-                FormDivider()
+                HorizontalDivider()
+                    .padding(.horizontal)
 
                 MissionFormTaskSection(
                     missionTasks: value.missionTasks,
@@ -77,15 +80,6 @@ struct MissionForm: View {
         Divider()
             .frame(height: 1)
             .overlay(value.imageData == nil ? .outlineVariant : .clear)
-    }
-}
-
-private struct FormDivider: View {
-    var body: some View {
-        Divider()
-            .frame(height: 1)
-            .overlay(.outlineVariant)
-            .padding(.horizontal)
     }
 }
 

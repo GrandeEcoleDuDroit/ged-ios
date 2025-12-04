@@ -94,7 +94,7 @@ private struct DeleteAccountView: View {
                         .padding(Dimens.smallMediumPadding)
                 }
             )
-            .background(.listRowBackground)
+            .background(.profileSectionBackground)
             .foregroundStyle(.red)
             .clipShape(.rect(cornerRadius: 10))
             .padding(.horizontal, Dimens.mediumLargePadding)

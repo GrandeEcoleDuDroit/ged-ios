@@ -39,5 +39,5 @@ struct ReportBottomSheet<T: CustomStringConvertible>: View {
         onReportClick: { _ in }
     )
     
-    OptionButton(action: {})
+    OptionsButton(action: {})
 }

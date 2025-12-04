@@ -38,4 +38,24 @@ class MissionRemoteDataSource {
             message: "Failed to delete remote missions"
         )
     }
+    
+    func addParticipant(addMissionParticipant: AddMissionParticipant) async throws {
+        try await mapServerError(
+            block: {
+                try await missionApi.addParticipant(remoteAddMissionParticipant: addMissionParticipant.toRemote())
+            },
+            tag: tag,
+            message: "Failed to add participant to mission"
+        )
+    }
+    
+    func removeParticipant(missionId: String, userId: String) async throws {
+        try await mapServerError(
+            block: {
+                try await missionApi.removeParticipant(missionId: missionId, userId: userId)
+            },
+            tag: tag,
+            message: "Failed to remove participant from mission"
+        )
+    }
 }

@@ -140,7 +140,7 @@ private struct UserView: View {
         .toolbar {
             if user.id != currentUser.id {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    OptionButton(action: { showUserBottomSheet = true } )
+                    OptionsButton(action: { showUserBottomSheet = true } )
                 }
             }
         }

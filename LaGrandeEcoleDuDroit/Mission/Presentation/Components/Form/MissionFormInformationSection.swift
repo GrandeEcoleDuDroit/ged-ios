@@ -1,7 +1,5 @@
 import SwiftUI
 
-private let iconScale: CGFloat = 0.2
-
 struct MissionFormInformationSection: View {
     let startDate: Date
     let endDate: Date
@@ -42,13 +40,7 @@ struct MissionFormInformationSection: View {
                 initialText: maxParticipants,
                 onTextChange: onMaxParticipantsChange,
                 placeHolder: stringResource(.missionMaxParticipantsField),
-                leading: {
-                    Image(systemName: "person.2")
-                        .frame(
-                            width: Dimens.defaultImageSize * iconScale,
-                            height: Dimens.defaultImageSize * iconScale
-                        )
-                }
+                leadingIcon: { Image(systemName: "person.2") }
             )
             .keyboardType(.decimalPad)
             
@@ -56,10 +48,7 @@ struct MissionFormInformationSection: View {
                 initialText: duration,
                 onTextChange: onDurationChange,
                 placeHolder: stringResource(.missionDurationField),
-                leading: {
-                    Image(systemName: "clock")
-                        .resize(scale: iconScale)
-                }
+                leadingIcon: { Image(systemName: "clock") }
             )
         }
         .frame(maxWidth: .infinity)
@@ -86,9 +75,11 @@ private struct OutlinedDatePicker: View {
     
     var body: some View {
         HStack {
-            HStack(spacing: Dimens.mediumPadding) {
+            HStack(alignment: .center, spacing: Dimens.leadingIconSpacing) {
                 Image(systemName: "calendar")
-                    .resize(scale: iconScale)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: Dimens.inputIconSize, height: Dimens.inputIconSize)
                     .foregroundStyle(.onSurfaceVariant)
                 
                 Text(label)
@@ -124,12 +115,9 @@ struct OutlinedSchoolLevelPicker: View {
     
     var body: some View {
         MultiSelectionPicker(
-            leadingIcon: {
-                Image(systemName: "graduationcap")
-                    .resize(scale: iconScale)
-            },
             text: formattedText,
             items: allSchoolLevels.map(\.rawValue),
+            leadingIcon: Image(systemName: "graduationcap"),
             seletctedItems: schoolLevels.map(\.rawValue),
             onItemSelected: {
                 if let schoolLevel = SchoolLevel(rawValue: $0) {
@@ -147,7 +135,7 @@ struct OutlinedSchoolLevelPicker: View {
             case _ where schoolLevels.count == allSchoolLevels.count:
                 stringResource(.everyone)
             
-            default: MissionFormatter.formatSchoolLevels(schoolLevels: schoolLevels)
+            default: MissionPresentationUtils.formatSchoolLevels(schoolLevels: schoolLevels)
         }
     }
 }

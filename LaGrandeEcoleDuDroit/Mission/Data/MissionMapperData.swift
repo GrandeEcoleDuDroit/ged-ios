@@ -260,3 +260,16 @@ extension InboundRemoteMission {
         )
     }
 }
+
+extension AddMissionParticipant {
+    func toRemote() -> RemoteAddMissionParticipant {
+        RemoteAddMissionParticipant(
+            missionId: missionId,
+            missionSchoolLevels: schoolLevels.map { $0.number },
+            missionMaxParticipants: maxParticipants,
+            missionParticipantsNumber: participantsNumber,
+            userId: user.id,
+            userSchoolLevel: user.schoolLevel.number
+        )
+    }
+}

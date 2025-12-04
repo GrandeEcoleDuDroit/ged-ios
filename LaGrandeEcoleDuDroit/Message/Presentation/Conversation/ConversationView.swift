@@ -69,8 +69,7 @@ private struct ConversationView: View {
                                 .simultaneousGesture(
                                     LongPressGesture()
                                         .onEnded { _ in
-                                            let generator = UIImpactFeedbackGenerator(style: .medium)
-                                            generator.impactOccurred()
+                                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                                             sheetConversationUi = conversationUi
                                         }
                                 )

@@ -3,18 +3,18 @@ import SwiftUI
 struct AnnouncementHeader: View {
     let announcement: Announcement
     let onAuthorClick: () -> Void
-    let onOptionClick: () -> Void
+    let onOptionsClick: () -> Void
     
     private let elapsedTimeText: String
     
     init(
         announcement: Announcement,
         onAuthorClick: @escaping () -> Void,
-        onOptionClick: @escaping () -> Void
+        onOptionsClick: @escaping () -> Void
     ) {
         self.announcement = announcement
         self.onAuthorClick = onAuthorClick
-        self.onOptionClick = onOptionClick
+        self.onOptionsClick = onOptionsClick
         
         elapsedTimeText = getElapsedTimeText(
             elapsedTime: GetElapsedTimeUseCase.execute(date: announcement.date),
@@ -41,7 +41,7 @@ struct AnnouncementHeader: View {
             
             Spacer()
                         
-            OptionButton(action: onOptionClick)
+            OptionsButton(action: onOptionsClick)
                 .buttonStyle(.borderless)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -52,6 +52,6 @@ struct AnnouncementHeader: View {
     AnnouncementHeader(
         announcement: announcementFixture,
         onAuthorClick: {},
-        onOptionClick: {}
+        onOptionsClick: {}
     ).padding(.horizontal)
 }

@@ -8,6 +8,8 @@ class MockMissionRepository: MissionRepository {
     
     var currentMissions: [Mission] { [] }
     
+    func getMissionPublisher(missionId: String) -> AnyPublisher<Mission, Never> { Empty().eraseToAnyPublisher() }
+    
     func getRemoteMissions() async throws -> [Mission] { [] }
     
     func createMission(mission: Mission, imageData: Data?) async throws {}
@@ -17,4 +19,8 @@ class MockMissionRepository: MissionRepository {
     func deleteMission(mission: Mission, imageUrl: String?) async throws {}
     
     func deleteLocalMission(missionId: String) async throws {}
+    
+    func addParticipant(addMissionParticipant: AddMissionParticipant) async throws {}
+    
+    func removeParticipant(missionId: String, userId: String) async throws {}
 }
