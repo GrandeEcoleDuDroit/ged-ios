@@ -3,7 +3,7 @@ import SwiftUI
 struct MissionCard: View {
     let mission: Mission
     let onClick: () -> Void
-    let onOptionClick: () -> Void
+    let onOptionsClick: () -> Void
     
     var body: some View {
         switch mission.state {
@@ -11,7 +11,7 @@ struct MissionCard: View {
                 Clickable(action: onClick) {
                     DefaultMissionCard(
                         mission: mission,
-                        onOptionClick: onOptionClick
+                        onOptionsClick: onOptionsClick
                     )
                 }
                 .clipShape(ShapeDefaults.medium)
@@ -26,7 +26,7 @@ struct MissionCard: View {
                 Clickable(action: onClick) {
                     PublishingMissionCard(
                         mission: mission,
-                        onOptionClick: onOptionClick
+                        onOptionsClick: onOptionsClick
                     )
                 }
                 .clipShape(ShapeDefaults.medium)
@@ -36,7 +36,7 @@ struct MissionCard: View {
 
 private struct DefaultMissionCard: View {
     let mission: Mission
-    let onOptionClick: () -> Void
+    let onOptionsClick: () -> Void
     
     var body: some View {
         VStack(spacing: Dimens.smallMediumPadding + 2) {
@@ -45,7 +45,7 @@ private struct DefaultMissionCard: View {
                     .frame(height: 180)
                     .clipped()
                 
-                OptionButton(action: onOptionClick)
+                OptionsButton(action: onOptionsClick)
                     .padding()
                     .padding(Dimens.extraSmallPadding)
                     .frame(
@@ -81,12 +81,12 @@ private struct DefaultMissionCard: View {
 
 private struct PublishingMissionCard: View {
     let mission: Mission
-    let onOptionClick: () -> Void
+    let onOptionsClick: () -> Void
     
     var body: some View {
         DefaultMissionCard(
             mission: mission,
-            onOptionClick: onOptionClick
+            onOptionsClick: onOptionsClick
         )
         .opacity(0.5)
     }
@@ -142,22 +142,18 @@ private struct CardHeader: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 TextIcon(
-                    icon: { Image(systemName: "person.2") },
-                    text: {
-                        Text(
-                            stringResource(
-                                .participantNumber,
-                                mission.participants.count,
-                                mission.maxParticipants
-                            )
-                        )
-                    }
+                    icon: Image(systemName: "person.2"),
+                    text: stringResource(
+                        .participantNumber,
+                        mission.participants.count,
+                        mission.maxParticipants
+                    )
                 )
                 .font(.bodyMedium)
                 .padding(.top, Dimens.extraSmallPadding)
             }
             
-            Text(MissionFormatter.formatDate(startDate: mission.startDate, endDate: mission.endDate))
+            Text(MissionPresentationUtils.formatDate(startDate: mission.startDate, endDate: mission.endDate))
                 .foregroundStyle(.informationText)
                 .font(.bodyMedium)
         }
@@ -179,7 +175,7 @@ private struct CardFooter: View {
     let schoolLevels: [SchoolLevel]
     
     var body: some View {
-        Text(MissionFormatter.formatSchoolLevels(schoolLevels: schoolLevels))
+        Text(MissionPresentationUtils.formatSchoolLevels(schoolLevels: schoolLevels))
             .font(.caption)
             .fontWeight(.semibold)
     }
@@ -188,12 +184,8 @@ private struct CardFooter: View {
 private struct ErrorBanner: View {
     var body: some View {
         TextIcon(
-            icon: {
-                Image(systemName: "exclamationmark.circle")
-            },
-            text: {
-                Text(stringResource(.sendingError))
-            }
+            icon: Image(systemName: "exclamationmark.circle"),
+            text: stringResource(.sendingError)
         )
         .font(.callout)
         .foregroundStyle(.error)
@@ -209,14 +201,14 @@ private struct ErrorBanner: View {
         VStack(spacing: Dimens.mediumPadding) {
             DefaultMissionCard(
                 mission: missionFixture,
-                onOptionClick: {}
+                onOptionsClick: {}
             )
             
             PublishingMissionCard(
                 mission: missionFixture.copy {
                     $0.state = .publishing()
                 },
-                onOptionClick: {}
+                onOptionsClick: {}
             )
             
             ErrorMissionCard(

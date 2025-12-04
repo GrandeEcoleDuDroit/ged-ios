@@ -80,7 +80,7 @@ private struct ReadAnnouncementView: View {
                 AnnouncementHeader(
                     announcement: announcement,
                     onAuthorClick: { onAuthorClick(announcement.author) },
-                    onOptionClick: { showAnnouncementBottomSheet = true }
+                    onOptionsClick: { showAnnouncementBottomSheet = true }
                 )
                 
                 if let title = announcement.title {

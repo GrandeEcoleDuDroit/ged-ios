@@ -7,7 +7,7 @@ struct UserItem<TrailingContent: View>: View {
 
     init(
         user: User,
-        @ViewBuilder trailingContent: @escaping () -> TrailingContent = { EmptyView() }
+        trailingContent: @escaping () -> TrailingContent = { EmptyView() }
     ) {
         self.user = user
         self.trailingContent = trailingContent

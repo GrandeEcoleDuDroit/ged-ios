@@ -4,7 +4,7 @@ struct RecentAnnouncementSection: View {
     let announcements: [Announcement]
     let onAnnouncementClick: (String) -> Void
     let onUncreatedAnnouncementClick: (Announcement) -> Void
-    let onAnnouncementOptionClick: (Announcement) -> Void
+    let onAnnouncementOptionsClick: (Announcement) -> Void
     let onSeeAllAnnouncementClick: () -> Void
     
     var body: some View {
@@ -47,7 +47,7 @@ struct RecentAnnouncementSection: View {
                         ) {
                             CompactAnnouncementItem(
                                 announcement: announcement,
-                                onOptionClick: { onAnnouncementOptionClick(announcement) }
+                                onOptionsClick: { onAnnouncementOptionsClick(announcement) }
                             )
                         }
                         .buttonStyle(ClickStyle())
@@ -68,7 +68,7 @@ struct RecentAnnouncementSection: View {
         announcements: announcementsFixture,
         onAnnouncementClick: { _ in },
         onUncreatedAnnouncementClick: { _ in },
-        onAnnouncementOptionClick: { _ in },
+        onAnnouncementOptionsClick: { _ in },
         onSeeAllAnnouncementClick: {}
     )
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)

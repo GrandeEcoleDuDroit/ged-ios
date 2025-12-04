@@ -1,7 +1,11 @@
 import Foundation
 
 struct MissionUtils {
+    private init() {}
+    
     struct ImageFile {
+        private init() {}
+        
         private static let folderName = "MissionImages"
         
         static func generateFileName(missionId: String) -> String {

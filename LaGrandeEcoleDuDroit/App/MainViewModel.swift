@@ -42,7 +42,7 @@ class MainViewModel: ObservableObject {
                 } else {
                     self?.listenDataUseCase.stop()
                     Task {
-                        await sleep(2)
+                        try await Task.sleep(for: .seconds(2))
                         await self?.clearDataUseCase.execute()
                     }
                 }

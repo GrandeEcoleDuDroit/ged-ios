@@ -20,12 +20,11 @@ struct AppNavigation: View {
         }
     }
 
-    @ViewBuilder
     private func tabView(_ tab: TopLevelDestination) -> some View {
         let icon = selectedTab == tab ? tab.filledIcon : tab.outlinedIcon
         let badgeCount = viewModel.uiState.badges[tab] ?? 0
 
-        destinationView(for: tab)
+        return destinationView(for: tab)
             .environmentObject(tabBarVisibility)
             .tabItem {
                 Label(tab.label, systemImage: icon)

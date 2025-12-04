@@ -74,7 +74,7 @@ private struct NewsView: View {
                     onUncreatedAnnouncementClick: {
                         announcementBottomSheetType = .announcement(announcement: $0)
                     },
-                    onAnnouncementOptionClick: {
+                    onAnnouncementOptionsClick: {
                         announcementBottomSheetType = .announcement(announcement: $0)
                     },
                     onSeeAllAnnouncementClick: onSeeAllAnnouncementClick

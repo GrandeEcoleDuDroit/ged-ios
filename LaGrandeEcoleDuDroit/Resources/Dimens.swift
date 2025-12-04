@@ -9,8 +9,15 @@ struct Dimens {
     static let largePadding: CGFloat = 24
     static let extraLargePadding: CGFloat = 32
     static let veryExtraLargePadding: CGFloat = 64
+    
     static let defaultImageSize: CGFloat = 100
-    static let leadingIconSpacing: CGFloat = 16
+    static let leadingIconSpacing: CGFloat = 14
+    static let inputIconSize: CGFloat = 18
+    static let iconSize: CGFloat = 18
+    
+    static let toolbarVerticalPadding: CGFloat = 10
+    static let toolbarHorizontalPadding: CGFloat = 16
+    static let toolbarItemSpacing: CGFloat = 16
     
     private static let defaultBottomSheetFraction: CGFloat = 0.12
     private static let additionalBottomSheetItemFraction: CGFloat = 0.06

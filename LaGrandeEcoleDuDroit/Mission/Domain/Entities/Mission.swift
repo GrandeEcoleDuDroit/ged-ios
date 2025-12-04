@@ -23,6 +23,18 @@ struct Mission: Copyable, Identifiable, Hashable {
         !schoolLevels.isEmpty &&
             schoolLevels.count < SchoolLevel.allCases.count
     }
+    
+    var full: Bool {
+        participants.count >= maxParticipants
+    }
+    
+    var complete: Bool {
+        endDate.isAlmostBefore(to: Date())
+    }
+    
+    func schoolLevelPermitted(schoolLevel: SchoolLevel) -> Bool {
+        schoolLevels.isEmpty || schoolLevels.contains(schoolLevel)
+    }
  
     enum MissionState: Hashable {
         case draft
