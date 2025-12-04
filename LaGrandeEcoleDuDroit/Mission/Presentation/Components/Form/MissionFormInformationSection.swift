@@ -40,7 +40,7 @@ struct MissionFormInformationSection: View {
                 initialText: maxParticipants,
                 onTextChange: onMaxParticipantsChange,
                 placeHolder: stringResource(.missionMaxParticipantsField),
-                leadingIcon: { Image(systemName: "person.2") }
+                leadingIcon: Image(systemName: "person.2")
             )
             .keyboardType(.decimalPad)
             
@@ -48,7 +48,7 @@ struct MissionFormInformationSection: View {
                 initialText: duration,
                 onTextChange: onDurationChange,
                 placeHolder: stringResource(.missionDurationField),
-                leadingIcon: { Image(systemName: "clock") }
+                leadingIcon: Image(systemName: "clock")
             )
         }
         .frame(maxWidth: .infinity)
