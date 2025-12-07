@@ -6,10 +6,30 @@ struct MissionBottomSheet: View {
     let onEditClick: () -> Void
     let onDeleteClick: () -> Void
     let onReportClick: () -> Void
+    let onResendClick: () -> Void
+    
+    init(
+        mission: Mission,
+        isAdminUser: Bool,
+        onEditClick: @escaping () -> Void,
+        onDeleteClick: @escaping () -> Void,
+        onReportClick: @escaping () -> Void,
+        onResendClick: @escaping () -> Void = {}
+    ) {
+        self.mission = mission
+        self.isAdminUser = isAdminUser
+        self.onEditClick = onEditClick
+        self.onDeleteClick = onDeleteClick
+        self.onReportClick = onReportClick
+        self.onResendClick = onResendClick
+    }
     
     var body: some View {
         switch mission.state {
-            case .error: ErrorMissionBottomSheet(onDeleteClick: onDeleteClick)
+            case .error: ErrorMissionBottomSheet(
+                onDeleteClick: onDeleteClick,
+                onResendClick: onResendClick
+            )
             
             default:
                 if isAdminUser {
@@ -26,9 +46,16 @@ struct MissionBottomSheet: View {
 
 private struct ErrorMissionBottomSheet: View {
     let onDeleteClick: () -> Void
+    let onResendClick: () -> Void
     
     var body: some View {
-        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
+        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 2)) {
+            ClickableTextItem(
+                icon: Image(systemName: "paperplane"),
+                text: Text(stringResource(.resend)),
+                onClick: onResendClick
+            )
+            
             ClickableTextItem(
                 icon: Image(systemName: "trash"),
                 text: Text(stringResource(.delete)),

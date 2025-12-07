@@ -20,6 +20,7 @@ struct MissionDestination: View {
                 onEditMissionClick: onEditMissionClick,
                 onDeleteMissionClick: viewModel.deleteMission,
                 onReportMissionClick: viewModel.reportMission,
+                onResendMissionClick: viewModel.resendMission,
                 onRefreshMissions: viewModel.refreshMissions,
             )
             .onReceive(viewModel.$event) { event in
@@ -53,6 +54,7 @@ private struct MissionView: View {
     let onEditMissionClick: (Mission) -> Void
     let onDeleteMissionClick: (Mission) -> Void
     let onReportMissionClick: (MissionReport) -> Void
+    let onResendMissionClick: (Mission) -> Void
     let onRefreshMissions: () async -> Void
     
     @State private var showMissionBottomSheet: Bool = false
@@ -135,6 +137,12 @@ private struct MissionView: View {
                 onReportMissionClick: {
                     showMissionBottomSheet = false
                     showReportMissionBottomSheet = true
+                },
+                onResendMissionClick: {
+                    showMissionBottomSheet = false
+                    if let clickedMission {
+                        onResendMissionClick(clickedMission)
+                    }
                 }
             )
         }
@@ -185,6 +193,7 @@ private struct BottomSheet: View {
     let onEditMissionClick: () -> Void
     let onDeleteMissionClick: () -> Void
     let onReportMissionClick: () -> Void
+    let onResendMissionClick: () -> Void
 
     var body: some View {
         if let mission {
@@ -193,7 +202,8 @@ private struct BottomSheet: View {
                 isAdminUser: user.admin,
                 onEditClick: onEditMissionClick,
                 onDeleteClick: onDeleteMissionClick,
-                onReportClick: onReportMissionClick
+                onReportClick: onReportMissionClick,
+                onResendClick: onResendMissionClick
             )
         } else {
             BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
@@ -215,6 +225,7 @@ private struct BottomSheet: View {
             onEditMissionClick: { _ in },
             onDeleteMissionClick: { _ in },
             onReportMissionClick: { _ in },
+            onResendMissionClick: { _ in},
             onRefreshMissions: {}
         )
         .background(.appBackground)
