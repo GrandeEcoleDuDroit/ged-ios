@@ -21,7 +21,7 @@ struct NewsNavigation: View {
                 tabBarVisibility.show = true
                 viewModel.setCurrentRoute(NewsMainRoute.news)
             }
-            .background(Color.background)
+            .background(.appBackground)
             .navigationDestination(for: NewsRoute.self) { route in
                 switch route {
                     case let .readAnnouncement(announcementId):
@@ -39,7 +39,7 @@ struct NewsNavigation: View {
                             tabBarVisibility.show = false
                             viewModel.setCurrentRoute(route)
                         }
-                        .background(Color.background)
+                        .background(.appBackground)
 
                     case let .editAnnouncement(announcement):
                         EditAnnouncementDestination(
@@ -50,7 +50,7 @@ struct NewsNavigation: View {
                             tabBarVisibility.show = false
                             viewModel.setCurrentRoute(route)
                         }
-                        .background(Color.background)
+                        .background(.appBackground)
                         
                     case .createAnnouncement:
                         CreateAnnouncementDestination(
@@ -60,7 +60,7 @@ struct NewsNavigation: View {
                             tabBarVisibility.show = false
                             viewModel.setCurrentRoute(route)
                         }
-                        .background(Color.background)
+                        .background(.appBackground)
                         
                     case let .authorProfile(user):
                         UserDestination(user: user)
@@ -68,7 +68,7 @@ struct NewsNavigation: View {
                             tabBarVisibility.show = false
                             viewModel.setCurrentRoute(route)
                         }
-                        .background(Color.background)
+                        .background(.appBackground)
                         
                     case .allAnnouncements:
                         AllAnnouncementsDestination(
@@ -86,7 +86,7 @@ struct NewsNavigation: View {
                             tabBarVisibility.show = false
                             viewModel.setCurrentRoute(route)
                         }
-                        .background(Color.background)
+                        .background(.appBackground)
                 }
             }
         }

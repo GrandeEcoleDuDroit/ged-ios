@@ -15,5 +15,17 @@ struct MissionUtils {
         static func relativePath(fileName: String) -> String {
             "\(folderName)/\(fileName)"
         }
+        
+        static func extractFileNameFromUrl(url: String?) -> String? {
+            url?.components(separatedBy: "/").last
+        }
+        
+        static func getImagePathFromUrl(url: String?) -> String? {
+            if let fileName = extractFileNameFromUrl(url: url) {
+                relativePath(fileName: fileName)
+            } else {
+                nil
+            }
+        }
     }
 }

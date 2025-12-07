@@ -36,6 +36,18 @@ class MissionMainThreadInjector: MainThreadInjector {
             )
         }
         
+        container.register(EditMissionViewModel.self) { (reolver, mission: Any) in
+            let mission = mission as! Mission
+            return EditMissionViewModel(
+                mission: mission,
+                userRepository: CommonInjector.shared.resolve(UserRepository.self),
+                updateMissionUseCase: MissionInjector.shared.resolve(UpdateMissionUseCase.self),
+                getUsersUseCase: CommonInjector.shared.resolve(GetUsersUseCase.self),
+                generateIdUseCase: CommonInjector.shared.resolve(GenerateIdUseCase.self),
+                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
+            )
+        }
+        
         container.register(MissionDetailsViewModel.self) { (resolver, missionId: Any) in
             let missionId = missionId as! String
             return MissionDetailsViewModel(

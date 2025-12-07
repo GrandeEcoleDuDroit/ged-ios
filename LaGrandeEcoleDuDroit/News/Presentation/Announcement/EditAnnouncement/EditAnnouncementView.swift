@@ -121,7 +121,7 @@ private struct EditAnnouncementView: View {
             onUpdateAnnouncementClick: {},
             onBackClick: {}
         )
-        .background(Color.background)
+        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

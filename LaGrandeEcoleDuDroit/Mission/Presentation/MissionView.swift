@@ -3,6 +3,7 @@ import SwiftUI
 struct MissionDestination: View {
     let onMissionClick: (String) -> Void
     let onCreateMissionClick: () -> Void
+    let onEditMissionClick: (Mission) -> Void
     
     @StateObject private var viewModel = MissionMainThreadInjector.shared.resolve(MissionViewModel.self)
     @State private var errorMessage: String = ""
@@ -16,6 +17,7 @@ struct MissionDestination: View {
                 loading: viewModel.uiState.loading,
                 onMissionClick: onMissionClick,
                 onCreateMissionClick: onCreateMissionClick,
+                onEditMissionClick: onEditMissionClick,
                 onDeleteMissionClick: viewModel.deleteMission,
                 onReportMissionClick: viewModel.reportMission,
                 onRefreshMissions: viewModel.refreshMissions,
@@ -48,6 +50,7 @@ private struct MissionView: View {
     let loading: Bool
     let onMissionClick: (String) -> Void
     let onCreateMissionClick: () -> Void
+    let onEditMissionClick: (Mission) -> Void
     let onDeleteMissionClick: (Mission) -> Void
     let onReportMissionClick: (MissionReport) -> Void
     let onRefreshMissions: () async -> Void
@@ -92,7 +95,7 @@ private struct MissionView: View {
                 }
             } else {
                 ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
@@ -119,6 +122,12 @@ private struct MissionView: View {
             BottomSheet(
                 user: user,
                 mission: $clickedMission,
+                onEditMissionClick: {
+                    showMissionBottomSheet = false
+                    if let clickedMission {
+                        onEditMissionClick(clickedMission)
+                    }
+                },
                 onDeleteMissionClick: {
                     showMissionBottomSheet = false
                     showDeleteMissionAlert = true
@@ -173,6 +182,7 @@ private struct MissionView: View {
 private struct BottomSheet: View {
     let user: User
     @Binding var mission: Mission?
+    let onEditMissionClick: () -> Void
     let onDeleteMissionClick: () -> Void
     let onReportMissionClick: () -> Void
 
@@ -180,7 +190,8 @@ private struct BottomSheet: View {
         if let mission {
             MissionBottomSheet(
                 mission: mission,
-                editable: mission.managers.contains(user),
+                isAdminUser: user.admin,
+                onEditClick: onEditMissionClick,
                 onDeleteClick: onDeleteMissionClick,
                 onReportClick: onReportMissionClick
             )
@@ -201,11 +212,12 @@ private struct BottomSheet: View {
             loading: false,
             onMissionClick: { _ in },
             onCreateMissionClick: {},
+            onEditMissionClick: { _ in },
             onDeleteMissionClick: { _ in },
             onReportMissionClick: { _ in },
             onRefreshMissions: {}
         )
-        .background(Color.background)
+        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

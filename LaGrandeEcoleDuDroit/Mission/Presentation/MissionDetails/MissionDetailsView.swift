@@ -25,7 +25,6 @@ struct MissionDetailsDestination: View {
         self.onManagerClick = onManagerClick
         self.onParticipantClick = onParticipantClick
     }
-    
     var body: some View {
         if let currentUser = viewModel.uiState.currentUser,
            let mission = viewModel.uiState.mission
@@ -47,12 +46,12 @@ struct MissionDetailsDestination: View {
                 onReportMissionClick: viewModel.reportMission
             )
             .onReceive(viewModel.$event) { event in
-                if let event = event as? MissionDetailsViewModel.MissionDetailsUiEvent,
-                   event == .missionDeleted
-                {
-                    onBackClick()
-                } else if let errorEvent = event as? ErrorEvent {
-                    errorMessage = errorEvent.message
+                if case let event as MissionDetailsViewModel.MissionDetailsUiEvent = event {
+                    switch event {
+                        case .missionDeleted: onBackClick()
+                    }
+                } else if case let event as ErrorEvent = event {
+                    errorMessage = event.message
                     showErrorAlert = true
                 }
             }
@@ -67,7 +66,7 @@ struct MissionDetailsDestination: View {
             )
         } else {
             ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
     }
 }
@@ -110,7 +109,7 @@ private struct MissionDetailsView: View {
                         missionState: mission.state,
                         defaultImageScale: 1.4
                     )
-                    .frame(height: 200)
+                    .frame(height: MissionPresentationUtils.missionImageHeight)
                     .clipped()
                     
                     VStack(spacing: Dimens.mediumPadding) {
@@ -205,12 +204,16 @@ private struct MissionDetailsView: View {
             }
             .padding(.vertical, Dimens.smallMediumPadding)
             .padding(.horizontal, Dimens.mediumPadding)
-            .background(Color.background)
+            .background(.appBackground)
         }
         .sheet(isPresented: $showMissionBottomSheet) {
             MissionBottomSheet(
                 mission: mission,
-                editable: isManager,
+                isAdminUser: user.admin,
+                onEditClick: {
+                    showMissionBottomSheet = false
+                    onEditMissionClick(mission)
+                },
                 onDeleteClick: {
                     showMissionBottomSheet = false
                     showDeleteMissionAlert = true
@@ -364,7 +367,7 @@ private struct ScrollOffsetPreferenceKey: PreferenceKey {
             onDeleteMissionClick: {},
             onReportMissionClick: { _ in }
         )
-        .background(Color.background)
+        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

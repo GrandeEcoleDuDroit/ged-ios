@@ -44,7 +44,7 @@ extension String {
 }
 
 extension String? {
-    func toString() -> String {
+    func orEmpty() -> String {
         self ?? ""
     }
 }

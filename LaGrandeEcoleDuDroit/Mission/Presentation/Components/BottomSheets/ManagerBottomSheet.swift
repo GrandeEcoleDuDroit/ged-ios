@@ -62,7 +62,6 @@ struct SelectManagerBottomSheet: View {
                 }
             }
             .scrollIndicators(.hidden)
-            .listRowBackground(Color.background)
             .listStyle(.plain)
             .searchable(
                 text: Binding(

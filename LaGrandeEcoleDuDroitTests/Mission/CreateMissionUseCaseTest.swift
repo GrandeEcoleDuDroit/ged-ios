@@ -17,7 +17,7 @@ class CreateMissionUseCaseTest {
         )
         
         // When
-        await useCase.execute(mission: missionFixture, imageData: pngImageFixture)
+        await useCase.execute(mission: missionFixture, imageData: pngImageDataFixture)
         
         // Then
         #expect(localImageCreated.createLocalImageCalled)
@@ -34,17 +34,17 @@ class CreateMissionUseCaseTest {
         )
         
         // When
-        await useCase.execute(mission: missionFixture, imageData: pngImageFixture)
+        await useCase.execute(mission: missionFixture, imageData: pngImageDataFixture)
         
         // Then
         #expect(getMission.missionCreated?.state.type == Mission.MissionState.publishing().type)
         
-        let imagePath: String? = if case .publishing(let imagePath) = getMission.missionCreated?.state {
+        let pathResult: String? = if case let .publishing(imagePath) = getMission.missionCreated?.state {
             imagePath
         } else {
             nil
         }
-        #expect(imagePath != nil)
+        #expect(pathResult != nil)
     }
     
     @Test
@@ -74,7 +74,7 @@ class CreateMissionUseCaseTest {
         )
         
         // When
-        await useCase.execute(mission: missionFixture, imageData: pngImageFixture)
+        await useCase.execute(mission: missionFixture, imageData: pngImageDataFixture)
         
         // Then
         #expect(localImageDeleted.deleteLocalImageCalled)
@@ -91,17 +91,17 @@ class CreateMissionUseCaseTest {
         )
         
         // When
-        await useCase.execute(mission: missionFixture, imageData: pngImageFixture)
+        await useCase.execute(mission: missionFixture, imageData: pngImageDataFixture)
 
         // Then
-        #expect(createMissionException.missionUpserted?.state.type == Mission.MissionState.error().type)
+        #expect(createMissionException.missionUpserted?.state.type == Mission.MissionState.MissionStateType.error)
         
-        let imagePath: String? = if case .error(let imagePath) = createMissionException.missionUpserted?.state {
+        let pathResult: String? = if case let .error(imagePath) = createMissionException.missionUpserted?.state {
             imagePath
         } else {
             nil
         }
-        #expect(imagePath != nil)
+        #expect(pathResult != nil)
     }
 }
 

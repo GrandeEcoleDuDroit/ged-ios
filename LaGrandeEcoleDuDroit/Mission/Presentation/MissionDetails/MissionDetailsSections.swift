@@ -39,7 +39,7 @@ struct MissionDetailsManagerSection: View {
                 .padding(.horizontal)
             
             ScrollView {
-                LazyVStack {
+                LazyVStack(spacing: .zero) {
                     ForEach(managers) { manager in
                         Button(action: { onManagerClick(manager) }) {
                             MissionUserItem(

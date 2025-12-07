@@ -156,6 +156,7 @@ struct RemoveButton: View {
         Button(action: action) {
             Image(systemName: "xmark")
         }
+        .foregroundStyle(.onSurfaceVariant)
     }
 }
 

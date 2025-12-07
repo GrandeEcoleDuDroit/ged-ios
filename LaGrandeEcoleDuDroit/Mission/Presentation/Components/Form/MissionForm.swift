@@ -2,8 +2,9 @@ import SwiftUI
 
 struct MissionForm: View {
     let value: MissionFormValue
-    let onImageClick: () -> Void
-    let onRemoveImageClick: () -> Void
+    @Binding var imageData: Data?
+    let onImageChange: () -> Void
+    let onImageRemove: () -> Void
     let onTitleChange: (String) -> String
     let onDescriptionChange: (String) -> String
     let onStartDateChange: (Date) -> Void
@@ -21,9 +22,10 @@ struct MissionForm: View {
         ScrollView {
             VStack(spacing: Dimens.mediumPadding) {
                 MissionFormImageSection(
-                    imageData: value.imageData,
-                    onImageClick: onImageClick,
-                    onRemoveImageClick: onRemoveImageClick
+                    imageData: $imageData,
+                    missionState: value.missionState,
+                    onImageChange: onImageChange,
+                    onImageRemove: onImageRemove
                 )
                 
                 MissionFormTitleDescriptionSection(
@@ -73,18 +75,10 @@ struct MissionForm: View {
             }
         }
         .scrollIndicators(.hidden)
-    
-    }
-    
-    var imageDivider: some View {
-        Divider()
-            .frame(height: 1)
-            .overlay(value.imageData == nil ? .outlineVariant : .clear)
     }
 }
 
 struct MissionFormValue {
-    let imageData: Data?
     let title: String
     let description: String
     let startDate: Date
@@ -95,12 +89,12 @@ struct MissionFormValue {
     let maxParticipants: String
     let managers: [User]
     let missionTasks: [MissionTask]
+    let missionState: Mission.MissionState
 }
 
 #Preview {
     MissionForm(
         value: MissionFormValue(
-            imageData: nil,
             title: "",
             description: "",
             startDate: Date(),
@@ -110,10 +104,12 @@ struct MissionFormValue {
             duration: "",
             maxParticipants: "",
             managers: [userFixture],
-            missionTasks: missionTasksFixture
+            missionTasks: missionTasksFixture,
+            missionState: .draft
         ),
-        onImageClick: {},
-        onRemoveImageClick: {},
+        imageData: .constant(nil),
+        onImageChange: {},
+        onImageRemove: {},
         onTitleChange: { _ in "" },
         onDescriptionChange: { _ in "" },
         onStartDateChange: { _ in },

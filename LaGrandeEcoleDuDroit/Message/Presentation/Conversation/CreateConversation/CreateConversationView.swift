@@ -34,8 +34,7 @@ private struct CreateConversationView: View {
         VStack {
             if loading {
                 ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                    .padding(.top, Dimens.largePadding)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             }
             else {
                 if users.isEmpty {
@@ -80,7 +79,7 @@ private struct CreateConversationView: View {
             onQueryChange: {_ in },
             onUserClick: {_ in }
         )
-        .background(Color.background)
+        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }
