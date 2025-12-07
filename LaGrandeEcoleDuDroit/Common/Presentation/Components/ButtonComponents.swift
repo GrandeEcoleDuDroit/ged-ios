@@ -106,32 +106,8 @@ struct LoadingButton: View {
     }
 }
 
-struct Clickable<Content: View>: View {
-    let action: () -> Void
-    let backgroundColor: Color
-    let content: () -> Content
-
-    init(
-        action: @escaping () -> Void,
-        backgroundColor: Color = .click,
-        @ViewBuilder content: @escaping () -> Content
-    ) {
-        self.action = action
-        self.backgroundColor = backgroundColor
-        self.content = content
-    }
-
-    var body: some View {
-        Button(
-            action: action,
-            label: content
-        )
-        .buttonStyle(ClickStyle(backgroundColor: backgroundColor))
-    }
-}
-
 struct ClickStyle: ButtonStyle {
-    var backgroundColor: Color = .click
+    var backgroundColor: Color = Color(.systemGray4)
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -202,5 +178,20 @@ struct TextButton: View {
             Spacer()
             RemoveButton(action: {})
         }
+        
+        Button(action: {}) {
+            Text("Click style")
+                .padding(10)
+                .frame(maxWidth: .infinity)
+                .contentShape(.rect)
+        }
+        .buttonStyle(ClickStyle())
+        
+        List {
+            Button ("AHHHHH"){
+                
+            }
+        }
+        .listStyle(.plain)
     }
 }

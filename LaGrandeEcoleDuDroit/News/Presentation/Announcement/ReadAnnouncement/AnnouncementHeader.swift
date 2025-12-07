@@ -34,7 +34,7 @@ struct AnnouncementHeader: View {
                     .font(.titleSmall)
                 
                 Text(elapsedTimeText)
-                    .foregroundStyle(.textPreview)
+                    .foregroundStyle(.supportingText)
                     .font(.bodySmall)
             }
             .onTapGesture(perform: onAuthorClick)

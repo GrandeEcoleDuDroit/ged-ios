@@ -98,7 +98,7 @@ private struct DefaultConversationItem: View {
     let interlocutor: User
     let text: String
     let elapsedTimeText: String
-    var textColor: Color = .textPreview
+    var textColor: Color = .supportingText
     var fontWeight: Font.Weight = .regular
     
     var body: some View {
@@ -152,16 +152,14 @@ private struct LoadingConversationItem: View {
     let interlocutor: User
     let text: String
     let elapsedTimeText: String
-    var textColor: Color = .textPreview
+    var textColor: Color = .supportingText
     var fontWeight: Font.Weight = .regular
     
     var body: some View {
         DefaultConversationItem(
             interlocutor: interlocutor,
             text: text,
-            elapsedTimeText: elapsedTimeText,
-            textColor: .primary,
-            fontWeight: .semibold
+            elapsedTimeText: elapsedTimeText
         ).opacity(0.5)
     }
 }
