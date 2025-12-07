@@ -35,19 +35,6 @@ class EditMissionViewModel: ViewModel {
         listenMissionUpdateState()
     }
     
-    private func initUiState() {
-        uiState.title = mission.title
-        uiState.description = mission.description
-        uiState.startDate = mission.startDate
-        uiState.endDate = mission.endDate
-        uiState.schoolLevels = mission.schoolLevels
-        uiState.duration = mission.duration.orEmpty()
-        uiState.managers = mission.managers
-        uiState.maxParticipants = mission.maxParticipants.description
-        uiState.missionTasks = mission.tasks
-        uiState.missionState = mission.state
-    }
-    
     func updateMission(imageData: Data?) {
         guard uiState.updateEnabled else { return }
         
@@ -167,6 +154,15 @@ class EditMissionViewModel: ViewModel {
                 $0.schoolLevelsUpdated = validateSchoolLevels(schoolLevels)
             }
         )
+        
+        if schoolLevels != mission.schoolLevels &&
+            !schoolLevels.isEmpty &&
+            schoolLevels.count < SchoolLevel.allCases.count
+        {
+            uiState.schoolLevelSupportingText = stringResource(.editMissionSchoolLevelSupportingText)
+        } else {
+            uiState.schoolLevelSupportingText = nil
+        }
     }
     
     func onMaxParticipantsChange(_ maxParticipants: String) -> String {
@@ -333,6 +329,20 @@ class EditMissionViewModel: ViewModel {
         }.store(in: &cancellables)
     }
     
+    private func initUiState() {
+        uiState.title = mission.title
+        uiState.description = mission.description
+        uiState.startDate = mission.startDate
+        uiState.endDate = mission.endDate
+        uiState.schoolLevels = mission.schoolLevels
+        uiState.duration = mission.duration.orEmpty()
+        uiState.managers = mission.managers
+        uiState.maxParticipants = mission.maxParticipants.description
+        uiState.missionTasks = mission.tasks
+        uiState.missionState = mission.state
+    }
+    
+    
     private func initUsers() {
         Task { @MainActor [weak self] in
             guard let mission = self?.mission,
@@ -384,6 +394,7 @@ class EditMissionViewModel: ViewModel {
         fileprivate(set) var loading: Bool = false
         fileprivate(set) var missionState: Mission.MissionState = .draft
         fileprivate(set) var updateEnabled: Bool = false
+        fileprivate(set) var schoolLevelSupportingText: String? = nil
     }
     
     private struct MissionUpdateState: Copyable {
