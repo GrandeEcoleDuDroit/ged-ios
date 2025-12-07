@@ -22,7 +22,7 @@ class UpdateMissionUseCaseTest {
         )
         
         // Then
-        #expect(missionRepositoryTest.isUpdated)
+        #expect(missionRepositoryTest.missionUpdated)
     }
     
     @Test
@@ -77,11 +77,11 @@ class UpdateMissionUseCaseTest {
 }
 
 private class MissionRepositoryTest: MockMissionRepository {
-    var isUpdated: Bool = false
+    var missionUpdated: Bool = false
     var updatedMissionState: Mission.MissionState?
     
     override func updateMission(mission: Mission, imageData: Data?) async throws {
-        isUpdated = true
+        missionUpdated = true
         updatedMissionState = mission.state
     }
 }

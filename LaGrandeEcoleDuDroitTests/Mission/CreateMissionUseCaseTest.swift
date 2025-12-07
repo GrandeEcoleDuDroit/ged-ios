@@ -27,9 +27,9 @@ class CreateMissionUseCaseTest {
     func createMissionsUseCase_should_create_mission_with_publishing_state_with_image_path() async {
         // Given
         let localImageCreated = LocalImageCreated()
-        let getMission = GetMission()
+        let getMissionState = GetMissionMissionState()
         let useCase = CreateMissionUseCase(
-            missionRepository: getMission,
+            missionRepository: getMissionState,
             imageRepository: localImageCreated
         )
         
@@ -37,9 +37,9 @@ class CreateMissionUseCaseTest {
         await useCase.execute(mission: missionFixture, imageData: pngImageDataFixture)
         
         // Then
-        #expect(getMission.missionCreated?.state.type == Mission.MissionState.publishing().type)
+        #expect(getMissionState.createdMissionState?.type == Mission.MissionState.MissionStateType.publishing)
         
-        let pathResult: String? = if case let .publishing(imagePath) = getMission.missionCreated?.state {
+        let pathResult: String? = if case let .publishing(imagePath) = getMissionState.createdMissionState {
             imagePath
         } else {
             nil
@@ -50,9 +50,9 @@ class CreateMissionUseCaseTest {
     @Test
     func createMissionsUseCase_should_upsert_mission_with_published_state_when_succeed()  async{
         // Given
-        let getMission = GetMission()
+        let getMissionState = GetMissionMissionState()
         let useCase = CreateMissionUseCase(
-            missionRepository: getMission,
+            missionRepository: getMissionState,
             imageRepository: MockImageRepository()
         )
         
@@ -60,16 +60,15 @@ class CreateMissionUseCaseTest {
         await useCase.execute(mission: missionFixture, imageData: nil)
         
         // Then
-        #expect(getMission.missionUpserted?.state.type == .published)
+        #expect(getMissionState.upsertedMissionState?.type == .published)
     }
     
     @Test
     func createMissionsUseCase_should_delete_created_local_image() async {
         // Given
         let localImageDeleted = LocalImageDeleted()
-        let getMission = GetMission()
         let useCase = CreateMissionUseCase(
-            missionRepository: getMission,
+            missionRepository: MockMissionRepository(),
             imageRepository: localImageDeleted
         )
         
@@ -84,7 +83,7 @@ class CreateMissionUseCaseTest {
     func createMissionsUseCase_should_upsert_mission_with_error_state_and_image_path_when_exception_throwns() async {
         // Given
         let localImageCreated = LocalImageCreated()
-        let createMissionException = CreateMissionException()
+        let createMissionException = CreateMissionThrowsException()
         let useCase = CreateMissionUseCase(
             missionRepository: createMissionException,
             imageRepository: localImageCreated
@@ -94,9 +93,9 @@ class CreateMissionUseCaseTest {
         await useCase.execute(mission: missionFixture, imageData: pngImageDataFixture)
 
         // Then
-        #expect(createMissionException.missionUpserted?.state.type == Mission.MissionState.MissionStateType.error)
+        #expect(createMissionException.upsertedMissionState?.type == Mission.MissionState.MissionStateType.error)
         
-        let pathResult: String? = if case let .error(imagePath) = createMissionException.missionUpserted?.state {
+        let pathResult: String? = if case let .error(imagePath) = createMissionException.upsertedMissionState {
             imagePath
         } else {
             nil
@@ -121,27 +120,27 @@ private class LocalImageDeleted: MockImageRepository {
     }
 }
 
-private class GetMission: MockMissionRepository {
-    var missionCreated: Mission?
-    var missionUpserted: Mission?
+private class GetMissionMissionState: MockMissionRepository {
+    var createdMissionState: Mission.MissionState?
+    var upsertedMissionState: Mission.MissionState?
     
     override func createMission(mission: Mission, imageData: Data?) async throws {
-        missionCreated = mission
+        createdMissionState = mission.state
     }
     
     override func upsertLocalMission(mission: Mission) async throws {
-        missionUpserted = mission
+        upsertedMissionState = mission.state
     }
 }
 
-private class CreateMissionException: MockMissionRepository {
-    var missionUpserted: Mission?
+private class CreateMissionThrowsException: MockMissionRepository {
+    var upsertedMissionState: Mission.MissionState?
 
     override func createMission(mission: Mission, imageData: Data?) async throws {
         throw NSError(domain: "", code: 0, userInfo: nil)
     }
     
     override func upsertLocalMission(mission: Mission) async throws {
-        missionUpserted = mission
+        upsertedMissionState = mission.state
     }
 }
