@@ -161,4 +161,5 @@ enum Strings: String {
     case deleteMissionAlertMessage = "delete_mission_alert_message"
     case unregisterMissionAlertMessage = "unregister_mission_alert_message"
     case removeParticipantAlertMessage = "remove_participant_alert_message"
+    case editMissionSchoolLevelSupportingText = "edit_mission_school_level_supporting_text"
 }

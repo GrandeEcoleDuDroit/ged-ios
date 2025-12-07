@@ -12,7 +12,7 @@ struct Dimens {
     
     static let defaultImageSize: CGFloat = 100
     static let leadingIconSpacing: CGFloat = 14
-    static let inputIconSize: CGFloat = 20
+    static let inputIconSize: CGFloat = 18
     static let iconSize: CGFloat = 20
     
     static let toolbarVerticalPadding: CGFloat = 10
