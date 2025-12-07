@@ -138,6 +138,7 @@
 "participants" = "Participants";
 "tasks" = "Tâches";
 "new_mission" = "Nouvelle mission";
+"edit_mission" = "Editer mission";
 "participant_number" = "%d/%d";
 "no_mission" = "No mission";
 "add_image" = "Ajouter image";

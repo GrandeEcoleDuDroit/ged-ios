@@ -84,7 +84,7 @@ private struct ConversationView: View {
                 }
             } else {
                 ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets())
             }
@@ -145,7 +145,7 @@ private struct ConversationView: View {
             onConversationClick: {_ in},
             onDeleteConversationClick: {_ in}
         )
-        .background(Color.background)
+        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

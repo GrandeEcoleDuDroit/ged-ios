@@ -1,13 +1,24 @@
 import SwiftUI
 import PhotosUI
 
-struct CreateMissionDestination: View {
-    let onBackClick: () -> Void
+struct EditMissionDestination: View {
+    private let onBackClick: () -> Void
+    @StateObject private var viewModel: EditMissionViewModel
+    @State private var showErrorAlert: Bool = false
+    @State private var errorMessage: String = ""
     
-    @StateObject private var viewModel = MissionMainThreadInjector.shared.resolve(CreateMissionViewModel.self)
+    init(
+        onBackClick: @escaping () -> Void,
+        mission: Mission
+    ) {
+        self.onBackClick = onBackClick
+        self._viewModel = StateObject(
+            wrappedValue: MissionMainThreadInjector.shared.resolve(EditMissionViewModel.self, arguments: mission)!
+        )
+    }
     
     var body: some View {
-        CreateMissionView(
+        EditMissionView(
             title: viewModel.uiState.title,
             description: viewModel.uiState.description,
             startDate: viewModel.uiState.startDate,
@@ -20,8 +31,11 @@ struct CreateMissionDestination: View {
             managers: viewModel.uiState.managers,
             userQuery: viewModel.uiState.userQuery,
             missionTasks: viewModel.uiState.missionTasks,
-            missionState: .draft,
-            createEnabled: viewModel.uiState.createEnabled,
+            loading: viewModel.uiState.loading,
+            missionState: viewModel.uiState.missionState,
+            editEnabled: viewModel.uiState.updateEnabled,
+            onImageChange: viewModel.onImageChange,
+            onImageRemove: viewModel.onImageRemove,
             onTitleChange: viewModel.onTitleChange,
             onDescriptionChange: viewModel.onDescriptionChange,
             onStartDateChange: viewModel.onStartDateChange,
@@ -35,15 +49,29 @@ struct CreateMissionDestination: View {
             onAddTaskClick: viewModel.onAddMissionTask,
             onEditTaskClick: viewModel.onEditMissionTask,
             onRemoveTaskClick: viewModel.onRemoveMissionTask,
-            onCreateMissionClick: {
-                viewModel.createMission(imageData: $0)
+            onSaveMissionClick: viewModel.updateMission
+        )
+        .onReceive(viewModel.$event) { event in
+            if event is SuccessEvent {
                 onBackClick()
+            } else if case let event as ErrorEvent = event {
+                errorMessage = event.message
+                showErrorAlert = true
+            }
+        }
+        .alert(
+            errorMessage,
+            isPresented: $showErrorAlert,
+            actions: {
+                Button(stringResource(.ok)) {
+                    showErrorAlert = false
+                }
             }
         )
     }
 }
 
-private struct CreateMissionView: View {
+private struct EditMissionView: View {
     let title: String
     let description: String
     let startDate: Date
@@ -56,9 +84,12 @@ private struct CreateMissionView: View {
     let managers: [User]
     let userQuery: String
     let missionTasks: [MissionTask]
+    let loading: Bool
     let missionState: Mission.MissionState
-    let createEnabled: Bool
+    let editEnabled: Bool
     
+    let onImageChange: () -> Void
+    let onImageRemove: () -> Void
     let onTitleChange: (String) -> String
     let onDescriptionChange: (String) -> String
     let onStartDateChange: (Date) -> Void
@@ -72,11 +103,11 @@ private struct CreateMissionView: View {
     let onAddTaskClick: (String) -> Void
     let onEditTaskClick: (MissionTask) -> Void
     let onRemoveTaskClick: (MissionTask) -> Void
-    let onCreateMissionClick: (Data?) -> Void
+    let onSaveMissionClick: (Data?) -> Void
     
     @State private var imageData: Data?
     @State private var missionBottomSheetType: MissionBottomSheetType?
-
+    
     var body: some View {
         MissionForm(
             value: MissionFormValue(
@@ -93,8 +124,8 @@ private struct CreateMissionView: View {
                 missionState: missionState
             ),
             imageData: $imageData,
-            onImageChange: {},
-            onImageRemove: {},
+            onImageChange: { onImageChange() },
+            onImageRemove: { onImageRemove() },
             onTitleChange: onTitleChange,
             onDescriptionChange: onDescriptionChange,
             onStartDateChange: onStartDateChange,
@@ -108,23 +139,21 @@ private struct CreateMissionView: View {
             onEditTaskClick: { missionBottomSheetType = .editTask(missionTask: $0) },
             onRemoveTaskClick: onRemoveTaskClick
         )
-        .navigationTitle(stringResource(.newMission))
+        .loading(loading)
+        .navigationTitle(stringResource(.editMission))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button(
-                    action: { onCreateMissionClick(imageData) },
-                    label: {
-                        if !createEnabled {
-                            Text(stringResource(.publish))
-                        } else {
-                            Text(stringResource(.publish))
-                                .foregroundStyle(.gedPrimary)
-                        }
+                Button(action: { onSaveMissionClick(imageData) }) {
+                    if !editEnabled {
+                        Text(stringResource(.save))
+                    } else {
+                        Text(stringResource(.save))
+                            .foregroundStyle(.gedPrimary)
                     }
-                )
+                }
                 .fontWeight(.semibold)
-                .disabled(!createEnabled)
+                .disabled(!editEnabled)
             }
         }
         .sheet(item: $missionBottomSheetType) { type in
@@ -168,22 +197,27 @@ private struct CreateMissionView: View {
 }
 
 #Preview {
+    let mission = missionFixture
+    
     NavigationStack {
-        CreateMissionView(
-            title: "",
-            description: "",
-            startDate: Date(),
-            endDate: Date(),
+        EditMissionView(
+            title: mission.title,
+            description: mission.description,
+            startDate: mission.startDate,
+            endDate: mission.endDate,
             allSchoolLevels: SchoolLevel.allCases,
-            schoolLevels: [],
-            duration: "",
-            maxParticipants: "",
+            schoolLevels: mission.schoolLevels,
+            duration: mission.duration.orEmpty(),
+            maxParticipants: mission.maxParticipants.description,
             users: usersFixture,
-            managers: [userFixture],
+            managers: mission.managers,
             userQuery: "",
-            missionTasks: [missionTaskFixture],
-            missionState: .draft,
-            createEnabled: false,
+            missionTasks: mission.tasks,
+            loading: false,
+            missionState: .published(imageUrl: "https://cdn.britannica.com/16/234216-050-C66F8665/beagle-hound-dog.jpg"),
+            editEnabled: false,
+            onImageChange: {},
+            onImageRemove: {},
             onTitleChange: { _ in "" },
             onDescriptionChange: { _ in "" },
             onStartDateChange: { _ in },
@@ -197,7 +231,7 @@ private struct CreateMissionView: View {
             onAddTaskClick: { _ in },
             onEditTaskClick: { _ in },
             onRemoveTaskClick: { _ in },
-            onCreateMissionClick: { _ in }
+            onSaveMissionClick: { _ in }
         )
         .background(.appBackground)
     }

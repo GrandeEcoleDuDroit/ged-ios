@@ -42,8 +42,7 @@ struct NewsDestination: View {
             )
         } else {
             ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                .padding(.top)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
     }
 }
@@ -81,7 +80,7 @@ private struct NewsView: View {
                 )
             } else {
                 ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -226,7 +225,7 @@ private enum AnnouncementBottomSheetType: Identifiable {
             onReportAnnouncementClick: {_ in },
             onSeeAllAnnouncementClick: {}
        )
-       .background(Color.background)
+       .background(.appBackground)
    }
    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

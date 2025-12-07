@@ -20,7 +20,7 @@ class EditAnnouncementViewModel: ViewModel {
     }
     
     private func initUiState() {
-        uiState.title = announcement.title.toString()
+        uiState.title = announcement.title.orEmpty()
         uiState.content = announcement.content
     }
     
@@ -67,7 +67,7 @@ class EditAnnouncementViewModel: ViewModel {
     }
     
     private func validateTitle(_ title: String) -> Bool {
-        title != announcement.title.toString() && !uiState.content.isBlank()
+        title != announcement.title.orEmpty() && !uiState.content.isBlank()
     }
     
     private func validateContent(_ content: String) -> Bool {

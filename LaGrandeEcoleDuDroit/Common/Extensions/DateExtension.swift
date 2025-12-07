@@ -13,6 +13,10 @@ extension Date {
         abs(self.timeIntervalSince(other)) < -tolerance
     }
     
+    func isAlmostAfter(to other: Date, tolerance: TimeInterval = 0.001) -> Bool {
+        abs(self.timeIntervalSince(other)) > tolerance
+    }
+    
     func differenceMinutes(from date: Date) -> Int {
         let diff = Calendar.current.dateComponents([.minute], from: self, to: date).minute
             ?? Int(date.timeIntervalSince(self) / 60)

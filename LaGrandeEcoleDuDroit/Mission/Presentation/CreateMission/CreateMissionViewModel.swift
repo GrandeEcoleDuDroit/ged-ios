@@ -7,9 +7,9 @@ class CreateMissionViewModel: ViewModel {
     private let getUsersUseCase: GetUsersUseCase
     private let generateIdUseCase: GenerateIdUseCase
     
-    @Published var uiState = CreateMissionUiState()
+    @Published private(set) var uiState = CreateMissionUiState()
     private var defaultUsers: [User] = []
-    private var cancellables: Set<AnyCancellable> = []
+    private var cancellable: AnyCancellable?
     
     init(
         userRepository: UserRepository,
@@ -50,45 +50,39 @@ class CreateMissionViewModel: ViewModel {
     
     func onTitleChange(_ title: String) -> String {
         let truncatedTitle = title.take(MissionPresentationUtils.maxTitleLength)
-        uiState = uiState.copy {
-            $0.title = truncatedTitle
-            $0.createEnabled = validateCreate(title: truncatedTitle)
-        }
+        uiState.title = truncatedTitle
+        uiState.createEnabled = validateCreate(title: truncatedTitle)
         return truncatedTitle
     }
     
     func onDescriptionChange(_ description: String) -> String {
         let truncatedDescription = description.take(MissionPresentationUtils.maxDescriptionLength)
-        uiState = uiState.copy {
-            $0.description = truncatedDescription
-            $0.createEnabled = validateCreate(description: truncatedDescription)
-        }
+        uiState.description = truncatedDescription
+        uiState.createEnabled = validateCreate(description: truncatedDescription)
         return truncatedDescription
     }
     
     func onStartDateChange(_ startDate: Date) {
-        uiState = uiState.copy {
-            $0.startDate = startDate
-            $0.endDate = !validateEndDate(startDate: startDate, endDate: $0.endDate) ? startDate : $0.endDate
+        uiState.startDate = startDate
+        if !validateEndDate(startDate: startDate, endDate: uiState.endDate) {
+            uiState.endDate = startDate
         }
     }
     
     func onEndDateChange(_ endDate: Date) {
-        uiState = uiState.copy {
-            $0.startDate = !validateEndDate(startDate: $0.startDate, endDate: endDate) ? endDate : $0.startDate
-            $0.endDate = endDate
+        uiState.endDate = endDate
+        if !validateEndDate(startDate: uiState.startDate, endDate: endDate) {
+            uiState.startDate =  endDate
         }
     }
     
     func onSchoolLevelChange(_ schoolLevel: SchoolLevel) {
         var schoolLevels = uiState.schoolLevels
-        
         if let index = schoolLevels.firstIndex(of: schoolLevel) {
             schoolLevels.remove(at: index)
         } else {
             schoolLevels.append(schoolLevel)
         }
-        
         schoolLevels = schoolLevels.sorted { $0.number < $1.number }
         
         uiState.schoolLevels = schoolLevels
@@ -117,10 +111,10 @@ class CreateMissionViewModel: ViewModel {
     }
     
     func onRemoveManager(_ manager: User) {
-        let managers = uiState.managers
-        
+        var managers = uiState.managers
         if managers.count > 1 {
-            uiState.managers.removeAll { $0.id == manager.id }
+            managers.remove(manager)
+            uiState.managers = managers
         }
     }
     
@@ -143,29 +137,22 @@ class CreateMissionViewModel: ViewModel {
         uiState.users = users
     }
     
-    func onAddTask(_ value: String) {
-        let task = MissionTask(id: generateIdUseCase.execute(), value: value)
+    func onAddMissionTask(_ missionTaskValue: String) {
+        let task = MissionTask(id: generateIdUseCase.execute(), value: missionTaskValue)
         uiState.missionTasks.append(task)
     }
     
-    func onEditTask(_ missionTask: MissionTask) {
-        uiState = uiState.copy { state in
-            state.missionTasks = state.missionTasks.replace(
-                where: { $0.id == missionTask.id },
-                with: missionTask.copy { $0.value = missionTask.value.trim() }
-            )
-        }
+    func onEditMissionTask(_ missionTask: MissionTask) {
+        let trimmedMissionTask = missionTask.copy { $0.value = missionTask.value.trim() }
+        let missionTasks = uiState.missionTasks.replace(
+            where: { $0.id == missionTask.id },
+            with: trimmedMissionTask
+        )
+        uiState.missionTasks = missionTasks
     }
     
-    func onRemoveTask(_ missionTask: MissionTask) {
-        uiState.missionTasks.removeAll { $0.id == missionTask.id }
-    }
-    
-    private func initCurrentUser() {
-        userRepository.user.first().sink { [weak self] user in
-            self?.uiState.user = user
-            self?.uiState.managers = [user]
-        }.store(in: &cancellables)
+    func onRemoveMissionTask(_ missionTask: MissionTask) {
+        uiState.missionTasks.remove(missionTask)
     }
     
     private func validateCreate(
@@ -176,16 +163,6 @@ class CreateMissionViewModel: ViewModel {
         validateTitle(title) &&
             validateDescription(description) &&
             validateMaxParticipants(maxParticipants)
-    }
-    
-    private func initUsers() {
-        Task { @MainActor [weak self] in
-            let users = await self?.getUsersUseCase.execute().managerSorting()
-            if let users {
-                self?.uiState.users = users
-                self?.defaultUsers = users
-            }
-        }
     }
     
     private func validateTitle(_ title: String?) -> Bool {
@@ -204,7 +181,24 @@ class CreateMissionViewModel: ViewModel {
         (maxParticipants ?? uiState.maxParticipants).isNotBlank()
     }
     
-    struct CreateMissionUiState: Copyable {
+    private func initCurrentUser() {
+        cancellable = userRepository.user.first().sink { [weak self] user in
+            self?.uiState.user = user
+            self?.uiState.managers = [user]
+        }
+    }
+    
+    private func initUsers() {
+        Task { @MainActor [weak self] in
+            let users = await self?.getUsersUseCase.execute().missionManagerSorting()
+            if let users {
+                self?.uiState.users = users
+                self?.defaultUsers = users
+            }
+        }
+    }
+    
+    struct CreateMissionUiState {
         fileprivate(set) var user: User?
         fileprivate(set) var title: String = ""
         fileprivate(set) var description: String = ""

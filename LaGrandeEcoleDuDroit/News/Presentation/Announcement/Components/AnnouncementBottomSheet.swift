@@ -18,18 +18,14 @@ struct AnnouncementBottomSheet: View {
                 
             default:
                 if isEditable {
-                    BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 2)) {
-                        EditableAnnouncementBottomSheetContent(
-                            onEditClick: onEditClick,
-                            onDeleteClick: onDeleteClick
-                        )
-                    }
+                    EditableAnnouncementBottomSheet(
+                        onEditClick: onEditClick,
+                        onDeleteClick: onDeleteClick
+                    )
                 } else {
-                    BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
-                        NonEditableAnnouncementBottomSheetContent(
-                            onReportClick: onReportClick
-                        )
-                    }
+                    NonEditableAnnouncementBottomSheet(
+                        onReportClick: onReportClick
+                    )
                 }
         }
     }
@@ -57,36 +53,40 @@ private struct ErrorAnnouncementBottomSheet: View {
     }
 }
 
-private struct EditableAnnouncementBottomSheetContent: View {
+private struct EditableAnnouncementBottomSheet: View {
     let onEditClick: () -> Void
     let onDeleteClick: () -> Void
     
     var body: some View {
-        ClickableTextItem(
-            icon: Image(systemName: "pencil"),
-            text: Text(stringResource(.edit)),
-            onClick: onEditClick
-        )
-        
-        ClickableTextItem(
-            icon: Image(systemName: "trash"),
-            text: Text(stringResource(.delete)),
-            onClick: onDeleteClick
-        )
-        .foregroundColor(.red)
+        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 2)) {
+            ClickableTextItem(
+                icon: Image(systemName: "pencil"),
+                text: Text(stringResource(.edit)),
+                onClick: onEditClick
+            )
+            
+            ClickableTextItem(
+                icon: Image(systemName: "trash"),
+                text: Text(stringResource(.delete)),
+                onClick: onDeleteClick
+            )
+            .foregroundColor(.red)
+        }
     }
 }
 
-private struct NonEditableAnnouncementBottomSheetContent: View {
+private struct NonEditableAnnouncementBottomSheet: View {
     let onReportClick: () -> Void
     
     var body: some View {
-        ClickableTextItem(
-            icon: Image(systemName: "exclamationmark.bubble"),
-            text: Text(stringResource(.report)),
-            onClick: onReportClick
-        )
-        .foregroundColor(.red)
+        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
+            ClickableTextItem(
+                icon: Image(systemName: "exclamationmark.bubble"),
+                text: Text(stringResource(.report)),
+                onClick: onReportClick
+            )
+            .foregroundColor(.red)
+        }
     }
 }
 

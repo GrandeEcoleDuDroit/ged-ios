@@ -29,6 +29,19 @@ class MissionRemoteDataSource {
         )
     }
     
+    func updateMission(mission: Mission, imageData: Data?) async throws {
+        try await mapServerError(
+            block: {
+                try await missionApi.updateMission(
+                    remoteMission: mission.toRemote()!,
+                    imageData: imageData
+                )
+            },
+            tag: tag,
+            message: "Failed to update remote missions"
+        )
+    }
+    
     func deleteMission(missionId: String, imageFileName: String?) async throws {
         try await mapServerError(
             block: {
