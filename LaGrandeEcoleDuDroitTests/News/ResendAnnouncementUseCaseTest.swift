@@ -37,7 +37,7 @@ class ResendAnnouncementUseCaseTest {
 private class AnnouncementSetPublished: MockAnnouncementRepository {
     var announcementSetToPublished: Bool = false
     
-    override func updateLocalAnnouncement(announcement: Announcement) {
+    override func upsertLocalAnnouncement(announcement: Announcement) async throws {
         announcementSetToPublished = announcement.state == .published
     }
 }
@@ -45,7 +45,7 @@ private class AnnouncementSetPublished: MockAnnouncementRepository {
 private class AnnouncementSetError: MockAnnouncementRepository {
     var announcementSetToError: Bool = false
     
-    override func updateLocalAnnouncement(announcement: Announcement) {
+    override func upsertLocalAnnouncement(announcement: Announcement) async throws {
         announcementSetToError = announcement.state == .error
     }
     
