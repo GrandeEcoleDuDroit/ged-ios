@@ -128,7 +128,7 @@ private struct ThirdRegistrationView: View {
             errorMessage: nil,
             onRegisterClick: {}
         )
-        .background(Color.background)
+        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

@@ -12,6 +12,8 @@ protocol MissionRepository {
     
     func createMission(mission: Mission, imageData: Data?) async throws
     
+    func updateMission(mission: Mission, imageData: Data?) async throws
+    
     func upsertLocalMission(mission: Mission) async throws
     
     func deleteMission(mission: Mission, imageUrl: String?) async throws

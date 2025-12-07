@@ -144,6 +144,7 @@
 "participants" = "Participants";
 "tasks" = "Tasks";
 "new_mission" = "New mission";
+"edit_mission" = "Edit mission";
 "participant_number" = "%lld/%lld";
 "no_mission" = "Aucune mission";
 "add_image" = "Add image";

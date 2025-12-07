@@ -17,7 +17,7 @@ struct MessageNavigation: View {
                 tabBarVisibility.show = true
                 viewModel.setCurrentRoute(MessageMainRoute.conversation)
             }
-            .background(Color.background)
+            .background(.appBackground)
             .navigationDestination(for: MessageRoute.self) { route in
                 switch route {
                     case .chat(let conversation):
@@ -32,7 +32,7 @@ struct MessageNavigation: View {
                             tabBarVisibility.show = false
                             viewModel.setCurrentRoute(route)
                         }
-                        .background(Color.background)
+                        .background(.appBackground)
                         
                     case .createConversation:
                         CreateConversationDestination(
@@ -44,7 +44,7 @@ struct MessageNavigation: View {
                             tabBarVisibility.show = false
                             viewModel.setCurrentRoute(route)
                         }
-                        .background(Color.background)
+                        .background(.appBackground)
                         
                     case .interlocutor(let user):
                         UserDestination(user: user)
@@ -52,7 +52,7 @@ struct MessageNavigation: View {
                                 tabBarVisibility.show = false
                                 viewModel.setCurrentRoute(route)
                             }
-                            .background(Color.background)
+                            .background(.appBackground)
                 }
             }
             .onReceive(viewModel.$routeToNavigate) { routeToNavigate in

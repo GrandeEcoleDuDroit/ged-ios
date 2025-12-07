@@ -8,7 +8,7 @@ struct AuthenticationNavigation: View {
             AuthenticationDestination(
                 onRegisterClick: { path.append(.first) }
             )
-            .background(Color.background)
+            .background(.appBackground)
             .navigationDestination(for: AuthRoute.self) { route in
                 switch route {
                     case .first:
@@ -20,7 +20,7 @@ struct AuthenticationNavigation: View {
                                 )
                             )
                         }
-                        .background(Color.background)
+                        .background(.appBackground)
                         
                     case let .second(firstName, lastName):
                         SecondRegistrationDestination(
@@ -35,7 +35,7 @@ struct AuthenticationNavigation: View {
                                 )
                             )
                         }
-                        .background(Color.background)
+                        .background(.appBackground)
                         
                     case let .third(firstName, lastName, schoolLevel):
                         ThirdRegistrationDestination(
@@ -43,7 +43,7 @@ struct AuthenticationNavigation: View {
                             lastName: lastName,
                             schoolLevel: schoolLevel
                         )
-                        .background(Color.background)
+                        .background(.appBackground)
                 }
             }
         }

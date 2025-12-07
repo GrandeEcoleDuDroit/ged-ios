@@ -171,7 +171,7 @@ private struct ReadAnnouncementView: View {
             onReportAnnouncementClick: { _ in },
             onAuthorClick: { _ in }
         )
-        .background(Color.background)
+        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

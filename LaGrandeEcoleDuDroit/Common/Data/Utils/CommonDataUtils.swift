@@ -11,7 +11,7 @@ func mapFirebaseException<T>(
         return try await block()
     }
     catch let error as URLError {
-        e(tag, message.toString(), error)
+        e(tag, message.orEmpty(), error)
         switch error.code {
             case .notConnectedToInternet, .cannotFindHost: throw NetworkError.noInternetConnection
             default : throw error
@@ -19,7 +19,7 @@ func mapFirebaseException<T>(
     }
     
     catch let error as NSError {
-        e(tag, message.toString(), error)
+        e(tag, message.orEmpty(), error)
         if let errorCode = FirestoreErrorCode.Code(rawValue: error.code) {
             switch errorCode {
                 case .resourceExhausted:
@@ -33,7 +33,7 @@ func mapFirebaseException<T>(
     }
     
     catch {
-        e(tag, message.toString(), error)
+        e(tag, message.orEmpty(), error)
         throw handleSpecificException(error)
     }
 }
@@ -49,7 +49,7 @@ func mapServerError(
         
         if let httpResponse = urlResponse as? HTTPURLResponse {
             if httpResponse.statusCode >= 400 {
-                e(tag, "\(message.toString()): \(serverResponse.error.toString())")
+                e(tag, "\(message.orEmpty()): \(serverResponse.error.orEmpty())")
                 guard specificHandle == nil else {
                     return try specificHandle!(urlResponse, serverResponse)
                 }
@@ -58,7 +58,7 @@ func mapServerError(
             }
         }
     } catch {
-        e(tag, message.toString(), error)
+        e(tag, message.orEmpty(), error)
         throw error
     }
 }
@@ -75,7 +75,7 @@ func mapServerError<T>(
         if let httpResponse = urlResponse as? HTTPURLResponse {
             if httpResponse.statusCode >= 400 {
                 let serverResponse = data as? ServerResponse
-                e(tag, "\(message.toString()): \(String(describing: serverResponse?.error))")
+                e(tag, "\(message.orEmpty()): \(String(describing: serverResponse?.error))")
                 
                 guard specificHandle == nil else {
                     return specificHandle!(urlResponse, data)
@@ -89,7 +89,7 @@ func mapServerError<T>(
             return data
         }
     } catch {
-        e(tag, message.toString(), error)
+        e(tag, message.orEmpty(), error)
         throw error
     }
 }
