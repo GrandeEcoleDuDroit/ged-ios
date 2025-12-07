@@ -11,7 +11,7 @@ struct OutlinedTextField: View {
     
     @FocusState private var focusState: Field?
     private var field: Field?
-    @State private var currentText: String = ""
+    @State private var currentText: String
     
     private var borderColor: Color {
         if errorMessage != nil {
@@ -20,14 +20,6 @@ struct OutlinedTextField: View {
             .disableBorder
         } else {
             .outline
-        }
-    }
-    
-    private var borderWeight: CGFloat {
-        if focusState == field {
-            4
-        } else {
-            2
         }
     }
     
@@ -72,7 +64,7 @@ struct OutlinedTextField: View {
             HStack(alignment: .center, spacing: Dimens.leadingIconSpacing) {
                 leadingIcon?
                     .resizable()
-                    .scaledToFill()
+                    .scaledToFit()
                     .frame(width: Dimens.inputIconSize, height: Dimens.inputIconSize)
                     .foregroundStyle(placeHolderColor)
                 
@@ -123,16 +115,8 @@ struct OutlinedPasswordTextField: View {
         }
     }
     
-    private var borderWeight: CGFloat {
-        if focusState == field {
-            4
-        } else {
-            2
-        }
-    }
-    
     private var verticalPadding: CGFloat {
-        showPassword ? 15.5 : 16
+        showPassword ? 15.2 : 16
     }
     
     private var placeHolderColor: Color {
@@ -168,53 +152,48 @@ struct OutlinedPasswordTextField: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                if(!showPassword) {
-                    SecureField(
-                        "",
-                        text: Binding(
-                            get: { text },
-                            set: onTextChange
-                        ),
-                        prompt: Text(label).foregroundColor(placeHolderColor)
-                    )
-                    .foregroundColor(textColor)
-                    .textInputAutocapitalization(.never)
-                    .textContentType(.password)
-                    .focused($focusState, equals: field)
-                    
-                    Image(systemName: "eye.slash")
-                        .foregroundColor(placeHolderColor)
-                        .onTapGesture {
-                            showPassword = true
-                        }
-                } else {
-                    TextField(
-                        "",
-                        text: Binding(
-                            get: { text },
-                            set: onTextChange
-                        ),
-                        prompt: Text(label).foregroundColor(placeHolderColor)
-                    )
-                    .foregroundColor(textColor)
-                    .textInputAutocapitalization(.never)
-                    .textContentType(.password)
-                    .focused($focusState, equals: field)
-                
-                    Image(systemName: "eye")
-                        .foregroundColor(placeHolderColor)
-                        .onTapGesture {
-                            showPassword = false
-                        }
+                Group {
+                    if showPassword {
+                        TextField(
+                            "",
+                            text: Binding(
+                                get: { text },
+                                set: onTextChange
+                            ),
+                            prompt: Text(label).foregroundColor(placeHolderColor)
+                        )
+                    } else {
+                        SecureField(
+                            "",
+                            text: Binding(
+                                get: { text },
+                                set: onTextChange
+                            ),
+                            prompt: Text(label).foregroundColor(placeHolderColor)
+                        )
+                    }
                 }
+                .foregroundColor(textColor)
+                .textInputAutocapitalization(.never)
+                .textContentType(.password)
+                .focused($focusState, equals: field)
+                
+                Image(systemName: showPassword ? "eye" : "eye.slash")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: Dimens.inputIconSize, height: Dimens.inputIconSize)
+                    .foregroundColor(placeHolderColor)
+                    .onTapGesture {
+                        showPassword.toggle()
+                    }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal)
             .padding(.vertical, verticalPadding)
-            .cornerRadius(5)
             .overlay(
                 RoundedRectangle(cornerRadius: 5)
-                    .stroke(borderColor, lineWidth: 1)
+                    .stroke(borderColor, lineWidth: 2)
             )
+            .cornerRadius(5)
             .disabled(isDisabled)
             
             if errorMessage != nil {
@@ -330,7 +309,7 @@ struct TransparentTextFieldArea: View {
         OutlinedTextField(
             initialText: "",
             onTextChange: { _ in "" },
-            placeHolder: "Outlined text field",
+            placeHolder: "Outlined text field"
         )
         
         OutlinedPasswordTextField(

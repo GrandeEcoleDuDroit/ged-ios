@@ -24,9 +24,9 @@ extension Mission {
         
         let imageFileName: String? = switch state {
             case .draft: nil
-            case let .publishing(imagePath): MissionUtils.ImageFile.getFileNameFromPath(path: imagePath)
-            case let .published(imageUrl): MissionUtils.ImageFile.getFileNameFromUrl(url: imageUrl)
-            case let .error(imagePath): MissionUtils.ImageFile.getFileNameFromPath(path: imagePath)
+            case let .publishing(imagePath): MissionUtils.ImageFile.extractFileNameFromPath(path: imagePath)
+            case let .published(imageUrl): MissionUtils.ImageFile.extractFileNameFromUrl(url: imageUrl)
+            case let .error(imagePath): MissionUtils.ImageFile.extractFileNameFromPath(path: imagePath)
         }
         
         return OutboundRemoteMission(
@@ -113,6 +113,7 @@ extension LocalMission {
             startDate: missionStartDate,
             endDate: missionEndDate,
             schoolLevels: schoolLevelNumbers.map { SchoolLevel.fromNumber($0) },
+            duration: missionDuration,
             managers: localManagers.map { $0.toUser() },
             participants: localParticipants.map { $0.toUser() },
             maxParticipants: Int(missionMaxParticipants),
@@ -136,9 +137,9 @@ extension LocalMission {
         
         let imageFileName: String? = switch mission.state {
             case .draft: nil
-            case let .publishing(imagePath): MissionUtils.ImageFile.getFileNameFromPath(path: imagePath)
-            case let .published(imageUrl): MissionUtils.ImageFile.getFileNameFromUrl(url: imageUrl)
-            case let .error(imagePath): MissionUtils.ImageFile.getFileNameFromPath(path: imagePath)
+            case let .publishing(imagePath): MissionUtils.ImageFile.extractFileNameFromPath(path: imagePath)
+            case let .published(imageUrl): MissionUtils.ImageFile.extractFileNameFromUrl(url: imageUrl)
+            case let .error(imagePath): MissionUtils.ImageFile.extractFileNameFromPath(path: imagePath)
         }
         
         missionId = mission.id
@@ -187,9 +188,9 @@ extension LocalMission {
         
         let imageFileName: String? = switch mission.state {
             case .draft: nil
-            case let .publishing(imagePath): MissionUtils.ImageFile.getFileNameFromPath(path: imagePath)
-            case let .published(imageUrl): MissionUtils.ImageFile.getFileNameFromUrl(url: imageUrl)
-            case let .error(imagePath): MissionUtils.ImageFile.getFileNameFromPath(path: imagePath)
+            case let .publishing(imagePath): MissionUtils.ImageFile.extractFileNameFromPath(path: imagePath)
+            case let .published(imageUrl): MissionUtils.ImageFile.extractFileNameFromUrl(url: imageUrl)
+            case let .error(imagePath): MissionUtils.ImageFile.extractFileNameFromPath(path: imagePath)
         }
         
         let sameSchoolLevels = if let data = schoolLevelNumbersJsonData {
@@ -252,6 +253,7 @@ extension InboundRemoteMission {
             startDate: missionStartDate.toDate(),
             endDate: missionEndDate.toDate(),
             schoolLevels: schoolLevelNumbers.map { SchoolLevel.fromNumber($0) },
+            duration: missionDuration,
             managers: missionManagers.map { $0.toUser() },
             participants: missionParticipants?.map { $0.toUser() } ?? [],
             maxParticipants: missionMaxParticipants,

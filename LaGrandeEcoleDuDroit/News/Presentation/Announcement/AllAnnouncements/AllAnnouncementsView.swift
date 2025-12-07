@@ -210,7 +210,7 @@ private struct Sheet: View {
             onReportAnnouncementClick: { _ in },
             onDeleteAnnouncementClick: {  _ in }
         )
-        .background(Color.background)
+        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

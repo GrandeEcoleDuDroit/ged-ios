@@ -7,11 +7,7 @@ extension MissionUtils.ImageFile {
         }
     }
     
-    static func getFileNameFromPath(path: String?) -> String? {
+    static func extractFileNameFromPath(path: String?) -> String? {
         path?.components(separatedBy: "/").last
-    }
-    
-    static func getFileNameFromUrl(url: String?) -> String? {
-        url?.components(separatedBy: "/").last
     }
 }

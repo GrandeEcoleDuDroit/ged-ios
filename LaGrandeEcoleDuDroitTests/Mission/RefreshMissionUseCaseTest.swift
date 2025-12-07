@@ -8,7 +8,7 @@ class RefreshMissionUseCaseTest {
     @Test
     func refreshMissionsUseCase_should_fetch_mission_when_debounce_superior_than_10_seconds() async {
         // Given
-        let missionSyncronized = MissionSyncronized()
+        let missionSyncronized = SyncronizedMission()
         let useCase = RefreshMissionsUseCase(
             fetchMissionsUseCase: missionSyncronized
         )
@@ -17,31 +17,31 @@ class RefreshMissionUseCaseTest {
         try? await useCase.execute()
         
         // Then
-        #expect(missionSyncronized.missionSynchronized)
+        #expect(missionSyncronized.synchronizedMission)
     }
     
     @Test
     func refreshMissionsUseCase_should_not_fetch_mission_when_debounce_inferior_than_10_seconds() async {
         // Given
-        let missionSyncronized = MissionSyncronized()
+        let syncronizedMission = SyncronizedMission()
         let useCase = RefreshMissionsUseCase(
-            fetchMissionsUseCase: missionSyncronized
+            fetchMissionsUseCase: syncronizedMission
         )
         
         // When
         try? await useCase.execute()
-        missionSyncronized.missionSynchronized = false
+        syncronizedMission.synchronizedMission = false
         try? await useCase.execute()
         
         // Then
-        #expect(!missionSyncronized.missionSynchronized)
+        #expect(!syncronizedMission.synchronizedMission)
     }
 }
 
-private class MissionSyncronized: MockSynchronizeMissionsUseCase {
-    var missionSynchronized: Bool = false
+private class SyncronizedMission: MockSynchronizeMissionsUseCase {
+    var synchronizedMission: Bool = false
     
     override func execute() async throws {
-        missionSynchronized = true
+        synchronizedMission = true
     }
 }

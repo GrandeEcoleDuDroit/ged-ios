@@ -147,7 +147,8 @@ private struct CardHeader: View {
                         .participantNumber,
                         mission.participants.count,
                         mission.maxParticipants
-                    )
+                    ),
+                    spacing: Dimens.smallPadding
                 )
                 .font(.bodyMedium)
                 .padding(.top, Dimens.extraSmallPadding)
@@ -192,7 +193,7 @@ private struct ErrorBanner: View {
         .padding(.vertical, Dimens.smallMediumPadding)
         .padding(.horizontal, Dimens.mediumPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.background.opacity(0.8))
+        .background(.appBackground.opacity(0.8))
     }
 }
 

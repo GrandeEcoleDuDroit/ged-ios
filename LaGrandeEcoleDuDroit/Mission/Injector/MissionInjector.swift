@@ -54,6 +54,13 @@ class MissionInjector: Injector {
         container.register(RefreshMissionsUseCase.self) { resolver in
             RefreshMissionsUseCase(fetchMissionsUseCase: resolver.resolve(FetchMissionsUseCase.self)!)
         }.inObjectScope(.container)
+        
+        container.register(UpdateMissionUseCase.self) { resolver in
+            UpdateMissionUseCase(
+                missionRepository: resolver.resolve(MissionRepository.self)!,
+                imageRepository: CommonInjector.shared.resolve(ImageRepository.self)
+            )
+        }
     }
     
     func resolve<T>(_ type: T.Type) -> T {

@@ -13,12 +13,12 @@ struct SplashScreen: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            .background(Color.background)
+            .background(.appBackground)
     }
 }
 
 #Preview {
     SplashScreen()
-        .background(Color.background)
+        .background(.appBackground)
         .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

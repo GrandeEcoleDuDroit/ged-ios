@@ -139,6 +139,7 @@ enum Strings: String {
     case participants = "participants"
     case tasks = "tasks"
     case newMission = "new_mission"
+    case editMission = "edit_mission"
     case participantNumber = "participant_number"
     case noMission = "no_mission"
     case addImage = "add_image"

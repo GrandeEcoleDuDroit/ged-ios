@@ -87,7 +87,7 @@ private struct CreateAnnouncementView: View {
             onContentChange: { _ in },
             onCreateClick: {}
         )
-        .background(Color.background)
+        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

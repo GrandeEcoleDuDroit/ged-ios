@@ -2,9 +2,7 @@ import Combine
 import Foundation
 
 class MockMissionRepository: MissionRepository {
-    var missions: AnyPublisher<[Mission], Never> {
-        Empty<[Mission], Never>().eraseToAnyPublisher()
-    }
+    var missions: AnyPublisher<[Mission], Never> { Empty().eraseToAnyPublisher() }
     
     var currentMissions: [Mission] { [] }
     
@@ -13,6 +11,8 @@ class MockMissionRepository: MissionRepository {
     func getRemoteMissions() async throws -> [Mission] { [] }
     
     func createMission(mission: Mission, imageData: Data?) async throws {}
+    
+    func updateMission(mission: Mission, imageData: Data?) async throws {}
     
     func upsertLocalMission(mission: Mission) async throws {}
     

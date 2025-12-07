@@ -9,13 +9,14 @@ struct MissionNavigation: View {
         NavigationStack(path: $path) {
             MissionDestination(
                 onMissionClick: { path.append(.missionDetails(missionId: $0)) },
-                onCreateMissionClick: { path.append(.createMission) }
+                onCreateMissionClick: { path.append(.createMission) },
+                onEditMissionClick: { path.append(.editMission(mission: $0)) }
             )
             .onAppear {
                 tabBarVisibility.show = true
                 viewModel.setCurrentRoute(MissionMainRoute.mission)
             }
-            .background(Color.background)
+            .background(.appBackground)
             .navigationDestination(for: MissionRoute.self) { route in
                 switch route {
                     case .createMission:
@@ -24,13 +25,24 @@ struct MissionNavigation: View {
                                 tabBarVisibility.show = false
                                 viewModel.setCurrentRoute(route)
                             }
-                            .background(Color.background)
+                            .background(.appBackground)
+                        
+                    case let .editMission(mission):
+                        EditMissionDestination(
+                            onBackClick: { path.removeLast() },
+                            mission: mission
+                        )
+                        .onAppear {
+                            tabBarVisibility.show = false
+                            viewModel.setCurrentRoute(route)
+                        }
+                        .background(.appBackground)
                         
                     case let .missionDetails(missionId):
                         MissionDetailsDestination(
                             missionId: missionId,
                             onBackClick: { path.removeLast() },
-                            onEditMissionClick: { _ in },
+                            onEditMissionClick: { path.append(.editMission(mission: $0)) },
                             onManagerClick: { path.append(.userProfile(user: $0)) },
                             onParticipantClick: { path.append(.userProfile(user: $0)) }
                         ).onAppear {
@@ -41,7 +53,7 @@ struct MissionNavigation: View {
                         .onDisappear {
                             EnableSwipeBack.enabled = false
                         }
-                        .background(Color.background)
+                        .background(.appBackground)
                         
                     case let .userProfile(user):
                         UserDestination(user: user)
@@ -49,7 +61,7 @@ struct MissionNavigation: View {
                             tabBarVisibility.show = false
                             viewModel.setCurrentRoute(route)
                         }
-                        .background(Color.background)
+                        .background(.appBackground)
                 }
             }
         }
@@ -58,6 +70,7 @@ struct MissionNavigation: View {
 
 enum MissionRoute: Route {
     case createMission
+    case editMission(mission: Mission)
     case missionDetails(missionId: String)
     case userProfile(user: User)
 }

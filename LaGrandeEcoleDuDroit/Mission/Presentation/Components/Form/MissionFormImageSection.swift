@@ -2,43 +2,63 @@ import SwiftUI
 import PhotosUI
 
 struct MissionFormImageSection: View {
-    let imageData: Data?
-    let onImageClick: () -> Void
-    let onRemoveImageClick: () -> Void
+    @Binding var imageData: Data?
+    let missionState: Mission.MissionState
+    let onImageChange: () -> Void
+    let onImageRemove: () -> Void
     
-    private let viewHeight: CGFloat = 200
+    @State private var selectedItem: PhotosPickerItem?
+    @State private var showPhotosPicker: Bool = false
     
     var body: some View {
         ZStack {
-            if let data = imageData,
-               let uiImage = UIImage(data: data) {
-                ZStack {
+            PhotosPicker(
+                selection: $selectedItem,
+                matching: .images
+            ) {
+                if let data = imageData, let uiImage = UIImage(data: data) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFill()
-                        .frame(height: viewHeight)
+                        .frame(height: MissionPresentationUtils.missionImageHeight)
                         .frame(maxWidth: .infinity)
                         .clipped()
-                    
-                    Button(action: onRemoveImageClick) {
-                        Image(systemName: "xmark")
-                    }
-                    .fontWeight(.medium)
-                    .padding(Dimens.smallPadding)
-                    .background(.imageIconButton)
-                    .clipShape(.circle)
-                    .padding(Dimens.smallMediumPadding)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                    .frame(height: viewHeight)
+                } else {
+                    MissionImage(
+                        missionState: missionState,
+                        defaultImage: EmptyImage()
+                    )
+                    .frame(height: MissionPresentationUtils.missionImageHeight)
+                    .clipped()
                 }
-            } else {
-                EmptyImage()
+            }
+            
+            if imageData != nil || missionState.imageReference != nil {
+                Button(
+                    action: {
+                        imageData = nil
+                        onImageRemove()
+                    }
+                ) {
+                    Image(systemName: "xmark")
+                }
+                .padding(10)
+                .background(.imageIconButtonBackground)
+                .clipShape(.circle)
+                .padding(Dimens.smallMediumPadding)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                .frame(height: MissionPresentationUtils.missionImageHeight)
             }
         }
         .frame(maxWidth: .infinity)
-        .frame(height: viewHeight)
+        .frame(height: MissionPresentationUtils.missionImageHeight)
         .contentShape(Rectangle())
-        .onTapGesture(perform: onImageClick)
+        .task(id: selectedItem) {
+            if let data = try? await selectedItem?.loadTransferable(type: Data.self) {
+                imageData = data
+                onImageChange()
+            }
+        }
     }
 }
 
@@ -59,9 +79,10 @@ private struct EmptyImage: View {
 
 #Preview {
     MissionFormImageSection(
-        imageData: nil,
-        onImageClick: {},
-        onRemoveImageClick: {}
+        imageData: .constant(nil),
+        missionState: .published(imageUrl: ""),
+        onImageChange: {},
+        onImageRemove: {}
     )
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }
