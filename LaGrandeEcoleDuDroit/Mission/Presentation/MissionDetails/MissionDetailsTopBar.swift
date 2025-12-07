@@ -34,7 +34,7 @@ private struct ImageTopBar: View {
                     .fontWeight(.semibold)
                     .padding(.vertical, 10)
                     .padding(.horizontal, 12)
-                    .background(.imageIconButtonBackground)
+                    .background(.imageIconButtonContainer)
                     .clipShape(.circle)
             }
             
@@ -45,7 +45,7 @@ private struct ImageTopBar: View {
                     .font(.title3)
                     .padding(.vertical, 17)
                     .padding(.horizontal, 10)
-                    .background(.imageIconButtonBackground)
+                    .background(.imageIconButtonContainer)
                     .clipShape(.circle)
             }
         }

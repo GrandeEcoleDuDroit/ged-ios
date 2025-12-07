@@ -39,72 +39,30 @@ private struct DeleteAccountView: View {
     @State private var showPassword: Bool = false
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: Dimens.largePadding) {
             Text(stringResource(.deleteAccountText))
-                .padding(.horizontal, Dimens.mediumLargePadding)
             
-            Form {
-                Section(stringResource(.enterPassword)) {
-                    if showPassword {
-                        HStack {
-                            TextField(
-                                stringResource(.password),
-                                text: $password
-                            )
-                            .textContentType(.password)
-
-                            Image(systemName: "eye")
-                                .foregroundColor(.iconInput)
-                                .onTapGesture {
-                                    showPassword = false
-                                }
-                        }
-                    } else {
-                        HStack {
-                            SecureField(
-                                stringResource(.password),
-                                text: $password
-                            )
-                            .textContentType(.password)
-                            
-                            Image(systemName: "eye.slash")
-                                .foregroundColor(.iconInput)
-                                .onTapGesture {
-                                    showPassword = true
-                                }
-                        }
-                    }
-                }
-            }
-            .frame(maxHeight: 90)
-            .scrollContentBackground(.hidden)
-            
-            if let errorMessage {
-                Text(errorMessage)
-                    .font(.callout)
-                    .foregroundStyle(.error)
-                    .padding(.horizontal, Dimens.mediumLargePadding)
-            }
-            
-            Button(
-                action: onDeleteAccountClick,
-                label: {
-                    Text(stringResource(.deleteAccount))
-                        .frame(maxWidth: .infinity)
-                        .padding(Dimens.smallMediumPadding)
-                }
+            OutlinedPasswordTextField(
+                label: stringResource(.password),
+                text: password,
+                onTextChange: { password = $0 },
+                errorMessage: errorMessage
             )
-            .background(.profileSectionBackground)
-            .foregroundStyle(.red)
-            .clipShape(.rect(cornerRadius: 10))
-            .padding(.horizontal, Dimens.mediumLargePadding)
-            .padding(.vertical, Dimens.smallPadding)
+            
+            Button(action: onDeleteAccountClick) {
+                Text(stringResource(.deleteAccount))
+                    .frame(maxWidth: .infinity)
+                    .padding(10)
+                    .foregroundStyle(.white)
+                    .background(.red)
+                    .clipShape(.rect(cornerRadius: 30))
+            }
         }
-        .contentShape(Rectangle())
+        .padding(.horizontal)
+        .loading(loading)
         .navigationTitle(stringResource(.deleteAccount))
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .loading(loading)
     }
 }
 

@@ -17,7 +17,7 @@ struct OutlinedTextField: View {
         if errorMessage != nil {
             .error
         } else if disabled {
-            .disableBorder
+            .disabledBorder
         } else {
             .outline
         }
@@ -25,7 +25,7 @@ struct OutlinedTextField: View {
     
     private var placeHolderColor: Color {
         if disabled {
-            .disableText
+            .disabledText
         } else {
             .onSurfaceVariant
         }
@@ -33,7 +33,7 @@ struct OutlinedTextField: View {
     
     private var textColor: Color {
         if disabled {
-            .disableText
+            .disabledText
         } else {
             .primary
         }
@@ -109,7 +109,7 @@ struct OutlinedPasswordTextField: View {
         if errorMessage != nil {
             .error
         } else if isDisabled {
-            .disableBorder
+            .disabledBorder
         } else {
             .outline
         }
@@ -121,7 +121,7 @@ struct OutlinedPasswordTextField: View {
     
     private var placeHolderColor: Color {
         if isDisabled {
-            .disableText
+            .disabledText
         } else {
             .onSurfaceVariant
         }
@@ -129,7 +129,7 @@ struct OutlinedPasswordTextField: View {
     
     private var textColor: Color {
         if isDisabled {
-            .disableText
+            .disabledText
         } else {
             .primary
         }
