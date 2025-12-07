@@ -8,27 +8,30 @@ struct MissionCard: View {
     var body: some View {
         switch mission.state {
             case .published:
-                Clickable(action: onClick) {
+                Button(action: onClick) {
                     DefaultMissionCard(
                         mission: mission,
                         onOptionsClick: onOptionsClick
                     )
                 }
+                .buttonStyle(ClickStyle())
                 .clipShape(ShapeDefaults.medium)
                 
             case .error:
-                Clickable(action: onClick) {
+                Button(action: onClick) {
                     ErrorMissionCard(mission: mission)
                 }
+                .buttonStyle(ClickStyle())
                 .clipShape(ShapeDefaults.medium)
                 
             default:
-                Clickable(action: onClick) {
+                Button(action: onClick) {
                     PublishingMissionCard(
                         mission: mission,
                         onOptionsClick: onOptionsClick
                     )
                 }
+                .buttonStyle(ClickStyle())
                 .clipShape(ShapeDefaults.medium)
         }
     }

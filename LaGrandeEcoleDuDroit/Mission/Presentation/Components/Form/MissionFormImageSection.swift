@@ -43,7 +43,7 @@ struct MissionFormImageSection: View {
                     Image(systemName: "xmark")
                 }
                 .padding(10)
-                .background(.imageIconButtonBackground)
+                .background(.imageIconButtonContainer)
                 .clipShape(.circle)
                 .padding(Dimens.smallMediumPadding)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
