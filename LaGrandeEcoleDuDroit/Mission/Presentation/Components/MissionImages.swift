@@ -134,14 +134,14 @@ private struct LoadingImage: View {
     var body: some View {
         ProgressView()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(.imageLoading)
+            .background(.imageLoadingBackground)
     }
 }
 
 private struct ErrorImage: View {
     var body: some View {
         Rectangle()
+            .fill(.imageLoadingBackground)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .foregroundStyle(.imageLoading)
     }
 }

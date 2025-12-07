@@ -33,7 +33,7 @@ struct ClickableProfilePicture: View {
             AsyncImage(url: URL(string: url)) { phase in
                 switch phase {
                     case .empty:
-                        Clickable(action: onClick) {
+                        Button(action: onClick) {
                             ZStack {
                                 ProgressView()
                             }
@@ -41,22 +41,25 @@ struct ClickableProfilePicture: View {
                                 width: Dimens.defaultImageSize * scale,
                                 height: Dimens.defaultImageSize * scale
                             )
-                            .background(.imageLoading)
+                            .background(.imageLoadingBackground)
                             .clipShape(Circle())
                         }
+                        .buttonStyle(ClickStyle())
                         .clipShape(Circle())
                         
                     case .success(let image):
-                        Clickable(action: onClick) {
-                            image.resize(scale: scale).clipShape(Circle())
-
+                        Button(action: onClick) {
+                            image.resize(scale: scale)
+                                .clipShape(Circle())
                         }
+                        .buttonStyle(ClickStyle())
                         .clipShape(Circle())
                         
                     case .failure:
-                        Clickable(action: onClick) {
+                        Button(action: onClick) {
                             ErrorImage(scale: scale).clipShape(Circle())
                         }
+                        .buttonStyle(ClickStyle())
                         .clipShape(Circle())
                         
                     default: ClickableDefaultProfilePicture(onClick: onClick, scale: scale)
@@ -76,7 +79,7 @@ struct ClickableProfilePictureImage: View {
     
     var body: some View {
         if let image {
-            Clickable(action: onClick) {
+            Button(action: onClick) {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -87,6 +90,7 @@ struct ClickableProfilePictureImage: View {
                     )
                     .clipShape(Circle())
             }
+            .buttonStyle(ClickStyle())
         } else {
             ClickableDefaultProfilePicture(onClick: onClick, scale: scale)
         }
@@ -127,11 +131,12 @@ private struct ClickableDefaultProfilePicture: View {
     var scale: CGFloat = 1.0
         
     var body: some View {
-        Clickable(action: onClick) {
+        Button(action: onClick) {
             Image(ImageResource.defaultProfilePicture)
                 .resize(scale: scale)
                 .clipShape(Circle())
         }
+        .buttonStyle(ClickStyle())
         .clipShape(Circle())
     }
 }
@@ -145,7 +150,7 @@ private struct LoadingImage: View {
                 width: Dimens.defaultImageSize * scale,
                 height: Dimens.defaultImageSize * scale
             )
-            .background(.imageLoading)
+            .background(.imageLoadingBackground)
     }
 }
 
@@ -154,11 +159,11 @@ private struct ErrorImage: View {
     
     var body: some View {
         Rectangle()
+            .fill(.imageLoadingBackground)
             .frame(
                 width: Dimens.defaultImageSize * scale,
                 height: Dimens.defaultImageSize * scale
             )
-            .foregroundStyle(.imageLoading)
     }
 }
 
@@ -174,7 +179,7 @@ private struct ErrorImage: View {
             ErrorImage()
             Text("Error image").font(.caption)
             
-            ProfilePicture(url: "")
+            ProfilePicture(url: "https://v24.tech/wp-content/uploads/2024/05/male_boy_person_people_avatar_white_tone_icon_159368.png")
             Text("Profile picture").font(.caption)
             
             DefaultProfilePicture()
@@ -183,5 +188,6 @@ private struct ErrorImage: View {
             ClickableDefaultProfilePicture(onClick: {})
             Text("Clickable default profile picture").font(.caption)
         }
+        .frame(maxWidth: .infinity)
     }
 }

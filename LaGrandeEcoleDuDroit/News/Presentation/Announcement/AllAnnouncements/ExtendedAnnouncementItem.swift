@@ -9,7 +9,7 @@ struct ExtendedAnnouncementItem: View {
     var body: some View {
         switch announcement.state {
             case .published, .draft:
-                Clickable(action: onClick) {
+                Button(action: onClick) {
                     DefaultItem(
                         announcement: announcement,
                         onOptionsClick: onOptionsClick,
@@ -19,6 +19,7 @@ struct ExtendedAnnouncementItem: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .contentShape(Rectangle())
                 }
+                .buttonStyle(ClickStyle())
                 
             case .publishing:
                 PublishingItem(
@@ -73,7 +74,7 @@ private struct PublishingItem: View {
     let onAuthorClick: () -> Void
     
     var body: some View {
-        Clickable(action: onClick) {
+        Button(action: onClick) {
             DefaultItem(
                 announcement: announcement,
                 onOptionsClick: onOptionsClick,
@@ -84,6 +85,7 @@ private struct PublishingItem: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
         }
+        .buttonStyle(ClickStyle())
     }
 }
 
@@ -94,7 +96,7 @@ private struct ErrorItem: View {
     let onAuthorClick: () -> Void
     
     var body: some View {
-        Clickable(action: onClick) {
+        Button(action: onClick) {
             VStack(spacing: Dimens.mediumPadding) {
                 HStack(
                     alignment: .center,
@@ -125,6 +127,7 @@ private struct ErrorItem: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
         }
+        .buttonStyle(ClickStyle())
     }
 }
 

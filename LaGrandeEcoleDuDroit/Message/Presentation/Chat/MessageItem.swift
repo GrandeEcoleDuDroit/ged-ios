@@ -8,7 +8,7 @@ struct SentMessageItem: View {
     var body: some View {
         HStack(alignment: .center) {
             VStack(alignment: .trailing) {
-                Clickable(action: onClick) {
+                Button(action: onClick) {
                     MessageBubble(
                         text: message.content,
                         date: message.date,
@@ -17,6 +17,7 @@ struct SentMessageItem: View {
                         dateColor: Color(UIColor.lightText)
                     )
                 }
+                .buttonStyle(ClickStyle())
                 .clipShape(.rect(cornerRadius: 24))
                 
                 if showSeen {
@@ -165,7 +166,7 @@ struct NewMessageIndicator: View {
     let onClick: () -> Void
     
     var body: some View {
-        Clickable(action: onClick) {
+        Button(action: onClick) {
             ZStack {
                 Text(stringResource(.newMessages))
                     .foregroundStyle(.black)
@@ -174,6 +175,7 @@ struct NewMessageIndicator: View {
                     .padding(.horizontal, Dimens.largePadding)
                     .padding(.vertical, Dimens.smallMediumPadding)
             }
+            .buttonStyle(ClickStyle())
             .background(.white)
             .clipShape(.rect(cornerRadius: 8))
             .shadow(radius: 10, x: 0, y: 0)

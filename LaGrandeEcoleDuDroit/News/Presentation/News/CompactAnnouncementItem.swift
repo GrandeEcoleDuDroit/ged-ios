@@ -69,18 +69,18 @@ private struct DefaultItem: View {
                         .lineLimit(1)
                     
                     Text(elapsedTimeText)
-                        .foregroundStyle(.textPreview)
+                        .foregroundStyle(.supportingText)
                         .font(.bodySmall)
                 }
                 
                 if let title = announcement.title, !title.isEmpty {
                     Text(title)
-                        .foregroundStyle(.textPreview)
+                        .foregroundStyle(.supportingText)
                         .font(.bodyMedium)
                         .lineLimit(1)
                 } else {
                     Text(announcement.content)
-                        .foregroundStyle(.textPreview)
+                        .foregroundStyle(.supportingText)
                         .font(.bodyMedium)
                         .lineLimit(1)
                 }
