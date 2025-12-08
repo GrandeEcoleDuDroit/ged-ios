@@ -1,11 +1,11 @@
 import SwiftUI
-import _PhotosUI_SwiftUI
+import PhotosUI
 
 struct AccountInformationDestination: View {
     @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(AccountInformationViewModel.self)
     @State private var errorMessage: String = ""
     @State private var showErrorAlert: Bool = false
-    @State private var profilePictureImage: UIImage? = nil
+    @State private var profilePictureImage: UIImage?
     
     var body: some View {
         if let user = viewModel.uiState.user {
@@ -51,101 +51,65 @@ private struct AccountInformationView: View {
     let onSaveProfilePictureClick: (Data?) -> Void
     let onDeleteProfilePictureClick: () -> Void
     
-    @State private var selectedPhoto: PhotosPickerItem?
+    @State private var selectedItem: PhotosPickerItem?
     @State private var showBottomSheet: Bool = false
     @State private var showPhotosPicker: Bool = false
     @State private var isBottomSheetItemClicked: Bool = false
     @State private var navigationTitle = stringResource(.accountInfos)
     @State private var showDeleteAlert: Bool = false
-    @State private var bottomSheetItemCount: Int
     
-    init(
-        user: User,
-        loading: Bool,
-        screenState: AccountInformationViewModel.ScreenState,
-        profilePictureImage: Binding<UIImage?>,
-        onScreenStateChange: @escaping (AccountInformationViewModel.ScreenState) -> Void,
-        onSaveProfilePictureClick: @escaping (Data?) -> Void,
-        onDeleteProfilePictureClick: @escaping () -> Void
-    ) {
-        self.user = user
-        self.loading = loading
-        self.screenState = screenState
-        self._profilePictureImage = profilePictureImage
-        self.onScreenStateChange = onScreenStateChange
-        self.onSaveProfilePictureClick = onSaveProfilePictureClick
-        self.onDeleteProfilePictureClick = onDeleteProfilePictureClick
-        
-        self.bottomSheetItemCount = user.profilePictureUrl != nil ? 2 : 1
-    }
-
     var body: some View {
-        ZStack {
-            VStack(spacing: Dimens.mediumPadding) {
-                if let profilePictureImage {
-                    ClickableProfilePictureImage(
-                        image: profilePictureImage,
-                        onClick: { showPhotosPicker = true },
-                        scale: 1.6
-                    )
-                } else {
-                    AccountImage(
-                        url: user.profilePictureUrl,
-                        onClick: { showBottomSheet = true },
-                        scale: 1.6
-                    )
-                }
-                
-                UserInformationItems(user: user)
-            }
+        VStack(spacing: Dimens.mediumPadding) {
+            AccountInformationPicture(
+                url: user.profilePictureUrl,
+                image: profilePictureImage,
+                onClick: {
+                    if profilePictureImage == nil {
+                        showBottomSheet = true
+                    } else {
+                        showPhotosPicker = true
+                    }
+                },
+                scale: 1.8
+            )
+            
+            UserInformationItems(user: user)
         }
         .loading(loading)
-        .task(id: selectedPhoto) {
-            if let data = try? await selectedPhoto?.loadTransferable(type: Data.self) {
+        .task(id: selectedItem) {
+            if let data = try? await selectedItem?.loadTransferable(type: Data.self) {
                 if let image = UIImage(data: data) {
                     onScreenStateChange(.edit)
                     profilePictureImage = image
                 }
             }
         }
-        .onChange(of: user.profilePictureUrl) { profilePictureUrl in
-            bottomSheetItemCount = profilePictureUrl != nil ? 2 : 1
-        }
         .onChange(of: screenState) { newState in
             if newState == .read {
                 profilePictureImage = nil
-                selectedPhoto = nil
+                selectedItem = nil
                 navigationTitle = stringResource(.accountInfos)
             } else {
                 navigationTitle = stringResource(.editProfile)
             }
         }
         .padding(.horizontal)
-        .photosPicker(isPresented: $showPhotosPicker, selection: $selectedPhoto, matching: .images)
+        .photosPicker(isPresented: $showPhotosPicker, selection: $selectedItem, matching: .images)
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(screenState == .edit)
         .sheet(isPresented: $showBottomSheet) {
-            BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: bottomSheetItemCount)) {
-                ClickableTextItem(
-                    icon: Image(systemName: "photo"),
-                    text: Text(stringResource(.newProfilePicture))
-                ) {
+            AccountInformationBottomSheet(
+                profilePictureUrl: user.profilePictureUrl,
+                onNewProfilePictureClick: {
                     showPhotosPicker = true
                     showBottomSheet = false
+                },
+                onDeleteProfilePictureClick: {
+                    showBottomSheet = false
+                    showDeleteAlert = true
                 }
-                
-                if user.profilePictureUrl != nil {
-                    ClickableTextItem(
-                        icon: Image(systemName: "trash"),
-                        text: Text(stringResource(.delete))
-                    ) {
-                        showBottomSheet = false
-                        showDeleteAlert = true
-                    }
-                    .foregroundStyle(.red)
-                }
-            }
+            )
         }
         .alert(
             stringResource(.deleteProfilePictureAlertMessage),
@@ -166,7 +130,7 @@ private struct AccountInformationView: View {
                     Button(stringResource(.cancel)) {
                         onScreenStateChange(.read)
                         profilePictureImage = nil
-                        selectedPhoto = nil
+                        selectedItem = nil
                     }
                 }
                 
@@ -191,6 +155,73 @@ private struct AccountInformationView: View {
     }
 }
 
+private struct AccountInformationPicture: View {
+    let url: String?
+    let image: UIImage?
+    let onClick: () -> Void
+    let scale: CGFloat
+    
+    var body: some View {
+        if let image {
+            Button(action: onClick) {
+                ProfilePictureImage(
+                    image: Image(uiImage: image),
+                    scale: 1.8
+                )
+                .clipShape(.circle)
+            }
+            .contentShape(.circle)
+            .buttonStyle(.plain)
+        } else {
+            ZStack(alignment: .bottomTrailing) {
+                Button(action: onClick) {
+                    ProfilePicture(url: url, scale: scale)
+                        .clipShape(.circle)
+                }
+                .contentShape(.circle)
+                .buttonStyle(.plain)
+                
+                ZStack {
+                    Circle()
+                        .fill(.gedPrimary)
+                        .frame(width: 30 * scale, height: 30 * scale)
+                    
+                    Image(systemName: "pencil")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 15 * scale, height: 15 * scale)
+                        .foregroundColor(.white)
+                }
+            }
+        }
+    }
+}
+
+private struct AccountInformationBottomSheet: View {
+    let profilePictureUrl: String?
+    let onNewProfilePictureClick: () -> Void
+    let onDeleteProfilePictureClick: () -> Void
+    
+    var body: some View {
+        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: profilePictureUrl == nil ? 1 : 2)) {
+            ClickableTextItem(
+                icon: Image(systemName: "photo"),
+                text: Text(stringResource(.newProfilePicture)),
+                onClick: onNewProfilePictureClick
+            )
+            
+            if profilePictureUrl != nil {
+                ClickableTextItem(
+                    icon: Image(systemName: "trash"),
+                    text: Text(stringResource(.delete)),
+                    onClick: onDeleteProfilePictureClick
+                )
+                .foregroundStyle(.red)
+            }
+        }
+    }
+}
+
 #Preview {
     NavigationStack {
         AccountInformationView(
@@ -200,7 +231,7 @@ private struct AccountInformationView: View {
             profilePictureImage: .constant(nil),
             onScreenStateChange: { _ in },
             onSaveProfilePictureClick: { _ in },
-            onDeleteProfilePictureClick: {  }
+            onDeleteProfilePictureClick: {}
         )
         .background(.profileSectionBackground)
     }

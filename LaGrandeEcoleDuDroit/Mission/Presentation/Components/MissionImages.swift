@@ -48,6 +48,20 @@ extension MissionImage {
     }
 }
 
+private struct PublishedMissionImage<DefaultImage: View>: View {
+    let imageUrl: String?
+    let defaultImage: DefaultImage
+
+    var body: some View {
+        if let imageUrl {
+            CacheAsyncImage(url: imageUrl)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+            defaultImage
+        }
+    }
+}
+
 private struct PublishingMissionImage<DefaultImage: View>: View {
     let imagePath: String?
     let defaultImage: DefaultImage
@@ -57,34 +71,6 @@ private struct PublishingMissionImage<DefaultImage: View>: View {
             LocalImage(imagePath: imagePath)
         } else {
            defaultImage
-        }
-    }
-}
-
-private struct PublishedMissionImage<DefaultImage: View>: View {
-    let imageUrl: String?
-    let defaultImage: DefaultImage
-
-    var body: some View {
-        if let imageUrl {
-            AsyncImage(url: URL(string: imageUrl)) { phase in
-                switch phase {
-                    case .empty: LoadingImage()
-                        
-                    case let .success(image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .clipped()
-                        
-                    case .failure: ErrorImage()
-                        
-                    default: ErrorImage()
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else {
-            defaultImage
         }
     }
 }

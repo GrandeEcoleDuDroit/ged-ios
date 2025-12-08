@@ -72,22 +72,15 @@ struct Mission: Copyable, Identifiable, Hashable {
         case published(imageUrl: String? = nil)
         case error(imagePath: String? = nil)
 
-        enum MissionStateType: String {
-            case draft = "DRAFT"
-            case publishing = "PUBLISHING"
-            case published = "PUBLISHED"
-            case error = "ERROR"
-        }
-
-        var type: MissionStateType {
+        var type: StateType {
             switch self {
-                case .draft: .draft
-                case .publishing: .publishing
-                case .published: .published
-                case .error: .error
+                case .draft: .draftType
+                case .publishing: .publishingType
+                case .published: .publishedType
+                case .error: .errorType
             }
         }
-
+        
         var description: String { type.rawValue }
         
         var imageReference: String? {
@@ -97,6 +90,13 @@ struct Mission: Copyable, Identifiable, Hashable {
                 case let .published(imageUrl: url): url
                 case let .error(imagePath: path): path
             }
+        }
+        
+        enum StateType: String {
+            case draftType = "DRAFT"
+            case publishingType = "PUBLISHING"
+            case publishedType = "PUBLISHED"
+            case errorType = "ERROR"
         }
     }
 }

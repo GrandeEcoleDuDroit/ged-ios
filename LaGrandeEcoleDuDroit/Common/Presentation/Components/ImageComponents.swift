@@ -1,118 +1,142 @@
 import SwiftUI
 
+struct CacheAsyncImage: View {
+    let url: String
+    var width: CGFloat?
+    var height: CGFloat?
+    
+    @State private var phase: CachedImagePhase = .empty
+    
+    var body: some View {
+        Group {
+            switch phase {
+                case .empty:
+                    LoadingImage()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .frame(width: width, height: height)
+                    
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .frame(width: width, height: height)
+                    
+                case .failure:
+                    ErrorImage()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .frame(width: width, height: height)
+            }
+        }
+        .onAppear {
+            if phase.type != .successType {
+                Task {
+                    await loadImage()
+                }
+            }
+        }
+        .onChange(of: url) { newUrl in
+            Task {
+                await loadImage()
+            }
+        }
+    }
+    
+    private func loadImage() async {
+        guard let url = URL(string: url) else {
+            phase = .failure
+            return
+        }
+        
+        let request = URLRequest(url: url)
+        
+        if let cachedResponse = URLCache.shared.cachedResponse(for: request),
+           let cachedImage = UIImage(data: cachedResponse.data) {
+            await MainActor.run {
+                self.phase = .success(Image(uiImage: cachedImage))
+            }
+            return
+        }
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            let cachedData = CachedURLResponse(response: response, data: data)
+            URLCache.shared.storeCachedResponse(cachedData, for: request)
+            
+            if let uiImage = UIImage(data: data) {
+                await MainActor.run {
+                    self.phase = .success(Image(uiImage: uiImage))
+                }
+            }
+        } catch {
+            await MainActor.run {
+                self.phase = .failure
+            }
+        }
+    }
+}
+
+private enum CachedImagePhase {
+    case empty
+    case success(Image)
+    case failure
+    
+    var type: PhaseType {
+        switch self {
+            case .empty: .emptyType
+            case .success: .successType
+            case .failure: .failureType
+        }
+    }
+    
+    enum PhaseType: Int {
+        case emptyType = 0
+        case successType = 1
+        case failureType = 2
+    }
+}
+
+extension CacheAsyncImage {
+    func cacheImageFrame(width: CGFloat, height: CGFloat) -> Self {
+        var copy = self
+        copy.width = width
+        copy.height = height
+        return copy
+    }
+}
+
 struct ProfilePicture: View {
     let url: String?
     var scale: CGFloat = 1.0
    
     var body: some View {
         if let url {
-            AsyncImage(url: URL(string: url)) { phase in
-                switch phase {
-                    case .empty: LoadingImage(scale: scale).clipShape(Circle())
-                        
-                    case let .success(image): image.resize(scale: scale).clipShape(Circle())
-                        
-                    case .failure: ErrorImage(scale: scale).clipShape(Circle())
-                        
-                    default: DefaultProfilePicture(scale: scale)
-                }
-            }
+            CacheAsyncImage(url: url)
+                .cacheImageFrame(
+                    width: Dimens.defaultImageSize * scale,
+                    height: Dimens.defaultImageSize * scale
+                )
+                .clipShape(.circle)
         } else {
             DefaultProfilePicture(scale: scale)
         }
     }
 }
 
-struct ClickableProfilePicture: View {
-    let url: String?
-    var scale: CGFloat = 1.0
-    let onClick: () -> Void
-    
-    var body: some View {
-        if let url {
-            AsyncImage(url: URL(string: url)) { phase in
-                switch phase {
-                    case .empty:
-                        Button(action: onClick) {
-                            ZStack {
-                                ProgressView()
-                            }
-                            .frame(
-                                width: Dimens.defaultImageSize * scale,
-                                height: Dimens.defaultImageSize * scale
-                            )
-                            .background(.imageLoadingBackground)
-                            .clipShape(Circle())
-                        }
-                        .buttonStyle(ClickStyle())
-                        .clipShape(Circle())
-                        
-                    case .success(let image):
-                        Button(action: onClick) {
-                            image.resize(scale: scale)
-                                .clipShape(Circle())
-                        }
-                        .buttonStyle(ClickStyle())
-                        .clipShape(Circle())
-                        
-                    case .failure:
-                        Button(action: onClick) {
-                            ErrorImage(scale: scale).clipShape(Circle())
-                        }
-                        .buttonStyle(ClickStyle())
-                        .clipShape(Circle())
-                        
-                    default: ClickableDefaultProfilePicture(onClick: onClick, scale: scale)
-                }
-            }
-        }
-        else {
-            ClickableDefaultProfilePicture(onClick: onClick, scale: scale)
-        }
-    }
-}
-
-struct ClickableProfilePictureImage: View {
-    let image: UIImage?
-    let onClick: () -> Void
+struct ProfilePictureImage: View {
+    let image: Image
     var scale: CGFloat = 1.0
     
     var body: some View {
-        if let image {
-            Button(action: onClick) {
-                Image(uiImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .scaledToFill()
-                    .frame(
-                        width: Dimens.defaultImageSize * scale,
-                        height: Dimens.defaultImageSize * scale
-                    )
-                    .clipShape(Circle())
-            }
-            .buttonStyle(ClickStyle())
-        } else {
-            ClickableDefaultProfilePicture(onClick: onClick, scale: scale)
-        }
-    }
-}
-
-struct SimpleAsyncImage: View {
-    let url: String
-    var scale: CGFloat = 1.0
-
-    var body: some View {
-        AsyncImage(url: URL(string: url)) { phase in
-            switch phase {
-                case .empty: LoadingImage(scale: scale)
-
-                case .success(let image): image.resize(scale: scale)
-
-                case .failure: ErrorImage(scale: scale)
-                    
-                default: DefaultProfilePicture(scale: scale)
-            }
-        }
+        image
+            .resizable()
+            .scaledToFill()
+            .frame(
+                width: Dimens.defaultImageSize * scale,
+                height: Dimens.defaultImageSize * scale
+            )
+            .clipShape(.circle)
     }
 }
 
@@ -121,72 +145,56 @@ private struct DefaultProfilePicture: View {
     
     var body: some View {
         Image(ImageResource.defaultProfilePicture)
-            .resize(scale: scale)
-            .clipShape(Circle())
-    }
-}
-
-private struct ClickableDefaultProfilePicture: View {
-    let onClick: () -> Void
-    var scale: CGFloat = 1.0
-        
-    var body: some View {
-        Button(action: onClick) {
-            Image(ImageResource.defaultProfilePicture)
-                .resize(scale: scale)
-                .clipShape(Circle())
-        }
-        .buttonStyle(ClickStyle())
-        .clipShape(Circle())
+            .resizable()
+            .scaledToFill()
+            .frame(
+                width: Dimens.defaultImageSize * scale,
+                height: Dimens.defaultImageSize * scale
+            )
+            .clipShape(.circle)
     }
 }
 
 private struct LoadingImage: View {
-    var scale: CGFloat = 1.0
     
     var body: some View {
-        ProgressView()
-            .frame(
-                width: Dimens.defaultImageSize * scale,
-                height: Dimens.defaultImageSize * scale
-            )
-            .background(.imageLoadingBackground)
+        Color.imageLoadingBackground
+            .overlay {
+                ProgressView()
+            }
     }
 }
 
 private struct ErrorImage: View {
-    var scale: CGFloat = 1.0
     
     var body: some View {
-        Rectangle()
-            .fill(.imageLoadingBackground)
-            .frame(
-                width: Dimens.defaultImageSize * scale,
-                height: Dimens.defaultImageSize * scale
-            )
+        Color.imageLoadingBackground
     }
 }
 
 #Preview {
     ScrollView {
         VStack(spacing: Dimens.mediumPadding) {
-            SimpleAsyncImage(url: "https://cdn.britannica.com/16/234216-050-C66F8665/beagle-hound-dog.jpg")
+            CacheAsyncImage(url: "https://cdn.britannica.com/16/234216-050-C66F8665/beagle-hound-dog.jpg")
+                .cacheImageFrame(width: 200, height: 120)
             Text("Simple async image").font(.caption)
             
             LoadingImage()
+                .frame(width: 100, height: 100)
             Text("Loading image").font(.caption)
             
             ErrorImage()
+                .frame(width: 100, height: 100)
             Text("Error image").font(.caption)
             
-            ProfilePicture(url: "https://v24.tech/wp-content/uploads/2024/05/male_boy_person_people_avatar_white_tone_icon_159368.png")
+            ProfilePicture(
+                url: "https://img.freepik.com/premium-vector/male-avatar-flat-icon-design-vector-illustration_549488-103.jpg",
+                scale: 1
+            )
             Text("Profile picture").font(.caption)
             
             DefaultProfilePicture()
             Text("Default profile picture").font(.caption)
-            
-            ClickableDefaultProfilePicture(onClick: {})
-            Text("Clickable default profile picture").font(.caption)
         }
         .frame(maxWidth: .infinity)
     }

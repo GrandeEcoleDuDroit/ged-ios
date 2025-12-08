@@ -44,7 +44,7 @@ class UpdateMissionUseCaseTest {
         )
         
         // Then
-        #expect(missionRepositoryTest.updatedMissionState?.type == Mission.MissionState.MissionStateType.published)
+        #expect(missionRepositoryTest.updatedMissionState?.type == .publishedType)
         var newPath = false
         if case let .published(imagePath) = missionRepositoryTest.updatedMissionState {
             let oldPath = MissionUtils.ImageFile.getImagePathFromUrl(url: mission.state.imageReference)

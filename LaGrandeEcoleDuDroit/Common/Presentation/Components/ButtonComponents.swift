@@ -122,6 +122,7 @@ struct OptionsButton : View {
         Button(action: action) {
             Image(systemName: "ellipsis")
         }
+        .buttonStyle(.borderless)
     }
 }
 

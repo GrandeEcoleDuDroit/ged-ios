@@ -28,8 +28,8 @@ struct MissionPresentationUtils {
         }
     }
     
-    static func formatRemainingParticipants(participantsCout: Int, maxParticipants: Int) -> String {
-        let remainingParticipants = max(maxParticipants - participantsCout, 0)
+    static func formatRemainingParticipants(participantsCount: Int, maxParticipants: Int) -> String {
+        let remainingParticipants = max(maxParticipants - participantsCount, 0)
         return remainingParticipants.takeIf { $0 < 100 }?.description ?? "99+"
     }
 }
