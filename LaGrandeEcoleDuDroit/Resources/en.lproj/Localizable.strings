@@ -167,3 +167,4 @@
 "delete_mission_alert_message" = "Do you want to delete this mission?";
 "unregister_mission_alert_message" = "Unregister from this mission?";
 "remove_participant_alert_message" = "Do you want remove %lld from this mission ?";
+"edit_mission_school_level_supporting_text" = "Participants with unmatched school levels will be removed.";

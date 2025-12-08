@@ -7,6 +7,7 @@ struct MissionFormInformationSection: View {
     let allSchoolLevels: [SchoolLevel]
     let maxParticipants: String
     let duration: String
+    let schoolLevelSupportingText: String?
     let onStartDateChange: (Date) -> Void
     let onEndDateChange: (Date) -> Void
     let onSchoolLevelChange: (SchoolLevel) -> Void
@@ -33,7 +34,8 @@ struct MissionFormInformationSection: View {
             OutlinedSchoolLevelPicker(
                 schoolLevels: schoolLevels,
                 onSchoolLevelChange: onSchoolLevelChange,
-                allSchoolLevels: allSchoolLevels
+                allSchoolLevels: allSchoolLevels,
+                supportingText: schoolLevelSupportingText
             )
             
             OutlinedTextField(
@@ -112,10 +114,11 @@ struct OutlinedSchoolLevelPicker: View {
     let schoolLevels: [SchoolLevel]
     let onSchoolLevelChange: (SchoolLevel) -> Void
     let allSchoolLevels: [SchoolLevel]
+    let supportingText: String?
     
     var body: some View {
         MultiSelectionPicker(
-            text: formattedText,
+            text: formattedSchoolLevel,
             items: allSchoolLevels.map(\.rawValue),
             leadingIcon: Image(systemName: "graduationcap"),
             seletctedItems: schoolLevels.map(\.rawValue),
@@ -123,11 +126,12 @@ struct OutlinedSchoolLevelPicker: View {
                 if let schoolLevel = SchoolLevel(rawValue: $0) {
                     onSchoolLevelChange(schoolLevel)
                 }
-            }
+            },
+            supportingText: supportingText
         )
     }
     
-    var formattedText: String {
+    var formattedSchoolLevel: String {
         switch schoolLevels {
             case _ where schoolLevels.isEmpty:
                 stringResource(.everyone)
@@ -148,6 +152,7 @@ struct OutlinedSchoolLevelPicker: View {
         allSchoolLevels: SchoolLevel.allCases,
         maxParticipants: "",
         duration: "",
+        schoolLevelSupportingText: nil,
         onStartDateChange: { _ in },
         onEndDateChange: { _ in },
         onSchoolLevelChange: { _ in },
@@ -166,6 +171,7 @@ struct OutlinedSchoolLevelPicker: View {
     OutlinedSchoolLevelPicker(
         schoolLevels: [.ged1, .ged2, .ged3, .ged4],
         onSchoolLevelChange: { _ in },
-        allSchoolLevels: SchoolLevel.allCases
+        allSchoolLevels: SchoolLevel.allCases,
+        supportingText: nil
     )
 }
