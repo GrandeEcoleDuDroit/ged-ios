@@ -37,7 +37,7 @@ class CreateMissionUseCaseTest {
         await useCase.execute(mission: missionFixture, imageData: pngImageDataFixture)
         
         // Then
-        #expect(getMissionState.createdMissionState?.type == Mission.MissionState.MissionStateType.publishing)
+        #expect(getMissionState.createdMissionState?.type == .publishingType)
         
         let pathResult: String? = if case let .publishing(imagePath) = getMissionState.createdMissionState {
             imagePath
@@ -60,7 +60,7 @@ class CreateMissionUseCaseTest {
         await useCase.execute(mission: missionFixture, imageData: nil)
         
         // Then
-        #expect(getMissionState.upsertedMissionState?.type == .published)
+        #expect(getMissionState.upsertedMissionState?.type == .publishedType)
     }
     
     @Test
@@ -93,7 +93,7 @@ class CreateMissionUseCaseTest {
         await useCase.execute(mission: missionFixture, imageData: pngImageDataFixture)
 
         // Then
-        #expect(createMissionException.upsertedMissionState?.type == Mission.MissionState.MissionStateType.error)
+        #expect(createMissionException.upsertedMissionState?.type == .errorType)
         
         let pathResult: String? = if case let .error(imagePath) = createMissionException.upsertedMissionState {
             imagePath

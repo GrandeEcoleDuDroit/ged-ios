@@ -153,12 +153,12 @@
 "add_task" = "Ajouter tâche";
 "enter_task" = "Entrer tâche";
 "full" = "Complet";
-"remaining_spots" = "%s places restantes";
+"remaining_spots" = "%@ places restantes";
 "no_participant" = "Aucun participant";
 "register_mission_button_text" = "S'inscrire";
 "registered_mission_button_text" = "Inscrit";
 "complete_mission_button_text" = "Complet";
 "delete_mission_alert_message" = "Voulez-vous supprimer cette mission ?";
 "unregister_mission_alert_message" = "Se désinscrire de cette mission ?";
-"remove_participant_alert_message" = "Voulez-vous retirer %lld de cette mission ?";
+"remove_participant_alert_message" = "Voulez-vous retirer %@ de cette mission ?";
 "edit_mission_school_level_supporting_text" = "Les participants avec un niveau scolaire non correspondant seront retirés.";

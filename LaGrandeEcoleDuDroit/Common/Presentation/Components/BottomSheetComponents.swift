@@ -38,6 +38,4 @@ struct ReportBottomSheet<T: CustomStringConvertible>: View {
         items: ["Spam", "Inappropriate content", "Harassment"],
         onReportClick: { _ in }
     )
-    
-    OptionsButton(action: {})
 }

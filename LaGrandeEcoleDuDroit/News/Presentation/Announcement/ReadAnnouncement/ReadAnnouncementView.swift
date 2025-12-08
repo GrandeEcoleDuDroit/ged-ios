@@ -79,8 +79,7 @@ private struct ReadAnnouncementView: View {
             VStack(spacing: Dimens.mediumPadding) {
                 AnnouncementHeader(
                     announcement: announcement,
-                    onAuthorClick: { onAuthorClick(announcement.author) },
-                    onOptionsClick: { showAnnouncementBottomSheet = true }
+                    onAuthorClick: { onAuthorClick(announcement.author) }
                 )
                 
                 if let title = announcement.title {
@@ -141,6 +140,11 @@ private struct ReadAnnouncementView: View {
                     )
                 }
             )
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                OptionsButton(action: { showAnnouncementBottomSheet = true })
+            }
         }
         .alert(
             stringResource(.deleteAnnouncementAlertMessage),

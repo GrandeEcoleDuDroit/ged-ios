@@ -218,7 +218,7 @@ private struct BottomSheet: View {
     NavigationStack {
         MissionView(
             user: userFixture,
-            missions: [],
+            missions: missionsFixture,
             loading: false,
             onMissionClick: { _ in },
             onCreateMissionClick: {},
