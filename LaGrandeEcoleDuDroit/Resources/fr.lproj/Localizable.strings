@@ -161,3 +161,4 @@
 "delete_mission_alert_message" = "Voulez-vous supprimer cette mission ?";
 "unregister_mission_alert_message" = "Se désinscrire de cette mission ?";
 "remove_participant_alert_message" = "Voulez-vous retirer %lld de cette mission ?";
+"edit_mission_school_level_supporting_text" = "Les participants avec un niveau scolaire non correspondant seront retirés.";

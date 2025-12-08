@@ -198,8 +198,8 @@ struct OutlinedPasswordTextField: View {
             
             if errorMessage != nil {
                 Text(errorMessage!)
+                    .font(.footnote)
                     .padding(.leading, Dimens.mediumPadding)
-                    .font(.caption)
                     .foregroundColor(.red)
             }
         }

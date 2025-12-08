@@ -46,6 +46,7 @@ struct MissionForm: View {
                     allSchoolLevels: value.allSchoolLevels,
                     maxParticipants: value.maxParticipants,
                     duration: value.duration,
+                    schoolLevelSupportingText: value.schoolLevelSupportingText,
                     onStartDateChange: onStartDateChange,
                     onEndDateChange: onEndDateChange,
                     onSchoolLevelChange: onSchoolLevelChange,
@@ -90,6 +91,35 @@ struct MissionFormValue {
     let managers: [User]
     let missionTasks: [MissionTask]
     let missionState: Mission.MissionState
+    let schoolLevelSupportingText: String?
+        
+    init(
+        title: String,
+        description: String,
+        startDate: Date,
+        endDate: Date,
+        allSchoolLevels: [SchoolLevel],
+        schoolLevels: [SchoolLevel],
+        duration: String,
+        maxParticipants: String,
+        managers: [User],
+        missionTasks: [MissionTask],
+        missionState: Mission.MissionState,
+        schoolLevelSupportingText: String? = nil
+    ) {
+        self.title = title
+        self.description = description
+        self.startDate = startDate
+        self.endDate = endDate
+        self.allSchoolLevels = allSchoolLevels
+        self.schoolLevels = schoolLevels
+        self.duration = duration
+        self.maxParticipants = maxParticipants
+        self.managers = managers
+        self.missionTasks = missionTasks
+        self.missionState = missionState
+        self.schoolLevelSupportingText = schoolLevelSupportingText
+    }
 }
 
 #Preview {

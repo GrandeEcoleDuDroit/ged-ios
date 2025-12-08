@@ -6,6 +6,7 @@ struct MultiSelectionPicker: View {
     let leadingIcon: Image?
     let seletctedItems: [String]
     let onItemSelected: (String) -> Void
+    var supportingText: String? = nil
     
     init(
         text: String,
@@ -25,45 +26,57 @@ struct MultiSelectionPicker: View {
         items: [String],
         leadingIcon: Image,
         seletctedItems: [String],
-        onItemSelected: @escaping (String) -> Void
+        onItemSelected: @escaping (String) -> Void,
+        supportingText: String? = nil
     ) {
         self.text = text
         self.items = items
         self.leadingIcon = leadingIcon
         self.seletctedItems = seletctedItems
         self.onItemSelected = onItemSelected
+        self.supportingText = supportingText
     }
     
     var body: some View {
-        Menu(
-            content: {
-                ForEach(items, id: \.self) { item in
-                    Button(action: { onItemSelected(item) }) {
-                        Label(
-                            title: { Text(item) },
-                            icon: { CheckBox(checked: seletctedItems.contains(item)) }
-                        )
+        VStack(alignment: .leading) {
+            Menu(
+                content: {
+                    ForEach(items, id: \.self) { item in
+                        Button(action: { onItemSelected(item) }) {
+                            Label(
+                                title: { Text(item) },
+                                icon: { CheckBox(checked: seletctedItems.contains(item)) }
+                            )
+                        }
                     }
-                }
-            },
-            label: {
-                HStack(alignment: .center, spacing: Dimens.leadingIconSpacing) {
-                    leadingIcon?
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: Dimens.inputIconSize, height: Dimens.inputIconSize)
-                        .foregroundStyle(.onSurfaceVariant)
+                },
+                label: {
+                    HStack(alignment: .center, spacing: Dimens.leadingIconSpacing) {
+                        leadingIcon?
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: Dimens.inputIconSize, height: Dimens.inputIconSize)
+                            .foregroundStyle(.onSurfaceVariant)
+                        
+                        Text(text)
+                    }
                     
-                    Text(text)
+                    Spacer()
+                    
+                    Image(systemName: "chevron.up.chevron.down")
                 }
-                
-                Spacer()
-                
-                Image(systemName: "chevron.up.chevron.down")
+            )
+            .outlined()
+            .menuActionDismissBehavior(.disabled)
+            
+            if let supportingText {
+                Text(supportingText)
+                    .font(.footnote)
+                    .foregroundStyle(.informationText)
+                    .padding(.leading, Dimens.mediumPadding)
+                    .multilineTextAlignment(.leading)
             }
-        )
-        .menuActionDismissBehavior(.disabled)
-        .outlined()
+        }
     }
 }
 
