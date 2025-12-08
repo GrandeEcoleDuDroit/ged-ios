@@ -94,12 +94,12 @@ extension LocalMission {
         }
         
         let state: Mission.MissionState = switch missionState {
-            case _ where missionState == Mission.MissionState.MissionStateType.draft.rawValue: .draft
+            case _ where missionState == Mission.MissionState.StateType.draftType.rawValue: .draft
                 
-            case _ where missionState == Mission.MissionState.MissionStateType.publishing.rawValue:
+            case _ where missionState == Mission.MissionState.StateType.publishingType.rawValue:
                     .publishing(imagePath: imagePath)
                 
-            case _ where missionState == Mission.MissionState.MissionStateType.published.rawValue:
+            case _ where missionState == Mission.MissionState.StateType.publishedType.rawValue:
                     .published(imageUrl: MissionUtils.ImageFile.url(fileName: missionImageFileName))
                 
             default: Mission.MissionState.error(imagePath: imagePath)

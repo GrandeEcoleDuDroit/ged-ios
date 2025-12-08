@@ -80,7 +80,7 @@ private struct EmptyImage: View {
 #Preview {
     MissionFormImageSection(
         imageData: .constant(nil),
-        missionState: .published(imageUrl: ""),
+        missionState: .draft,
         onImageChange: {},
         onImageRemove: {}
     )

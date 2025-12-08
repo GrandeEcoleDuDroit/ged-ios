@@ -14,15 +14,13 @@ struct MissionCard: View {
                         onOptionsClick: onOptionsClick
                     )
                 }
-                .buttonStyle(ClickStyle())
-                .clipShape(ShapeDefaults.medium)
+                .buttonStyle(.plain)
                 
             case .error:
                 Button(action: onClick) {
                     ErrorMissionCard(mission: mission)
                 }
-                .buttonStyle(ClickStyle())
-                .clipShape(ShapeDefaults.medium)
+                .buttonStyle(.plain)
                 
             default:
                 Button(action: onClick) {
@@ -31,8 +29,7 @@ struct MissionCard: View {
                         onOptionsClick: onOptionsClick
                     )
                 }
-                .buttonStyle(ClickStyle())
-                .clipShape(ShapeDefaults.medium)
+                .buttonStyle(.plain)
         }
     }
 }
@@ -56,7 +53,6 @@ private struct DefaultMissionCard: View {
                         maxHeight: .infinity,
                         alignment: .topTrailing
                     )
-                    .buttonStyle(.borderless)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 180)
@@ -77,7 +73,6 @@ private struct DefaultMissionCard: View {
             ShapeDefaults.medium
                 .stroke(.outlineVariant, lineWidth: 2)
         )
-        .contentShape(ShapeDefaults.medium)
         .clipShape(ShapeDefaults.medium)
     }
 }
@@ -127,7 +122,6 @@ private struct ErrorMissionCard: View {
             ShapeDefaults.medium
                 .stroke(.outlineVariant, lineWidth: 2)
         )
-        .contentShape(ShapeDefaults.medium)
         .clipShape(ShapeDefaults.medium)
     }
 }
