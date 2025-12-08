@@ -20,7 +20,7 @@ class ResendMissionUseCaseTest {
         await useCase.execute(mission: mission)
         
         // Then
-        #expect(missionRepositoryTest.createdMissionState?.type == Mission.MissionState.MissionStateType.publishing)
+        #expect(missionRepositoryTest.createdMissionState?.type == .publishingType)
         let pathResult: String? = if case let .publishing(path) = missionRepositoryTest.createdMissionState {
             path
         } else {
@@ -44,7 +44,7 @@ class ResendMissionUseCaseTest {
         await useCase.execute(mission: mission)
         
         // Then
-        #expect(missionRepositoryTest.upsertedMissionState?.type == Mission.MissionState.MissionStateType.published)
+        #expect(missionRepositoryTest.upsertedMissionState?.type == .publishedType)
         
         let pathResult: String? = if case let .published(path) = missionRepositoryTest.upsertedMissionState {
             path
@@ -89,7 +89,7 @@ class ResendMissionUseCaseTest {
         await useCase.execute(mission: mission)
         
         // Then
-        #expect(createMissionException.upsertedMissionState?.type == Mission.MissionState.MissionStateType.error)
+        #expect(createMissionException.upsertedMissionState?.type == .errorType)
         let pathResult: String? = if case let .error(path) = createMissionException.upsertedMissionState {
             path
         } else {

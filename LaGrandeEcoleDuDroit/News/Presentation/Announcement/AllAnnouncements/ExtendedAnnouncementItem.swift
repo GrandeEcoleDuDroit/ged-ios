@@ -47,11 +47,14 @@ private struct DefaultItem: View {
     
     var body: some View {
         VStack(spacing: Dimens.mediumPadding) {
-            AnnouncementHeader(
-                announcement: announcement,
-                onAuthorClick: onAuthorClick,
-                onOptionsClick: onOptionsClick
-            )
+            HStack {
+                AnnouncementHeader(
+                    announcement: announcement,
+                    onAuthorClick: onAuthorClick
+                )
+                
+                OptionsButton(action: onOptionsClick)
+            }
             
             if let title = announcement.title, !title.isEmpty {
                 Text(title)
@@ -107,9 +110,10 @@ private struct ErrorItem: View {
                     
                     AnnouncementHeader(
                         announcement: announcement,
-                        onAuthorClick: onAuthorClick,
-                        onOptionsClick: onOptionsClick
+                        onAuthorClick: onAuthorClick
                     )
+                    
+                    OptionsButton(action: onOptionsClick)
                 }
                 
                 if let title = announcement.title {

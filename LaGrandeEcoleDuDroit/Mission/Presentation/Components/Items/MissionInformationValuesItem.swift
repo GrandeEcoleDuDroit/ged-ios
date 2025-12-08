@@ -29,7 +29,7 @@ struct MissionInformationValuesItem: View {
             stringResource(
                 .remainingSpots,
                 MissionPresentationUtils.formatRemainingParticipants(
-                    participantsCout: mission.participants.count,
+                    participantsCount: mission.participants.count,
                     maxParticipants: mission.maxParticipants
                 )
             )

@@ -58,8 +58,9 @@ class UserRepositoryImpl: UserRepository {
     func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {
         try await userRemoteDataSource.updateProfilePictureFileName(userId: userId, fileName: profilePictureFileName)
         try? userLocalDataSource.updateProfilePictureFileName(fileName: profilePictureFileName)
-        var user = userSubject.value
-        user?.profilePictureUrl = UserUtils.ProfilePictureFile.url(fileName: profilePictureFileName)
+        let user = userSubject.value?.copy {
+            $0.profilePictureUrl = UserUtils.ProfilePictureFile.url(fileName: profilePictureFileName)
+        }
         userSubject.send(user)
     }
     
@@ -71,8 +72,9 @@ class UserRepositoryImpl: UserRepository {
     func deleteProfilePictureFileName(userId: String) async throws {
         try await userRemoteDataSource.deleteProfilePictureFileName(userId: userId)
         try? userLocalDataSource.updateProfilePictureFileName(fileName: nil)
-        var user = userSubject.value
-        user?.profilePictureUrl = nil
+        let user = userSubject.value?.copy {
+            $0.profilePictureUrl = nil
+        }
         userSubject.send(user)
     }
     
