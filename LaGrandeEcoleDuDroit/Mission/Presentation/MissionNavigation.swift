@@ -48,10 +48,6 @@ struct MissionNavigation: View {
                         ).onAppear {
                             tabBarVisibility.show = false
                             viewModel.setCurrentRoute(route)
-                            EnableSwipeBack.enabled = true
-                        }
-                        .onDisappear {
-                            EnableSwipeBack.enabled = false
                         }
                         .background(.appBackground)
                         

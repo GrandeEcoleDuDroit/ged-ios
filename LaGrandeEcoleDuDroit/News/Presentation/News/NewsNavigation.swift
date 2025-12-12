@@ -86,7 +86,6 @@ struct NewsNavigation: View {
                             tabBarVisibility.show = false
                             viewModel.setCurrentRoute(route)
                         }
-                        .background(.appBackground)
                 }
             }
         }

@@ -36,8 +36,7 @@ struct AccountInformationDestination: View {
                 }
             )
         } else {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            FullProgressView()
         }
     }
 }

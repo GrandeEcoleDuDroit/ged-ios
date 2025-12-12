@@ -15,7 +15,7 @@ struct AllAnnouncementsDestination: View {
                 user: user,
                 announcements: announcements,
                 loading: viewModel.uiState.loading,
-                onRefresh: viewModel.refreshAnnouncements,
+                onRefreshAnnouncements: viewModel.refreshAnnouncements,
                 onAuthorClick: onAuthorClick,
                 onAnnouncementClick: onAnnouncementClick,
                 onResendAnnouncementClick: { viewModel.resendAnnouncement(announcement: $0) },
@@ -39,8 +39,7 @@ struct AllAnnouncementsDestination: View {
                 }
             )
         } else {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            FullProgressView()
         }
     }
 }
@@ -49,7 +48,7 @@ private struct AllAnnouncementsView: View {
     let user: User
     let announcements: [Announcement]
     let loading: Bool
-    let onRefresh: () async -> Void
+    let onRefreshAnnouncements: () async -> Void
     let onAuthorClick: (User) -> Void
     let onAnnouncementClick: (String) -> Void
     let onResendAnnouncementClick: (Announcement) -> Void
@@ -63,42 +62,37 @@ private struct AllAnnouncementsView: View {
     @State private var clickedAnnouncement: Announcement?
     
     var body: some View {
-        List {
-            if announcements.isEmpty {
+        PlainTableView(
+            modifier: PlainTableModifier(
+                backgroundColor: .appBackground,
+                separatorStyle: .singleLine,
+                onRefresh: onRefreshAnnouncements
+            ),
+            values: announcements,
+            onRowClick: { announcement in
+                if announcement.state == .published {
+                    onAnnouncementClick(announcement.id)
+                } else {
+                    clickedAnnouncement = announcement
+                    showAnnouncementBottomSheet = true
+                }
+            },
+            emptyContent: {
                 Text(stringResource(.noAnnouncement))
                     .foregroundStyle(.informationText)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets())
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            } else {
-                ForEach(announcements) { announcement in
-                    ExtendedAnnouncementItem(
-                        announcement: announcement,
-                        onClick: {
-                            if announcement.state == .published {
-                                onAnnouncementClick(announcement.id)
-                            } else {
-                                clickedAnnouncement = announcement
-                                showAnnouncementBottomSheet = true
-                            }
-                        },
-                        onOptionsClick: {
-                            clickedAnnouncement = announcement
-                            showAnnouncementBottomSheet = true
-                        },
-                        onAuthorClick: { onAuthorClick(announcement.author) },
-                    )
-                    .listRowInsets(EdgeInsets())
-                    .listSectionSeparator(.hidden)
-                    .listRowBackground(Color.clear)
-                }
+            },
+            content: { announcement in
+                ExtendedAnnouncementItem(
+                    announcement: announcement,
+                    onOptionsClick: {
+                        clickedAnnouncement = announcement
+                        showAnnouncementBottomSheet = true
+                    },
+                    onAuthorClick: { onAuthorClick(announcement.author) },
+                )
             }
-        }
-        .scrollIndicators(.hidden)
-        .listStyle(.plain)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .refreshable { await onRefresh() }
+        )
         .loading(loading)
         .navigationTitle(stringResource(.allAnnouncements))
         .navigationBarTitleDisplayMode(.inline)
@@ -202,7 +196,7 @@ private struct Sheet: View {
             user: userFixture,
             announcements: announcementsFixture,
             loading: false,
-            onRefresh: {},
+            onRefreshAnnouncements: {},
             onAuthorClick: { _ in },
             onAnnouncementClick: { _ in },
             onResendAnnouncementClick: { _ in },
@@ -210,7 +204,6 @@ private struct Sheet: View {
             onReportAnnouncementClick: { _ in },
             onDeleteAnnouncementClick: {  _ in }
         )
-        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

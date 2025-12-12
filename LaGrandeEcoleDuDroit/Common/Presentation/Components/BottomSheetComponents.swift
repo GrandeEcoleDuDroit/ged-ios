@@ -33,6 +33,15 @@ struct ReportBottomSheet<T: CustomStringConvertible>: View {
     }
 }
 
+struct ErrorBottomSheet: View {
+    var body: some View {
+        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
+            Text(stringResource(.unknownError))
+                .foregroundColor(.error)
+        }
+    }
+}
+
 #Preview {
     ReportBottomSheet(
         items: ["Spam", "Inappropriate content", "Harassment"],

@@ -26,9 +26,7 @@ struct MissionDetailsDestination: View {
         self.onParticipantClick = onParticipantClick
     }
     var body: some View {
-        if let currentUser = viewModel.uiState.currentUser,
-           let mission = viewModel.uiState.mission
-        {
+        if let currentUser = viewModel.uiState.currentUser, let mission = viewModel.uiState.mission {
             MissionDetailsView(
                 user: currentUser,
                 mission: mission,
@@ -65,8 +63,7 @@ struct MissionDetailsDestination: View {
                 }
             )
         } else {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            FullProgressView()
         }
     }
 }

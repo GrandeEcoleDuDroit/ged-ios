@@ -41,8 +41,7 @@ struct UserDestination: View {
                 }
             )
         } else {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            FullProgressView()
         }
     }
 }

@@ -4,49 +4,41 @@ struct CompactAnnouncementItem: View {
     let announcement: Announcement
     let onOptionsClick: () -> Void
     
-    private let elapsedTimeText: String
-    
     init(
         announcement: Announcement,
         onOptionsClick: @escaping () -> Void
     ) {
         self.announcement = announcement
         self.onOptionsClick = onOptionsClick
-        
-        elapsedTimeText = getElapsedTimeText(
-            elapsedTime: GetElapsedTimeUseCase.execute(date: announcement.date),
-            announcementDate: announcement.date
-        )
+    }
+
+    private var elapsedTimeText: String {
+        getElapsedTimeText(date: announcement.date)
     }
     
     var body: some View {
-        ZStack {
-            switch (announcement.state) {
-                case .published, .draft:
-                    DefaultItem(
-                        announcement: announcement,
-                        elapsedTimeText: elapsedTimeText,
-                        onOptionsClick: onOptionsClick
-                    )
-                    
-                case .publishing:
-                    PublishingItem(
-                        announcement: announcement,
-                        elapsedTimeText: elapsedTimeText,
-                        onOptionsClick: onOptionsClick
-                    )
-                    
-                case .error:
-                    ErrorItem(
-                        announcement: announcement,
-                        elapsedTimeText: elapsedTimeText,
-                        onOptionsClick: onOptionsClick
-                    )
-            }
+        switch (announcement.state) {
+            case .published, .draft:
+                DefaultItem(
+                    announcement: announcement,
+                    elapsedTimeText: elapsedTimeText,
+                    onOptionsClick: onOptionsClick
+                )
+                
+            case .publishing:
+                PublishingItem(
+                    announcement: announcement,
+                    elapsedTimeText: elapsedTimeText,
+                    onOptionsClick: onOptionsClick
+                )
+                
+            case .error:
+                ErrorItem(
+                    announcement: announcement,
+                    elapsedTimeText: elapsedTimeText,
+                    onOptionsClick: onOptionsClick
+                )
         }
-        .contentShape(Rectangle())
-        .padding(.horizontal)
-        .padding(.vertical, Dimens.smallMediumPadding)
     }
 }
 
@@ -56,39 +48,22 @@ private struct DefaultItem: View {
     let onOptionsClick: () -> Void
         
     var body: some View {
-        HStack(spacing: Dimens.mediumPadding) {
-            ProfilePicture(
-                url: announcement.author.profilePictureUrl,
-                scale: 0.5
-            )
-            
-            VStack(alignment: .leading, spacing: Dimens.extraSmallPadding) {
-                HStack {
-                    Text(announcement.author.fullName)
-                        .fontWeight(.medium)
-                        .lineLimit(1)
-                    
-                    Text(elapsedTimeText)
-                        .foregroundStyle(.supportingText)
-                        .font(.bodySmall)
-                }
-                
-                if let title = announcement.title, !title.isEmpty {
-                    Text(title)
-                        .foregroundStyle(.supportingText)
-                        .font(.bodyMedium)
-                        .lineLimit(1)
-                } else {
-                    Text(announcement.content)
-                        .foregroundStyle(.supportingText)
-                        .font(.bodyMedium)
-                        .lineLimit(1)
-                }
+        PlainListItem(
+            headlineContent: {
+                HeadlineContent(
+                    authorFullName: announcement.author.fullName,
+                    elapsedTimeText: elapsedTimeText
+                )
+            },
+            leadingContent: { LeadingContent(profilePictureUrl: announcement.author.profilePictureUrl) },
+            trailingContent: { TrailingContent(onOptionsClick: onOptionsClick) },
+            supportingContent: {
+                SupportingContent(
+                    title: announcement.title,
+                    content: announcement.content
+                )
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
-            OptionsButton(action: onOptionsClick)
-        }
+        )
     }
 }
 
@@ -113,15 +88,83 @@ private struct ErrorItem: View {
     let onOptionsClick: () -> Void
     
     var body: some View {
-        HStack(alignment: .center, spacing: Dimens.mediumPadding) {
-            Image(systemName: "exclamationmark.circle")
-                .foregroundStyle(.red)
+        PlainListItem(
+            headlineContent: {
+                HeadlineContent(
+                    authorFullName: announcement.author.fullName,
+                    elapsedTimeText: elapsedTimeText
+                )
+            },
+            leadingContent: {
+                HStack(spacing: Dimens.smallMediumPadding) {
+                    Image(systemName: "exclamationmark.circle")
+                        .foregroundStyle(.red)
+                    
+                    LeadingContent(profilePictureUrl: announcement.author.profilePictureUrl)
+                }
+            },
+            trailingContent: { TrailingContent(onOptionsClick: onOptionsClick) },
+            supportingContent: {
+                SupportingContent(
+                    title: announcement.title,
+                    content: announcement.content
+                )
+            }
+        )
+    }
+}
+
+private struct HeadlineContent: View {
+    let authorFullName: String
+    let elapsedTimeText: String
+    
+    var body: some View {
+        HStack {
+            Text(authorFullName)
+                .fontWeight(.medium)
+                .lineLimit(1)
             
-            DefaultItem(
-                announcement: announcement,
-                elapsedTimeText: elapsedTimeText,
-                onOptionsClick: onOptionsClick
-            )
+            Text(elapsedTimeText)
+                .foregroundStyle(.supportingText)
+                .font(.bodySmall)
+        }
+    }
+}
+
+private struct LeadingContent: View {
+    let profilePictureUrl: String?
+    
+    var body: some View {
+        ProfilePicture(
+            url: profilePictureUrl,
+            scale: 0.5
+        )
+    }
+}
+
+private struct TrailingContent: View {
+    let onOptionsClick: () -> Void
+    
+    var body: some View {
+        OptionsButton(action: onOptionsClick)
+    }
+}
+
+private struct SupportingContent: View {
+    let title: String?
+    let content: String
+    
+    var body: some View {
+        if let title, !title.isEmpty {
+            Text(title)
+                .foregroundStyle(.supportingText)
+                .font(.bodyMedium)
+                .lineLimit(1)
+        } else {
+            Text(content)
+                .foregroundStyle(.supportingText)
+                .font(.bodyMedium)
+                .lineLimit(1)
         }
     }
 }

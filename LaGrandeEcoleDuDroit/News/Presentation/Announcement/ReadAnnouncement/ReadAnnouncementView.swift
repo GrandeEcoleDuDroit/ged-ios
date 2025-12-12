@@ -27,43 +27,42 @@ struct ReadAnnouncementDestination: View {
     }
     
     var body: some View {
-        ZStack {
-            if let announcement = viewModel.uiState.announcement,
-               let user = viewModel.uiState.user {
-                ReadAnnouncementView(
-                    announcement: announcement,
-                    user: user,
-                    loading: viewModel.uiState.loading,
-                    onEditAnnouncementClick: onEditAnnouncementClick,
-                    onDeleteAnnouncementClick: viewModel.deleteAnnouncement,
-                    onReportAnnouncementClick: viewModel.reportAnnouncement,
-                    onAuthorClick: onAuthorClick
-                )
-            }
-        }
-        .onReceive(viewModel.$event) { event in
-            if let errorEvent = event as? ErrorEvent {
-                errorMessage = errorEvent.message
-                showErrorAlert = true
-            } else if let _ = event as? SuccessEvent {
-                onBackClick()
-            }
-        }
-        .alert(
-            errorMessage,
-            isPresented: $showErrorAlert,
-            actions: {
-                Button(stringResource(.ok)) {
-                    showErrorAlert = false
+        if let announcement = viewModel.uiState.announcement, let user = viewModel.uiState.user {
+            ReadAnnouncementView(
+                user: user,
+                announcement: announcement,
+                loading: viewModel.uiState.loading,
+                onEditAnnouncementClick: onEditAnnouncementClick,
+                onDeleteAnnouncementClick: viewModel.deleteAnnouncement,
+                onReportAnnouncementClick: viewModel.reportAnnouncement,
+                onAuthorClick: onAuthorClick
+            )
+            .onReceive(viewModel.$event) { event in
+                if let errorEvent = event as? ErrorEvent {
+                    errorMessage = errorEvent.message
+                    showErrorAlert = true
+                } else if let _ = event as? SuccessEvent {
+                    onBackClick()
                 }
             }
-        )
+            .alert(
+                errorMessage,
+                isPresented: $showErrorAlert,
+                actions: {
+                    Button(stringResource(.ok)) {
+                        showErrorAlert = false
+                    }
+                }
+            )
+        } else {
+            FullProgressView()
+        }
     }
 }
 
 private struct ReadAnnouncementView: View {
-    let announcement: Announcement
     let user: User
+    let announcement: Announcement
     let loading: Bool
     let onEditAnnouncementClick: (Announcement) -> Void
     let onDeleteAnnouncementClick: () -> Void
@@ -167,8 +166,8 @@ private struct ReadAnnouncementView: View {
 #Preview {
     NavigationStack {
         ReadAnnouncementView(
-            announcement: announcementFixture,
             user: userFixture2,
+            announcement: announcementFixture,
             loading: false,
             onEditAnnouncementClick: { _ in },
             onDeleteAnnouncementClick: {},

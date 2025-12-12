@@ -24,42 +24,31 @@ struct CreateConversationDestination: View {
 }
 
 private struct CreateConversationView: View {
-    let users: [User]
+    let users: [User]?
     let loading: Bool
     let userQuery: String
     let onQueryChange: (String) -> Void
     let onUserClick: (User) -> Void
     
     var body: some View {
-        VStack {
-            ScrollView {
-                LazyVStack(spacing: .zero) {
-                    if loading {
-                        ProgressView()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    }
-                    else {
-                        if users.isEmpty {
-                            Text(stringResource(.userNotFound))
-                                .foregroundColor(.informationText)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical)
-                        } else {
-                            ForEach(users, id: \.id) { user in
-                                Button(action: { onUserClick(user) }) {
-                                    UserItem(user: user)
-                                        .contentShape(Rectangle())
-                                }
-                                .buttonStyle(ClickStyle())
-                            }
-                        }
-                    }
-                }
+        Group {
+            if let users {
+                PlainTableView(
+                    values: users,
+                    onRowClick: { onUserClick($0) },
+                    emptyContent: {
+                        Text(stringResource(.userNotFound))
+                            .foregroundColor(.informationText)
+                            .frame(maxWidth: .infinity)
+                    },
+                    content: { UserItem(user: $0) }
+                )
+            } else {
+                FullProgressView()
             }
         }
         .navigationTitle(stringResource(.newConversation))
         .navigationBarTitleDisplayMode(.inline)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .searchable(
             text: Binding(
                 get: { userQuery },

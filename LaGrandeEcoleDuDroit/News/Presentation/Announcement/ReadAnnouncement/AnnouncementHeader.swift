@@ -4,19 +4,16 @@ struct AnnouncementHeader: View {
     let announcement: Announcement
     let onAuthorClick: () -> Void
     
-    private let elapsedTimeText: String
-    
     init(
         announcement: Announcement,
         onAuthorClick: @escaping () -> Void
     ) {
         self.announcement = announcement
         self.onAuthorClick = onAuthorClick
-        
-        elapsedTimeText = getElapsedTimeText(
-            elapsedTime: GetElapsedTimeUseCase.execute(date: announcement.date),
-            announcementDate: announcement.date
-        )
+    }
+    
+    private var elapsedTimeText: String {
+        getElapsedTimeText(date: announcement.date)
     }
 
     var body: some View {

@@ -8,18 +8,22 @@ struct ProfileDestination: View {
     @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(ProfileViewModel.self)
     
     var body: some View {
-        ProfileView(
-            user: viewModel.uiState.user,
-            onAccountInfosClick: onAccountInfosClick,
-            onAccountClick: onAccountClick,
-            onPrivacyClick: onPrivacyClick,
-            onLogoutClick: viewModel.logout
-        )
+        if let user = viewModel.uiState.user {
+            ProfileView(
+                user: user,
+                onAccountInfosClick: onAccountInfosClick,
+                onAccountClick: onAccountClick,
+                onPrivacyClick: onPrivacyClick,
+                onLogoutClick: viewModel.logout
+            )
+        } else {
+            FullProgressView()
+        }
     }
 }
 
 private struct ProfileView: View {
-    let user: User?
+    let user: User
     let onAccountInfosClick: () -> Void
     let onAccountClick: () -> Void
     let onPrivacyClick: () -> Void
@@ -29,66 +33,60 @@ private struct ProfileView: View {
 
     var body: some View {
         List {
-            if let user {
-                Section {
-                    Button(action: onAccountInfosClick) {
-                        HStack(spacing: Dimens.mediumPadding) {
-                            ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
-                            
-                            VStack(alignment: .leading) {
-                                HStack {
-                                    Text(user.fullName)
-                                        .font(.title3)
-                                        .fontWeight(.semibold)
-                                        .lineLimit(1)
-                                    
-                                    if user.admin {
-                                        Image(systemName: "star.fill")
-                                            .foregroundStyle(.gold)
-                                            .font(.system(size: 14))
-                                    }
-                                }
+            Section {
+                Button(action: onAccountInfosClick) {
+                    HStack(spacing: Dimens.mediumPadding) {
+                        ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
+                        
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Text(user.fullName)
+                                    .font(.title3)
+                                    .fontWeight(.semibold)
+                                    .lineLimit(1)
                                 
-                                Text(user.email)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
+                                if user.admin {
+                                    Image(systemName: "star.fill")
+                                        .foregroundStyle(.gold)
+                                        .font(.system(size: 14))
+                                }
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
                             
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.gray)
+                            Text(user.email)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.gray)
                     }
                 }
-                
-                Section {
-                    Button(action: onAccountClick) {
-                        ListItem(
-                            image: Image(systemName: "key"),
-                            text: Text(stringResource(.account))
-                        )
-                    }
-                    
-                    Button(action: onPrivacyClick) {
-                        ListItem(
-                            image: Image(systemName: "lock"),
-                            text: Text(stringResource(.privacy))
-                        )
-                    }
-                }
-                
-                Section {
-                    ClickableTextItem(
-                        icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
-                        text: Text(stringResource(.logout)),
-                        onClick: { showLogoutAlert = true }
+            }
+            
+            Section {
+                Button(action: onAccountClick) {
+                    ListItem(
+                        image: Image(systemName: "key"),
+                        text: Text(stringResource(.account))
                     )
-                    .foregroundStyle(.red)
                 }
-            } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .listRowBackground(Color.clear)
+                
+                Button(action: onPrivacyClick) {
+                    ListItem(
+                        image: Image(systemName: "lock"),
+                        text: Text(stringResource(.privacy))
+                    )
+                }
+            }
+            
+            Section {
+                ClickableTextItem(
+                    icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
+                    text: Text(stringResource(.logout)),
+                    onClick: { showLogoutAlert = true }
+                )
+                .foregroundStyle(.red)
             }
         }
         .navigationTitle(stringResource(.profile))

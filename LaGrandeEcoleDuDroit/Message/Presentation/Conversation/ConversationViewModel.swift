@@ -9,7 +9,7 @@ class ConversationViewModel: ViewModel {
     @Published private(set) var uiState: ConversationUiState = ConversationUiState()
     @Published private(set) var event: SingleUiEvent? = nil
     private var cancellables: Set<AnyCancellable> = []
-    private var defaultConversations: [ConversationUi] = []
+    private var defaultConversationsUi: [ConversationUi] = []
     
     init(
         userRepository: UserRepository,
@@ -40,11 +40,11 @@ class ConversationViewModel: ViewModel {
         getConversationsUiUseCase.execute()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] conversations in
-                let sortedConversations = conversations.sorted {
+                let sortedConversationsUi = conversations.sorted {
                     $0.lastMessage.date > $1.lastMessage.date
                 }
-                self?.uiState.conversations = sortedConversations
-                self?.defaultConversations = sortedConversations
+                self?.uiState.conversationsUi = sortedConversationsUi
+                self?.defaultConversationsUi = sortedConversationsUi
             }.store(in: &cancellables)
     }
     
@@ -59,7 +59,7 @@ class ConversationViewModel: ViewModel {
     }
     
     struct ConversationUiState {
-        var conversations: [ConversationUi] = []
+        var conversationsUi: [ConversationUi]? = nil
         var loading = true
     }
 }

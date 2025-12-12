@@ -11,10 +11,10 @@ struct NewsDestination: View {
     @State private var showErrorAlert: Bool = false
     
     var body: some View {
-        if let user = viewModel.uiState.user {
+        if let user = viewModel.uiState.user, let announcements = viewModel.uiState.announcements {
             NewsView(
                 user: user,
-                announcements: viewModel.uiState.announcements,
+                announcements: announcements,
                 loading: viewModel.uiState.loading,
                 onRefreshAnnouncements: viewModel.refreshAnnouncements,
                 onAnnouncementClick: onAnnouncementClick,
@@ -41,15 +41,14 @@ struct NewsDestination: View {
                 }
             )
         } else {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            FullProgressView()
         }
     }
 }
 
 private struct NewsView: View {
     let user: User
-    let announcements: [Announcement]?
+    let announcements: [Announcement]
     let loading: Bool
     let onRefreshAnnouncements: () async -> Void
     let onAnnouncementClick: (String) -> Void
@@ -65,26 +64,19 @@ private struct NewsView: View {
     @State private var alertAnnouncement: Announcement?
     
     var body: some View {
-        ZStack {
-            if let announcements {
-                RecentAnnouncementSection(
-                    announcements: announcements,
-                    onAnnouncementClick: onAnnouncementClick,
-                    onUncreatedAnnouncementClick: {
-                        announcementBottomSheetType = .announcement(announcement: $0)
-                    },
-                    onAnnouncementOptionsClick: {
-                        announcementBottomSheetType = .announcement(announcement: $0)
-                    },
-                    onSeeAllAnnouncementClick: onSeeAllAnnouncementClick
-                )
-            } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            }
-        }
+        RecentAnnouncementSection(
+            announcements: announcements,
+            onAnnouncementClick: onAnnouncementClick,
+            onUncreatedAnnouncementClick: {
+                announcementBottomSheetType = .announcement(announcement: $0)
+            },
+            onAnnouncementOptionsClick: {
+                announcementBottomSheetType = .announcement(announcement: $0)
+            },
+            onSeeAllAnnouncementClick: onSeeAllAnnouncementClick,
+            onRefreshAnnouncements: onRefreshAnnouncements
+        )
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .refreshable { await onRefreshAnnouncements() }
         .padding(.top)
         .loading(loading)
         .toolbar {

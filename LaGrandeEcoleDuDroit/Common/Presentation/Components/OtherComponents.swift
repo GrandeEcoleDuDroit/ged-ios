@@ -41,40 +41,6 @@ struct ClickableTextItem: View {
     }
 }
 
-struct PlainListItem<
-    LeadingContent: View,
-    TrailingContent: View,
-    HeadlineContent: View
->: View {
-    let leadingContent: LeadingContent
-    let headlineContent: HeadlineContent
-    let trailingContent: TrailingContent
-    
-    init(
-        headlineContent: () -> HeadlineContent = { EmptyView() },
-        leadingContent: () -> LeadingContent = { EmptyView() },
-        trailingContent: () -> TrailingContent = { EmptyView() }
-    ) {
-        self.headlineContent = headlineContent()
-        self.leadingContent = leadingContent()
-        self.trailingContent = trailingContent()
-    }
-    
-    var body: some View {
-        HStack(alignment: .center, spacing: .zero) {
-            leadingContent
-                .padding(.trailing, Dimens.mediumPadding)
-            
-            headlineContent
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            trailingContent
-        }
-        .padding(.vertical, Dimens.smallPadding)
-        .padding(.horizontal)
-    }
-}
-
 struct ListItem: View {
     let image: Image?
     let text: Text
@@ -176,6 +142,15 @@ struct SearchBar: UIViewRepresentable {
     }
 }
 
+struct FullProgressView: View {
+    var body: some View {
+        ProgressView()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            .ignoresSafeArea(.all)
+            .background(.appBackground)
+    }
+}
+
 #Preview {
     VStack(alignment: .leading, spacing: 20) {
         TextItem(
@@ -187,12 +162,6 @@ struct SearchBar: UIViewRepresentable {
             icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
             text: Text("Clickable text item"),
             onClick: {}
-        )
-        
-        PlainListItem(
-            headlineContent: { Text("Plain list item") },
-            leadingContent: { Image(systemName: "star") },
-            trailingContent: { Image(systemName: "chevron.right") }
         )
         
         HStack {

@@ -10,10 +10,10 @@ struct MissionDestination: View {
     @State private var showErrorAlert: Bool = false
     
     var body: some View {
-        if let user = viewModel.uiState.user {
+        if let user = viewModel.uiState.user, let missions = viewModel.uiState.missions {
             MissionView(
                 user: user,
-                missions: viewModel.uiState.missions,
+                missions: missions,
                 loading: viewModel.uiState.loading,
                 onMissionClick: onMissionClick,
                 onCreateMissionClick: onCreateMissionClick,
@@ -39,15 +39,14 @@ struct MissionDestination: View {
                 }
             )
         } else {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            FullProgressView()
         }
     }
 }
 
 private struct MissionView: View {
     let user: User
-    let missions: [Mission]?
+    let missions: [Mission]
     let loading: Bool
     let onMissionClick: (String) -> Void
     let onCreateMissionClick: () -> Void
@@ -64,48 +63,39 @@ private struct MissionView: View {
     
     var body: some View {
         List {
-            if let missions {
-                if missions.isEmpty {
-                    Text(stringResource(.noMission))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                        .foregroundStyle(.informationText)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.clear)
-                } else {
-                    ForEach(missions) { mission in
-                        MissionCard(
-                            mission: mission,
-                            onClick: {
-                                if case .published = mission.state {
-                                    onMissionClick(mission.id)
-                                } else {
-                                    clickedMission = mission
-                                    showMissionBottomSheet = true
-                                }
-                            },
-                            onOptionsClick: {
-                                clickedMission = mission
-                                showMissionBottomSheet = true
-                            }
-                        )
-                        .padding(.horizontal)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.clear)
-                    }
-                }
-            } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            if missions.isEmpty {
+                Text(stringResource(.noMission))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .foregroundStyle(.informationText)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
+            } else {
+                ForEach(missions) { mission in
+                    MissionCard(
+                        mission: mission,
+                        onClick: {
+                            if case .published = mission.state {
+                                onMissionClick(mission.id)
+                            } else {
+                                clickedMission = mission
+                                showMissionBottomSheet = true
+                            }
+                        },
+                        onOptionsClick: {
+                            clickedMission = mission
+                            showMissionBottomSheet = true
+                        }
+                    )
+                    .padding(.horizontal)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                }
             }
         }
         .scrollIndicators(.hidden)
         .listStyle(.plain)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .listRowSpacing(Dimens.largePadding)
         .refreshable { await onRefreshMissions() }
         .loading(loading)

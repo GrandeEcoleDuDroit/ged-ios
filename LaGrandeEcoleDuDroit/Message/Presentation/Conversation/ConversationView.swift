@@ -9,32 +9,36 @@ struct ConversationDestination: View {
     @State private var errorMessage: String = ""
     
     var body: some View {
-        ConversationView(
-            conversationsUi: viewModel.uiState.conversations,
-            onCreateConversationClick: onCreateConversationClick,
-            onConversationClick: onConversationClick,
-            onDeleteConversationClick: viewModel.deleteConversation
-        )
-        .onReceive(viewModel.$event) { event in
-            if let errorEvent = event as? ErrorEvent {
-                errorMessage = errorEvent.message
-                showErrorAlert = true
-            }
-        }
-        .alert(
-            errorMessage,
-            isPresented: $showErrorAlert,
-            actions: {
-                Button(stringResource(.ok)) {
-                    showErrorAlert = false
+        if let conversationsUi = viewModel.uiState.conversationsUi {
+            ConversationView(
+                conversationsUi: conversationsUi,
+                onCreateConversationClick: onCreateConversationClick,
+                onConversationClick: onConversationClick,
+                onDeleteConversationClick: viewModel.deleteConversation
+            )
+            .onReceive(viewModel.$event) { event in
+                if let errorEvent = event as? ErrorEvent {
+                    errorMessage = errorEvent.message
+                    showErrorAlert = true
                 }
             }
-        )
+            .alert(
+                errorMessage,
+                isPresented: $showErrorAlert,
+                actions: {
+                    Button(stringResource(.ok)) {
+                        showErrorAlert = false
+                    }
+                }
+            )
+        } else {
+            FullProgressView()
+        }
     }
 }
 
 private struct ConversationView: View {
-    let conversationsUi: [ConversationUi]?
+    let conversationsUi: [ConversationUi]
     let onCreateConversationClick: () -> Void
     let onConversationClick: (ConversationUi) -> Void
     let onDeleteConversationClick: (Conversation) -> Void
@@ -44,54 +48,16 @@ private struct ConversationView: View {
     @State private var alertConversationUi: ConversationUi?
     
     var body: some View {
-        List {
-            if let conversationsUi {
-                if conversationsUi.isEmpty {
-                    VStack {
-                        Text(stringResource(.noConversation))
-                            .foregroundStyle(.informationText)
-                        
-                        Button(
-                            stringResource(.newConversation),
-                            action: onCreateConversationClick
-                        )
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.gedPrimary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                } else {
-                    ForEach(conversationsUi) { conversationUi in
-                        Button(action: { onConversationClick(conversationUi) }) {
-                            ConversationItem(conversationUi: conversationUi)
-                                .simultaneousGesture(
-                                    LongPressGesture()
-                                        .onEnded { _ in
-                                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                            sheetConversationUi = conversationUi
-                                        }
-                                )
-                                .contentShape(.rect)
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(ClickStyle())
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets())
-                    }
-                }
-            } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets())
-            }
-        }
-        .scrollIndicators(.hidden)
-        .listStyle(.plain)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        PlainTableView(
+            modifier: PlainTableModifier(
+                backgroundColor: .appBackground,
+                onRowLongClick: { sheetConversationUi = $0 }
+            ),
+            values: conversationsUi,
+            onRowClick: { onConversationClick($0) },
+            emptyContent: { emptyConversationsView },
+            content: { ConversationItem(conversationUi: $0) }
+        )
         .navigationTitle(stringResource(.messages))
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -135,6 +101,21 @@ private struct ConversationView: View {
             }
         }
     }
+    
+    private var emptyConversationsView: some View {
+        VStack {
+            Text(stringResource(.noConversation))
+                .foregroundStyle(.informationText)
+            
+            Button(
+                stringResource(.newConversation),
+                action: onCreateConversationClick
+            )
+            .fontWeight(.semibold)
+            .foregroundStyle(.gedPrimary)
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+    }
 }
 
 #Preview {
@@ -145,7 +126,6 @@ private struct ConversationView: View {
             onConversationClick: {_ in},
             onDeleteConversationClick: {_ in}
         )
-        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

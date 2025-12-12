@@ -17,7 +17,6 @@ struct MessageNavigation: View {
                 tabBarVisibility.show = true
                 viewModel.setCurrentRoute(MessageMainRoute.conversation)
             }
-            .background(.appBackground)
             .navigationDestination(for: MessageRoute.self) { route in
                 switch route {
                     case .chat(let conversation):

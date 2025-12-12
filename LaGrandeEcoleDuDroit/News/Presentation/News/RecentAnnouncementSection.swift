@@ -6,9 +6,10 @@ struct RecentAnnouncementSection: View {
     let onUncreatedAnnouncementClick: (Announcement) -> Void
     let onAnnouncementOptionsClick: (Announcement) -> Void
     let onSeeAllAnnouncementClick: () -> Void
+    let onRefreshAnnouncements: () async -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: .zero) {
+        VStack(alignment: .leading) {
             HStack(alignment: .center) {
                 Text(stringResource(.recentAnnouncements))
                     .font(.titleMedium)
@@ -25,40 +26,28 @@ struct RecentAnnouncementSection: View {
             }
             .padding(.horizontal)
             
-            List {
-                if announcements.isEmpty {
-                    Text(stringResource(.noAnnouncement))
-                        .foregroundStyle(.informationText)
-                        .padding()
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets())
-                        .frame(maxWidth: .infinity, alignment: .center)
-                } else {
-                    ForEach(announcements) { announcement in
-                        Button(
-                            action: {
-                                if announcement.state == .published {
-                                    onAnnouncementClick(announcement.id)
-                                } else {
-                                    onUncreatedAnnouncementClick(announcement)
-                                }
-                            }
-                        ) {
-                            CompactAnnouncementItem(
-                                announcement: announcement,
-                                onOptionsClick: { onAnnouncementOptionsClick(announcement) }
-                            )
-                        }
-                        .buttonStyle(ClickStyle())
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.clear)
+            PlainTableView(
+                modifier: PlainTableModifier(onRefresh: onRefreshAnnouncements),
+                values: announcements,
+                onRowClick: { announcement in
+                    if announcement.state == .published {
+                        onAnnouncementClick(announcement.id)
+                    } else {
+                        onUncreatedAnnouncementClick(announcement)
                     }
+                },
+                emptyContent: {
+                    Text(stringResource(.noAnnouncement))
+                        .padding()
+                        .foregroundStyle(.informationText)
+                        .frame(maxWidth: .infinity, alignment: .center)
                 }
+            ) { announcement in
+                CompactAnnouncementItem(
+                    announcement: announcement,
+                    onOptionsClick: { onAnnouncementOptionsClick(announcement) }
+                )
             }
-            .scrollIndicators(.hidden)
-            .listStyle(.plain)
         }
     }
 }
@@ -69,7 +58,9 @@ struct RecentAnnouncementSection: View {
         onAnnouncementClick: { _ in },
         onUncreatedAnnouncementClick: { _ in },
         onAnnouncementOptionsClick: { _ in },
-        onSeeAllAnnouncementClick: {}
+        onSeeAllAnnouncementClick: {},
+        onRefreshAnnouncements: {}
     )
+    .background(.appBackground)
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }
