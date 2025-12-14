@@ -190,21 +190,27 @@ private struct MissionDetailsView: View {
                             loading: loading,
                             onClick: onRegisterMissionClick
                         )
+                        .padding(.vertical, Dimens.smallMediumPadding)
+                        .padding(.horizontal, Dimens.mediumPadding)
+                        .background(.appBackground)
                         
                     case .registered:
                         RegisteredButton(
                             loading: loading,
                             onClick: { showUnregisterMissionAlert = true }
                         )
+                        .padding(.vertical, Dimens.smallMediumPadding)
+                        .padding(.horizontal, Dimens.mediumPadding)
+                        .background(.appBackground)
                         
                     case .complete: CompleteButton()
+                            .padding(.vertical, Dimens.smallMediumPadding)
+                            .padding(.horizontal, Dimens.mediumPadding)
+                            .background(.appBackground)
                         
                     case .hidden: EmptyView()
                 }
             }
-            .padding(.vertical, Dimens.smallMediumPadding)
-            .padding(.horizontal, Dimens.mediumPadding)
-            .background(.appBackground)
         }
         .sheet(isPresented: $showMissionBottomSheet) {
             MissionBottomSheet(
