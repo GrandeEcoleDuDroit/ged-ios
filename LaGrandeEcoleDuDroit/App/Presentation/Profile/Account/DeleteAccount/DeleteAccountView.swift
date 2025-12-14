@@ -39,30 +39,61 @@ private struct DeleteAccountView: View {
     @State private var showPassword: Bool = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.largePadding) {
+        VStack(alignment: .leading) {
             Text(stringResource(.deleteAccountText))
+                .padding(.horizontal, Dimens.mediumLargePadding)
             
-            OutlinedPasswordTextField(
-                label: stringResource(.password),
-                text: password,
-                onTextChange: { password = $0 },
-                errorMessage: errorMessage
-            )
-            
-            Button(action: onDeleteAccountClick) {
-                Text(stringResource(.deleteAccount))
-                    .frame(maxWidth: .infinity)
-                    .padding(10)
-                    .foregroundStyle(.white)
-                    .background(.red)
-                    .clipShape(.rect(cornerRadius: 30))
+            Form {
+                Section(
+                    content: {
+                        HStack {
+                            if showPassword {
+                                TextField(
+                                    stringResource(.password),
+                                    text: $password
+                                )
+                                .textContentType(.password)
+                            } else {
+                                SecureField(
+                                    stringResource(.password),
+                                    text: $password
+                                )
+                                .textContentType(.password)
+                            }
+                            
+                            Image(systemName: showPassword ? "eye" : "eye.slash")
+                                .foregroundStyle(.onSurfaceVariant)
+                                .onTapGesture {
+                                    showPassword.toggle()
+                                }
+                        }
+                    },
+                    header: { Text(stringResource(.enterPassword)) },
+                    footer: {
+                        if let errorMessage {
+                            Text(errorMessage)
+                                .foregroundStyle(.error)
+                        } else {
+                            EmptyView()
+                        }
+                    }
+                )
+                
+                Button(
+                    stringResource(.deleteAccount),
+                    action: onDeleteAccountClick
+                )
+                .foregroundStyle(.red)
+                .frame(maxWidth: .infinity, alignment: .center)
             }
+            .scrollContentBackground(.hidden)
+            .scrollDisabled(true)
         }
-        .padding(.horizontal)
-        .loading(loading)
         .navigationTitle(stringResource(.deleteAccount))
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(Color.profileSectionBackground)
+        .loading(loading)
     }
 }
 
@@ -74,7 +105,5 @@ private struct DeleteAccountView: View {
             errorMessage: nil,
             onDeleteAccountClick: {}
         )
-        .background(.profileSectionBackground)
     }
-    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }
