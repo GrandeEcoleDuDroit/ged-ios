@@ -58,7 +58,9 @@ private struct DefaultMissionCard: View {
             .frame(height: 180)
             
             VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
-                CardHeader(mission: mission)
+                CardTitle(title: mission.title)
+                
+                CardSubtitle(mission: mission)
                 
                 CardContent(description: mission.description)
                 
@@ -107,7 +109,9 @@ private struct ErrorMissionCard: View {
             .frame(height: 180)
             
             VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
-                CardHeader(mission: mission)
+                CardTitle(title: mission.title)
+                
+                CardSubtitle(mission: mission)
                 
                 CardContent(description: mission.description)
                 
@@ -126,34 +130,42 @@ private struct ErrorMissionCard: View {
     }
 }
 
-private struct CardHeader: View {
+private struct CardTitle: View {
+    let title: String
+    
+    var body: some View {
+        Text(title)
+            .font(.titleLarge)
+            .fixedSize(horizontal: false, vertical: true)
+            .lineLimit(2)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct CardSubtitle: View {
     let mission: Mission
     
     var body: some View {
         VStack(alignment: .leading, spacing: Dimens.smallPadding) {
-            HStack(alignment: .top, spacing: Dimens.smallPadding) {
-                Text(mission.title)
-                    .font(.titleLarge)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .lineLimit(2)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-                TextIcon(
-                    icon: Image(systemName: "person.2"),
-                    text: stringResource(
-                        .participantNumber,
-                        mission.participants.count,
-                        mission.maxParticipants
-                    ),
-                    spacing: Dimens.smallPadding
-                )
-                .font(.bodyMedium)
-                .padding(.top, Dimens.extraSmallPadding)
-            }
-            
-            Text(MissionPresentationUtils.formatDate(startDate: mission.startDate, endDate: mission.endDate))
-                .foregroundStyle(.informationText)
-                .font(.bodyMedium)
+            TextIcon(
+                icon: Image(systemName: "calendar"),
+                text: MissionPresentationUtils.formatDate(startDate: mission.startDate, endDate: mission.endDate),
+                spacing: Dimens.smallPadding
+            )
+            .foregroundStyle(.informationText)
+            .font(.bodyMedium)
+                        
+            TextIcon(
+                icon: Image(systemName: "person.2"),
+                text: stringResource(
+                    .participantNumber,
+                    mission.participants.count,
+                    mission.maxParticipants
+                ),
+                spacing: Dimens.smallPadding
+            )
+            .foregroundStyle(.informationText)
+            .font(.bodyMedium)
         }
     }
 }
