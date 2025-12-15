@@ -57,6 +57,8 @@ enum Strings: String {
     case blockUserAlertMessage = "block_user_alert_message"
     case unblockUserAlertMessage = "unblock_user_alert_message"
     case noUser = "no_user"
+    case deletedUserFirstName = "deleted_user_first_name"
+    case deletedUserLastName = "deleted_user_last_name"
     
     // Common errors
     case mandatoryFieldError = "mandatory_field_error"
