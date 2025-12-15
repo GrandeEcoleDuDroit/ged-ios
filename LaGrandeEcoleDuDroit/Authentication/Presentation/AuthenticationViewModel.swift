@@ -56,12 +56,10 @@ class AuthenticationViewModel: ViewModel {
     }
     
     private func validateEmail(email: String) -> String? {
-        if email.isBlank() {
-            stringResource(.mandatoryFieldError)
-        } else if !VerifyEmailFormatUseCase.execute(email) {
-            stringResource(.incorrectEmailFormatError)
-        } else {
-            nil
+        switch email {
+            case _ where email.isBlank(): stringResource(.mandatoryFieldError)
+            case _ where !VerifyEmailFormatUseCase.execute(email): stringResource(.incorrectEmailFormatError)
+            default : nil
         }
     }
     

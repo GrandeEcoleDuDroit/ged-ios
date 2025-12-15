@@ -162,4 +162,7 @@ enum Strings: String {
     case unregisterMissionAlertMessage = "unregister_mission_alert_message"
     case removeParticipantAlertMessage = "remove_participant_alert_message"
     case editMissionSchoolLevelSupportingText = "edit_mission_school_level_supporting_text"
+    
+    case maxParticipantsInferiorThanParticpantCountErrorMessage = "max_participants_inferior_than_particpant_count_error_message"
+    case maxParticipantsInvalidNumberErrorMessage = "max_participants_invalid_number_error_message"
 }
