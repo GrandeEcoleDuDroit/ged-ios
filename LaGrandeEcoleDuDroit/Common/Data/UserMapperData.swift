@@ -43,12 +43,11 @@ extension User {
 }
 
 extension LocalUser {
-    
     func toUser() -> User {
         User(
             id: userId,
-            firstName: userFirstName.uppercaseFirstLetter(),
-            lastName: userLastName.uppercaseFirstLetter(),
+            firstName: userFirstName.userNameFormatting(),
+            lastName: userLastName.userNameFormatting(),
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel)!,
             admin: userAdmin,
@@ -61,8 +60,8 @@ extension FirestoreUser {
     func toUser() -> User {
         return User(
             id: userId,
-            firstName: firstName.uppercaseFirstLetter(),
-            lastName: lastName.uppercaseFirstLetter(),
+            firstName: firstName.userNameFormatting(),
+            lastName: lastName.userNameFormatting(),
             email: email,
             schoolLevel: SchoolLevel.fromNumber(schoolLevel),
             admin: admin,
