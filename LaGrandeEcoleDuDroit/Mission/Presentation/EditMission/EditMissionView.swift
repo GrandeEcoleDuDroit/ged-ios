@@ -35,6 +35,7 @@ struct EditMissionDestination: View {
             missionState: viewModel.uiState.missionState,
             editEnabled: viewModel.uiState.updateEnabled,
             schoolLevelSupportingText: viewModel.uiState.schoolLevelSupportingText,
+            maxParticipantsError: viewModel.uiState.maxParticipantsError,
             onImageChange: viewModel.onImageChange,
             onImageRemove: viewModel.onImageRemove,
             onTitleChange: viewModel.onTitleChange,
@@ -89,6 +90,7 @@ private struct EditMissionView: View {
     let missionState: Mission.MissionState
     let editEnabled: Bool
     let schoolLevelSupportingText: String?
+    let maxParticipantsError: String?
     
     let onImageChange: () -> Void
     let onImageRemove: () -> Void
@@ -124,7 +126,8 @@ private struct EditMissionView: View {
                 managers: managers,
                 missionTasks: missionTasks,
                 missionState: missionState,
-                schoolLevelSupportingText: schoolLevelSupportingText
+                schoolLevelSupportingText: schoolLevelSupportingText,
+                maxParticipantsError: maxParticipantsError
             ),
             imageData: $imageData,
             onImageChange: { onImageChange() },
@@ -220,6 +223,7 @@ private struct EditMissionView: View {
             missionState: .published(imageUrl: "https://cdn.britannica.com/16/234216-050-C66F8665/beagle-hound-dog.jpg"),
             editEnabled: false,
             schoolLevelSupportingText: nil,
+            maxParticipantsError: nil,
             onImageChange: {},
             onImageRemove: {},
             onTitleChange: { _ in "" },

@@ -14,9 +14,7 @@ struct OutlinedTextField: View {
     @State private var currentText: String
     
     private var borderColor: Color {
-        if errorMessage != nil {
-            .error
-        } else if disabled {
+        if disabled {
             .disabledBorder
         } else {
             .outline
@@ -85,6 +83,7 @@ struct OutlinedTextField: View {
                     .padding(.leading, Dimens.mediumPadding)
                     .font(.caption)
                     .foregroundColor(.red)
+                    .multilineTextAlignment(.leading)
             }
         }
         .onChange(of: currentText) {
@@ -106,9 +105,7 @@ struct OutlinedPasswordTextField: View {
     @State private var showPassword = false
 
     private var borderColor: Color {
-        if errorMessage != nil {
-            .error
-        } else if isDisabled {
+       if isDisabled {
             .disabledBorder
         } else {
             .outline

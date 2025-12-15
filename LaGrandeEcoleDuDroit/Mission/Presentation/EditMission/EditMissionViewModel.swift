@@ -36,25 +36,49 @@ class EditMissionViewModel: ViewModel {
     }
     
     func updateMission(imageData: Data?) {
-        guard uiState.updateEnabled else { return }
+        let (
+            title,
+            description,
+            startDate,
+            endDate,
+            schoolLevels,
+            duration,
+            managers,
+            maxParticipants,
+            missionTasks,
+            missionState
+        ) = (
+            uiState.title.trim(),
+            uiState.description.trim(),
+            uiState.startDate,
+            uiState.endDate,
+            uiState.schoolLevels,
+            uiState.duration.takeIf { $0.isNotBlank() }?.trim(),
+            uiState.managers,
+            uiState.maxParticipants.trim(),
+            uiState.missionTasks,
+            uiState.missionState
+        )
         
-        let newMission = mission.copy {
-            $0.title = uiState.title.trim()
-            $0.description = uiState.description.trim()
-            $0.startDate = uiState.startDate
-            $0.endDate = uiState.endDate
-            $0.schoolLevels = uiState.schoolLevels
-            $0.duration = uiState.duration.takeIf { $0.isNotBlank() }?.trim()
-            $0.managers = uiState.managers
-            $0.maxParticipants = uiState.maxParticipants.trim().toInt()
-            $0.tasks = uiState.missionTasks
-            $0.state = uiState.missionState
+        guard validateInputs(maxParticipants: maxParticipants) else { return }
+        
+        let missionToUpdate = mission.copy {
+            $0.title = title
+            $0.description = description
+            $0.startDate = startDate
+            $0.endDate = endDate
+            $0.schoolLevels = schoolLevels
+            $0.duration = duration
+            $0.managers = managers
+            $0.maxParticipants = maxParticipants.toInt()
+            $0.tasks = missionTasks
+            $0.state = missionState
         }
         
         executeRequest { [weak self] in
             guard let self else { return }
             try await updateMissionUseCase.execute(
-                mission: newMission,
+                mission: missionToUpdate,
                 imageData: imageData,
                 previousMissionState: self.mission.state
             )
@@ -95,7 +119,7 @@ class EditMissionViewModel: ViewModel {
         uiState.title = truncatedTitle
         missionUpdateState.send(
             missionUpdateState.value.copy {
-                $0.titleUpdated = validateTitle(truncatedTitle)
+                $0.titleUpdated = validateTitleUpdate(truncatedTitle)
             }
         )
         
@@ -107,7 +131,7 @@ class EditMissionViewModel: ViewModel {
         uiState.description = truncatedDescription
         missionUpdateState.send(
             missionUpdateState.value.copy {
-                $0.descriptionUpdated = validateDescription(truncatedDescription)
+                $0.descriptionUpdated = validateDescriptionUpdate(truncatedDescription)
             }
         )
         
@@ -116,18 +140,18 @@ class EditMissionViewModel: ViewModel {
     
     func onStartDateChange(_ startDate: Date) {
         uiState.startDate = startDate
-        if !validateEndDate(startDate: startDate, endDate: uiState.endDate) {
+        if !validateEndDateUpdate(startDate: startDate, endDate: uiState.endDate) {
             uiState.endDate = startDate
         }
         missionUpdateState.send(
             missionUpdateState.value.copy {
-                $0.startDateUpdated = validateStartDate(startDate)
+                $0.startDateUpdated = validateStartDateUpdate(startDate)
             }
         )
     }
     
     func onEndDateChange(_ endDate: Date) {
-        let endDateValid = validateEndDate(startDate: uiState.startDate, endDate: endDate)
+        let endDateValid = validateEndDateUpdate(startDate: uiState.startDate, endDate: endDate)
         uiState.endDate = endDate
         if !endDateValid {
             uiState.startDate =  endDate
@@ -151,7 +175,7 @@ class EditMissionViewModel: ViewModel {
         uiState.schoolLevels = schoolLevels
         missionUpdateState.send(
             missionUpdateState.value.copy {
-                $0.schoolLevelsUpdated = validateSchoolLevels(schoolLevels)
+                $0.schoolLevelsUpdated = validateSchoolLevelsUpdate(schoolLevels)
             }
         )
         
@@ -175,7 +199,7 @@ class EditMissionViewModel: ViewModel {
         uiState.maxParticipants = value
         missionUpdateState.send(
             missionUpdateState.value.copy {
-                $0.maxParticipantsUpdated = validateMaxParticipants(maxParticipants)
+                $0.maxParticipantsUpdated = validateMaxParticipantsUpdate(maxParticipants)
             }
         )
         
@@ -187,7 +211,7 @@ class EditMissionViewModel: ViewModel {
         uiState.duration = truncatedDuration
         missionUpdateState.send(
             missionUpdateState.value.copy {
-                $0.durationUpdated = validateDuration(truncatedDuration)
+                $0.durationUpdated = validateDurationUpdate(truncatedDuration)
             }
         )
         
@@ -198,7 +222,7 @@ class EditMissionViewModel: ViewModel {
         uiState.managers = managers
         missionUpdateState.send(
             missionUpdateState.value.copy {
-                $0.managersUpdated = validateManagers(managers)
+                $0.managersUpdated = validateManagersUpdate(managers)
             }
         )
     }
@@ -210,7 +234,7 @@ class EditMissionViewModel: ViewModel {
             uiState.managers = managers
             missionUpdateState.send(
                 missionUpdateState.value.copy {
-                    $0.managersUpdated = validateManagers(managers)
+                    $0.managersUpdated = validateManagersUpdate(managers)
                 }
             )
         }
@@ -242,7 +266,7 @@ class EditMissionViewModel: ViewModel {
         uiState.missionTasks = missionTasks
         missionUpdateState.send(
             missionUpdateState.value.copy {
-                $0.missionTasksUpdated = validateMissionTasks(missionTasks)
+                $0.missionTasksUpdated = validateMissionTasksUpdate(missionTasks)
             }
         )
     }
@@ -256,7 +280,7 @@ class EditMissionViewModel: ViewModel {
         uiState.missionTasks = missionTasks
         missionUpdateState.send(
             missionUpdateState.value.copy {
-                $0.missionTasksUpdated = validateMissionTasks(missionTasks)
+                $0.missionTasksUpdated = validateMissionTasksUpdate(missionTasks)
             }
         )
     }
@@ -267,9 +291,14 @@ class EditMissionViewModel: ViewModel {
         uiState.missionTasks = missionTasks
         missionUpdateState.send(
             missionUpdateState.value.copy {
-                $0.missionTasksUpdated = validateMissionTasks(missionTasks)
+                $0.missionTasksUpdated = validateMissionTasksUpdate(missionTasks)
             }
         )
+    }
+    
+    private func validateInputs(maxParticipants: String) -> Bool {
+        uiState.maxParticipantsError = validateMaxParticipants(maxParticipants: maxParticipants)
+        return uiState.maxParticipantsError == nil
     }
     
     private func validateRemovedImage() -> Bool {
@@ -280,47 +309,54 @@ class EditMissionViewModel: ViewModel {
         }
     }
     
-    private func validateTitle(_ title: String) -> Bool {
+    private func validateTitleUpdate(_ title: String) -> Bool {
         title != mission.title && title.isNotBlank()
     }
     
-    private func validateDescription(_ description: String) -> Bool {
+    private func validateDescriptionUpdate(_ description: String) -> Bool {
         description != mission.description && description.isNotBlank()
     }
     
-    private func validateStartDate(_ startDate: Date) -> Bool {
+    private func validateStartDateUpdate(_ startDate: Date) -> Bool {
         startDate != mission.startDate
     }
     
-    private func validateEndDate(startDate: Date, endDate: Date) -> Bool {
+    private func validateEndDateUpdate(startDate: Date, endDate: Date) -> Bool {
         endDate != mission.endDate &&
             (endDate.isAlmostEqual(to: startDate) || endDate.isAlmostAfter(to: startDate))
     }
     
-    private func validateSchoolLevels(_ schoolLevels: [SchoolLevel]) -> Bool {
+    private func validateSchoolLevelsUpdate(_ schoolLevels: [SchoolLevel]) -> Bool {
         schoolLevels != mission.schoolLevels
     }
     
-    private func validateMaxParticipants(_ maxParticipants: String) -> Bool {
+    private func validateMaxParticipantsUpdate(_ maxParticipants: String) -> Bool {
         maxParticipants != mission.maxParticipants.description && maxParticipants.isNotBlank()
     }
     
-    private func validateDuration(_ duration: String) -> Bool {
+    private func validateDurationUpdate(_ duration: String) -> Bool {
         duration != mission.duration.orEmpty()
     }
     
-    private func validateManagers(_ managers: [User]) -> Bool {
+    private func validateManagersUpdate(_ managers: [User]) -> Bool {
         managers != mission.managers
     }
     
-    private func validateMissionTasks(_ missionTasks: [MissionTask]) -> Bool {
+    private func validateMissionTasksUpdate(_ missionTasks: [MissionTask]) -> Bool {
         missionTasks != mission.tasks
     }
     
-    private func validateMandatoryFields() -> Bool {
-        uiState.title.isNotBlank() &&
-            uiState.description.isNotBlank() &&
-            uiState.maxParticipants.isNotBlank()
+    private func validateMaxParticipants(maxParticipants: String) -> String? {
+        let maxParticipantsNumber = maxParticipants.trim().toIntOrDefault(-1)
+        return switch maxParticipantsNumber {
+            case _ where maxParticipantsNumber == -1:
+                stringResource(.maxParticipantsInvalidNumberErrorMessage)
+            
+            case _ where maxParticipantsNumber < mission.participants.count:
+                stringResource(.maxParticipantsInferiorThanParticpantCountErrorMessage, mission.participants.count)
+                
+            default: nil
+        }
     }
     
     private func listenMissionUpdateState() {
@@ -395,6 +431,8 @@ class EditMissionViewModel: ViewModel {
         fileprivate(set) var missionState: Mission.MissionState = .draft
         fileprivate(set) var updateEnabled: Bool = false
         fileprivate(set) var schoolLevelSupportingText: String? = nil
+        
+        fileprivate(set) var maxParticipantsError: String? = nil
     }
     
     private struct MissionUpdateState: Copyable {

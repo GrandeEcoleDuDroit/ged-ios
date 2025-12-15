@@ -8,6 +8,8 @@ struct MissionFormInformationSection: View {
     let maxParticipants: String
     let duration: String
     let schoolLevelSupportingText: String?
+    let maxParticipantsError: String?
+    
     let onStartDateChange: (Date) -> Void
     let onEndDateChange: (Date) -> Void
     let onSchoolLevelChange: (SchoolLevel) -> Void
@@ -42,6 +44,7 @@ struct MissionFormInformationSection: View {
                 initialText: maxParticipants,
                 onTextChange: onMaxParticipantsChange,
                 placeHolder: stringResource(.missionMaxParticipantsField),
+                errorMessage: maxParticipantsError,
                 leadingIcon: Image(systemName: "person.2")
             )
             .keyboardType(.decimalPad)
@@ -153,6 +156,7 @@ struct OutlinedSchoolLevelPicker: View {
         maxParticipants: "",
         duration: "",
         schoolLevelSupportingText: nil,
+        maxParticipantsError: nil,
         onStartDateChange: { _ in },
         onEndDateChange: { _ in },
         onSchoolLevelChange: { _ in },
