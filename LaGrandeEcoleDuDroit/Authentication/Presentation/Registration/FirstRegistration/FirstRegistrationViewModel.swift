@@ -17,8 +17,8 @@ class FirstRegistrationViewModel: ViewModel {
     }
     
     func validateInputs() -> Bool {
-        uiState.firstName = uiState.firstName.trimmedAndCapitalizedFirstLetter()
-        uiState.lastName = uiState.lastName.trimmedAndCapitalizedFirstLetter()
+        uiState.firstName = uiState.firstName.trim().userNameFormatting()
+        uiState.lastName = uiState.lastName.trim().userNameFormatting()
         uiState.firstNameError = uiState.firstName.isBlank() ? stringResource(.mandatoryFieldError) : nil
         uiState.lastNameError = uiState.lastName.isBlank() ? stringResource(.mandatoryFieldError) : nil
         
