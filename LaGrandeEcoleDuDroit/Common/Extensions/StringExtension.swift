@@ -11,12 +11,6 @@ extension String {
         !self.trim().isEmpty
     }
     
-    func userNameFormatting() -> String {
-        self
-            .capitalizeFirstLetters()
-            .capitalizeFirstLetters(separator: "-")
-    }
-    
     func capitalizeFirstLetters(separator: Character = " ") -> String {
         let split = self.split(separator: separator)
         var result: [String] = []

@@ -16,8 +16,8 @@ extension Announcement {
 extension LocalAnnouncement {
     func toAnnouncement() -> Announcement? {
         guard let authorId = announcementAuthorId,
-              let authorFirstName = announcementAuthorFirstName?.userNameFormatting(),
-              let authorLastName = announcementAuthorLastName?.userNameFormatting(),
+              let authorFirstName = announcementAuthorFirstName,
+              let authorLastName = announcementAuthorLastName,
               let authorEmail = announcementAuthorEmail,
               let authorSchoolLevel = announcementAuthorSchoolLevel,
               let announcementId = announcementId,
@@ -28,12 +28,12 @@ extension LocalAnnouncement {
         
         let user = User(
             id: authorId,
-            firstName: authorFirstName,
-            lastName: authorLastName,
+            firstName: UserUtils.Name.formatName(authorFirstName),
+            lastName: UserUtils.Name.formatName(authorLastName),
             email: authorEmail,
             schoolLevel: SchoolLevel(rawValue: authorSchoolLevel) ?? SchoolLevel.unknown,
             admin: announcementAuthorAdmin,
-            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: announcementAuthorProfilePictureFileName)
+            profilePictureUrl: UserUtils.ProfilePicture.url(fileName: announcementAuthorProfilePictureFileName)
         )
         
         return Announcement(
@@ -58,7 +58,7 @@ extension LocalAnnouncement {
         announcementAuthorEmail = announcement.author.email
         announcementAuthorSchoolLevel = announcement.author.schoolLevel.rawValue
         announcementAuthorAdmin = announcement.author.admin
-        announcementAuthorProfilePictureFileName = UserUtils.ProfilePictureFile.getFileName(url: announcement.author.profilePictureUrl)
+        announcementAuthorProfilePictureFileName = UserUtils.ProfilePicture.getFileName(url: announcement.author.profilePictureUrl)
         announcementAuthorState = announcement.author.state.rawValue
         announcementAuthorTester = announcement.author.tester
     }
@@ -75,7 +75,7 @@ extension LocalAnnouncement {
         announcementAuthorEmail == announcement.author.email &&
         announcementAuthorSchoolLevel == announcement.author.schoolLevel.rawValue &&
         announcementAuthorAdmin == announcement.author.admin &&
-        announcementAuthorProfilePictureFileName == UserUtils.ProfilePictureFile.getFileName(url: announcement.author.profilePictureUrl) &&
+        announcementAuthorProfilePictureFileName == UserUtils.ProfilePicture.getFileName(url: announcement.author.profilePictureUrl) &&
         announcementAuthorState == announcement.author.state.rawValue &&
         announcementAuthorTester == announcement.author.tester
     }
@@ -85,12 +85,12 @@ extension InboundRemoteAnnouncement {
     func toAnnouncement() -> Announcement {
         let user = User(
             id: userId,
-            firstName: userFirstName.userNameFormatting(),
-            lastName: userLastName.userNameFormatting(),
+            firstName: UserUtils.Name.formatName(userFirstName),
+            lastName: UserUtils.Name.formatName(userLastName),
             email: userEmail,
             schoolLevel: SchoolLevel.fromNumber(userSchoolLevel),
             admin: userAdmin == 1,
-            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: userProfilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePicture.url(fileName: userProfilePictureFileName),
             state: User.UserState(rawValue: userState) ?? .active,
             tester: userTester == 1
         )

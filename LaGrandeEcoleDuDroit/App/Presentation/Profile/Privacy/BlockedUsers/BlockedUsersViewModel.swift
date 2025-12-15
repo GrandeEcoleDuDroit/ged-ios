@@ -17,7 +17,9 @@ class BlockedUsersViewModel: ViewModel {
         self.userRepository = userRepository
         self.networkMonitor = networkMonitor
         
-        initBlockedUsers()
+        Task { @MainActor in
+            await initBlockedUsers()
+        }
     }
     
     func unblockUser(userId: String) {
@@ -42,18 +44,28 @@ class BlockedUsersViewModel: ViewModel {
         }
     }
 
-    private func initBlockedUsers() {
+    private func initBlockedUsers() async {
         let blockedUserIds = blockedUserRepository.currentBlockedUserIds
-        for userId in blockedUserIds {
-            Task { @MainActor [weak self] in
-                if let user = try? await self?.userRepository.getUser(userId: userId) {
-                    guard let blockedUsers = self?.uiState.blockedUsers else {
-                        return
-                    }
-                    self?.uiState.blockedUsers = (blockedUsers + [user]).sorted { $0.fullName < $1.fullName }
+        
+        let blockedUsers = await withTaskGroup(of: User?.self) { [weak self] group in
+            var result: [User] = []
+            
+            for userId in blockedUserIds {
+                group.addTask {
+                    try? await self?.userRepository.getUser(userId: userId)
                 }
             }
+            
+            for await user in group {
+                if let user {
+                    result.append(user)
+                }
+            }
+            
+            return result.sorted { $0.fullName < $1.fullName }
         }
+        
+        uiState.blockedUsers = blockedUsers
     }
     
     struct BlockedUsersUiState {

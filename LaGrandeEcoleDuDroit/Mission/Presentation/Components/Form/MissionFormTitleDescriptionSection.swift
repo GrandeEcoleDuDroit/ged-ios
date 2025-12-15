@@ -13,14 +13,14 @@ struct MissionFormTitleDescriptionSection: View {
                 onTextChange: onTitleChange,
                 placeHolder: stringResource(.title)
             )
-            .font(MissionPresentationUtils.titleFont)
+            .font(MissionUtilsPresentation.titleFont)
             
             TransparentTextField(
                 initialText: description,
                 onTextChange: onDescriptionChange,
                 placeHolder: stringResource(.missionDescriptionField),
             )
-            .font(MissionPresentationUtils.descriptionFont)
+            .font(MissionUtilsPresentation.descriptionFont)
             .lineLimit(4...)
         }
     }

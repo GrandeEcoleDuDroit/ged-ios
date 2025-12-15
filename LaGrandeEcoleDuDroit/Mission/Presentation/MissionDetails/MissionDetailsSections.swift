@@ -6,10 +6,10 @@ struct MissionDetailsTitleAndDescriptionSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
             Text(mission.title)
-                .font(MissionPresentationUtils.titleFont)
+                .font(MissionUtilsPresentation.titleFont)
             
             Text(mission.description)
-                .font(MissionPresentationUtils.descriptionFont)
+                .font(MissionUtilsPresentation.descriptionFont)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -23,7 +23,7 @@ struct MissionDetailsInformationSection: View {
             SectionTitle(title: stringResource(.information))
             
             MissionInformationValuesItem(mission: mission)
-                .font(MissionPresentationUtils.contentFont)
+                .font(MissionUtilsPresentation.contentFont)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -47,7 +47,7 @@ struct MissionDetailsManagerSection: View {
                                 imageScale: 0.4,
                                 showAdminIndicator: false
                             )
-                            .font(MissionPresentationUtils.contentFont)
+                            .font(MissionUtilsPresentation.contentFont)
                             .frame(maxWidth: .infinity)
                             .contentShape(.rect)
                         }
@@ -75,7 +75,7 @@ struct MissionDetailsParticipantSection: View {
                 LazyVStack(spacing: .zero) {
                     if participants.isEmpty {
                         EmptyText(stringResource(.noParticipant))
-                            .font(MissionPresentationUtils.contentFont)
+                            .font(MissionUtilsPresentation.contentFont)
                     } else {
                         ForEach(participants) { participant in
                             Button(action: { onParticipantClick(participant) }) {
@@ -84,7 +84,7 @@ struct MissionDetailsParticipantSection: View {
                                     imageScale: 0.4,
                                     showAdminIndicator: false
                                 )
-                                .font(MissionPresentationUtils.contentFont)
+                                .font(MissionUtilsPresentation.contentFont)
                                 .frame(maxWidth: .infinity)
                                 .contentShape(.rect)
                             }
@@ -121,7 +121,7 @@ struct MissionDetailsTaskSection: View {
                             .padding(.top, -6)
                         
                         Text(missionTask.value)
-                            .font(MissionPresentationUtils.contentFont)
+                            .font(MissionUtilsPresentation.contentFont)
                     }
                 }
             }

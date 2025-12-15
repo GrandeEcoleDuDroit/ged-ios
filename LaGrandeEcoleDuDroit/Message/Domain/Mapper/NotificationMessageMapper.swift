@@ -98,7 +98,7 @@ private extension User {
             email: email,
             schoolLevel: schoolLevel.rawValue,
             admin: admin,
-            profilePictureFileName: UserUtils.ProfilePictureFile.getFileName(url: profilePictureUrl),
+            profilePictureFileName: UserUtils.ProfilePicture.getFileName(url: profilePictureUrl),
             state: state.rawValue,
             tester: tester
         )
@@ -126,7 +126,7 @@ private extension RemoteMessageNotification.Conversation.Interlocutor {
             email: email,
             schoolLevel: SchoolLevel(rawValue: schoolLevel) ?? .ged1,
             admin: admin,
-            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: profilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePicture.url(fileName: profilePictureFileName),
             state: User.UserState(rawValue: state) ?? .active,
             tester: tester
         )

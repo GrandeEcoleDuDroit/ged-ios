@@ -6,15 +6,19 @@ struct ConversationItem: View {
     private let conversationUi: ConversationUi
     private let lastMessage: Message
     private let interlocutor: User
-    private let text: String
-    private let isNotSender: Bool
     
     init(conversationUi: ConversationUi) {
         self.conversationUi = conversationUi
         self.lastMessage = conversationUi.lastMessage
         self.interlocutor = conversationUi.interlocutor
-        self.text = lastMessage.state == .sending ? stringResource(.sending) : lastMessage.content
-        self.isNotSender = lastMessage.senderId == interlocutor.id
+    }
+    
+    private var text: String {
+        lastMessage.state == .sending ? stringResource(.sending) : lastMessage.content
+    }
+    
+    private var isNotSender: Bool {
+        lastMessage.senderId == interlocutor.id
     }
     
     var body: some View {
@@ -35,25 +39,12 @@ private struct SwitchConversationItem: View {
     let isUnread: Bool
     let text: String
     
-    @State private var elapsedTimeText: String
-    @State private var loading: Bool
-    private let interlocutorName: String
-
-    init(
-        interlocutor: User,
-        conversationState: ConversationState,
-        lastMessage: Message,
-        isUnread: Bool,
-        text: String
-    ) {
-        self.interlocutor = interlocutor
-        self.conversationState = conversationState
-        self.lastMessage = lastMessage
-        self.isUnread = isUnread
-        self.text = text
-        self.elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
-        self.loading = self.conversationState == .creating || self.conversationState == .deleting
-        self.interlocutorName = interlocutor.state == .deleted ? stringResource(.deletedUser) : interlocutor.fullName
+    private var loading: Bool {
+        conversationState == .creating || conversationState == .deleting
+    }
+    
+    private var elapsedTimeText: String {
+        getElapsedTimeText(date: lastMessage.date)
     }
     
     var body: some View {
@@ -82,15 +73,6 @@ private struct SwitchConversationItem: View {
         }
         .padding(.horizontal)
         .padding(.vertical, Dimens.smallMediumPadding)
-        .onAppear {
-            elapsedTimeText = updateElapsedTimeText(for: lastMessage.date)
-        }
-        .onChange(of: lastMessage.date) { newDate in
-            elapsedTimeText = updateElapsedTimeText(for: newDate)
-        }
-        .onChange(of: conversationState) { newState in
-            loading = newState == .creating || newState == .deleting
-        }
     }
 }
 
@@ -107,7 +89,7 @@ private struct DefaultConversationItem: View {
             
             VStack(alignment: .leading, spacing: Dimens.extraSmallPadding) {
                 HStack {
-                    Text(interlocutor.fullName)
+                    Text(interlocutor.displayedName)
                         .fontWeight(fontWeight)
                         .lineLimit(1)
                     
@@ -164,33 +146,6 @@ private struct LoadingConversationItem: View {
     }
 }
     
-private func updateElapsedTimeText(for date: Date) -> String {
-    let elapsedTime = GetElapsedTimeUseCase.execute(date: date)
-    return getElapsedTimeText(elapsedTime: elapsedTime, date: date)
-}
-
-private func getElapsedTimeText(elapsedTime: ElapsedTime, date: Date) -> String {
-    switch elapsedTime {
-        case .now(_):
-            stringResource(.now)
-            
-        case.minute(let minutes):
-            stringResource(.minutesAgoShort, minutes)
-            
-        case .hour(let hours):
-            stringResource(.hoursAgoShort, hours)
-            
-        case .day(let days):
-            stringResource(.daysAgoShort, days)
-            
-        case .week(let weeks):
-            stringResource(.weeksAgoShort, weeks)
-            
-        default:
-            date.formatted(.dateTime.year().month().day())
-    }
-}
-
 #Preview {
     DefaultConversationItem(
         interlocutor: userFixture,

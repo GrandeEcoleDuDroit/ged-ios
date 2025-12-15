@@ -115,7 +115,7 @@ class EditMissionViewModel: ViewModel {
     }
     
     func onTitleChange(_ title: String) -> String {
-        let truncatedTitle = title.take(MissionPresentationUtils.maxTitleLength)
+        let truncatedTitle = title.take(MissionUtilsPresentation.maxTitleLength)
         uiState.title = truncatedTitle
         missionUpdateState.send(
             missionUpdateState.value.copy {
@@ -127,7 +127,7 @@ class EditMissionViewModel: ViewModel {
     }
     
     func onDescriptionChange(_ description: String) -> String {
-        let truncatedDescription = description.take(MissionPresentationUtils.maxDescriptionLength)
+        let truncatedDescription = description.take(MissionUtilsPresentation.maxDescriptionLength)
         uiState.description = truncatedDescription
         missionUpdateState.send(
             missionUpdateState.value.copy {
@@ -207,7 +207,7 @@ class EditMissionViewModel: ViewModel {
     }
     
     func onDurationChange(_ duration: String) -> String {
-        let truncatedDuration = duration.take(MissionPresentationUtils.maxDurationLength)
+        let truncatedDuration = duration.take(MissionUtilsPresentation.maxDurationLength)
         uiState.duration = truncatedDuration
         missionUpdateState.send(
             missionUpdateState.value.copy {

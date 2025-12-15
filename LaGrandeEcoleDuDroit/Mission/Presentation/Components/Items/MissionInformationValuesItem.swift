@@ -22,7 +22,7 @@ struct MissionInformationValuesItem: View {
         } else {
             stringResource(
                 .remainingSpots,
-                MissionPresentationUtils.formatRemainingParticipants(
+                MissionUtilsPresentation.formatRemainingParticipants(
                     participantsCount: mission.participants.count,
                     maxParticipants: mission.maxParticipants
                 )
@@ -32,11 +32,11 @@ struct MissionInformationValuesItem: View {
         var missionInformationValues : [MissionInformationValue] = [
             .init(
                 imageSystemName: "calendar",
-                text: MissionPresentationUtils.formatDate(startDate: mission.startDate, endDate: mission.endDate)
+                text: MissionUtilsPresentation.formatDate(startDate: mission.startDate, endDate: mission.endDate)
             ),
             .init(
                 imageSystemName: "graduationcap",
-                text: MissionPresentationUtils.formatSchoolLevels(schoolLevels: mission.schoolLevels)
+                text: MissionUtilsPresentation.formatSchoolLevels(schoolLevels: mission.schoolLevels)
             ),
             .init(
                 imageSystemName: "person.2",

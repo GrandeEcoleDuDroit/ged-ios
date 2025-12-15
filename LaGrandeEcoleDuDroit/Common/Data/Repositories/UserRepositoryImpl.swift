@@ -59,7 +59,7 @@ class UserRepositoryImpl: UserRepository {
         try await userRemoteDataSource.updateProfilePictureFileName(userId: userId, fileName: profilePictureFileName)
         try? userLocalDataSource.updateProfilePictureFileName(fileName: profilePictureFileName)
         let user = userSubject.value?.copy {
-            $0.profilePictureUrl = UserUtils.ProfilePictureFile.url(fileName: profilePictureFileName)
+            $0.profilePictureUrl = UserUtils.ProfilePicture.url(fileName: profilePictureFileName)
         }
         userSubject.send(user)
     }

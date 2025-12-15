@@ -3,20 +3,9 @@ import SwiftUI
 struct CompactAnnouncementItem: View {
     let announcement: Announcement
     let onOptionsClick: () -> Void
-    
-    private let elapsedTimeText: String
-    
-    init(
-        announcement: Announcement,
-        onOptionsClick: @escaping () -> Void
-    ) {
-        self.announcement = announcement
-        self.onOptionsClick = onOptionsClick
-        
-        elapsedTimeText = getElapsedTimeText(
-            elapsedTime: GetElapsedTimeUseCase.execute(date: announcement.date),
-            announcementDate: announcement.date
-        )
+
+    private var elapsedTimeText: String {
+        getElapsedTimeText(date: announcement.date)
     }
     
     var body: some View {
@@ -64,7 +53,7 @@ private struct DefaultItem: View {
             
             VStack(alignment: .leading, spacing: Dimens.extraSmallPadding) {
                 HStack {
-                    Text(announcement.author.fullName)
+                    Text(announcement.author.displayedName)
                         .fontWeight(.medium)
                         .lineLimit(1)
                     

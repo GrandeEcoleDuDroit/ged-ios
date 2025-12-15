@@ -60,7 +60,6 @@ private struct UserView: View {
     @State private var showReportBottomSheet: Bool = false
     @State private var showBlockAlert: Bool = false
     @State private var showUnblockAlert: Bool = false
-    private let userName: String
     
     init(
         user: User,
@@ -78,7 +77,6 @@ private struct UserView: View {
         self.onReportClick = onReportClick
         self.onBlockUserClick = onBlockUserClick
         self.onUnblockUserClick = onUnblockUserClick
-        self.userName = user.state == .deleted ? stringResource(.deletedUser) : user.fullName
     }
 
     var body: some View {
@@ -94,7 +92,7 @@ private struct UserView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .loading(loading)
-        .navigationTitle(userName)
+        .navigationTitle(user.displayedName)
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showUserBottomSheet) {
             UserBottomSheet(
