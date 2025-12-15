@@ -15,9 +15,13 @@ struct MissionPresentationUtils {
     static let contentFont: Font = .callout
     
     static func formatSchoolLevels(schoolLevels: [SchoolLevel]) -> String {
-        schoolLevels.sorted { $0.number < $1.number }
-            .map { $0.rawValue }
-            .joined(separator: " - ")
+        if schoolLevels.count == SchoolLevel.allCases.count || schoolLevels.isEmpty {
+            stringResource(.everyone)
+        } else {
+            schoolLevels.sorted { $0.number < $1.number }
+                .map { $0.rawValue }
+                .joined(separator: " - ")
+        }
     }
     
     static func formatDate(startDate: Date, endDate: Date) -> String {

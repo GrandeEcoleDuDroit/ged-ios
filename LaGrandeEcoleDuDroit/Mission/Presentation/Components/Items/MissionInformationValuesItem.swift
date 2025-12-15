@@ -17,12 +17,6 @@ struct MissionInformationValuesItem: View {
     }
     
     private func missionInformationValues(mission: Mission) -> [MissionInformationValue] {
-        let schoolLevelText = if mission.schoolLevelRestricted {
-            MissionPresentationUtils.formatSchoolLevels(schoolLevels: mission.schoolLevels)
-        } else {
-            stringResource(.everyone)
-        }
-        
         let remainingSpotText = if mission.full {
             stringResource(.full)
         } else {
@@ -42,7 +36,7 @@ struct MissionInformationValuesItem: View {
             ),
             .init(
                 imageSystemName: "graduationcap",
-                text: schoolLevelText
+                text: MissionPresentationUtils.formatSchoolLevels(schoolLevels: mission.schoolLevels)
             ),
             .init(
                 imageSystemName: "person.2",
