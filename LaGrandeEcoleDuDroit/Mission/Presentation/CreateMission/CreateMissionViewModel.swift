@@ -49,14 +49,14 @@ class CreateMissionViewModel: ViewModel {
     }
     
     func onTitleChange(_ title: String) -> String {
-        let truncatedTitle = title.take(MissionPresentationUtils.maxTitleLength)
+        let truncatedTitle = title.take(MissionUtilsPresentation.maxTitleLength)
         uiState.title = truncatedTitle
         uiState.createEnabled = validateCreate(title: truncatedTitle)
         return truncatedTitle
     }
     
     func onDescriptionChange(_ description: String) -> String {
-        let truncatedDescription = description.take(MissionPresentationUtils.maxDescriptionLength)
+        let truncatedDescription = description.take(MissionUtilsPresentation.maxDescriptionLength)
         uiState.description = truncatedDescription
         uiState.createEnabled = validateCreate(description: truncatedDescription)
         return truncatedDescription
@@ -101,7 +101,7 @@ class CreateMissionViewModel: ViewModel {
     }
     
     func onDurationChange(_ duration: String) -> String {
-        let truncatedDuration = duration.take(MissionPresentationUtils.maxDurationLength)
+        let truncatedDuration = duration.take(MissionUtilsPresentation.maxDurationLength)
         uiState.duration = truncatedDuration
         return truncatedDuration
     }

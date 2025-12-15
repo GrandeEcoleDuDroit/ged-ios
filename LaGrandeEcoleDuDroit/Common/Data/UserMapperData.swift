@@ -7,7 +7,7 @@ extension User {
             userEmail: email,
             userSchoolLevel: schoolLevel.number,
             userAdmin: admin ? 1 : 0,
-            userProfilePictureFileName: UserUtils.ProfilePictureFile.getFileName(url: profilePictureUrl),
+            userProfilePictureFileName: UserUtils.ProfilePicture.getFileName(url: profilePictureUrl),
             userState: state.rawValue,
             userTester: tester ? 1 : 0
         )
@@ -21,7 +21,7 @@ extension User {
             email: email,
             schoolLevel: schoolLevel.number,
             admin: admin,
-            profilePictureFileName: UserUtils.ProfilePictureFile.getFileName(url: profilePictureUrl),
+            profilePictureFileName: UserUtils.ProfilePicture.getFileName(url: profilePictureUrl),
             state: state.rawValue,
             tester: tester
         )
@@ -35,7 +35,7 @@ extension User {
             userEmail: email,
             userSchoolLevel: schoolLevel.rawValue,
             userAdmin: admin,
-            userProfilePictureFileName: UserUtils.ProfilePictureFile.getFileName(url: profilePictureUrl),
+            userProfilePictureFileName: UserUtils.ProfilePicture.getFileName(url: profilePictureUrl),
             userState: state.rawValue,
             userTester: tester
         )
@@ -46,12 +46,12 @@ extension LocalUser {
     func toUser() -> User {
         User(
             id: userId,
-            firstName: formatUserFirstName(firstName: userFirstName, state: userState),
-            lastName: formatUserLastName(lastName: userLastName, state: userState),
+            firstName: UserUtils.Name.formatName(userFirstName),
+            lastName: UserUtils.Name.formatName(userLastName),
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel)!,
             admin: userAdmin,
-            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: userProfilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePicture.url(fileName: userProfilePictureFileName),
             state: User.UserState(rawValue: userState) ?? .active,
             tester: userTester
         )
@@ -62,12 +62,12 @@ extension FirestoreUser {
     func toUser() -> User {
         User(
             id: userId,
-            firstName: formatUserFirstName(firstName: firstName, state: state),
-            lastName: formatUserLastName(lastName: lastName, state: state),
+            firstName: UserUtils.Name.formatName(firstName),
+            lastName: UserUtils.Name.formatName(lastName),
             email: email,
             schoolLevel: SchoolLevel.fromNumber(schoolLevel),
             admin: admin,
-            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: profilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePicture.url(fileName: profilePictureFileName),
             state: User.UserState(rawValue: state) ?? .active,
             tester: tester
         )
@@ -78,12 +78,12 @@ extension ServerUser {
     func toUser() -> User {
         User(
             id: userId,
-            firstName: formatUserFirstName(firstName: userFirstName, state: userState),
-            lastName: formatUserLastName(lastName: userLastName, state: userState),
+            firstName: UserUtils.Name.formatName(userFirstName),
+            lastName: UserUtils.Name.formatName(userLastName),
             email: userEmail,
             schoolLevel: SchoolLevel.fromNumber(userSchoolLevel),
             admin: userAdmin == 1,
-            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: userProfilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePicture.url(fileName: userProfilePictureFileName),
             state: User.UserState(rawValue: userState) ?? .active,
             tester: userTester == 1
         )
@@ -117,16 +117,4 @@ private extension UserReport.Reporter {
             email: email
         )
     }
-}
-
-private func formatUserFirstName(firstName: String, state: String) -> String {
-    state == User.UserState.active.rawValue
-        ? firstName.uppercaseFirstLetter()
-        : stringResource(.deletedUserFirstName)
-}
-
-private func formatUserLastName(lastName: String, state: String) -> String {
-    state == User.UserState.active.rawValue
-        ? lastName.uppercaseFirstLetter()
-        : stringResource(.deletedUserLastName)
 }

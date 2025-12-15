@@ -109,7 +109,7 @@ private struct MissionDetailsView: View {
                         missionState: mission.state,
                         defaultImageScale: 1.4
                     )
-                    .frame(height: MissionPresentationUtils.missionImageHeight)
+                    .frame(height: MissionUtilsPresentation.missionImageHeight)
                     .clipped()
                     
                     VStack(spacing: Dimens.mediumPadding) {
