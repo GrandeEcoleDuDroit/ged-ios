@@ -62,6 +62,8 @@
 "block_user_alert_message" = "You will no longer see any of their content.";
 "unblock_user_alert_message" = "Do you want to unblock this user?";
 "no_user" = "No user";
+"deleted_user_first_name" = "Deleted";
+"deleted_user_last_name" = "User";
 
 // Common error
 "mandatory_field_error" = "Mandatory field";

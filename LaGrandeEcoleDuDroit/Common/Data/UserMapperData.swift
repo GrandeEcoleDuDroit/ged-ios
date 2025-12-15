@@ -46,22 +46,24 @@ extension LocalUser {
     func toUser() -> User {
         User(
             id: userId,
-            firstName: userFirstName.userNameFormatting(),
-            lastName: userLastName.userNameFormatting(),
+            firstName: formatUserFirstName(firstName: userFirstName, state: userState),
+            lastName: formatUserLastName(lastName: userLastName, state: userState),
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel)!,
             admin: userAdmin,
-            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: userProfilePictureFileName)
+            profilePictureUrl: UserUtils.ProfilePictureFile.url(fileName: userProfilePictureFileName),
+            state: User.UserState(rawValue: userState) ?? .active,
+            tester: userTester
         )
     }
 }
 
 extension FirestoreUser {
     func toUser() -> User {
-        return User(
+        User(
             id: userId,
-            firstName: firstName.userNameFormatting(),
-            lastName: lastName.userNameFormatting(),
+            firstName: formatUserFirstName(firstName: firstName, state: state),
+            lastName: formatUserLastName(lastName: lastName, state: state),
             email: email,
             schoolLevel: SchoolLevel.fromNumber(schoolLevel),
             admin: admin,
@@ -74,10 +76,10 @@ extension FirestoreUser {
 
 extension ServerUser {
     func toUser() -> User {
-        return User(
+        User(
             id: userId,
-            firstName: userFirstName,
-            lastName: userLastName,
+            firstName: formatUserFirstName(firstName: userFirstName, state: userState),
+            lastName: formatUserLastName(lastName: userLastName, state: userState),
             email: userEmail,
             schoolLevel: SchoolLevel.fromNumber(userSchoolLevel),
             admin: userAdmin == 1,
@@ -115,4 +117,16 @@ private extension UserReport.Reporter {
             email: email
         )
     }
+}
+
+private func formatUserFirstName(firstName: String, state: String) -> String {
+    state == User.UserState.active.rawValue
+        ? firstName.uppercaseFirstLetter()
+        : stringResource(.deletedUserFirstName)
+}
+
+private func formatUserLastName(lastName: String, state: String) -> String {
+    state == User.UserState.active.rawValue
+        ? lastName.uppercaseFirstLetter()
+        : stringResource(.deletedUserLastName)
 }
