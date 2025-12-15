@@ -11,23 +11,23 @@ extension String {
         !self.trim().isEmpty
     }
     
-    func trimmedAndCapitalizedFirstLetter() -> String {
-        let trimmedText = self.trim()
-        
-        guard !trimmedText.isEmpty else {
-            return ""
-        }
-        
-        let firstLetter = trimmedText.prefix(1).uppercased()
-        let remainingText = trimmedText.dropFirst()
-        
-        return firstLetter + remainingText
+    func userNameFormatting() -> String {
+        self
+            .capitalizeFirstLetters()
+            .capitalizeFirstLetters(separator: "-")
     }
     
-    func uppercaseFirstLetter() -> String {
-        let firstLetter = self.prefix(1).uppercased()
-        let remainingText = self.dropFirst()
-        return firstLetter + remainingText
+    func capitalizeFirstLetters(separator: Character = " ") -> String {
+        let split = self.split(separator: separator)
+        var result: [String] = []
+        
+        split.forEach { s in
+            let firstLetter = s.prefix(1).uppercased()
+            let remainingText = s.dropFirst()
+            result += [firstLetter + remainingText]
+        }
+        
+        return result.joined(separator: String(separator))
     }
     
     func toInt() -> Int {

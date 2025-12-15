@@ -16,8 +16,8 @@ extension Announcement {
 extension LocalAnnouncement {
     func toAnnouncement() -> Announcement? {
         guard let authorId = announcementAuthorId,
-              let authorFirstName = announcementAuthorFirstName?.uppercaseFirstLetter(),
-              let authorLastName = announcementAuthorLastName?.uppercaseFirstLetter(),
+              let authorFirstName = announcementAuthorFirstName?.userNameFormatting(),
+              let authorLastName = announcementAuthorLastName?.userNameFormatting(),
               let authorEmail = announcementAuthorEmail,
               let authorSchoolLevel = announcementAuthorSchoolLevel,
               let announcementId = announcementId,
@@ -85,8 +85,8 @@ extension InboundRemoteAnnouncement {
     func toAnnouncement() -> Announcement {
         let user = User(
             id: userId,
-            firstName: userFirstName.uppercaseFirstLetter(),
-            lastName: userLastName.uppercaseFirstLetter(),
+            firstName: userFirstName.userNameFormatting(),
+            lastName: userLastName.userNameFormatting(),
             email: userEmail,
             schoolLevel: SchoolLevel.fromNumber(userSchoolLevel),
             admin: userAdmin == 1,
