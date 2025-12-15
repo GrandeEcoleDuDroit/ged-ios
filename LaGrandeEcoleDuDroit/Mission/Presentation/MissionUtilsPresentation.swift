@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-struct MissionPresentationUtils {
+struct MissionUtilsPresentation {
     private init() {}
     
     static let maxTitleLength: Int = 100

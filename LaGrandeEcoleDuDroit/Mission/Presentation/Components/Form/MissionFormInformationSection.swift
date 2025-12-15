@@ -142,7 +142,7 @@ struct OutlinedSchoolLevelPicker: View {
             case _ where schoolLevels.count == allSchoolLevels.count:
                 stringResource(.everyone)
             
-            default: MissionPresentationUtils.formatSchoolLevels(schoolLevels: schoolLevels)
+            default: MissionUtilsPresentation.formatSchoolLevels(schoolLevels: schoolLevels)
         }
     }
 }

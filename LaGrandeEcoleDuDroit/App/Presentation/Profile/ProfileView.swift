@@ -37,7 +37,7 @@ private struct ProfileView: View {
                             
                             VStack(alignment: .leading) {
                                 HStack {
-                                    Text(user.fullName)
+                                    Text(user.displayedName)
                                         .font(.title3)
                                         .fontWeight(.semibold)
                                         .lineLimit(1)

@@ -35,6 +35,14 @@ struct User: Codable, Hashable, Identifiable, Copyable {
         firstName + " " + lastName
     }
     
+    var displayedName: String {
+        if state == UserState.active {
+            fullName
+        } else {
+            stringResource(.deletedUser)
+        }
+    }
+    
     enum UserState: String, Codable {
         case active = "active"
         case deleted = "deleted"

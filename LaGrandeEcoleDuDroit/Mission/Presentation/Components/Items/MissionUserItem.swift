@@ -22,7 +22,7 @@ struct MissionUserItem<TrailingContent: View>: View {
         PlainListItem(
             headlineContent: {
                 HStack(spacing: Dimens.smallPadding) {
-                    Text(user.fullName)
+                    Text(user.displayedName)
                         .lineLimit(1)
                     
                     if user.admin && showAdminIndicator {

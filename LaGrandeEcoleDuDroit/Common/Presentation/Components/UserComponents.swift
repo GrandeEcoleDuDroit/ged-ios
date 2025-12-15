@@ -3,7 +3,6 @@ import SwiftUI
 struct UserItem<TrailingContent: View>: View {
     let user: User
     let trailingContent: () -> TrailingContent
-    private let userName: String
 
     init(
         user: User,
@@ -11,7 +10,6 @@ struct UserItem<TrailingContent: View>: View {
     ) {
         self.user = user
         self.trailingContent = trailingContent
-        self.userName = user.state == .deleted ? stringResource(.deletedUser) : user.fullName
     }
     
     var body: some View {
@@ -22,7 +20,7 @@ struct UserItem<TrailingContent: View>: View {
                     scale: 0.5
                 )
                 
-                Text(userName)
+                Text(user.displayedName)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
