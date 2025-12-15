@@ -11,7 +11,7 @@ class RequestUtils {
     
     static func formatOracleUrl(base: String, endPoint: String) throws -> URL {
         if let url = URL.oracleUrl(path: "/\(base)/\(endPoint)") {
-            return url
+            url
         } else {
             throw NetworkError.invalidURL("Invalid URL")
         }

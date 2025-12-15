@@ -71,7 +71,7 @@ struct MultiSelectionPicker: View {
             
             if let supportingText {
                 Text(supportingText)
-                    .font(.footnote)
+                    .font(.caption)
                     .foregroundStyle(.informationText)
                     .padding(.leading, Dimens.mediumPadding)
                     .multilineTextAlignment(.leading)
