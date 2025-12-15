@@ -87,7 +87,7 @@ private struct MissionTaskBottomSheet: View {
                 initialText: initialValue,
                 onTextChange: {
                     onValueChange($0)
-                    value = $0.take(MissionPresentationUtils.maxTaskLength)
+                    value = $0.take(MissionUtilsPresentation.maxTaskLength)
                     return value
                 },
                 placeHolder: stringResource(.enterTask)

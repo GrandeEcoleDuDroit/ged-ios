@@ -149,7 +149,7 @@ private struct CardSubtitle: View {
         VStack(alignment: .leading, spacing: Dimens.smallPadding) {
             TextIcon(
                 icon: Image(systemName: "calendar"),
-                text: MissionPresentationUtils.formatDate(startDate: mission.startDate, endDate: mission.endDate),
+                text: MissionUtilsPresentation.formatDate(startDate: mission.startDate, endDate: mission.endDate),
                 spacing: Dimens.smallPadding
             )
             .foregroundStyle(.informationText)
@@ -185,7 +185,7 @@ private struct CardFooter: View {
     let schoolLevels: [SchoolLevel]
     
     var body: some View {
-        Text(MissionPresentationUtils.formatSchoolLevels(schoolLevels: schoolLevels))
+        Text(MissionUtilsPresentation.formatSchoolLevels(schoolLevels: schoolLevels))
             .font(.caption)
             .fontWeight(.semibold)
     }

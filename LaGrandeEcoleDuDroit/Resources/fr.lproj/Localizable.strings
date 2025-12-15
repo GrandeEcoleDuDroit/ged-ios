@@ -56,6 +56,8 @@
 "block_user_alert_message" = "Vous ne verrez plus aucun de ses contenus.";
 "unblock_user_alert_message" = "Voulez-vous débloquer cet utilisateur ?";
 "no_user" = "Aucun utilisateur";
+"deleted_user_first_name" = "Utilisateur";
+"deleted_user_last_name" = "Supprimé";
 
 // Common error
 "mandatory_field_error" = "Champs obligatoire.";

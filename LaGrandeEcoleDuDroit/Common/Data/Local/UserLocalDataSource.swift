@@ -24,7 +24,7 @@ class UserLocalDataSource {
         }
         let localUser = try JSONDecoder().decode(LocalUser.self, from: localUserData)
         var user = localUser.toUser()
-        user.profilePictureUrl = UserUtils.ProfilePictureFile.url(fileName: fileName)
+        user.profilePictureUrl = UserUtils.ProfilePicture.url(fileName: fileName)
         try storeUser(user: user)
     }
     
