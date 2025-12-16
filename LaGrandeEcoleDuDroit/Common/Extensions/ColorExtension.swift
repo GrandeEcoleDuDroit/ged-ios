@@ -1,7 +1,7 @@
 import SwiftUI
 
 extension Color {
-    init(_ hex: String) {
+    func hex(_ hex: String) -> Color {
         var hexSanitized = hex.trim()
         if hexSanitized.hasPrefix("#") {
             hexSanitized.removeFirst()
@@ -14,6 +14,10 @@ extension Color {
         let green = Double((rgb & 0x00FF00) >> 8) / 255.0
         let blue = Double(rgb & 0x0000FF) / 255.0
         
-        self.init(red: red, green: green, blue: blue)
+        return .init(red: red, green: green, blue: blue)
+    }
+    
+    static var click: Color {
+        Color(UIColor.systemGray4)
     }
 }

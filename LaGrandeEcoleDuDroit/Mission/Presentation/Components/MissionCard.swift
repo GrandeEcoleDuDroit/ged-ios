@@ -2,34 +2,23 @@ import SwiftUI
 
 struct MissionCard: View {
     let mission: Mission
-    let onClick: () -> Void
     let onOptionsClick: () -> Void
     
     var body: some View {
         switch mission.state {
             case .published:
-                Button(action: onClick) {
-                    DefaultMissionCard(
-                        mission: mission,
-                        onOptionsClick: onOptionsClick
-                    )
-                }
-                .buttonStyle(.plain)
+                DefaultMissionCard(
+                    mission: mission,
+                    onOptionsClick: onOptionsClick
+                )
                 
-            case .error:
-                Button(action: onClick) {
-                    ErrorMissionCard(mission: mission)
-                }
-                .buttonStyle(.plain)
+            case .error: ErrorMissionCard(mission: mission)
                 
             default:
-                Button(action: onClick) {
-                    PublishingMissionCard(
-                        mission: mission,
-                        onOptionsClick: onOptionsClick
-                    )
-                }
-                .buttonStyle(.plain)
+                PublishingMissionCard(
+                    mission: mission,
+                    onOptionsClick: onOptionsClick
+                )
         }
     }
 }
