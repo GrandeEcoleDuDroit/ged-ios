@@ -1,6 +1,6 @@
 import Foundation
 
-struct Announcement: Identifiable, Hashable, Copyable {
+struct Announcement: Identifiable, Hashable, Copying {
     var id: String
     var title: String? = nil
     var content: String

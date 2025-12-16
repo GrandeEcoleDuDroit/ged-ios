@@ -19,9 +19,3 @@ extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
         true
     }
 }
-
-struct EnableSwipeBack {
-    private init() {}
-    
-    static var enabled: Bool = false
-}

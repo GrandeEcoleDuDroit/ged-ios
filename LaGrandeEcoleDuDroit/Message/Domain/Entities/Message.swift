@@ -1,6 +1,6 @@
 import Foundation
 
-struct Message: Hashable, Codable, Copyable {
+struct Message: Hashable, Codable, Copying {
     var id: String
     var senderId: String
     var recipientId: String

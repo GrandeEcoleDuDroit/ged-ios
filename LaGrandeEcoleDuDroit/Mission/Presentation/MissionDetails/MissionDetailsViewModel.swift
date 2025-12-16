@@ -141,7 +141,7 @@ class MissionDetailsViewModel: ViewModel {
         }
     }
     
-    struct MissionDetailsUiState: Copyable {
+    struct MissionDetailsUiState: Copying {
         fileprivate(set) var currentUser: User? = nil
         fileprivate(set) var mission: Mission? = nil
         fileprivate(set) var isManager: Bool = false

@@ -435,7 +435,7 @@ class EditMissionViewModel: ViewModel {
         fileprivate(set) var maxParticipantsError: String? = nil
     }
     
-    private struct MissionUpdateState: Copyable {
+    private struct MissionUpdateState: Copying {
         var imageUpdated: Bool = false
         var titleUpdated: Bool = false
         var descriptionUpdated: Bool = false

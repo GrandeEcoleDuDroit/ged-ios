@@ -4,48 +4,48 @@ import Foundation
 
 struct AppNavigation: View {
     @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(AppNavigationViewModel.self)
-    @State var selectedTab: TopLevelDestination = .home
-    @StateObject private var tabBarVisibility = TabBarVisibility()
     
     var body: some View {
-        TabView(selection: $selectedTab) {
-            ForEach(TopLevelDestination.allCases, id: \.self) { tab in
-                tabView(tab)
+        TabView(selection: $viewModel.selectedTab) {
+            ForEach(viewModel.uiState.topLevelDestinations) { tab in
+                TabContent(
+                    tab: tab,
+                    selected: tab == viewModel.selectedTab,
+                    badge: viewModel.uiState.badges[tab] ?? 0
+                )
             }
-        }
-        .onReceive(viewModel.$tabToNavigate) { destinationToNavigate in
-            if let destinationToNavigate {
-                selectedTab = destinationToNavigate
-            }
-        }
-    }
-
-    private func tabView(_ tab: TopLevelDestination) -> some View {
-        let icon = selectedTab == tab ? tab.filledIcon : tab.outlinedIcon
-        let badgeCount = viewModel.uiState.badges[tab] ?? 0
-
-        return destinationView(for: tab)
-            .environmentObject(tabBarVisibility)
-            .tabItem {
-                Label(tab.label, systemImage: icon)
-                    .environment(\.symbolVariants, .none)
-            }
-            .badge(badgeCount)
-            .tag(tab)
-            .toolbar(tabBarVisibility.show ? .visible : .hidden, for: .tabBar)
-    }
-
-    @ViewBuilder
-    private func destinationView(for tab: TopLevelDestination) -> some View {
-        switch tab {
-            case .home: NewsNavigation()
-            case .message: MessageNavigation()
-            case .mission: MissionNavigation()
-            case .profile: ProfileNavigation()
         }
     }
 }
 
-class TabBarVisibility: ObservableObject {
-    @Published var show: Bool = false
+private struct TabContent: View {
+    let tab: TopLevelDestination
+    let icon: String
+    let badge: Int
+    
+    init(
+        tab: TopLevelDestination,
+        selected: Bool,
+        badge: Int
+    ) {
+        self.tab = tab
+        self.icon = selected ? tab.filledIcon : tab.outlinedIcon
+        self.badge = badge
+    }
+    
+    var body: some View {
+        Group {
+            switch tab {
+                case .home: NewsNavigation()
+                case .message: MessageNavigation().badge(badge)
+                case .mission: MissionNavigation()
+                case .profile: ProfileNavigation()
+            }
+        }
+        .tabItem {
+            Label(tab.label, systemImage: icon)
+                .environment(\.symbolVariants, .none)
+        }
+        .tag(tab)
+    }
 }
