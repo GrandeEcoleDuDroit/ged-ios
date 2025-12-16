@@ -4,7 +4,7 @@ import Foundation
 class NavigationHostViewModel: ViewModel {
     private let listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase
     
-    @Published private(set) var uiState: NavigationHostUiState = NavigationHostUiState()
+    @Published private(set) var uiState = NavigationHostUiState()
     private var cancellables: Set<AnyCancellable> = []
 
     init(listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase) {
@@ -15,8 +15,8 @@ class NavigationHostViewModel: ViewModel {
     private func updateStartDestination() {
         listenAuthenticationStateUseCase.authenticated
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isAuthenticated in
-                self?.uiState.startDestination = isAuthenticated ? .app : .authentication
+            .sink { [weak self] authenticated in
+                self?.uiState.startDestination = authenticated ? .app : .authentication
             }.store(in: &cancellables)
     }
     

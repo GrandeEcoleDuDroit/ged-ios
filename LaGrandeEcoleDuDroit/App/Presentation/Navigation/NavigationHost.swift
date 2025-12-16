@@ -7,7 +7,7 @@ struct NavigationHost: View {
         ZStack {
             switch viewModel.uiState.startDestination {
                 case .authentication: AuthenticationNavigation()
-                case .app: AppNavigation().environmentObject(viewModel)
+                case .app: AppNavigation()
                 case .splash: SplashScreen()
             }
         }
