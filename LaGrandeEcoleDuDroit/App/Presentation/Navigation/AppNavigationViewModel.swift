@@ -5,8 +5,8 @@ class AppNavigationViewModel: ViewModel {
     private let getUnreadConversationsCountUseCase: GetUnreadConversationsCountUseCase
     private let navigationRequestUseCase: NavigationRequestUseCase
 
-    @Published private(set) var uiState: AppNavigationUiState = AppNavigationUiState()
-    @Published private(set) var tabToNavigate: TopLevelDestination? = nil
+    @Published private(set) var uiState = AppNavigationUiState()
+    @Published var selectedTab: TopLevelDestination = .home
     private var cancellables: Set<AnyCancellable> = []
     
     init(
@@ -32,7 +32,9 @@ class AppNavigationViewModel: ViewModel {
         navigationRequestUseCase.routeToNavigate
             .receive(on: DispatchQueue.main)
             .sink { [weak self] routeToNavigate in
-                self?.tabToNavigate = self?.mapToTopLevelDestination(routeToNavigate)
+                if let tab = self?.mapToTopLevelDestination(routeToNavigate) {
+                    self?.selectedTab = tab
+                }
             }.store(in: &cancellables)
 
     }
@@ -41,12 +43,14 @@ class AppNavigationViewModel: ViewModel {
         switch routeToNavigate.mainRoute {
             case is NewsMainRoute: .home
             case is MessageMainRoute: .message
+            case is MissionMainRoute: .mission
             case is ProfileMainRoute: .profile
             default: nil
         }
     }
     
     struct AppNavigationUiState {
-        var badges: [TopLevelDestination: Int] = [:]
+        fileprivate(set) var topLevelDestinations: [TopLevelDestination] = [.home, .message, .mission, .profile]
+        fileprivate(set) var badges: [TopLevelDestination: Int] = [:]
     }
 }

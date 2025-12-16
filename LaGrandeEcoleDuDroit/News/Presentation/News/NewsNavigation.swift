@@ -1,26 +1,21 @@
 import SwiftUI
 
 struct NewsNavigation: View {
-    private let viewModel = NewsMainThreadInjector.shared.resolve(NewsNavigationViewModel.self)
-    @EnvironmentObject private var tabBarVisibility: TabBarVisibility
-    @State var path: [NewsRoute] = []
+    @StateObject private var viewModel = NewsMainThreadInjector.shared.resolve(NewsNavigationViewModel.self)
 
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack(path: $viewModel.path) {
             NewsDestination(
                 onAnnouncementClick: { announcementId in
-                    path.append(.readAnnouncement(announcementId: announcementId))
+                    viewModel.path.append(.readAnnouncement(announcementId: announcementId))
                 },
-                onCreateAnnouncementClick: { path.append(.createAnnouncement) },
+                onCreateAnnouncementClick: { viewModel.path.append(.createAnnouncement) },
                 onEditAnnouncementClick: { announcement in
-                    path.append(.editAnnouncement(announcement: announcement))
+                    viewModel.path.append(.editAnnouncement(announcement: announcement))
                 },
-                onSeeAllAnnouncementClick: { path.append(.allAnnouncements) }
+                onSeeAllAnnouncementClick: { viewModel.path.append(.allAnnouncements) }
             )
-            .onAppear {
-                tabBarVisibility.show = true
-                viewModel.setCurrentRoute(NewsMainRoute.news)
-            }
+            .toolbar(viewModel.path.isEmpty ? .visible : .hidden, for: .tabBar)
             .background(.appBackground)
             .navigationDestination(for: NewsRoute.self) { route in
                 switch route {
@@ -28,79 +23,47 @@ struct NewsNavigation: View {
                         ReadAnnouncementDestination(
                             announcementId: announcementId,
                             onAuthorClick: { user in
-                                path.append(.authorProfile(user: user))
+                                viewModel.path.append(.authorProfile(user: user))
                             },
                             onEditAnnouncementClick: { announcement in
-                                path.append(.editAnnouncement(announcement: announcement))
+                                viewModel.path.append(.editAnnouncement(announcement: announcement))
                             },
-                            onBackClick: { path.removeLast() }
+                            onBackClick: { viewModel.path.removeLast() }
                         )
-                        .onAppear {
-                            tabBarVisibility.show = false
-                            viewModel.setCurrentRoute(route)
-                        }
                         .background(.appBackground)
 
                     case let .editAnnouncement(announcement):
                         EditAnnouncementDestination(
                             announcement: announcement,
-                            onBackClick: { path.removeLast() }
+                            onBackClick: { viewModel.path.removeLast() }
                         )
-                        .onAppear {
-                            tabBarVisibility.show = false
-                            viewModel.setCurrentRoute(route)
-                        }
                         .background(.appBackground)
                         
                     case .createAnnouncement:
                         CreateAnnouncementDestination(
-                            onBackClick: { path.removeLast() }
+                            onBackClick: { viewModel.path.removeLast() }
                         )
-                        .onAppear {
-                            tabBarVisibility.show = false
-                            viewModel.setCurrentRoute(route)
-                        }
                         .background(.appBackground)
                         
                     case let .authorProfile(user):
                         UserDestination(user: user)
-                        .onAppear {
-                            tabBarVisibility.show = false
-                            viewModel.setCurrentRoute(route)
-                        }
-                        .background(.appBackground)
+                            .background(.appBackground)
                         
                     case .allAnnouncements:
                         AllAnnouncementsDestination(
                             onAnnouncementClick: { announcementId in
-                                path.append(.readAnnouncement(announcementId: announcementId))
+                                viewModel.path.append(.readAnnouncement(announcementId: announcementId))
                             },
                             onEditAnnouncementClick: { announcement in
-                                path.append(.editAnnouncement(announcement: announcement))
+                                viewModel.path.append(.editAnnouncement(announcement: announcement))
                             },
                             onAuthorClick: { user in
-                                path.append(.authorProfile(user: user))
+                                viewModel.path.append(.authorProfile(user: user))
                             }
                         )
-                        .onAppear {
-                            tabBarVisibility.show = false
-                            viewModel.setCurrentRoute(route)
-                        }
                         .background(.appBackground)
                 }
             }
         }
     }
-}
-
-enum NewsRoute: Route {
-    case readAnnouncement(announcementId: String)
-    case editAnnouncement(announcement: Announcement)
-    case createAnnouncement
-    case authorProfile(user: User)
-    case allAnnouncements
-}
-
-enum NewsMainRoute: MainRoute {
-    case news
 }

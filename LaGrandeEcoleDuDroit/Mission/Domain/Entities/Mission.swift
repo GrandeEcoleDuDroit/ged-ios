@@ -1,6 +1,6 @@
 import Foundation
 
-struct Mission: Copyable, Identifiable, Hashable {
+struct Mission: Copying, Identifiable, Hashable {
     var id: String
     var title: String
     var description: String
