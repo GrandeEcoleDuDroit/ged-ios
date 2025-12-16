@@ -1,6 +1,6 @@
-protocol Copyable {}
+protocol Copying {}
 
-extension Copyable {
+extension Copying {
     func copy(_ mutating: (inout Self) -> Void) -> Self {
         var copy = self
         mutating(&copy)

@@ -1,6 +1,6 @@
 import Foundation
 
-struct ConversationUi: Identifiable, Copyable, Equatable {
+struct ConversationUi: Identifiable, Copying, Equatable {
     var id: String
     var interlocutor: User
     var lastMessage: Message

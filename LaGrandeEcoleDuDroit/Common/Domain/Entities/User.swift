@@ -1,4 +1,4 @@
-struct User: Codable, Hashable, Identifiable, Copyable {
+struct User: Codable, Hashable, Identifiable, Copying {
     var id: String
     var firstName: String
     var lastName: String

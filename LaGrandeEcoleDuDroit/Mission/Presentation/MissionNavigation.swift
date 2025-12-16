@@ -1,80 +1,45 @@
 import SwiftUI
 
 struct MissionNavigation: View {
-    private var viewModel = MissionMainThreadInjector.shared.resolve(MissionNavigationViewModel.self)
-    @EnvironmentObject private var tabBarVisibility: TabBarVisibility
-    @State private var path: [MissionRoute] = []
+    @StateObject private var viewModel = MissionMainThreadInjector.shared.resolve(MissionNavigationViewModel.self)
 
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack(path: $viewModel.path) {
             MissionDestination(
-                onMissionClick: { path.append(.missionDetails(missionId: $0)) },
-                onCreateMissionClick: { path.append(.createMission) },
-                onEditMissionClick: { path.append(.editMission(mission: $0)) }
+                onMissionClick: { viewModel.path.append(.missionDetails(missionId: $0)) },
+                onCreateMissionClick: { viewModel.path.append(.createMission) },
+                onEditMissionClick: { viewModel.path.append(.editMission(mission: $0)) }
             )
-            .onAppear {
-                tabBarVisibility.show = true
-                viewModel.setCurrentRoute(MissionMainRoute.mission)
-            }
+            .toolbar(viewModel.path.isEmpty ? .visible : .hidden, for: .tabBar)
             .background(.appBackground)
             .navigationDestination(for: MissionRoute.self) { route in
                 switch route {
                     case .createMission:
-                        CreateMissionDestination(onBackClick: { path.removeLast() })
-                            .onAppear {
-                                tabBarVisibility.show = false
-                                viewModel.setCurrentRoute(route)
-                            }
+                        CreateMissionDestination(onBackClick: { viewModel.path.removeLast() })
                             .background(.appBackground)
                         
                     case let .editMission(mission):
                         EditMissionDestination(
-                            onBackClick: { path.removeLast() },
+                            onBackClick: { viewModel.path.removeLast() },
                             mission: mission
                         )
-                        .onAppear {
-                            tabBarVisibility.show = false
-                            viewModel.setCurrentRoute(route)
-                        }
                         .background(.appBackground)
                         
                     case let .missionDetails(missionId):
                         MissionDetailsDestination(
                             missionId: missionId,
-                            onBackClick: { path.removeLast() },
-                            onEditMissionClick: { path.append(.editMission(mission: $0)) },
-                            onManagerClick: { path.append(.userProfile(user: $0)) },
-                            onParticipantClick: { path.append(.userProfile(user: $0)) }
-                        ).onAppear {
-                            tabBarVisibility.show = false
-                            viewModel.setCurrentRoute(route)
-                            EnableSwipeBack.enabled = true
-                        }
-                        .onDisappear {
-                            EnableSwipeBack.enabled = false
-                        }
+                            onBackClick: { viewModel.path.removeLast() },
+                            onEditMissionClick: { viewModel.path.append(.editMission(mission: $0)) },
+                            onManagerClick: { viewModel.path.append(.userProfile(user: $0)) },
+                            onParticipantClick: { viewModel.path.append(.userProfile(user: $0)) }
+                        )
                         .background(.appBackground)
                         
                     case let .userProfile(user):
                         UserDestination(user: user)
-                        .onAppear {
-                            tabBarVisibility.show = false
-                            viewModel.setCurrentRoute(route)
-                        }
-                        .background(.appBackground)
+                            .background(.appBackground)
                 }
             }
         }
     }
-}
-
-enum MissionRoute: Route {
-    case createMission
-    case editMission(mission: Mission)
-    case missionDetails(missionId: String)
-    case userProfile(user: User)
-}
-
-enum MissionMainRoute: MainRoute {
-    case mission
 }

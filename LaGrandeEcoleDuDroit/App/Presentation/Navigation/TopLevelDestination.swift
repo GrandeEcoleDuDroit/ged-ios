@@ -1,8 +1,17 @@
-enum TopLevelDestination: Hashable, CaseIterable {
+enum TopLevelDestination: Hashable, Identifiable {
     case home
     case message
     case mission
     case profile
+    
+    var id: Int {
+        switch self {
+            case .home: 0
+            case .message: 1
+            case .mission: 2
+            case .profile: 3
+        }
+    }
     
     var label: String {
         switch self {

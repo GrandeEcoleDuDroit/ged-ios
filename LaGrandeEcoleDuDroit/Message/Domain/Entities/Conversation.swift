@@ -1,6 +1,6 @@
 import Foundation
 
-struct Conversation: Hashable, Codable, Copyable {
+struct Conversation: Hashable, Codable, Copying {
     var id: String
     var interlocutor: User
     var createdAt: Date
