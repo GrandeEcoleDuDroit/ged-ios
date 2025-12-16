@@ -187,12 +187,5 @@ struct TextButton: View {
                 .contentShape(.rect)
         }
         .buttonStyle(ClickStyle())
-        
-        List {
-            Button ("AHHHHH"){
-                
-            }
-        }
-        .listStyle(.plain)
     }
 }

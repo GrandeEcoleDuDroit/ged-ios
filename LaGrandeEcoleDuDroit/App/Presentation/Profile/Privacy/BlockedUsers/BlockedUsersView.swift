@@ -40,6 +40,7 @@ private struct BlockedUsersView: View {
     
     @State private var showUnblockAlert: Bool = false
     @State private var clickedUser: User?
+    @State private var selectedUser: User?
 
     var body: some View {
         List {
@@ -52,34 +53,31 @@ private struct BlockedUsersView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             } else {
                 ForEach(blockedUsers) { user in
-                    Button(action: { onAccountClick(user) }) {
-                        UserItem(
-                            user: user,
-                            trailingContent: {
-                                Button(
-                                    action: {
-                                        showUnblockAlert = true
-                                        clickedUser = user
-                                    },
-                                    label: {
-                                        Text(stringResource(.unblock))
-                                            .foregroundStyle(.gedPrimary)
-                                            .fontWeight(.medium)
-                                    }
-                                )
-                                .buttonStyle(.borderless)
+                    UserItem(
+                        user: user,
+                        trailingContent: {
+                            Button(stringResource(.unblock)) {
+                                showUnblockAlert = true
+                                clickedUser = user
                             }
-                        )
-                    }
-                    .buttonStyle(ClickStyle())
+                            .buttonStyle(.borderless)
+                            .foregroundStyle(.gedPrimary)
+                            .fontWeight(.medium)
+                        }
+                    )
+                    .contentShape(.rect)
+                    .listRowTap(
+                        action: { onAccountClick(user) },
+                        selectedItem: $selectedUser,
+                        value: user
+                    )
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
+                    .listRowBackground(selectedUser == user ? Color.click : Color.clear)
                 }
             }
         }
         .listStyle(.plain)
-        .scrollIndicators(.hidden)
         .loading(loading)
         .navigationTitle(stringResource(.blockedUsers))
         .navigationBarTitleDisplayMode(.inline)
