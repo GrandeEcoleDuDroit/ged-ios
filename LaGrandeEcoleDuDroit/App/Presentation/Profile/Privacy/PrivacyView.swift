@@ -22,9 +22,7 @@ private struct PrivacyView: View {
     var body: some View {
         List {
             Button(action: onBlockedUsersClick) {
-                ListItem(
-                    text: Text(stringResource(.blockedUsers))
-                )
+                ListItem(text: Text(stringResource(.blockedUsers)))
             }
         }
         .navigationTitle(stringResource(.privacy))

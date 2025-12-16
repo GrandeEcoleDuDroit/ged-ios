@@ -2,29 +2,23 @@ import SwiftUI
 
 struct ExtendedAnnouncementItem: View {
     let announcement: Announcement
-    let onClick: () -> Void
     let onOptionsClick: () -> Void
     let onAuthorClick: () -> Void
     
     var body: some View {
         switch announcement.state {
             case .published, .draft:
-                Button(action: onClick) {
-                    DefaultItem(
-                        announcement: announcement,
-                        onOptionsClick: onOptionsClick,
-                        onAuthorClick: onAuthorClick
-                    )
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(ClickStyle())
+                DefaultItem(
+                    announcement: announcement,
+                    onOptionsClick: onOptionsClick,
+                    onAuthorClick: onAuthorClick
+                )
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
             case .publishing:
                 PublishingItem(
                     announcement: announcement,
-                    onClick: onClick,
                     onOptionsClick: onOptionsClick,
                     onAuthorClick: onAuthorClick
                 )
@@ -32,7 +26,6 @@ struct ExtendedAnnouncementItem: View {
             case.error:
                 ErrorItem(
                     announcement: announcement,
-                    onClick: onClick,
                     onOptionsClick: onOptionsClick,
                     onAuthorClick: onAuthorClick
                 )
@@ -72,87 +65,74 @@ private struct DefaultItem: View {
 
 private struct PublishingItem: View {
     let announcement: Announcement
-    let onClick: () -> Void
     let onOptionsClick: () -> Void
     let onAuthorClick: () -> Void
     
     var body: some View {
-        Button(action: onClick) {
-            DefaultItem(
-                announcement: announcement,
-                onOptionsClick: onOptionsClick,
-                onAuthorClick: onAuthorClick
-            )
-            .opacity(0.5)
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(ClickStyle())
+        DefaultItem(
+            announcement: announcement,
+            onOptionsClick: onOptionsClick,
+            onAuthorClick: onAuthorClick
+        )
+        .opacity(0.5)
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
 private struct ErrorItem: View {
     let announcement: Announcement
-    let onClick: () -> Void
     let onOptionsClick: () -> Void
     let onAuthorClick: () -> Void
     
     var body: some View {
-        Button(action: onClick) {
-            VStack(spacing: Dimens.mediumPadding) {
-                HStack(
-                    alignment: .center,
-                    spacing: Dimens.smallMediumPadding
-                ) {
-                    Image(systemName: "exclamationmark.circle")
-                        .foregroundStyle(.red)
-                    
-                    AnnouncementHeader(
-                        announcement: announcement,
-                        onAuthorClick: onAuthorClick
-                    )
-                    
-                    OptionsButton(action: onOptionsClick)
-                }
+        VStack(spacing: Dimens.mediumPadding) {
+            HStack(
+                alignment: .center,
+                spacing: Dimens.smallMediumPadding
+            ) {
+                Image(systemName: "exclamationmark.circle")
+                    .foregroundStyle(.red)
                 
-                if let title = announcement.title {
-                    Text(title)
-                        .font(.titleMedium)
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
+                AnnouncementHeader(
+                    announcement: announcement,
+                    onAuthorClick: onAuthorClick
+                )
                 
-                Text(announcement.content)
-                    .font(.bodyMedium)
+                OptionsButton(action: onOptionsClick)
+            }
+            
+            if let title = announcement.title {
+                Text(title)
+                    .font(.titleMedium)
+                    .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Rectangle())
+            
+            Text(announcement.content)
+                .font(.bodyMedium)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .buttonStyle(ClickStyle())
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
 #Preview {
     ExtendedAnnouncementItem(
         announcement: announcementFixture,
-        onClick: {},
         onOptionsClick: {},
         onAuthorClick: {}
     )
     
     ExtendedAnnouncementItem(
         announcement: announcementFixture.copy { $0.state = .publishing },
-        onClick: {},
         onOptionsClick: {},
         onAuthorClick: {}
     )
     
     ExtendedAnnouncementItem(
         announcement: announcementFixture.copy { $0.state = .error },
-        onClick: {},
         onOptionsClick: {},
         onAuthorClick: {}
     )

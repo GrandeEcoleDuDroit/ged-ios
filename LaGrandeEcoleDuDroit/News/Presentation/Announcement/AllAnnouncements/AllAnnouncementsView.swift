@@ -61,6 +61,7 @@ private struct AllAnnouncementsView: View {
     @State private var showAnnouncementReportBottomSheet: Bool = false
     @State private var showDeleteAnnouncementAlert: Bool = false
     @State private var clickedAnnouncement: Announcement?
+    @State private var selectedAnnouncement: Announcement?
     
     var body: some View {
         List {
@@ -75,7 +76,15 @@ private struct AllAnnouncementsView: View {
                 ForEach(announcements) { announcement in
                     ExtendedAnnouncementItem(
                         announcement: announcement,
-                        onClick: {
+                        onOptionsClick: {
+                            clickedAnnouncement = announcement
+                            showAnnouncementBottomSheet = true
+                        },
+                        onAuthorClick: { onAuthorClick(announcement.author) },
+                    )
+                    .contentShape(.rect)
+                    .listRowTap(
+                        action: {
                             if announcement.state == .published {
                                 onAnnouncementClick(announcement.id)
                             } else {
@@ -83,19 +92,15 @@ private struct AllAnnouncementsView: View {
                                 showAnnouncementBottomSheet = true
                             }
                         },
-                        onOptionsClick: {
-                            clickedAnnouncement = announcement
-                            showAnnouncementBottomSheet = true
-                        },
-                        onAuthorClick: { onAuthorClick(announcement.author) },
+                        selectedItem: $selectedAnnouncement,
+                        value: announcement
                     )
                     .listRowInsets(EdgeInsets())
                     .listSectionSeparator(.hidden)
-                    .listRowBackground(Color.clear)
+                    .listRowBackground(selectedAnnouncement == announcement ? Color.click : Color.clear)
                 }
             }
         }
-        .scrollIndicators(.hidden)
         .listStyle(.plain)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .refreshable { await onRefresh() }

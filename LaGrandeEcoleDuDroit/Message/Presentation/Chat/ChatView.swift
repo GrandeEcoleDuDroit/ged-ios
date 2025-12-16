@@ -40,7 +40,8 @@ struct ChatDestination: View {
             onReportMessageClick: viewModel.reportMessage,
             onDeleteChatClick: viewModel.deleteChat,
             onUnblockUserClick: viewModel.unblockUser,
-            onInterlocutorProfilePictureClick: onInterlocutorClick
+            onInterlocutorProfilePictureClick: onInterlocutorClick,
+            onBackClick: onBackClick
         )
         .onReceive(viewModel.$event) { event in
             if let errorEvent = event as? ErrorEvent {
@@ -82,6 +83,7 @@ private struct ChatView: View {
     let onDeleteChatClick: () -> Void
     let onUnblockUserClick: (String) -> Void
     let onInterlocutorProfilePictureClick: (User) -> Void
+    let onBackClick: () -> Void
     
     @State private var showSentMessageBottomSheet: Bool = false
     @State private var showReceivedMessageBottomSheet: Bool = false
@@ -124,6 +126,23 @@ private struct ChatView: View {
         .padding(.horizontal)
         .contentShape(Rectangle())
         .loading(loading)
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            ToolbarItem(placement: .navigation) {
+                HStack(spacing: Dimens.smallMediumPadding) {
+                    ProfilePicture(
+                        url: conversation.interlocutor.profilePictureUrl,
+                        scale: 0.3
+                    )
+                    
+                    Text(conversation.interlocutor.displayedName)
+                        .fontWeight(.medium)
+                }
+                .onTapGesture {
+                    onInterlocutorClick(conversation.interlocutor)
+                }
+            }
+        }
         .sheet(isPresented: $showSentMessageBottomSheet) {
             SentMessageBottomSheet(
                 onResendMessage: {
@@ -225,22 +244,6 @@ private struct ChatView: View {
                 )
             }
         )
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                HStack(spacing: Dimens.smallMediumPadding) {
-                    ProfilePicture(
-                        url: conversation.interlocutor.profilePictureUrl,
-                        scale: 0.3
-                    )
-                    
-                    Text(conversation.interlocutor.displayedName)
-                        .fontWeight(.medium)
-                }
-                .onTapGesture {
-                    onInterlocutorClick(conversation.interlocutor)
-                }
-            }
-        }
     }
 }
 
@@ -323,7 +326,8 @@ private struct MessageBottomSection: View {
             onReportMessageClick: { _ in },
             onDeleteChatClick: {},
             onUnblockUserClick: { _ in },
-            onInterlocutorProfilePictureClick: { _ in }
+            onInterlocutorProfilePictureClick: { _ in },
+            onBackClick: {}
         )
     }
 }
