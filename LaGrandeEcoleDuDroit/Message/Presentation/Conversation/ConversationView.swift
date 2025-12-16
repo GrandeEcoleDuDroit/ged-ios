@@ -42,6 +42,7 @@ private struct ConversationView: View {
     @State private var showDeleteAlert: Bool = false
     @State private var sheetConversationUi: ConversationUi?
     @State private var alertConversationUi: ConversationUi?
+    @State private var selectedConversationUi: ConversationUi?
     
     var body: some View {
         List {
@@ -64,22 +65,23 @@ private struct ConversationView: View {
                     .listRowSeparator(.hidden)
                 } else {
                     ForEach(conversationsUi) { conversationUi in
-                        Button(action: { onConversationClick(conversationUi) }) {
-                            ConversationItem(conversationUi: conversationUi)
-                                .simultaneousGesture(
-                                    LongPressGesture()
-                                        .onEnded { _ in
-                                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                            sheetConversationUi = conversationUi
-                                        }
-                                )
-                                .contentShape(.rect)
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(ClickStyle())
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets())
+                        ConversationItem(conversationUi: conversationUi)
+                            .contentShape(.rect)
+                            .simultaneousGesture(
+                                LongPressGesture()
+                                    .onEnded { _ in
+                                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                        sheetConversationUi = conversationUi
+                                    }
+                            )
+                            .listRowTap(
+                                action: { onConversationClick(conversationUi) },
+                                selectedItem: $selectedConversationUi,
+                                value: conversationUi
+                            )
+                            .listRowBackground(selectedConversationUi == conversationUi ? Color.click : Color.clear)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets())
                     }
                 }
             } else {

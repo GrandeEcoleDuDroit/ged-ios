@@ -27,4 +27,18 @@ extension View {
             )
             .cornerRadius(5)
     }
+    
+    func listRowTap<Value: Equatable>(
+        action: @escaping () -> Void,
+        selectedItem: Binding<Value?>,
+        value: Value
+    ) -> some View {
+        self.onTapGesture {
+            selectedItem.wrappedValue = value
+            action()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                selectedItem.wrappedValue = nil
+            }
+        }
+    }
 }

@@ -7,6 +7,8 @@ struct RecentAnnouncementSection: View {
     let onAnnouncementOptionsClick: (Announcement) -> Void
     let onSeeAllAnnouncementClick: () -> Void
     
+    @State private var selectedAnnouncement: Announcement?
+    
     var body: some View {
         VStack(alignment: .leading, spacing: .zero) {
             HStack(alignment: .center) {
@@ -36,24 +38,25 @@ struct RecentAnnouncementSection: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                 } else {
                     ForEach(announcements) { announcement in
-                        Button(
+                        CompactAnnouncementItem(
+                            announcement: announcement,
+                            onOptionsClick: { onAnnouncementOptionsClick(announcement) }
+                        )
+                        .contentShape(.rect)
+                        .listRowTap(
                             action: {
                                 if announcement.state == .published {
                                     onAnnouncementClick(announcement.id)
                                 } else {
                                     onUncreatedAnnouncementClick(announcement)
                                 }
-                            }
-                        ) {
-                            CompactAnnouncementItem(
-                                announcement: announcement,
-                                onOptionsClick: { onAnnouncementOptionsClick(announcement) }
-                            )
-                        }
-                        .buttonStyle(ClickStyle())
+                            },
+                            selectedItem: $selectedAnnouncement,
+                            value: announcement
+                        )
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.clear)
+                        .listRowBackground(selectedAnnouncement == announcement ? Color.click : Color.clear)
                     }
                 }
             }

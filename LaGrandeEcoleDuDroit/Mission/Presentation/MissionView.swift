@@ -61,6 +61,7 @@ private struct MissionView: View {
     @State private var showDeleteMissionAlert: Bool = false
     @State private var showReportMissionBottomSheet: Bool = false
     @State private var clickedMission: Mission?
+    @State private var selectedMission: Mission?
     
     var body: some View {
         List {
@@ -76,7 +77,16 @@ private struct MissionView: View {
                     ForEach(missions) { mission in
                         MissionCard(
                             mission: mission,
-                            onClick: {
+                            onOptionsClick: {
+                                clickedMission = mission
+                                showMissionBottomSheet = true
+                            }
+                        )
+                        .background(selectedMission == mission ? Color.click : Color.clear)
+                        .clipShape(ShapeDefaults.medium)
+                        .contentShape(.rect)
+                        .listRowTap(
+                            action: {
                                 if case .published = mission.state {
                                     onMissionClick(mission.id)
                                 } else {
@@ -84,10 +94,8 @@ private struct MissionView: View {
                                     showMissionBottomSheet = true
                                 }
                             },
-                            onOptionsClick: {
-                                clickedMission = mission
-                                showMissionBottomSheet = true
-                            }
+                            selectedItem: $selectedMission,
+                            value: mission
                         )
                         .padding(.horizontal)
                         .listRowSeparator(.hidden)
