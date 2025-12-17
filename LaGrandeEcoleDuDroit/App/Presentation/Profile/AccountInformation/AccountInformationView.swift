@@ -52,11 +52,10 @@ private struct AccountInformationView: View {
     let onDeleteProfilePictureClick: () -> Void
     
     @State private var selectedItem: PhotosPickerItem?
-    @State private var showBottomSheet: Bool = false
     @State private var showPhotosPicker: Bool = false
-    @State private var isBottomSheetItemClicked: Bool = false
     @State private var navigationTitle = stringResource(.accountInfos)
     @State private var showDeleteAlert: Bool = false
+    @State private var activeSheet: AccountInformationViewSheet?
     
     var body: some View {
         VStack(spacing: Dimens.mediumPadding) {
@@ -65,7 +64,7 @@ private struct AccountInformationView: View {
                 image: profilePictureImage,
                 onClick: {
                     if profilePictureImage == nil {
-                        showBottomSheet = true
+                        activeSheet = .accountInformation
                     } else {
                         showPhotosPicker = true
                     }
@@ -98,18 +97,32 @@ private struct AccountInformationView: View {
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(screenState == .edit)
-        .sheet(isPresented: $showBottomSheet) {
-            AccountInformationBottomSheet(
-                profilePictureUrl: user.profilePictureUrl,
-                onNewProfilePictureClick: {
-                    showPhotosPicker = true
-                    showBottomSheet = false
-                },
-                onDeleteProfilePictureClick: {
-                    showBottomSheet = false
-                    showDeleteAlert = true
-                }
-            )
+        .sheet(item: $activeSheet) {
+            switch $0 {
+                case .accountInformation:
+                    SheetContainer(fraction: Dimens.sheetFraction(itemCount: user.profilePictureUrl == nil ? 1 : 2)) {
+                        ClickableTextItem(
+                            icon: Image(systemName: "photo"),
+                            text: Text(stringResource(.newProfilePicture)),
+                            onClick: {
+                                activeSheet = nil
+                                showPhotosPicker = true
+                            }
+                        )
+                        
+                        if user.profilePictureUrl != nil {
+                            ClickableTextItem(
+                                icon: Image(systemName: "trash"),
+                                text: Text(stringResource(.delete)),
+                                onClick: {
+                                    activeSheet = nil
+                                    showDeleteAlert = true
+                                }
+                            )
+                            .foregroundStyle(.red)
+                        }
+                    }
+            }
         }
         .alert(
             stringResource(.deleteProfilePictureAlertMessage),
@@ -118,6 +131,7 @@ private struct AccountInformationView: View {
                 Button(stringResource(.cancel), role: .cancel) {
                     showDeleteAlert = false
                 }
+                
                 Button(stringResource(.delete), role: .destructive) {
                     onDeleteProfilePictureClick()
                     showDeleteAlert = false
@@ -197,27 +211,12 @@ private struct AccountInformationPicture: View {
     }
 }
 
-private struct AccountInformationBottomSheet: View {
-    let profilePictureUrl: String?
-    let onNewProfilePictureClick: () -> Void
-    let onDeleteProfilePictureClick: () -> Void
+private enum AccountInformationViewSheet: Identifiable {
+    case accountInformation
     
-    var body: some View {
-        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: profilePictureUrl == nil ? 1 : 2)) {
-            ClickableTextItem(
-                icon: Image(systemName: "photo"),
-                text: Text(stringResource(.newProfilePicture)),
-                onClick: onNewProfilePictureClick
-            )
-            
-            if profilePictureUrl != nil {
-                ClickableTextItem(
-                    icon: Image(systemName: "trash"),
-                    text: Text(stringResource(.delete)),
-                    onClick: onDeleteProfilePictureClick
-                )
-                .foregroundStyle(.red)
-            }
+    var id: Int {
+        switch self {
+            case .accountInformation: 0
         }
     }
 }

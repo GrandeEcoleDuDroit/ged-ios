@@ -42,6 +42,7 @@ private struct DefaultMissionCard: View {
                         maxHeight: .infinity,
                         alignment: .topTrailing
                     )
+                    .buttonStyle(.borderless)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 180)

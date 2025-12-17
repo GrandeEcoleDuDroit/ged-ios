@@ -57,10 +57,9 @@ private struct MissionView: View {
     let onResendMissionClick: (Mission) -> Void
     let onRefreshMissions: () async -> Void
     
-    @State private var showMissionBottomSheet: Bool = false
+    @State private var activeSheet: MissionViewSheet?
     @State private var showDeleteMissionAlert: Bool = false
-    @State private var showReportMissionBottomSheet: Bool = false
-    @State private var clickedMission: Mission?
+    @State private var alertMission: Mission?
     @State private var selectedMission: Mission?
     
     var body: some View {
@@ -78,8 +77,7 @@ private struct MissionView: View {
                         MissionCard(
                             mission: mission,
                             onOptionsClick: {
-                                clickedMission = mission
-                                showMissionBottomSheet = true
+                                activeSheet = .mission(mission)
                             }
                         )
                         .background(selectedMission == mission ? Color.click : Color.clear)
@@ -90,8 +88,7 @@ private struct MissionView: View {
                                 if case .published = mission.state {
                                     onMissionClick(mission.id)
                                 } else {
-                                    clickedMission = mission
-                                    showMissionBottomSheet = true
+                                    activeSheet = .mission(mission)
                                 }
                             },
                             selectedItem: $selectedMission,
@@ -111,7 +108,6 @@ private struct MissionView: View {
                     .listRowBackground(Color.clear)
             }
         }
-        .scrollIndicators(.hidden)
         .listStyle(.plain)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .listRowSpacing(Dimens.largePadding)
@@ -128,43 +124,39 @@ private struct MissionView: View {
                 }
             }
         }
-        .sheet(isPresented: $showMissionBottomSheet) {
-            BottomSheet(
-                user: user,
-                mission: $clickedMission,
-                onEditMissionClick: {
-                    showMissionBottomSheet = false
-                    if let clickedMission {
-                        onEditMissionClick(clickedMission)
-                    }
-                },
-                onDeleteMissionClick: {
-                    showMissionBottomSheet = false
-                    showDeleteMissionAlert = true
-                },
-                onReportMissionClick: {
-                    showMissionBottomSheet = false
-                    showReportMissionBottomSheet = true
-                },
-                onResendMissionClick: {
-                    showMissionBottomSheet = false
-                    if let clickedMission {
-                        onResendMissionClick(clickedMission)
-                    }
-                }
-            )
-        }
-        .sheet(isPresented: $showReportMissionBottomSheet) {
-            ReportBottomSheet(
-                items: MissionReport.Reason.allCases,
-                fraction: Dimens.reportBottomSheetFraction(itemCount: MissionReport.Reason.allCases.count),
-                onReportClick: { reason in
-                    showReportMissionBottomSheet = false
+        .sheet(item: $activeSheet) {
+            switch $0 {
+                case let .mission(mission):
+                    MissionSheet(
+                        mission: mission,
+                        isAdminUser: user.admin,
+                        onEditClick: {
+                            activeSheet = nil
+                            onEditMissionClick(mission)
+                        },
+                        onDeleteClick: {
+                            activeSheet = nil
+                            alertMission = mission
+                            showDeleteMissionAlert = true
+                        },
+                        onReportClick: {
+                            activeSheet = .missionReport(mission)
+                        },
+                        onResendClick: {
+                            activeSheet = nil
+                            onResendMissionClick(mission)
+                        }
+                    )
                     
-                    if let clickedMission {
+                case let .missionReport(mission):
+                    ReportSheet(
+                        items: MissionReport.Reason.allCases,
+                        fraction: Dimens.reportSheetFraction(itemCount: MissionReport.Reason.allCases.count),
+                        onReportClick: { reason in
+                        activeSheet = nil
                         onReportMissionClick(
                             MissionReport(
-                                missionId: clickedMission.id,
+                                missionId: mission.id,
                                 reporter: MissionReport.Reporter(
                                     fullName: user.fullName,
                                     email: user.email
@@ -173,51 +165,37 @@ private struct MissionView: View {
                             )
                         )
                     }
-                }
-            )
+                )
+            }
         }
         .alert(
             stringResource(.deleteMissionAlertMessage),
             isPresented: $showDeleteMissionAlert,
-            actions: {
+            presenting: alertMission,
+            actions: { mission in
                 Button(stringResource(.cancel), role: .cancel) {
+                    alertMission = nil
                     showDeleteMissionAlert = false
                 }
                 
                 Button(stringResource(.delete), role: .destructive) {
                     showDeleteMissionAlert = false
-                    if let clickedMission {
-                        onDeleteMissionClick(clickedMission)
-                    }
+                    alertMission = nil
+                    onDeleteMissionClick(mission)
                 }
             }
         )
     }
 }
 
-private struct BottomSheet: View {
-    let user: User
-    @Binding var mission: Mission?
-    let onEditMissionClick: () -> Void
-    let onDeleteMissionClick: () -> Void
-    let onReportMissionClick: () -> Void
-    let onResendMissionClick: () -> Void
-
-    var body: some View {
-        if let mission {
-            MissionBottomSheet(
-                mission: mission,
-                isAdminUser: user.admin,
-                onEditClick: onEditMissionClick,
-                onDeleteClick: onDeleteMissionClick,
-                onReportClick: onReportMissionClick,
-                onResendClick: onResendMissionClick
-            )
-        } else {
-            BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
-                Text(stringResource(.unknownError))
-                    .foregroundColor(.error)
-            }
+private enum MissionViewSheet: Identifiable {
+    case mission(Mission)
+    case missionReport(Mission)
+    
+    var id: Int {
+        switch self {
+            case .mission: 0
+            case .missionReport: 1
         }
     }
 }

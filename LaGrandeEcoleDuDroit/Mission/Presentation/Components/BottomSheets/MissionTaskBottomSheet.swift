@@ -1,13 +1,13 @@
 import SwiftUI
 
-struct AddMissionTaskBottomSheet: View {
+struct AddMissionTaskSheet: View {
     let onAddTaskClick: (String) -> Void
     let onCancelClick: () -> Void
     
     @State private var createEnbaled = false
     
     var body: some View {
-        MissionTaskBottomSheet(
+        MissionTaskSheet(
             initialValue: "",
             onValueChange: { value in
                 createEnbaled = !value.isEmpty
@@ -20,7 +20,7 @@ struct AddMissionTaskBottomSheet: View {
     }
 }
 
-struct EditMissionTaskBottomSheet: View {
+struct EditMissionTaskSheet: View {
     let missionTask: MissionTask
     let onEditTaskClick: (MissionTask) -> Void
     let onCancelClick: () -> Void
@@ -38,7 +38,7 @@ struct EditMissionTaskBottomSheet: View {
     @State private var editEnabled = false
     
     var body: some View {
-        MissionTaskBottomSheet(
+        MissionTaskSheet(
             initialValue: missionTask.value,
             onValueChange: { value in
                 editEnabled = !value.isEmpty && value != missionTask.value
@@ -53,7 +53,7 @@ struct EditMissionTaskBottomSheet: View {
     }
 }
 
-private struct MissionTaskBottomSheet: View {
+private struct MissionTaskSheet: View {
     let initialValue: String
     let onValueChange: (String) -> Void
     let enabled: Bool
@@ -122,7 +122,7 @@ private struct MissionTaskBottomSheet: View {
 }
 
 #Preview {
-    MissionTaskBottomSheet(
+    MissionTaskSheet(
         initialValue: "",
         onValueChange: { _ in },
         enabled: true,

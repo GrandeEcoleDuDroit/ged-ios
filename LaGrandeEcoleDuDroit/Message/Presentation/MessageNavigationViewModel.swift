@@ -43,7 +43,6 @@ class MessageNavigationViewModel: ViewModel {
 
 enum MessageRoute: Route {
     case chat(conversation: Conversation)
-    case createConversation
     case interlocutor(user: User)
 }
 

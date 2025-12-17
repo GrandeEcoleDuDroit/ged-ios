@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct EditAnnouncementDestination: View {
-    let onBackClick: () -> Void
+    let onCancelClick: () -> Void
     
     @StateObject private var viewModel: EditAnnouncementViewModel
     @State private var errorMessage: String = ""
@@ -9,12 +9,12 @@ struct EditAnnouncementDestination: View {
     
     init(
         announcement: Announcement,
-        onBackClick: @escaping () -> Void
+        onCancelClick: @escaping () -> Void
     ) {
         _viewModel = StateObject(
             wrappedValue: NewsMainThreadInjector.shared.resolve(EditAnnouncementViewModel.self, arguments: announcement)!
         )
-        self.onBackClick = onBackClick
+        self.onCancelClick = onCancelClick
     }
     
     var body: some View {
@@ -22,18 +22,18 @@ struct EditAnnouncementDestination: View {
             title: viewModel.uiState.title,
             content: viewModel.uiState.content,
             loading: viewModel.uiState.loading,
-            editButtonEnable: viewModel.uiState.enableUpdate,
+            updateEnabled: viewModel.uiState.updateEnabled,
             onTitleChange: viewModel.onTitleChange,
             onContentChange: viewModel.onContentChange,
             onUpdateAnnouncementClick: viewModel.updateAnnouncement,
-            onBackClick: onBackClick
+            onCancelClick: onCancelClick
         )
         .onReceive(viewModel.$event) { event in
             if let errorEvent = event as? ErrorEvent {
                 errorMessage = errorEvent.message
                 showErrorAlert = true
             } else if let _ = event as? SuccessEvent {
-                onBackClick()
+                onCancelClick()
             }
         }
         .alert(
@@ -52,11 +52,11 @@ private struct EditAnnouncementView: View {
     let title: String
     let content: String
     let loading: Bool
-    let editButtonEnable: Bool
+    let updateEnabled: Bool
     let onTitleChange: (String) -> Void
     let onContentChange: (String) -> Void
     let onUpdateAnnouncementClick: () -> Void
-    let onBackClick: () -> Void
+    let onCancelClick: () -> Void
     
     @FocusState private var focusState: Field?
 
@@ -75,27 +75,22 @@ private struct EditAnnouncementView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
+            ToolbarItem(placement: .cancellationAction) {
                 Button(stringResource(.cancel)) {
-                   onBackClick()
+                    onCancelClick()
                 }
             }
             
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(
-                    action: onUpdateAnnouncementClick,
-                    label: {
-                        if !editButtonEnable || loading {
-                            Text(stringResource(.save))
-                                .fontWeight(.semibold)
-                        } else {
-                            Text(stringResource(.save))
-                                .foregroundStyle(.gedPrimary)
-                                .fontWeight(.semibold)
-                        }
+            ToolbarItem(placement: .confirmationAction) {
+                Button(action: onUpdateAnnouncementClick) {
+                    if !updateEnabled || loading {
+                        Text(stringResource(.save))
+                    } else {
+                        Text(stringResource(.save))
+                            .foregroundStyle(.gedPrimary)
                     }
-                )
-                .disabled(!editButtonEnable)
+                }
+                .disabled(!updateEnabled)
             }
         }
         .onAppear {
@@ -103,8 +98,6 @@ private struct EditAnnouncementView: View {
                 focusState = .title
             }
         }
-        .contentShape(Rectangle())
-        .onTapGesture { focusState = nil }
         .disabled(loading)
     }
 }
@@ -115,11 +108,11 @@ private struct EditAnnouncementView: View {
             title: announcementFixture.title ?? "",
             content: announcementFixture.content,
             loading: false,
-            editButtonEnable: true,
+            updateEnabled: false,
             onTitleChange: {_ in },
             onContentChange: {_ in },
             onUpdateAnnouncementClick: {},
-            onBackClick: {}
+            onCancelClick: {}
         )
         .background(.appBackground)
     }

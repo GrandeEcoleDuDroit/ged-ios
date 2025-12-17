@@ -2,8 +2,6 @@ import SwiftUI
 
 struct NewsDestination: View {
     let onAnnouncementClick: (String) -> Void
-    let onCreateAnnouncementClick: () -> Void
-    let onEditAnnouncementClick: (Announcement) -> Void
     let onSeeAllAnnouncementClick: () -> Void
     
     @StateObject private var viewModel = NewsMainThreadInjector.shared.resolve(NewsViewModel.self)
@@ -18,8 +16,6 @@ struct NewsDestination: View {
                 loading: viewModel.uiState.loading,
                 onRefreshAnnouncements: viewModel.refreshAnnouncements,
                 onAnnouncementClick: onAnnouncementClick,
-                onCreateAnnouncementClick: onCreateAnnouncementClick,
-                onEditAnnouncementClick: onEditAnnouncementClick,
                 onResendAnnouncementClick: viewModel.resendAnnouncement,
                 onDeleteAnnouncementClick: viewModel.deleteAnnouncement,
                 onReportAnnouncementClick: viewModel.reportAnnouncement,
@@ -53,28 +49,26 @@ private struct NewsView: View {
     let loading: Bool
     let onRefreshAnnouncements: () async -> Void
     let onAnnouncementClick: (String) -> Void
-    let onCreateAnnouncementClick: () -> Void
-    let onEditAnnouncementClick: (Announcement) -> Void
     let onResendAnnouncementClick: (Announcement) -> Void
     let onDeleteAnnouncementClick: (Announcement) -> Void
     let onReportAnnouncementClick: (AnnouncementReport) -> Void
     let onSeeAllAnnouncementClick: () -> Void
     
     @State private var showDeleteAnnouncementAlert: Bool = false
-    @State private var announcementBottomSheetType:  AnnouncementBottomSheetType?
     @State private var alertAnnouncement: Announcement?
-    
+    @State private var activeSheet:  NewsViewSheet?
+
     var body: some View {
-        ZStack {
+        Group {
             if let announcements {
                 RecentAnnouncementSection(
                     announcements: announcements,
                     onAnnouncementClick: onAnnouncementClick,
                     onUncreatedAnnouncementClick: {
-                        announcementBottomSheetType = .announcement(announcement: $0)
+                        activeSheet = .announcement($0)
                     },
                     onAnnouncementOptionsClick: {
-                        announcementBottomSheetType = .announcement(announcement: $0)
+                        activeSheet = .announcement($0)
                     },
                     onSeeAllAnnouncementClick: onSeeAllAnnouncementClick
                 )
@@ -104,42 +98,41 @@ private struct NewsView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 if user.admin {
                     Button(
-                        action: onCreateAnnouncementClick,
+                        action: { activeSheet = .createAnnouncement },
                         label: { Image(systemName: "plus") }
                     )
                 }
             }
         }
-        .sheet(item: $announcementBottomSheetType) {
+        .sheet(item: $activeSheet) {
             switch $0 {
                 case let .announcement(announcement):
-                    BottomSheet(
-                        user: user,
+                    AnnouncementSheet(
                         announcement: announcement,
-                        onResendAnnouncementClick: {
-                            announcementBottomSheetType = nil
-                            onResendAnnouncementClick($0)
+                        isEditable: user.admin && announcement.author.id == user.id,
+                        onEditClick: {
+                            activeSheet = .editAnnouncement(announcement)
                         },
-                        onDeleteAnnouncementClick: {
-                            announcementBottomSheetType = nil
+                        onResendClick: {
+                            activeSheet = nil
+                            onResendAnnouncementClick(announcement)
+                        },
+                        onDeleteClick: {
+                            activeSheet = nil
                             alertAnnouncement = announcement
                             showDeleteAnnouncementAlert = true
                         },
-                        onEditAnnouncementClick: {
-                            announcementBottomSheetType = nil
-                            onEditAnnouncementClick($0)
-                        },
-                        onReportAnnouncementClick: {
-                            announcementBottomSheetType = .report(announcement: announcement)
+                        onReportClick: {
+                            activeSheet = .announcementReport(announcement)
                         }
                     )
                     
-                case let .report(announcement):
-                    ReportBottomSheet(
+                case let .announcementReport(announcement):
+                    ReportSheet(
                         items: AnnouncementReport.Reason.allCases,
-                        fraction: Dimens.reportBottomSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
+                        fraction: Dimens.reportSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
                         onReportClick: { reason in
-                            announcementBottomSheetType = nil
+                            activeSheet = nil
                             onReportAnnouncementClick(
                                 AnnouncementReport(
                                     announcementId: announcement.id,
@@ -156,6 +149,21 @@ private struct NewsView: View {
                             )
                         }
                     )
+                    
+                case .createAnnouncement:
+                    NavigationStack {
+                        CreateAnnouncementDestination(
+                            onCancelClick: { activeSheet = nil }
+                        )
+                    }
+                    
+                case let .editAnnouncement(announcement):
+                    NavigationStack {
+                        EditAnnouncementDestination(
+                            announcement: announcement,
+                            onCancelClick: { activeSheet = nil }
+                        )
+                    }
             }
         }
         .alert(
@@ -178,34 +186,18 @@ private struct NewsView: View {
     }
 }
 
-private struct BottomSheet: View {
-    let user: User
-    let announcement: Announcement
-    let onResendAnnouncementClick: (Announcement) -> Void
-    let onDeleteAnnouncementClick: () -> Void
-    let onEditAnnouncementClick: (Announcement) -> Void
-    let onReportAnnouncementClick: () -> Void
-    
-    var body: some View {
-        AnnouncementBottomSheet(
-            announcement: announcement,
-            isEditable: user.admin && announcement.author.id == user.id,
-            onEditClick: { onEditAnnouncementClick(announcement) },
-            onResendClick: { onResendAnnouncementClick(announcement) },
-            onDeleteClick: onDeleteAnnouncementClick,
-            onReportClick: onReportAnnouncementClick
-        )
-    }
-}
-
-private enum AnnouncementBottomSheetType: Identifiable {
-    case announcement(announcement: Announcement)
-    case report(announcement: Announcement)
+private enum NewsViewSheet: Identifiable {
+    case announcement(Announcement)
+    case announcementReport(Announcement)
+    case createAnnouncement
+    case editAnnouncement(Announcement)
     
     var id: Int {
         switch self {
-            case .announcement: 1
-            case .report: 2
+            case .announcement: 0
+            case .announcementReport: 1
+            case .createAnnouncement: 2
+            case .editAnnouncement: 3
         }
     }
 }
@@ -218,8 +210,6 @@ private enum AnnouncementBottomSheetType: Identifiable {
             loading: false,
             onRefreshAnnouncements: {},
             onAnnouncementClick: {_ in },
-            onCreateAnnouncementClick: {},
-            onEditAnnouncementClick: {_ in },
             onResendAnnouncementClick: {_ in },
             onDeleteAnnouncementClick: {_ in },
             onReportAnnouncementClick: {_ in },

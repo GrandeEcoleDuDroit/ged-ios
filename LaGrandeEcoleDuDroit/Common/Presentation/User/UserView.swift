@@ -1,5 +1,5 @@
 import SwiftUI
-import _PhotosUI_SwiftUI
+import PhotosUI
 
 struct UserDestination: View {
     private let user: User
@@ -20,8 +20,8 @@ struct UserDestination: View {
                 user: user,
                 currentUser: currentUser,
                 loading: viewModel.uiState.loading,
-                isUserBlocked: viewModel.uiState.userBlocked,
-                onReportClick: viewModel.reportUser,
+                blockedUser: viewModel.uiState.blockedUser,
+                onReportUserClick: viewModel.reportUser,
                 onBlockUserClick: viewModel.blockUser,
                 onUnblockUserClick: viewModel.unblockUser
             )
@@ -51,34 +51,15 @@ private struct UserView: View {
     let user: User
     let currentUser: User
     let loading: Bool
-    let isUserBlocked: Bool
-    let onReportClick: (UserReport) -> Void
+    let blockedUser: Bool
+    let onReportUserClick: (UserReport) -> Void
     let onBlockUserClick: (String) -> Void
     let onUnblockUserClick: (String) -> Void
     
-    @State private var showUserBottomSheet: Bool = false
-    @State private var showReportBottomSheet: Bool = false
+    @State private var activeSheet: UserViewSheet?
     @State private var showBlockAlert: Bool = false
     @State private var showUnblockAlert: Bool = false
     
-    init(
-        user: User,
-        currentUser: User,
-        loading: Bool,
-        isUserBlocked: Bool,
-        onReportClick: @escaping (UserReport) -> Void,
-        onBlockUserClick: @escaping (String) -> Void,
-        onUnblockUserClick: @escaping (String) -> Void
-    ) {
-        self.user = user
-        self.currentUser = currentUser
-        self.loading = loading
-        self.isUserBlocked = isUserBlocked
-        self.onReportClick = onReportClick
-        self.onBlockUserClick = onBlockUserClick
-        self.onUnblockUserClick = onUnblockUserClick
-    }
-
     var body: some View {
         VStack(spacing: Dimens.mediumPadding) {
             ProfilePicture(
@@ -94,51 +75,52 @@ private struct UserView: View {
         .loading(loading)
         .navigationTitle(user.displayedName)
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $showUserBottomSheet) {
-            UserBottomSheet(
-                isUserBlocked: isUserBlocked,
-                onReportClick: {
-                    showUserBottomSheet = false
-                    showReportBottomSheet = true
-                },
-                onBlockClick: {
-                    showUserBottomSheet = false
-                    showBlockAlert = true
-                },
-                onUnblockClick: {
-                    showUserBottomSheet = false
-                    showUnblockAlert = true
-                }
-            )
-        }
-        .sheet(isPresented: $showReportBottomSheet) {
-            ReportBottomSheet(
-                items: UserReport.Reason.allCases,
-                fraction: Dimens.reportBottomSheetFraction(itemCount: UserReport.Reason.allCases.count),
-                onReportClick: { reason in
-                    showReportBottomSheet = false
-                    
-                    onReportClick(
-                        UserReport(
-                            userId: user.id,
-                            reportedUser: UserReport.ReportedUser(
-                                fullName: user.fullName,
-                                email: user.email
-                            ),
-                            reporterInfo: UserReport.Reporter(
-                                fullName: currentUser.fullName,
-                                email: currentUser.email
-                            ),
-                            reason: reason
-                        )
+        .sheet(item: $activeSheet) {
+            switch $0 {
+                case .user:
+                    UserSheet(
+                        blockedUser: blockedUser,
+                        onReportUserClick: {
+                            activeSheet = .userReport
+                        },
+                        onBlockUserClick: {
+                            activeSheet = nil
+                            showBlockAlert = true
+                        },
+                        onUnblockUserClick: {
+                            activeSheet = nil
+                            showUnblockAlert = true
+                        }
                     )
-                }
-            )
+                    
+                case .userReport:
+                    ReportSheet(
+                        items: UserReport.Reason.allCases,
+                        fraction: Dimens.reportSheetFraction(itemCount: UserReport.Reason.allCases.count),
+                        onReportClick: { reason in
+                            activeSheet = nil
+                            onReportUserClick(
+                                UserReport(
+                                    userId: user.id,
+                                    reportedUser: UserReport.ReportedUser(
+                                        fullName: user.fullName,
+                                        email: user.email
+                                    ),
+                                    reporterInfo: UserReport.Reporter(
+                                        fullName: currentUser.fullName,
+                                        email: currentUser.email
+                                    ),
+                                    reason: reason
+                                )
+                            )
+                        }
+                    )
+            }
         }
         .toolbar {
             if user.id != currentUser.id {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    OptionsButton(action: { showUserBottomSheet = true } )
+                    OptionsButton(action: { activeSheet = .user } )
                 }
             }
         }
@@ -178,34 +160,46 @@ private struct UserView: View {
     }
 }
 
-private struct UserBottomSheet: View {
-    let isUserBlocked: Bool
-    let onReportClick: () -> Void
-    let onBlockClick: () -> Void
-    let onUnblockClick: () -> Void
+private struct UserSheet: View {
+    let blockedUser: Bool
+    let onReportUserClick: () -> Void
+    let onBlockUserClick: () -> Void
+    let onUnblockUserClick: () -> Void
     
     var body: some View {
-        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 2)) {
-            if isUserBlocked {
+        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
+            if blockedUser {
                 ClickableTextItem(
                     icon: Image(systemName: "nosign"),
                     text: Text(stringResource(.unblock)),
-                    onClick: onUnblockClick
+                    onClick: onUnblockUserClick
                 )
             } else {
                 ClickableTextItem(
                     icon: Image(systemName: "nosign"),
                     text: Text(stringResource(.block)),
-                    onClick: onBlockClick
+                    onClick: onBlockUserClick
                 )
             }
             
             ClickableTextItem(
                 icon: Image(systemName: "exclamationmark.bubble"),
                 text: Text(stringResource(.report)),
-                onClick: onReportClick
+                onClick: onReportUserClick
             )
             .foregroundColor(.error)
+        }
+    }
+}
+
+private enum UserViewSheet: Identifiable {
+    case user
+    case userReport
+    
+    var id: Int {
+        switch self {
+            case .user: 0
+            case .userReport: 1
         }
     }
 }
@@ -216,8 +210,8 @@ private struct UserBottomSheet: View {
             user: userFixture,
             currentUser: userFixture2,
             loading: false,
-            isUserBlocked: false,
-            onReportClick: { _ in },
+            blockedUser: false,
+            onReportUserClick: { _ in },
             onBlockUserClick: { _ in },
             onUnblockUserClick: { _ in }
         )

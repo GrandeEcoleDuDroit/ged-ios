@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SelectManagerBottomSheet: View {
+struct SelectManagerSheet: View {
     let users: [User]
     let selectedManagers: Set<User>
     let userQuery: String
@@ -115,7 +115,7 @@ private struct SelectableManagerItem: View {
 
 #Preview {
     NavigationStack {
-        SelectManagerBottomSheet(
+        SelectManagerSheet(
             users: usersFixture,
             selectedManagers: [userFixture],
             userQuery: "",
