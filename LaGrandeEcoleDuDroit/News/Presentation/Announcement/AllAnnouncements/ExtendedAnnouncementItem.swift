@@ -47,6 +47,7 @@ private struct DefaultItem: View {
                 )
                 
                 OptionsButton(action: onOptionsClick)
+                    .buttonStyle(.borderless)
             }
             
             if let title = announcement.title, !title.isEmpty {
@@ -100,6 +101,7 @@ private struct ErrorItem: View {
                 )
                 
                 OptionsButton(action: onOptionsClick)
+                    .buttonStyle(.borderless)
             }
             
             if let title = announcement.title {

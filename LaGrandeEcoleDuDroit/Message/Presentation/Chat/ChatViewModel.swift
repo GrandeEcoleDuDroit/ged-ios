@@ -275,7 +275,7 @@ class ChatViewModel: ViewModel {
         blockedUserRepository.blockedUserIds
             .receive(on: DispatchQueue.main)
             .sink { [weak self] blockedUserIds in
-                self?.uiState.userBlocked = blockedUserIds.contains(interlocutorId)
+                self?.uiState.blockedUser = blockedUserIds.contains(interlocutorId)
             }.store(in: &cancellables)
     }
     
@@ -283,7 +283,7 @@ class ChatViewModel: ViewModel {
         fileprivate(set) var messages: [Message] = []
         fileprivate(set) var messageText: String = ""
         fileprivate(set) var loading: Bool = false
-        fileprivate(set) var userBlocked: Bool = false
+        fileprivate(set) var blockedUser: Bool = false
         fileprivate(set) var canLoadMoreMessages: Bool = true
     }
     

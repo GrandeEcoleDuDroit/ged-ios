@@ -6,7 +6,7 @@ class GetConversationUseCaseTest {
     @Test
     func getConversationUseCase_should_return_conversation_when_exist() async throws {
         // Given
-        let useCase = GetConversationUseCase(
+        let useCase = GetLocalConversationUseCase(
             userRepository: MockUserRepository(),
             conversationRepository: SingleConversation()
         )
@@ -21,7 +21,7 @@ class GetConversationUseCaseTest {
     @Test
     func getConversationUseCase_should_return_new_conversation_when_not_exist() async throws {
         // Given
-        let useCase = GetConversationUseCase(
+        let useCase = GetLocalConversationUseCase(
             userRepository: CurrentUser(),
             conversationRepository: MockConversationRepository()
         )
@@ -36,7 +36,7 @@ class GetConversationUseCaseTest {
     @Test
     func getConversationUseCase_should_throw_error_when_current_user_not_exist() async throws {
         // Given
-        let useCase = GetConversationUseCase(
+        let useCase = GetLocalConversationUseCase(
             userRepository: MockUserRepository(),
             conversationRepository: MockConversationRepository()
         )

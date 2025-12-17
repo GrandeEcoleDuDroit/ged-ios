@@ -1,6 +1,6 @@
 import Foundation
 
-class GetConversationUseCase {
+class GetLocalConversationUseCase {
     private let userRepository: UserRepository
     private let conversationRepository: ConversationRepository
     

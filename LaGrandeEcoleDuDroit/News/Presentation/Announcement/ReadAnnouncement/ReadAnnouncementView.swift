@@ -2,7 +2,6 @@ import SwiftUI
 
 struct ReadAnnouncementDestination: View {
     let onAuthorClick: (User) -> Void
-    let onEditAnnouncementClick: (Announcement) -> Void
     let onBackClick: () -> Void
     
     @StateObject private var viewModel: ReadAnnouncementViewModel
@@ -12,7 +11,6 @@ struct ReadAnnouncementDestination: View {
     init(
         announcementId: String,
         onAuthorClick: @escaping (User) -> Void,
-        onEditAnnouncementClick: @escaping (Announcement) -> Void,
         onBackClick: @escaping () -> Void
     ) {
         _viewModel = StateObject(
@@ -22,7 +20,6 @@ struct ReadAnnouncementDestination: View {
             )!
         )
         self.onAuthorClick = onAuthorClick
-        self.onEditAnnouncementClick = onEditAnnouncementClick
         self.onBackClick = onBackClick
     }
     
@@ -34,7 +31,6 @@ struct ReadAnnouncementDestination: View {
                     announcement: announcement,
                     user: user,
                     loading: viewModel.uiState.loading,
-                    onEditAnnouncementClick: onEditAnnouncementClick,
                     onDeleteAnnouncementClick: viewModel.deleteAnnouncement,
                     onReportAnnouncementClick: viewModel.reportAnnouncement,
                     onAuthorClick: onAuthorClick
@@ -65,14 +61,12 @@ private struct ReadAnnouncementView: View {
     let announcement: Announcement
     let user: User
     let loading: Bool
-    let onEditAnnouncementClick: (Announcement) -> Void
     let onDeleteAnnouncementClick: () -> Void
     let onReportAnnouncementClick: (AnnouncementReport) -> Void
     let onAuthorClick: (User) -> Void
     
     @State private var showDeleteAnnouncementAlert: Bool = false
-    @State private var showAnnouncementBottomSheet: Bool = false
-    @State private var showAnnouncementReportBottomSheet: Bool = false
+    @State private var activeSheet: ReadAnnouncementViewSheet?
     
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -99,51 +93,60 @@ private struct ReadAnnouncementView: View {
         .loading(loading)
         .navigationTitle(stringResource(.announcement))
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $showAnnouncementBottomSheet) {
-            AnnouncementBottomSheet(
-                announcement: announcement,
-                isEditable: user.admin && announcement.author.id == user.id,
-                onEditClick: {
-                    showAnnouncementBottomSheet = false
-                    onEditAnnouncementClick(announcement)
-                },
-                onResendClick: {},
-                onDeleteClick: {
-                    showAnnouncementBottomSheet = false
-                    showDeleteAnnouncementAlert = true
-                },
-                onReportClick: {
-                    showAnnouncementBottomSheet = false
-                    showAnnouncementReportBottomSheet = true
-                }
-            )
-        }
-        .sheet(isPresented: $showAnnouncementReportBottomSheet) {
-            ReportBottomSheet(
-                items: AnnouncementReport.Reason.allCases,
-                fraction: Dimens.reportBottomSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
-                onReportClick: { reason in
-                    showAnnouncementReportBottomSheet = false
-                    onReportAnnouncementClick(
-                        AnnouncementReport(
-                            announcementId: announcement.id,
-                            author: AnnouncementReport.Author(
-                                fullName: announcement.author.fullName,
-                                email: announcement.author.email
-                            ),
-                            reporter: AnnouncementReport.Reporter(
-                                fullName: user.fullName,
-                                email: user.email
-                            ),
-                            reason: reason
-                        )
+        .sheet(item: $activeSheet) {
+            switch $0 {
+                case .announcement:
+                    AnnouncementSheet(
+                        announcement: announcement,
+                        isEditable: user.admin && announcement.author.id == user.id,
+                        onEditClick: {
+                            activeSheet = .editAnnouncement
+                        },
+                        onResendClick: {},
+                        onDeleteClick: {
+                            activeSheet = nil
+                            showDeleteAnnouncementAlert = true
+                        },
+                        onReportClick: {
+                            activeSheet = .announcementReport
+                        }
                     )
-                }
-            )
+                    
+                case .announcementReport:
+                    ReportSheet(
+                        items: AnnouncementReport.Reason.allCases,
+                        fraction: Dimens.reportSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
+                        onReportClick: { reason in
+                            activeSheet = nil
+                            onReportAnnouncementClick(
+                                AnnouncementReport(
+                                    announcementId: announcement.id,
+                                    author: AnnouncementReport.Author(
+                                        fullName: announcement.author.fullName,
+                                        email: announcement.author.email
+                                    ),
+                                    reporter: AnnouncementReport.Reporter(
+                                        fullName: user.fullName,
+                                        email: user.email
+                                    ),
+                                    reason: reason
+                                )
+                            )
+                        }
+                    )
+                    
+                case .editAnnouncement:
+                    NavigationStack {
+                        EditAnnouncementDestination(
+                            announcement: announcement,
+                            onCancelClick: { activeSheet = nil }
+                        )
+                    }
+            }
         }
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                OptionsButton(action: { showAnnouncementBottomSheet = true })
+            ToolbarItem(placement: .confirmationAction) {
+                OptionsButton(action: { activeSheet = .announcement })
             }
         }
         .alert(
@@ -155,6 +158,7 @@ private struct ReadAnnouncementView: View {
                     role: .cancel,
                     action: { showDeleteAnnouncementAlert = false }
                 )
+                
                 Button(
                     stringResource(.delete), role: .destructive,
                     action: onDeleteAnnouncementClick
@@ -164,13 +168,26 @@ private struct ReadAnnouncementView: View {
     }
 }
 
+private enum ReadAnnouncementViewSheet: Identifiable {
+    case announcement
+    case announcementReport
+    case editAnnouncement
+    
+    var id: Int {
+        switch self {
+            case .announcement: 0
+            case .announcementReport: 1
+            case .editAnnouncement: 2
+        }
+    }
+}
+
 #Preview {
     NavigationStack {
         ReadAnnouncementView(
             announcement: announcementFixture,
-            user: userFixture2,
+            user: announcementFixture.author,
             loading: false,
-            onEditAnnouncementClick: { _ in },
             onDeleteAnnouncementClick: {},
             onReportAnnouncementClick: { _ in },
             onAuthorClick: { _ in }

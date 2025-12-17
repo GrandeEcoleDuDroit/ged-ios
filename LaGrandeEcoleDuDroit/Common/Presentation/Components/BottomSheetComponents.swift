@@ -1,13 +1,13 @@
 import SwiftUI
 
-struct ReportBottomSheet<T: CustomStringConvertible>: View {
+struct ReportSheet<T: CustomStringConvertible>: View {
     let items: [T]
     let fraction: CGFloat
     let onReportClick: (T) -> Void
     
     init(
         items: [T],
-        fraction: CGFloat = Dimens.reportBottomSheetFraction(itemCount: 1),
+        fraction: CGFloat = Dimens.reportSheetFraction(itemCount: 1),
         onReportClick: @escaping (T) -> Void
     ) {
         self.items = items
@@ -21,7 +21,7 @@ struct ReportBottomSheet<T: CustomStringConvertible>: View {
                 .font(.titleMedium)
                 .frame(maxWidth: .infinity, alignment: .center)
             
-            BottomSheetContainer(fraction: fraction) {
+            SheetContainer(fraction: fraction) {
                 ForEach(items.indices, id: \.self) { index in
                     ClickableTextItem(
                         text: Text(items[index].description),
@@ -34,7 +34,7 @@ struct ReportBottomSheet<T: CustomStringConvertible>: View {
 }
 
 #Preview {
-    ReportBottomSheet(
+    ReportSheet(
         items: ["Spam", "Inappropriate content", "Harassment"],
         onReportClick: { _ in }
     )

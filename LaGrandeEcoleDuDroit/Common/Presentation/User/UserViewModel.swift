@@ -100,7 +100,7 @@ class UserViewModel: ViewModel {
         blockedUserRepository.blockedUserIds
             .receive(on: DispatchQueue.main)
             .sink { [weak self] blockedUserIds in
-                self?.uiState.userBlocked = blockedUserIds.contains(userId)
+                self?.uiState.blockedUser = blockedUserIds.contains(userId)
             }
             .store(in: &cancellables)
     }
@@ -108,6 +108,6 @@ class UserViewModel: ViewModel {
     struct UserUiState {
         var currentUser: User? = nil
         var loading: Bool = false
-        var userBlocked: Bool = false
+        var blockedUser: Bool = false
     }
 }
