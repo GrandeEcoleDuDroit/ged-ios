@@ -94,8 +94,8 @@ class MessageInjector: Injector {
             )
         }.inObjectScope(.container)
         
-        container.register(GetConversationUseCase.self) { resolver in
-            GetConversationUseCase(
+        container.register(GetLocalConversationUseCase.self) { resolver in
+            GetLocalConversationUseCase(
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
                 conversationRepository: resolver.resolve(ConversationRepository.self)!
             )

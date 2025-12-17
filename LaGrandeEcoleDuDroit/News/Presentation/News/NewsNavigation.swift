@@ -9,10 +9,6 @@ struct NewsNavigation: View {
                 onAnnouncementClick: { announcementId in
                     viewModel.path.append(.readAnnouncement(announcementId: announcementId))
                 },
-                onCreateAnnouncementClick: { viewModel.path.append(.createAnnouncement) },
-                onEditAnnouncementClick: { announcement in
-                    viewModel.path.append(.editAnnouncement(announcement: announcement))
-                },
                 onSeeAllAnnouncementClick: { viewModel.path.append(.allAnnouncements) }
             )
             .toolbar(viewModel.path.isEmpty ? .visible : .hidden, for: .tabBar)
@@ -25,26 +21,10 @@ struct NewsNavigation: View {
                             onAuthorClick: { user in
                                 viewModel.path.append(.authorProfile(user: user))
                             },
-                            onEditAnnouncementClick: { announcement in
-                                viewModel.path.append(.editAnnouncement(announcement: announcement))
-                            },
                             onBackClick: { viewModel.path.removeLast() }
                         )
                         .background(.appBackground)
 
-                    case let .editAnnouncement(announcement):
-                        EditAnnouncementDestination(
-                            announcement: announcement,
-                            onBackClick: { viewModel.path.removeLast() }
-                        )
-                        .background(.appBackground)
-                        
-                    case .createAnnouncement:
-                        CreateAnnouncementDestination(
-                            onBackClick: { viewModel.path.removeLast() }
-                        )
-                        .background(.appBackground)
-                        
                     case let .authorProfile(user):
                         UserDestination(user: user)
                             .background(.appBackground)
@@ -53,9 +33,6 @@ struct NewsNavigation: View {
                         AllAnnouncementsDestination(
                             onAnnouncementClick: { announcementId in
                                 viewModel.path.append(.readAnnouncement(announcementId: announcementId))
-                            },
-                            onEditAnnouncementClick: { announcement in
-                                viewModel.path.append(.editAnnouncement(announcement: announcement))
                             },
                             onAuthorClick: { user in
                                 viewModel.path.append(.authorProfile(user: user))

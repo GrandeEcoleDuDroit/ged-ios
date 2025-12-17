@@ -6,9 +6,8 @@ struct MessageNavigation: View {
     var body: some View {
         NavigationStack(path: $viewModel.path) {
             ConversationDestination(
-                onCreateConversationClick: { viewModel.path.append(.createConversation) },
                 onConversationClick: { conversation in
-                    viewModel.path.append(.chat(conversation: conversation.toConversation()))
+                    viewModel.path.append(.chat(conversation: conversation))
                 }
             )
             .background(.appBackground)
@@ -25,15 +24,9 @@ struct MessageNavigation: View {
                         )
                         .background(.appBackground)
                         
-                    case .createConversation:
-                        CreateConversationDestination(
-                            onCreateConversationClick: { conversation in
-                                viewModel.path.append(.chat(conversation: conversation))
-                            }
-                        )
-                        .background(.appBackground)
-                        
-                    case let .interlocutor(user): UserDestination(user: user)
+                    case let .interlocutor(user):
+                        UserDestination(user: user)
+                            .background(.appBackground)
                 }
             }
         }

@@ -5,7 +5,8 @@ class ConversationViewModel: ViewModel {
     private let userRepository: UserRepository
     private let deleteConversationUseCase: DeleteConversationUseCase
     private let getConversationsUiUseCase: GetConversationsUiUseCase
-    
+    private let getLocalConversationUseCase: GetLocalConversationUseCase
+
     @Published private(set) var uiState: ConversationUiState = ConversationUiState()
     @Published private(set) var event: SingleUiEvent? = nil
     private var cancellables: Set<AnyCancellable> = []
@@ -14,11 +15,14 @@ class ConversationViewModel: ViewModel {
     init(
         userRepository: UserRepository,
         getConversationsUiUseCase: GetConversationsUiUseCase,
-        deleteConversationUseCase: DeleteConversationUseCase
+        deleteConversationUseCase: DeleteConversationUseCase,
+        getLocalConversationUseCase: GetLocalConversationUseCase
     ) {
         self.userRepository = userRepository
         self.getConversationsUiUseCase = getConversationsUiUseCase
         self.deleteConversationUseCase = deleteConversationUseCase
+        self.getLocalConversationUseCase = getLocalConversationUseCase
+        
         listenConversations()
     }
     
@@ -33,6 +37,15 @@ class ConversationViewModel: ViewModel {
                 guard let self else { return }
                 self.event = ErrorEvent(message: self.mapErrorMessage(error))
             }
+        }
+    }
+    
+    func getConversation(interlocutor: User) async -> Conversation? {
+        do {
+            return try await getLocalConversationUseCase.execute(interlocutor: interlocutor)
+        } catch {
+            event = ErrorEvent(message: mapNetworkErrorMessage(error))
+            return nil
         }
     }
     

@@ -24,8 +24,6 @@ class NewsNavigationViewModel: ViewModel {
 
 enum NewsRoute: Route {
     case readAnnouncement(announcementId: String)
-    case editAnnouncement(announcement: Announcement)
-    case createAnnouncement
     case authorProfile(user: User)
     case allAnnouncements
 }

@@ -15,17 +15,18 @@ class MessageMainThreadInjector: MainThreadInjector {
             ConversationViewModel(
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
                 getConversationsUiUseCase: MessageInjector.shared.resolve(GetConversationsUiUseCase.self),
-                deleteConversationUseCase: MessageInjector.shared.resolve(DeleteConversationUseCase.self)
+                deleteConversationUseCase: MessageInjector.shared.resolve(DeleteConversationUseCase.self),
+                getLocalConversationUseCase: MessageInjector.shared.resolve(GetLocalConversationUseCase.self)
             )
-        }.inObjectScope(.weak)
+        }
         
         container.register(CreateConversationViewModel.self) { resolver in
             CreateConversationViewModel(
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
                 blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self),
-                getLocalConversationUseCase: MessageInjector.shared.resolve(GetConversationUseCase.self)
+                getUsersUseCase: CommonInjector.shared.resolve(GetUsersUseCase.self)
             )
-        }.inObjectScope(.weak)
+        }
         
         container.register(ChatViewModel.self) { (resolver, conversation: Any) in
             let conversation = conversation as! Conversation

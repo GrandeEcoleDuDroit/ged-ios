@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct MissionBottomSheet: View {
+struct MissionSheet: View {
     let mission: Mission
     let isAdminUser: Bool
     let onEditClick: () -> Void
@@ -26,30 +26,30 @@ struct MissionBottomSheet: View {
     
     var body: some View {
         switch mission.state {
-            case .error: ErrorMissionBottomSheet(
+            case .error: ErrorMissionSheet(
                 onDeleteClick: onDeleteClick,
                 onResendClick: onResendClick
             )
             
             default:
                 if isAdminUser {
-                    EditableMissionBottomSheet(
+                    EditableMissionSheet(
                         onEditClick: onEditClick,
                         onDeleteClick: onDeleteClick
                     )
                 } else {
-                    NonEditableMissionBottomSheet(onReportClick: onReportClick)
+                    NonEditableMissionSheet(onReportClick: onReportClick)
                 }
         }
     }
 }
 
-private struct ErrorMissionBottomSheet: View {
+private struct ErrorMissionSheet: View {
     let onDeleteClick: () -> Void
     let onResendClick: () -> Void
     
     var body: some View {
-        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 2)) {
+        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
             ClickableTextItem(
                 icon: Image(systemName: "paperplane"),
                 text: Text(stringResource(.resend)),
@@ -66,12 +66,12 @@ private struct ErrorMissionBottomSheet: View {
     }
 }
 
-private struct EditableMissionBottomSheet: View {
+private struct EditableMissionSheet: View {
     let onEditClick: () -> Void
     let onDeleteClick: () -> Void
     
     var body: some View {
-        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 2)) {
+        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
             ClickableTextItem(
                 icon: Image(systemName: "pencil"),
                 text: Text(stringResource(.edit)),
@@ -88,11 +88,11 @@ private struct EditableMissionBottomSheet: View {
     }
 }
 
-private struct NonEditableMissionBottomSheet: View {
+private struct NonEditableMissionSheet: View {
     let onReportClick: () -> Void
     
     var body: some View {
-        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
+        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
             ClickableTextItem(
                 icon: Image(systemName: "exclamationmark.bubble"),
                 text: Text(stringResource(.report)),

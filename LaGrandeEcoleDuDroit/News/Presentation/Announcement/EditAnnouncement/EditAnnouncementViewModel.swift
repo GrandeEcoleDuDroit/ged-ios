@@ -16,6 +16,7 @@ class EditAnnouncementViewModel: ViewModel {
         self.announcementRepository = announcementRepository
         self.announcement = announcement
         self.networkMonitor = networkMonitor
+        
         initUiState()
     }
     
@@ -26,12 +27,12 @@ class EditAnnouncementViewModel: ViewModel {
     
     func onTitleChange(_ title: String) {
         uiState.title = title
-        uiState.enableUpdate = validateInput()
+        uiState.updateEnabled = validateInput()
     }
     
     func onContentChange(_ content: String) {
         uiState.content = content
-        uiState.enableUpdate = validateInput()
+        uiState.updateEnabled = validateInput()
     }
     
     func updateAnnouncement() {
@@ -78,6 +79,6 @@ class EditAnnouncementViewModel: ViewModel {
         var title: String = ""
         var content: String = ""
         fileprivate(set) var loading: Bool = false
-        fileprivate(set) var enableUpdate: Bool = false
-    }
+        fileprivate(set) var updateEnabled: Bool = false
+    }    
 }
