@@ -110,7 +110,7 @@ private struct EditMissionView: View {
     let onSaveMissionClick: (Data?) -> Void
     
     @State private var imageData: Data?
-    @State private var missionBottomSheetType: MissionBottomSheetType?
+    @State private var activeSheet: EditMissionViewSheet?
     
     var body: some View {
         MissionForm(
@@ -139,10 +139,10 @@ private struct EditMissionView: View {
             onSchoolLevelChange: onSchoolLevelChange,
             onMaxParticipantsChange: onMaxParticipantsChange,
             onDurationChange: onDurationChange,
-            onShowManagerListClick: { missionBottomSheetType = .selectManager },
+            onShowManagerListClick: { activeSheet = .selectManager },
             onRemoveManagerClick: onRemoveManagerClick,
-            onAddTaskClick: { missionBottomSheetType = .addTask },
-            onEditTaskClick: { missionBottomSheetType = .editTask(missionTask: $0) },
+            onAddTaskClick: { activeSheet = .addTask },
+            onEditTaskClick: { activeSheet = .editTask($0) },
             onRemoveTaskClick: onRemoveTaskClick
         )
         .loading(loading)
@@ -162,42 +162,56 @@ private struct EditMissionView: View {
                 .disabled(!editEnabled)
             }
         }
-        .sheet(item: $missionBottomSheetType) { type in
-            switch type {
+        .sheet(item: $activeSheet) {
+            switch $0 {
                 case .addTask:
-                    AddMissionTaskBottomSheet(
+                    AddMissionTaskSheet(
                         onAddTaskClick: {
-                            missionBottomSheetType = nil
+                            activeSheet = nil
                             onAddTaskClick($0)
                         },
-                        onCancelClick: { missionBottomSheetType = nil }
+                        onCancelClick: { activeSheet = nil }
                     )
                     .presentationDetents([.medium])
                     
                 case let .editTask(missionTask):
-                    EditMissionTaskBottomSheet(
+                    EditMissionTaskSheet(
                         missionTask: missionTask,
                         onEditTaskClick: {
-                            missionBottomSheetType = nil
+                            activeSheet = nil
                             onEditTaskClick($0)
                         },
-                        onCancelClick: { missionBottomSheetType = nil }
+                        onCancelClick: { activeSheet = nil }
                     )
                     .presentationDetents([.medium])
                     
                 case .selectManager:
-                    SelectManagerBottomSheet(
+                    SelectManagerSheet(
                         users: users,
                         selectedManagers: managers.toSet(),
                         userQuery: userQuery,
                         onUserQueryChange: onUserQueryChange,
                         onSaveManagersClick: {
-                            missionBottomSheetType = nil
+                            activeSheet = nil
                             onSaveManagersClick($0)
                         },
-                        onCancelClick: { missionBottomSheetType = nil }
+                        onCancelClick: { activeSheet = nil }
                     )
             }
+        }
+    }
+}
+
+enum EditMissionViewSheet: Identifiable {
+    case addTask
+    case editTask(MissionTask)
+    case selectManager
+
+    var id: Int {
+        switch self {
+            case .addTask: 0
+            case .editTask: 1
+            case .selectManager: 2
         }
     }
 }

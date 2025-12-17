@@ -19,12 +19,12 @@ struct Dimens {
     static let toolbarHorizontalPadding: CGFloat = 16
     static let toolbarItemSpacing: CGFloat = 16
     
-    private static let defaultBottomSheetFraction: CGFloat = 0.12
-    private static let additionalBottomSheetItemFraction: CGFloat = 0.06
-    static func bottomSheetFraction(itemCount: Int) -> CGFloat {
-        defaultBottomSheetFraction + CGFloat(additionalBottomSheetItemFraction * CGFloat(itemCount - 1))
+    private static let defaultSheetFraction: CGFloat = 0.12
+    private static let additionalSheetItemFraction: CGFloat = 0.06
+    static func sheetFraction(itemCount: Int) -> CGFloat {
+        defaultSheetFraction + CGFloat(additionalSheetItemFraction * CGFloat(itemCount - 1))
     }
-    static func reportBottomSheetFraction(itemCount: Int) -> CGFloat {
-        defaultBottomSheetFraction + CGFloat(additionalBottomSheetItemFraction * CGFloat(itemCount))
+    static func reportSheetFraction(itemCount: Int) -> CGFloat {
+        defaultSheetFraction + CGFloat(additionalSheetItemFraction * CGFloat(itemCount))
     }
 }

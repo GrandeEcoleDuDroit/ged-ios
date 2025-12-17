@@ -1,42 +1,34 @@
 import SwiftUI
 
 struct CreateAnnouncementDestination: View {
-    let onBackClick: () -> Void
+    let onCancelClick: () -> Void
     
     @StateObject private var viewModel = NewsMainThreadInjector.shared.resolve(CreateAnnouncementViewModel.self)
-    @State private var errorMessage: String = ""
-    @State private var showErrorAlert: Bool = false
     
     var body: some View {
         CreateAnnouncementView(
             title: viewModel.uiState.title,
             content: viewModel.uiState.content,
-            enableCreate: viewModel.uiState.enableCreate,
+            createEnabled: viewModel.uiState.createEnabled,
             onTitleChange: viewModel.onTitleChange,
             onContentChange: viewModel.onContentChange,
             onCreateClick: {
                 viewModel.createAnnouncement()
-                onBackClick()
-            }
+                onCancelClick()
+            },
+            onCancelClick: onCancelClick
         )
-        .onReceive(viewModel.$event) { event in
-            if let errorEvent = event as? ErrorEvent {
-                errorMessage = errorEvent.message
-                showErrorAlert = true
-            } else if let _ = event as? SuccessEvent {
-                onBackClick()
-            }
-        }
     }
 }
 
 private struct CreateAnnouncementView: View {
     let title: String
     let content: String
-    let enableCreate: Bool
+    let createEnabled: Bool
     let onTitleChange: (String) -> Void
     let onContentChange: (String) -> Void
     let onCreateClick: () -> Void
+    let onCancelClick: () -> Void
     
     @FocusState private var focusState: Field?
     
@@ -54,18 +46,22 @@ private struct CreateAnnouncementView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .cancellationAction) {
+                Button(stringResource(.cancel)) {
+                    onCancelClick()
+                }
+            }
+            
+            ToolbarItem(placement: .confirmationAction) {
                 Button(action: onCreateClick) {
-                    if !enableCreate {
+                    if createEnabled {
                         Text(stringResource(.publish))
-                            .fontWeight(.semibold)
+                            .foregroundStyle(.gedPrimary)
                     } else {
                         Text(stringResource(.publish))
-                            .foregroundColor(.gedPrimary)
-                            .fontWeight(.semibold)
                     }
                 }
-                .disabled(!enableCreate)
+                .disabled(!createEnabled)
             }
         }
         .onAppear {
@@ -73,7 +69,6 @@ private struct CreateAnnouncementView: View {
                 focusState = .title
             }
         }
-        .contentShape(Rectangle())
     }
 }
 
@@ -82,10 +77,11 @@ private struct CreateAnnouncementView: View {
         CreateAnnouncementView(
             title: "",
             content: "",
-            enableCreate: false,
+            createEnabled: false,
             onTitleChange: { _ in },
             onContentChange: { _ in },
-            onCreateClick: {}
+            onCreateClick: {},
+            onCancelClick: {}
         )
         .background(.appBackground)
     }

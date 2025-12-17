@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct CreateConversationDestination: View {
-    let onCreateConversationClick: (Conversation) -> Void
+    let onUserClick: (User) -> Void
+    let onCancelClick: () -> Void
     
     @StateObject private var viewModel = MessageMainThreadInjector.shared.resolve(CreateConversationViewModel.self)
     @State private var errorMessage: String = ""
@@ -9,77 +10,79 @@ struct CreateConversationDestination: View {
     var body: some View {
         CreateConversationView(
             users: viewModel.uiState.users,
-            loading: viewModel.uiState.loading,
-            userQuery: viewModel.uiState.query,
-            onQueryChange: viewModel.onQueryChange,
-            onUserClick: { user in
-                Task {
-                    if let conversation = await viewModel.getConversation(interlocutor: user) {
-                        onCreateConversationClick(conversation)
-                    }
-                }
-            }
+            onUserQueryChange: { [weak viewModel] query in
+                viewModel?.onUserQueryChange(query)
+            },
+            onUserClick: onUserClick,
+            onCancelClick: onCancelClick
         )
     }
 }
 
 private struct CreateConversationView: View {
-    let users: [User]
-    let loading: Bool
-    let userQuery: String
-    let onQueryChange: (String) -> Void
+    let users: [User]?
+    let onUserQueryChange: (String) -> Void
     let onUserClick: (User) -> Void
+    let onCancelClick: () -> Void
     
+    @State private var selectedUser: User?
+    @State private var query: String = ""
+
     var body: some View {
-        VStack {
-            ScrollView {
-                LazyVStack(spacing: .zero) {
-                    if loading {
-                        ProgressView()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    }
-                    else {
-                        if users.isEmpty {
-                            Text(stringResource(.userNotFound))
-                                .foregroundColor(.informationText)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical)
-                        } else {
-                            ForEach(users, id: \.id) { user in
-                                Button(action: { onUserClick(user) }) {
-                                    UserItem(user: user)
-                                        .contentShape(Rectangle())
-                                }
-                                .buttonStyle(ClickStyle())
-                            }
+        List {
+            if let users {
+                if users.isEmpty {
+                    Text(stringResource(.userNotFound))
+                        .foregroundStyle(.informationText)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                } else {
+                    ForEach(users) { user in
+                        Button(action: { onUserClick(user) }) {
+                            UserItem(user: user)
+                                .contentShape(Rectangle())
                         }
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets())
                     }
                 }
+            } else {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets())
             }
         }
+        .listStyle(.plain)
         .navigationTitle(stringResource(.newConversation))
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .searchable(
-            text: Binding(
-                get: { userQuery },
-                set: onQueryChange
-            ),
+            text: $query,
             placement: .navigationBarDrawer(displayMode: .always)
         )
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button(stringResource(.cancel)) {
+                    onCancelClick()
+                }
+            }
+        }
+        .onChange(of: query) {
+            onUserQueryChange($0)
+        }
     }
 }
 
 #Preview {
     NavigationStack {
         CreateConversationView(
-            users: usersFixture,
-            loading: false,
-            userQuery: "",
-            onQueryChange: {_ in },
-            onUserClick: {_ in }
+            users: [],
+            onUserQueryChange: {_ in },
+            onUserClick: {_ in },
+            onCancelClick: {}
         )
-        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

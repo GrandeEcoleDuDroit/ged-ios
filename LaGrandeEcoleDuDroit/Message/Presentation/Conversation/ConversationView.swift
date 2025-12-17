@@ -1,8 +1,7 @@
 import SwiftUI
 
 struct ConversationDestination: View {
-    let onCreateConversationClick: () -> Void
-    let onConversationClick: (ConversationUi) -> Void
+    let onConversationClick: (Conversation) -> Void
     
     @StateObject private var viewModel = MessageMainThreadInjector.shared.resolve(ConversationViewModel.self)
     @State private var showErrorAlert: Bool = false
@@ -11,9 +10,17 @@ struct ConversationDestination: View {
     var body: some View {
         ConversationView(
             conversationsUi: viewModel.uiState.conversations,
-            onCreateConversationClick: onCreateConversationClick,
             onConversationClick: onConversationClick,
-            onDeleteConversationClick: viewModel.deleteConversation
+            onDeleteConversationClick: viewModel.deleteConversation,
+            onCreateConversationClick: { interlocutor in
+                Task { @MainActor in
+                    if let conversation = await viewModel.getConversation(interlocutor: interlocutor) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            onConversationClick(conversation)
+                        }
+                    }
+                }
+            }
         )
         .onReceive(viewModel.$event) { event in
             if let errorEvent = event as? ErrorEvent {
@@ -35,54 +42,32 @@ struct ConversationDestination: View {
 
 private struct ConversationView: View {
     let conversationsUi: [ConversationUi]?
-    let onCreateConversationClick: () -> Void
-    let onConversationClick: (ConversationUi) -> Void
+    let onConversationClick: (Conversation) -> Void
     let onDeleteConversationClick: (Conversation) -> Void
+    let onCreateConversationClick: (User) -> Void
     
     @State private var showDeleteAlert: Bool = false
-    @State private var sheetConversationUi: ConversationUi?
-    @State private var alertConversationUi: ConversationUi?
-    @State private var selectedConversationUi: ConversationUi?
-    
+    @State private var alertConversation: Conversation?
+    @State private var activeSheet: ConversationViewSheet?
+
     var body: some View {
         List {
             if let conversationsUi {
                 if conversationsUi.isEmpty {
-                    VStack {
-                        Text(stringResource(.noConversation))
-                            .foregroundStyle(.informationText)
-                        
-                        Button(
-                            stringResource(.newConversation),
-                            action: onCreateConversationClick
-                        )
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.gedPrimary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
+                    EmptyConversationView(
+                        onNewConversationClick: {
+                            activeSheet = .createConversation
+                        }
+                    )
                 } else {
-                    ForEach(conversationsUi) { conversationUi in
-                        ConversationItem(conversationUi: conversationUi)
-                            .contentShape(.rect)
-                            .simultaneousGesture(
-                                LongPressGesture()
-                                    .onEnded { _ in
-                                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                        sheetConversationUi = conversationUi
-                                    }
-                            )
-                            .listRowTap(
-                                action: { onConversationClick(conversationUi) },
-                                selectedItem: $selectedConversationUi,
-                                value: conversationUi
-                            )
-                            .listRowBackground(selectedConversationUi == conversationUi ? Color.click : Color.clear)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets())
-                    }
+                    ConversationListContent(
+                        conversationsUi: conversationsUi,
+                        onConversationClick: onConversationClick,
+                        onLongConversationClick: {
+                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                            activeSheet = .conversation($0)
+                        }
+                    )
                 }
             } else {
                 ProgressView()
@@ -95,10 +80,11 @@ private struct ConversationView: View {
         .listStyle(.plain)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .navigationTitle(stringResource(.messages))
+        .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(
-                    action: onCreateConversationClick,
+                    action: { activeSheet = .createConversation },
                     label: { Image(systemName: "plus") }
                 )
             }
@@ -106,35 +92,113 @@ private struct ConversationView: View {
         .alert(
             stringResource(.deleteConversationAlertTitle),
             isPresented: $showDeleteAlert,
-            presenting: alertConversationUi,
-            actions: { conversationUi in
+            presenting: alertConversation,
+            actions: { conversation in
                 Button(stringResource(.cancel), role: .cancel) {
                     showDeleteAlert = false
-                    alertConversationUi = nil
+                    alertConversation = nil
                 }
                 
                 Button(stringResource(.delete), role: .destructive) {
                     showDeleteAlert = false
-                    alertConversationUi = nil
-                    onDeleteConversationClick(conversationUi.toConversation())
+                    alertConversation = nil
+                    onDeleteConversationClick(conversation)
                 }
             },
             message: { _ in
                 Text(stringResource(.deleteConversationAlertMessage))
             }
         )
-        .sheet(item: $sheetConversationUi) { conversationUi in
-            BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
-                ClickableTextItem(
-                    icon: Image(systemName: "trash"),
-                    text: Text(stringResource(.delete))
-                ) {
-                    sheetConversationUi = nil
-                    alertConversationUi = conversationUi
-                    showDeleteAlert = true
-                }
-                .foregroundStyle(.red)
+        .sheet(item: $activeSheet) {
+            switch $0 {
+                case let .conversation(conversation):
+                    SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
+                        ClickableTextItem(
+                            icon: Image(systemName: "trash"),
+                            text: Text(stringResource(.delete))
+                        ) {
+                            activeSheet = nil
+                            alertConversation = conversation
+                            showDeleteAlert = true
+                        }
+                        .foregroundStyle(.red)
+                    }
+                    
+                case .createConversation:
+                    NavigationStack {
+                        CreateConversationDestination(
+                            onUserClick: { user in
+                                activeSheet = nil
+                                onCreateConversationClick(user)
+                            },
+                            onCancelClick: { activeSheet = nil }
+                        )
+                        .presentationDetents([.large])
+                    }
             }
+        }
+    }
+}
+
+private struct ConversationListContent: View {
+    let conversationsUi: [ConversationUi]
+    let onConversationClick: (Conversation) -> Void
+    let onLongConversationClick: (Conversation) -> Void
+    
+    @State private var selectedConversationUi: ConversationUi?
+
+    var body: some View {
+        ForEach(conversationsUi) { conversationUi in
+            ConversationItem(conversationUi: conversationUi)
+                .contentShape(.rect)
+                .simultaneousGesture(
+                    LongPressGesture()
+                        .onEnded { _ in
+                            onLongConversationClick(conversationUi.toConversation())
+                        }
+                )
+                .listRowTap(
+                    action: { onConversationClick(conversationUi.toConversation()) },
+                    selectedItem: $selectedConversationUi,
+                    value: conversationUi
+                )
+                .listRowBackground(selectedConversationUi == conversationUi ? Color.click : Color.clear)
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets())
+        }
+    }
+}
+
+private struct EmptyConversationView: View {
+    let onNewConversationClick: () -> Void
+    
+    var body: some View {
+        VStack {
+            Text(stringResource(.noConversation))
+                .foregroundStyle(.informationText)
+            
+            Button(
+                stringResource(.newConversation),
+                action: onNewConversationClick
+            )
+            .fontWeight(.semibold)
+            .foregroundStyle(.gedPrimary)
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .listRowBackground(Color.clear)
+        .listRowInsets(EdgeInsets())
+        .listRowSeparator(.hidden)
+    }
+}
+
+private enum ConversationViewSheet: Identifiable {
+    case conversation(Conversation)
+    case createConversation
+    
+    var id: Int {
+        switch self {
+            case .conversation: 0
+            case .createConversation: 1
         }
     }
 }
@@ -143,9 +207,9 @@ private struct ConversationView: View {
     NavigationStack {
         ConversationView(
             conversationsUi: conversationsUiFixture,
-            onCreateConversationClick: {},
             onConversationClick: {_ in},
-            onDeleteConversationClick: {_ in}
+            onDeleteConversationClick: {_ in},
+            onCreateConversationClick: { _ in}
         )
         .background(.appBackground)
     }

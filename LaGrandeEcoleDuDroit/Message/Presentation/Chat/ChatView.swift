@@ -29,7 +29,7 @@ struct ChatDestination: View {
             messages: viewModel.uiState.messages,
             messageText: viewModel.uiState.messageText,
             loading: viewModel.uiState.loading,
-            userBlocked: viewModel.uiState.userBlocked,
+            blockedUser: viewModel.uiState.blockedUser,
             canLoadMoreMessages: viewModel.uiState.canLoadMoreMessages,
             onSendMessagesClick: viewModel.sendMessage,
             onMessageTextChange: viewModel.onMessageTextChange,
@@ -71,7 +71,7 @@ private struct ChatView: View {
     let messages: [Message]
     let messageText: String
     let loading: Bool
-    let userBlocked: Bool
+    let blockedUser: Bool
     let canLoadMoreMessages: Bool
     let onSendMessagesClick: () -> Void
     let onMessageTextChange: (String) -> Void
@@ -85,13 +85,11 @@ private struct ChatView: View {
     let onInterlocutorProfilePictureClick: (User) -> Void
     let onBackClick: () -> Void
     
-    @State private var showSentMessageBottomSheet: Bool = false
-    @State private var showReceivedMessageBottomSheet: Bool = false
-    @State private var showReportMessageBottomSheet: Bool = false
-    @State private var clickedMessage: Message?
-    @State private var showDeleteAnnouncementAlert: Bool = false
+    @State private var activeSheet: ChatViewSheet?
+    @State private var alertMessage: Message?
+    @State private var showDeleteMessageAlert: Bool = false
     @State private var showDeleteChatAlert: Bool = false
-    @State private var showUnblockAlert: Bool = false
+    @State private var showUnblockUserAlert: Bool = false
     
     var body: some View {
         VStack(spacing: Dimens.smallMediumPadding) {
@@ -102,33 +100,29 @@ private struct ChatView: View {
                 loadMoreMessages: loadMoreMessages,
                 onErrorMessageClick: {
                     if $0.state == .error {
-                        clickedMessage = $0
-                        showSentMessageBottomSheet = true
+                        activeSheet = .sentMessage($0)
                     }
                 },
                 onReceivedMessageLongClick: {
                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    clickedMessage = $0
-                    showReceivedMessageBottomSheet = true
+                    activeSheet = .receivedMessage($0)
                 },
                 onInterlocutorProfilePictureClick: { onInterlocutorProfilePictureClick(conversation.interlocutor) }
             )
             
             MessageBottomSection(
-                userBlocked: userBlocked,
+                blockedUser: blockedUser,
                 messageText: messageText,
                 onMessageTextChange: onMessageTextChange,
                 onSendMessagesClick: onSendMessagesClick,
                 onDeleteChatClick: { showDeleteChatAlert = true },
-                onUnblockUserClick: { showUnblockAlert = true }
+                onUnblockUserClick: { showUnblockUserAlert = true }
             )
         }
         .padding(.horizontal)
-        .contentShape(Rectangle())
         .loading(loading)
-        .navigationBarBackButtonHidden()
         .toolbar {
-            ToolbarItem(placement: .navigation) {
+            ToolbarItem(placement: .topBarLeading) {
                 HStack(spacing: Dimens.smallMediumPadding) {
                     ProfilePicture(
                         url: conversation.interlocutor.profilePictureUrl,
@@ -143,64 +137,63 @@ private struct ChatView: View {
                 }
             }
         }
-        .sheet(isPresented: $showSentMessageBottomSheet) {
-            SentMessageBottomSheet(
-                onResendMessage: {
-                    showSentMessageBottomSheet = false
-                    if let clickedMessage {
-                        onResendMessage(clickedMessage)
-                    }
-                },
-                onDeleteMessage: {
-                    showSentMessageBottomSheet = false
-                    showDeleteAnnouncementAlert = true
-                }
-            )
-        }
-        .sheet(isPresented: $showReceivedMessageBottomSheet) {
-            ReceivedMessageBottomSheet(
-                onReportClick: {
-                    showReceivedMessageBottomSheet = false
-                    showReportMessageBottomSheet = true
-                }
-            )
-        }
-        .sheet(isPresented: $showReportMessageBottomSheet) {
-            ReportBottomSheet(
-                items: MessageReport.Reason.allCases,
-                fraction: Dimens.reportBottomSheetFraction(itemCount: MessageReport.Reason.allCases.count),
-                onReportClick: { reason in
-                    showReportMessageBottomSheet = false
+        .sheet(item: $activeSheet) {
+            switch $0 {
+                case let .sentMessage(message):
+                    SentMessageSheet(
+                        onResendMessage: {
+                            activeSheet = nil
+                            onResendMessage(message)
+                        },
+                        onDeleteMessage: {
+                            activeSheet = nil
+                            alertMessage = message
+                            showDeleteMessageAlert = true
+                        }
+                    )
                     
-                    if let clickedMessage {
-                        onReportMessageClick(
-                            MessageReport(
-                                conversationId: conversation.id,
-                                messageId: clickedMessage.id,
-                                recipient: MessageReport.Recipient(
-                                    fullName: conversation.interlocutor.fullName,
-                                    email: conversation.interlocutor.email
-                                ),
-                                reason: reason
+                case let .receivedMessage(message):
+                    ReceivedMessageSheet(
+                        onReportClick: {
+                            activeSheet = .messageReport(message)
+                        }
+                    )
+                    
+                case let .messageReport(message):
+                    ReportSheet(
+                        items: MessageReport.Reason.allCases,
+                        fraction: Dimens.reportSheetFraction(itemCount: MessageReport.Reason.allCases.count),
+                        onReportClick: { reason in
+                            activeSheet = nil
+                            onReportMessageClick(
+                                MessageReport(
+                                    conversationId: conversation.id,
+                                    messageId: message.id,
+                                    recipient: MessageReport.Recipient(
+                                        fullName: conversation.interlocutor.fullName,
+                                        email: conversation.interlocutor.email
+                                    ),
+                                    reason: reason
+                                )
                             )
-                        )
-                    }
-                }
-            )
+                        }
+                    )
+            }
         }
         .alert(
             stringResource(.deleteMessageAlertContent),
-            isPresented: $showDeleteAnnouncementAlert,
-            actions: {
+            isPresented: $showDeleteMessageAlert,
+            presenting: alertMessage,
+            actions: { message in
                 Button(stringResource(.cancel), role: .cancel) {
-                    showDeleteAnnouncementAlert = false
+                    showDeleteMessageAlert = false
+                    alertMessage = nil
                 }
                 
                 Button(stringResource(.delete), role: .destructive) {
-                    showDeleteAnnouncementAlert = false
-                    if let clickedMessage {
-                        onDeleteErrorMessageClick(clickedMessage)
-                    }
+                    showDeleteMessageAlert = false
+                    alertMessage = nil
+                    onDeleteErrorMessageClick(message)
                 }
             }
         )
@@ -211,7 +204,7 @@ private struct ChatView: View {
                 Button(
                     stringResource(.cancel),
                     role: .cancel,
-                    action: { showUnblockAlert = false }
+                    action: { showDeleteChatAlert = false }
                 )
                 
                 Button(
@@ -227,32 +220,29 @@ private struct ChatView: View {
         )
         .alert(
             stringResource(.unblockUserAlertMessage),
-            isPresented: $showUnblockAlert,
+            isPresented: $showUnblockUserAlert,
             actions: {
                 Button(
                     stringResource(.cancel),
                     role: .cancel,
-                    action: { showUnblockAlert = false }
+                    action: { showUnblockUserAlert = false }
                 )
                 
-                Button(
-                    stringResource(.unblock),
-                    action: {
-                        showUnblockAlert = false
-                        onUnblockUserClick(conversation.interlocutor.id)
-                    }
-                )
+                Button(stringResource(.unblock)) {
+                    showUnblockUserAlert = false
+                    onUnblockUserClick(conversation.interlocutor.id)
+                }
             }
         )
     }
 }
 
-private struct SentMessageBottomSheet: View {
+private struct SentMessageSheet: View {
     let onResendMessage: () -> Void
     let onDeleteMessage: () -> Void
     
     var body: some View {
-        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 2)) {
+        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
             ClickableTextItem(
                 icon: Image(systemName: "paperplane"),
                 text: Text(stringResource(.resend)),
@@ -269,11 +259,11 @@ private struct SentMessageBottomSheet: View {
     }
 }
 
-private struct ReceivedMessageBottomSheet: View {
+private struct ReceivedMessageSheet: View {
     let onReportClick: () -> Void
     
     var body: some View {
-        BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
+        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
             ClickableTextItem(
                 icon: Image(systemName: "exclamationmark.bubble"),
                 text: Text(stringResource(.report)),
@@ -285,7 +275,7 @@ private struct ReceivedMessageBottomSheet: View {
 }
 
 private struct MessageBottomSection: View {
-    let userBlocked: Bool
+    let blockedUser: Bool
     let messageText: String
     let onMessageTextChange: (String) -> Void
     let onSendMessagesClick: () -> Void
@@ -293,7 +283,7 @@ private struct MessageBottomSection: View {
     let onUnblockUserClick: () -> Void
     
     var body: some View {
-        if userBlocked {
+        if blockedUser {
             MessageBlockedUserIndicator(
                 onDeleteChatClick: onDeleteChatClick,
                 onUnblockUserClick: onUnblockUserClick
@@ -308,6 +298,20 @@ private struct MessageBottomSection: View {
     }
 }
 
+private enum ChatViewSheet: Identifiable {
+    case sentMessage(Message)
+    case receivedMessage(Message)
+    case messageReport(Message)
+    
+    var id: Int {
+        switch self {
+            case .sentMessage: 0
+            case .receivedMessage: 1
+            case .messageReport: 2
+        }
+    }
+}
+
 #Preview {
     NavigationStack {
         ChatView(
@@ -315,7 +319,7 @@ private struct MessageBottomSection: View {
             messages: messagesFixture,
             messageText: "",
             loading: false,
-            userBlocked: false,
+            blockedUser: false,
             canLoadMoreMessages: true,
             onSendMessagesClick: {},
             onMessageTextChange: { _ in },

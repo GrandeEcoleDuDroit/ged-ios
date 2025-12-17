@@ -97,7 +97,7 @@ struct ListItem: View {
     }
 }
 
-struct BottomSheetContainer<Content: View>: View {
+struct SheetContainer<Content: View>: View {
     let fraction: CGFloat
     let content: Content
     

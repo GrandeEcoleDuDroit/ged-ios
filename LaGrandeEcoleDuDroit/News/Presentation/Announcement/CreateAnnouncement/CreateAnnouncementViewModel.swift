@@ -45,7 +45,7 @@ class CreateAnnouncementViewModel: ViewModel {
     func onTitleChange(_ title: String) {
         if title.count <= 300 {
             uiState.title = title
-            uiState.enableCreate = validateInput()
+            uiState.createEnabled = validateInput()
         } else {
             uiState.title = String(title.prefix(300))
         }
@@ -54,7 +54,7 @@ class CreateAnnouncementViewModel: ViewModel {
     func onContentChange(_ content: String) {
         if content.count <= 2000 {
             uiState.content = content
-            uiState.enableCreate = validateInput()
+            uiState.createEnabled = validateInput()
         } else {
             uiState.content = String(content.prefix(2000))
         }
@@ -67,6 +67,6 @@ class CreateAnnouncementViewModel: ViewModel {
     struct CreateAnnouncementUiState {
         var title: String = ""
         var content: String = ""
-        fileprivate(set) var enableCreate: Bool = false
+        fileprivate(set) var createEnabled: Bool = false
     }
 }

@@ -89,17 +89,11 @@ private struct MissionDetailsView: View {
     
     @State private var imageTopBar: Bool = true
     @State private var scrollPosition: CGPoint = .zero
-    
     @State private var showDeleteMissionAlert: Bool = false
     @State private var showUnregisterMissionAlert: Bool = false
     @State private var showRemoveParticipantAlert: Bool = false
-    
-    @State private var showMissionBottomSheet: Bool = false
-    @State private var showReportMissionBottomSheet: Bool = false
-    @State private var showParticipantBottomSheet: Bool = false
-    
-    @State private var clickedParticipant: User? = nil
-    @State private var clickedMission: Mission? = nil
+    @State private var alertParticipant: User?
+    @State private var activeSheet: MissionDetailsViewSheet?
 
     var body: some View {
         ZStack {
@@ -139,8 +133,7 @@ private struct MissionDetailsView: View {
                             onLongParticipantClick: { participant in
                                 if isManager {
                                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                    clickedParticipant = participant
-                                    showParticipantBottomSheet = true
+                                    activeSheet = .participant(participant)
                                 }
                             }
                         )
@@ -176,7 +169,7 @@ private struct MissionDetailsView: View {
                 title: mission.title,
                 imageTopBar: imageTopBar,
                 onBackClick: onBackClick,
-                onOptionsClick: { showMissionBottomSheet = true }
+                onOptionsClick: { activeSheet = .mission }
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
@@ -212,58 +205,58 @@ private struct MissionDetailsView: View {
                 }
             }
         }
-        .sheet(isPresented: $showMissionBottomSheet) {
-            MissionBottomSheet(
-                mission: mission,
-                isAdminUser: user.admin,
-                onEditClick: {
-                    showMissionBottomSheet = false
-                    onEditMissionClick(mission)
-                },
-                onDeleteClick: {
-                    showMissionBottomSheet = false
-                    showDeleteMissionAlert = true
-                },
-                onReportClick: {
-                    showMissionBottomSheet = false
-                    showReportMissionBottomSheet = true
-                }
-            )
-        }
-        .sheet(isPresented: $showParticipantBottomSheet) {
-            BottomSheetContainer(fraction: Dimens.bottomSheetFraction(itemCount: 1)) {
-                Button(
-                    action: {
-                        showParticipantBottomSheet = false
-                        showRemoveParticipantAlert = true
-                    }
-                ) {
-                    TextItem(
-                        text: Text(stringResource(.remove)),
-                        image: Image(systemName: "person.badge.minus")
+        .sheet(item: $activeSheet) {
+            switch $0 {
+                case .mission:
+                    MissionSheet(
+                        mission: mission,
+                        isAdminUser: user.admin,
+                        onEditClick: {
+                            activeSheet = nil
+                            onEditMissionClick(mission)
+                        },
+                        onDeleteClick: {
+                            activeSheet = nil
+                            showDeleteMissionAlert = true
+                        },
+                        onReportClick: {
+                            activeSheet = .missionReport
+                        }
                     )
-                }
-            }
-        }
-        .sheet(isPresented: $showReportMissionBottomSheet) {
-            ReportBottomSheet(
-                items: MissionReport.Reason.allCases,
-                fraction: Dimens.reportBottomSheetFraction(itemCount: MissionReport.Reason.allCases.count),
-                onReportClick: { reason in
-                    showReportMissionBottomSheet = false
                     
-                    onReportMissionClick(
-                        MissionReport(
-                            missionId: mission.id,
-                            reporter: MissionReport.Reporter(
-                                fullName: user.fullName,
-                                email: user.email
-                            ),
-                            reason: reason
+                case let .participant(user):
+                    SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
+                        ClickableTextItem(
+                            icon: Image(systemName: "person.badge.minus"),
+                            text: Text(stringResource(.remove)),
+                            onClick: {
+                                activeSheet = nil
+                                alertParticipant = user
+                                showRemoveParticipantAlert = true
+                            }
                         )
+                    }
+                    
+                case .missionReport:
+                    ReportSheet(
+                        items: MissionReport.Reason.allCases,
+                        fraction: Dimens.reportSheetFraction(itemCount: MissionReport.Reason.allCases.count),
+                        onReportClick: { reason in
+                            activeSheet = nil
+                            
+                            onReportMissionClick(
+                                MissionReport(
+                                    missionId: mission.id,
+                                    reporter: MissionReport.Reporter(
+                                        fullName: user.fullName,
+                                        email: user.email
+                                    ),
+                                    reason: reason
+                                )
+                            )
+                        }
                     )
-                }
-            )
+            }
         }
         .alert(
             stringResource(.deleteMissionAlertMessage),
@@ -292,18 +285,18 @@ private struct MissionDetailsView: View {
             }
         }
         .alert(
-            stringResource(.removeParticipantAlertMessage),
+            stringResource(.removeParticipantAlertMessage, alertParticipant?.fullName ?? ""),
             isPresented: $showRemoveParticipantAlert,
-            presenting: clickedParticipant
+            presenting: alertParticipant
         ) { participant in
             Button(stringResource(.cancel), role: .cancel) {
                 showRemoveParticipantAlert = false
             }
             
             Button(stringResource(.remove), role: .destructive) {
+                alertParticipant = nil
                 showRemoveParticipantAlert = false
                 onRemoveParticipantsClick(participant.id)
-                clickedParticipant = nil
             }
         }
     }
@@ -353,6 +346,20 @@ private struct ScrollOffsetPreferenceKey: PreferenceKey {
     static var defaultValue: CGPoint = .zero
 
     static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {}
+}
+
+private enum MissionDetailsViewSheet: Identifiable {
+    case mission
+    case participant(User)
+    case missionReport
+    
+    var id: Int {
+        switch self {
+            case .mission: 0
+            case .participant: 1
+            case .missionReport: 2
+        }
+    }
 }
 
 #Preview {

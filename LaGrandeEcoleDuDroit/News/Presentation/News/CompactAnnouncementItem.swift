@@ -77,6 +77,7 @@ private struct DefaultItem: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             
             OptionsButton(action: onOptionsClick)
+                .buttonStyle(.borderless)
         }
     }
 }
