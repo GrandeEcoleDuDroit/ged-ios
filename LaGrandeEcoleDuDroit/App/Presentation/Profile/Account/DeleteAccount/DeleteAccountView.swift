@@ -39,59 +39,54 @@ private struct DeleteAccountView: View {
     @State private var showPassword: Bool = false
     
     var body: some View {
-        VStack(alignment: .leading) {
+        Form {
             Text(stringResource(.deleteAccountText))
-                .padding(.horizontal, Dimens.mediumLargePadding)
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets())
             
-            Form {
-                Section(
-                    content: {
-                        HStack {
-                            if showPassword {
-                                TextField(
-                                    stringResource(.password),
-                                    text: $password
-                                )
-                                .textContentType(.password)
-                            } else {
-                                SecureField(
-                                    stringResource(.password),
-                                    text: $password
-                                )
-                                .textContentType(.password)
-                            }
-                            
-                            Image(systemName: showPassword ? "eye" : "eye.slash")
-                                .foregroundStyle(.onSurfaceVariant)
-                                .onTapGesture {
-                                    showPassword.toggle()
-                                }
-                        }
-                    },
-                    header: { Text(stringResource(.enterPassword)) },
-                    footer: {
-                        if let errorMessage {
-                            Text(errorMessage)
-                                .foregroundStyle(.error)
+            Section(
+                content: {
+                    HStack {
+                        if showPassword {
+                            TextField(
+                                stringResource(.password),
+                                text: $password
+                            )
+                            .textContentType(.password)
                         } else {
-                            EmptyView()
+                            SecureField(
+                                stringResource(.password),
+                                text: $password
+                            )
+                            .textContentType(.password)
                         }
+                        
+                        Image(systemName: showPassword ? "eye" : "eye.slash")
+                            .foregroundStyle(Color(UIColor.systemGray))
+                            .onTapGesture {
+                                showPassword.toggle()
+                            }
                     }
-                )
-                
-                Button(
-                    stringResource(.deleteAccount),
-                    action: onDeleteAccountClick
-                )
-                .foregroundStyle(.red)
-                .frame(maxWidth: .infinity, alignment: .center)
-            }
-            .scrollContentBackground(.hidden)
-            .scrollDisabled(true)
+                },
+                header: { Text(stringResource(.enterPassword)) },
+                footer: {
+                    if let errorMessage {
+                        Text(errorMessage)
+                            .foregroundStyle(.error)
+                    }
+                }
+            )
+            
+            Button(
+                stringResource(.deleteAccount),
+                action: onDeleteAccountClick
+            )
+            .foregroundStyle(.red)
+            .frame(maxWidth: .infinity, alignment: .center)
         }
+        .scrollContentBackground(.hidden)
         .navigationTitle(stringResource(.deleteAccount))
         .navigationBarTitleDisplayMode(.inline)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color.profileSectionBackground)
         .loading(loading)
     }
@@ -105,5 +100,6 @@ private struct DeleteAccountView: View {
             errorMessage: nil,
             onDeleteAccountClick: {}
         )
+        .background(.profileSectionBackground)
     }
 }

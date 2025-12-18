@@ -110,7 +110,7 @@
 "user_not_exist_error" = "User doesn't exist.";
 "email_not_verified_error" = "Please validate your email address before to continue.";
 "email_already_associated_error" = "This email address is already used.";
-"user_not_white_listed_error" = "The registration is currently limited to authorized users.";
+"user_not_white_listed_error" = "Registration is currently limited to authorized users.";
 
 // News
 "news" = "News";

@@ -65,7 +65,7 @@
 "internal_server_error" = "Une erreur interne du serveur est survenue.";
 "unknown_network_error" = "Une erreur réseau est survenue.";
 "unknown_error" = "Une erreur inconnue est survenue.";
-"timeout_error" = "Le serveur a mis trop de temps à répondre. Veuillez réessayer.";
+"time_out_error" = "Le serveur a mis trop de temps à répondre. Veuillez réessayer.";
 "server_connection_error" = "Impossible de se connecter au serveur.";
 "empty_inputs_error" = "Veuillez remplir tous les champs.";
 "cannot_connect_to_host_error" = "Impossible de se connecter au serveur.";
@@ -87,7 +87,7 @@
 "register" = "S'inscrire";
 "registration" = "Inscription";
 "not_register_yet" = "Pas encore inscrit ?";
-"select_school_level" = "Sélectionnez votre niveau d'étude";
+"select_school_level" = "Sélectionnez votre niveau scolaire";
 "level" = "Niveau";
 "enter_names" = "Saisissez votre nom";
 "enter_email_password" = "Saisissez votre adresse mail et votre mot de passe";

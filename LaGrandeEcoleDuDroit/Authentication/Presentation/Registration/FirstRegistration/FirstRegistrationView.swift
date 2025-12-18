@@ -55,6 +55,7 @@ private struct FirstRegistrationView: View {
                 .padding(.horizontal)
             }
             .scrollIndicators(.hidden)
+            .scrollDismissesKeyboard(.interactively)
             
             Spacer()
             
@@ -62,6 +63,7 @@ private struct FirstRegistrationView: View {
                 Text(stringResource(.next))
                     .foregroundStyle(.gedPrimary)
             }
+            .fontWeight(.semibold)
             .frame(maxWidth: .infinity, alignment: .trailing)
             .padding()
         }

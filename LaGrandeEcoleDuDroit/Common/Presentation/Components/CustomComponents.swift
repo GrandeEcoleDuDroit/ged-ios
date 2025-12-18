@@ -127,55 +127,6 @@ struct CheckBox: View {
     }
 }
 
-struct SearchBar: UIViewRepresentable {
-    let query: String
-    let onQueryChange: (String) -> Void
-
-    func makeUIView(context: Context) -> UISearchBar {
-        let searchBar = UISearchBar()
-        searchBar.backgroundImage = UIImage()
-        searchBar.placeholder = stringResource(.search)
-        searchBar.delegate = context.coordinator
-        return searchBar
-    }
-
-    func updateUIView(_ uiView: UISearchBar, context: Context) {}
-
-    func makeCoordinator() -> Coordinator {
-        return Coordinator(text: Binding(get: { query }, set: onQueryChange))
-    }
-
-    class Coordinator: NSObject, UISearchBarDelegate {
-        @Binding var text: String
-
-        init(text: Binding<String>) {
-            self._text = text
-        }
-
-        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-            text = searchText
-        }
-
-        func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-            searchBar.setShowsCancelButton(true, animated: true)
-        }
-
-        func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-            searchBar.setShowsCancelButton(false, animated: true)
-            searchBar.resignFirstResponder()
-        }
-
-        func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-            searchBar.endEditing(true)
-            searchBar.text = ""
-        }
-
-        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-            searchBar.endEditing(true)
-        }
-    }
-}
-
 #Preview {
     VStack(alignment: .leading, spacing: 20) {
         TextItem(
@@ -201,11 +152,6 @@ struct SearchBar: UIViewRepresentable {
                 checked: true
             )
         }
-        
-        SearchBar(
-            query: "",
-            onQueryChange: { _ in }
-        )
     }
     .frame(maxWidth: .infinity)
 }
