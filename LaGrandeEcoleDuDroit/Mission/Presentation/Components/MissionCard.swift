@@ -142,19 +142,18 @@ private struct CardSubtitle: View {
                 text: MissionUtilsPresentation.formatDate(startDate: mission.startDate, endDate: mission.endDate),
                 spacing: Dimens.smallPadding
             )
-            .foregroundStyle(.informationText)
+            .foregroundStyle(Color.gray)
             .font(.bodyMedium)
                         
             TextIcon(
                 icon: Image(systemName: "person.2"),
-                text: stringResource(
-                    .participantNumber,
-                    mission.participants.count,
-                    mission.maxParticipants
+                text: MissionUtilsPresentation.formatParticipantNumber(
+                    participantsCount: mission.participants.count,
+                    maxParticipants: mission.maxParticipants
                 ),
                 spacing: Dimens.smallPadding
             )
-            .foregroundStyle(.informationText)
+            .foregroundStyle(Color.gray)
             .font(.bodyMedium)
         }
     }

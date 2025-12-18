@@ -141,7 +141,7 @@
 "tasks" = "Tâches";
 "new_mission" = "Nouvelle mission";
 "edit_mission" = "Editer mission";
-"participant_number" = "%d/%d";
+"participant_number" = "%d participant sur %d";
 "no_mission" = "No mission";
 "add_image" = "Ajouter image";
 "mission_title_field" = "Titre";
@@ -156,7 +156,6 @@
 "edit_task" = "Editer tâche";
 "enter_task" = "Entrer tâche";
 "full" = "Complet";
-"remaining_spots" = "%@ places restantes";
 "no_participant" = "Aucun participant";
 "register_mission_button_text" = "S'inscrire";
 "registered_mission_button_text" = "Inscrit";
