@@ -159,6 +159,7 @@
 "mission_duration_field" = "Duration (optional)";
 "add_manager" = "Add manager";
 "add_task" = "Add task";
+"edit_task" = "Edit task";
 "enter_task" = "Enter task";
 "full" = "Full";
 "remaining_spots" = "%@ remaining spots";
@@ -170,6 +171,7 @@
 "unregister_mission_alert_message" = "Unregister from this mission?";
 "remove_participant_alert_message" = "Do you want remove %@ from this mission ?";
 "edit_mission_school_level_supporting_text" = "Participants with unmatched school levels will be removed.";
+"select_managers" = "Select managers";
 
-"max_participants_inferior_than_particpant_count_error_message" = "Maximum participants cannot be less than the current participant count (%d).";
+"max_participants_lower_than_current_error_message" = "Maximum number of participants cannot be lower than the current count (%d).";
 "max_participants_invalid_number_error_message" = "Please enter a valid number.";

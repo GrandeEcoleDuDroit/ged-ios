@@ -29,9 +29,9 @@ extension View {
     }
     
     func listRowTap<Value: Equatable>(
-        action: @escaping () -> Void,
+        value: Value,
         selectedItem: Binding<Value?>,
-        value: Value
+        action: @escaping () -> Void
     ) -> some View {
         self.onTapGesture {
             selectedItem.wrappedValue = value

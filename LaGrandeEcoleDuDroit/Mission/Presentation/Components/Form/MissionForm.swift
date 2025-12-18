@@ -1,18 +1,31 @@
 import SwiftUI
 
 struct MissionForm: View {
-    let value: MissionFormValue
     @Binding var imageData: Data?
+    @Binding var title: String
+    @Binding var description: String
+    let startDate: Date
+    let endDate: Date
+    let allSchoolLevels: [SchoolLevel]
+    let schoolLevels: [SchoolLevel]
+    @Binding var maxParticipants: String
+    @Binding var duration: String
+    let managers: [User]
+    let missionTasks: [MissionTask]
+    let missionState: Mission.MissionState
+    var schoolLevelSupportingText: String? = nil
+    var maxParticipantsError: String? = nil
+    
     let onImageChange: () -> Void
     let onImageRemove: () -> Void
-    let onTitleChange: (String) -> String
-    let onDescriptionChange: (String) -> String
+    let onTitleChange: (String) -> Void
+    let onDescriptionChange: (String) -> Void
     let onStartDateChange: (Date) -> Void
     let onEndDateChange: (Date) -> Void
     let onSchoolLevelChange: (SchoolLevel) -> Void
-    let onMaxParticipantsChange: (String) -> String
-    let onDurationChange: (String) -> String
-    let onShowManagerListClick: () -> Void
+    let onMaxParticipantsChange: (String) -> Void
+    let onDurationChange: (String) -> Void
+    let onAddManagerClick: () -> Void
     let onRemoveManagerClick: (User) -> Void
     let onAddTaskClick: () -> Void
     let onEditTaskClick: (MissionTask) -> Void
@@ -23,14 +36,14 @@ struct MissionForm: View {
             VStack(spacing: Dimens.mediumPadding) {
                 MissionFormImageSection(
                     imageData: $imageData,
-                    missionState: value.missionState,
+                    missionState: missionState,
                     onImageChange: onImageChange,
                     onImageRemove: onImageRemove
                 )
                 
                 MissionFormTitleDescriptionSection(
-                    title: value.title,
-                    description: value.description,
+                    title: $title,
+                    description: $description,
                     onTitleChange: onTitleChange,
                     onDescriptionChange: onDescriptionChange
                 )
@@ -40,36 +53,36 @@ struct MissionForm: View {
                     .padding(.horizontal)
                 
                 MissionFormInformationSection(
-                    startDate: value.startDate,
-                    endDate: value.endDate,
-                    schoolLevels: value.schoolLevels,
-                    allSchoolLevels: value.allSchoolLevels,
-                    maxParticipants: value.maxParticipants,
-                    duration: value.duration,
-                    schoolLevelSupportingText: value.schoolLevelSupportingText,
-                    maxParticipantsError: value.maxParticipantsError,
+                    startDate: startDate,
+                    endDate: endDate,
+                    schoolLevels: schoolLevels,
+                    allSchoolLevels: allSchoolLevels,
+                    maxParticipants: $maxParticipants,
+                    duration: $duration,
+                    schoolLevelSupportingText: schoolLevelSupportingText,
+                    maxParticipantsError: maxParticipantsError,
                     onStartDateChange: onStartDateChange,
                     onEndDateChange: onEndDateChange,
                     onSchoolLevelChange: onSchoolLevelChange,
                     onMaxParticipantsChange: onMaxParticipantsChange,
                     onDurationChange: onDurationChange
-               )
-               .padding(.horizontal)
+                )
+                .padding(.horizontal)
                 
                 HorizontalDivider()
                     .padding(.horizontal)
                 
                 MissionFormManagerSection(
-                    managers: value.managers,
-                    onShowManagerListClick: onShowManagerListClick,
+                    managers: managers,
+                    onAddManagerClick: onAddManagerClick,
                     onRemoveManagerClick: onRemoveManagerClick
                 )
                 
                 HorizontalDivider()
                     .padding(.horizontal)
-
+                
                 MissionFormTaskSection(
-                    missionTasks: value.missionTasks,
+                    missionTasks: missionTasks,
                     onTaskClick: onEditTaskClick,
                     onAddTaskClick: onAddTaskClick,
                     onRemoveTaskClick: onRemoveTaskClick
@@ -77,81 +90,36 @@ struct MissionForm: View {
             }
         }
         .scrollIndicators(.hidden)
-    }
-}
-
-struct MissionFormValue {
-    let title: String
-    let description: String
-    let startDate: Date
-    let endDate: Date
-    let allSchoolLevels: [SchoolLevel]
-    let schoolLevels: [SchoolLevel]
-    let duration: String
-    let maxParticipants: String
-    let managers: [User]
-    let missionTasks: [MissionTask]
-    let missionState: Mission.MissionState
-    let schoolLevelSupportingText: String?
-    let maxParticipantsError: String?
-        
-    init(
-        title: String,
-        description: String,
-        startDate: Date,
-        endDate: Date,
-        allSchoolLevels: [SchoolLevel],
-        schoolLevels: [SchoolLevel],
-        duration: String,
-        maxParticipants: String,
-        managers: [User],
-        missionTasks: [MissionTask],
-        missionState: Mission.MissionState,
-        schoolLevelSupportingText: String? = nil,
-        maxParticipantsError: String? = nil
-    ) {
-        self.title = title
-        self.description = description
-        self.startDate = startDate
-        self.endDate = endDate
-        self.allSchoolLevels = allSchoolLevels
-        self.schoolLevels = schoolLevels
-        self.duration = duration
-        self.maxParticipants = maxParticipants
-        self.managers = managers
-        self.missionTasks = missionTasks
-        self.missionState = missionState
-        self.schoolLevelSupportingText = schoolLevelSupportingText
-        self.maxParticipantsError = maxParticipantsError
+        .scrollDismissesKeyboard(.interactively)
     }
 }
 
 #Preview {
     MissionForm(
-        value: MissionFormValue(
-            title: "",
-            description: "",
-            startDate: Date(),
-            endDate: Date(),
-            allSchoolLevels: SchoolLevel.allCases,
-            schoolLevels: [],
-            duration: "",
-            maxParticipants: "",
-            managers: [userFixture],
-            missionTasks: missionTasksFixture,
-            missionState: .draft
-        ),
         imageData: .constant(nil),
+        title: .constant(""),
+        description: .constant(""),
+        startDate: Date(),
+        endDate: Date(),
+        allSchoolLevels: SchoolLevel.allCases,
+        schoolLevels: [],
+        maxParticipants: .constant(""),
+        duration: .constant(""),
+        managers: [userFixture],
+        missionTasks: missionTasksFixture,
+        missionState: .draft,
+        schoolLevelSupportingText: nil,
+        maxParticipantsError: nil,
         onImageChange: {},
         onImageRemove: {},
-        onTitleChange: { _ in "" },
-        onDescriptionChange: { _ in "" },
+        onTitleChange: { _ in },
+        onDescriptionChange: { _ in },
         onStartDateChange: { _ in },
         onEndDateChange: { _ in },
         onSchoolLevelChange: { _ in },
-        onMaxParticipantsChange: { _ in "" },
-        onDurationChange: { _ in "" },
-        onShowManagerListClick: {},
+        onMaxParticipantsChange: { _ in },
+        onDurationChange: { _ in },
+        onAddManagerClick: {},
         onRemoveManagerClick: { _ in },
         onAddTaskClick: {},
         onEditTaskClick: { _ in },

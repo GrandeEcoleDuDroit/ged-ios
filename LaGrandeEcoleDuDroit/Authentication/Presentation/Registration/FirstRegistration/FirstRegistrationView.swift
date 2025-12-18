@@ -7,8 +7,8 @@ struct FirstRegistrationDestination: View {
     
     var body: some View {
         FirstRegistrationView(
-            firstName: viewModel.uiState.firstName,
-            lastName: viewModel.uiState.lastName,
+            firstName: $viewModel.uiState.firstName,
+            lastName: $viewModel.uiState.lastName,
             firstNameError: viewModel.uiState.firstNameError,
             lastNameError: viewModel.uiState.lastNameError,
             onFirstNameChange: viewModel.onFirstNameChanged,
@@ -23,71 +23,63 @@ struct FirstRegistrationDestination: View {
 }
 
 private struct FirstRegistrationView: View {
-    let firstName: String
-    let lastName: String
+    @Binding var firstName: String
+    @Binding var lastName: String
     let firstNameError: String?
     let lastNameError: String?
-    let onFirstNameChange: (String) -> String
-    let onLastNameChange: (String) -> String
+    let onFirstNameChange: (String) -> Void
+    let onLastNameChange: (String) -> Void
     let onNextClick: (String, String) -> Void
     
-    @FocusState private var focusState: Field?
-    
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
-            Text(stringResource(.enterNames))
-                .font(.title3)
+        VStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+                    Text(stringResource(.enterNames))
+                        .font(.title3)
+                    
+                    OutlinedTextField(
+                        stringResource(.firstName),
+                        text: $firstName,
+                        errorMessage: firstNameError
+                    )
+                    .onChange(of: firstName, perform: onFirstNameChange)
+                    
+                    OutlinedTextField(
+                        stringResource(.lastName),
+                        text: $lastName,
+                        errorMessage: lastNameError
+                    )
+                    .onChange(of: lastName, perform: onLastNameChange)
+                }
+                .padding(.horizontal)
+            }
+            .scrollIndicators(.hidden)
             
-            OutlinedTextField(
-                initialText: firstName,
-                onTextChange: onFirstNameChange,
-                placeHolder: stringResource(.firstName),
-                errorMessage: firstNameError
-            )
-            .setTextFieldFocusState(focusState: _focusState, field: .firstName)
+            Spacer()
             
-            OutlinedTextField(
-                initialText: lastName,
-                onTextChange: onLastNameChange,
-                placeHolder: stringResource(.lastName),
-                errorMessage: lastNameError
-            )
-            .setTextFieldFocusState(focusState: _focusState, field: .lastName)
+            Button(action: { onNextClick(firstName, lastName)}) {
+                Text(stringResource(.next))
+                    .foregroundStyle(.gedPrimary)
+            }
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .padding()
-        .onTapGesture { focusState = nil }
-        .contentShape(Rectangle())
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text(stringResource(.registration))
-            }
-            
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(
-                    action: {
-                        onNextClick(firstName, lastName)
-                    }, label: {
-                        Text(stringResource(.next))
-                            .foregroundStyle(.gedPrimary)
-                            .fontWeight(.semibold)
-                    }
-                )
-            }
-        }
+        .navigationTitle(stringResource(.registration))
     }
 }
 
 #Preview {
     NavigationStack {
         FirstRegistrationView(
-            firstName: "",
-            lastName: "",
+            firstName: .constant(""),
+            lastName: .constant(""),
             firstNameError: nil,
             lastNameError: nil,
-            onFirstNameChange: {_ in "" },
-            onLastNameChange: {_ in "" },
+            onFirstNameChange: {_ in },
+            onLastNameChange: {_ in },
             onNextClick: {_, _ in}
         )
         .background(.appBackground)

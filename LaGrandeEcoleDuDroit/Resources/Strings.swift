@@ -153,6 +153,7 @@ enum Strings: String {
     case missionDurationField = "mission_duration_field"
     case addManager = "add_manager"
     case addTask = "add_task"
+    case editTask = "edit_task"
     case enterTask = "enter_task"
     case full = "full"
     case remainingSpots = "remaining_spots"
@@ -164,7 +165,8 @@ enum Strings: String {
     case unregisterMissionAlertMessage = "unregister_mission_alert_message"
     case removeParticipantAlertMessage = "remove_participant_alert_message"
     case editMissionSchoolLevelSupportingText = "edit_mission_school_level_supporting_text"
+    case selectManagers = "select_managers"
     
-    case maxParticipantsInferiorThanParticpantCountErrorMessage = "max_participants_inferior_than_particpant_count_error_message"
+    case maxParticipantsLowerThanCurrentErrorMessage = "max_participants_lower_than_current_error_message"
     case maxParticipantsInvalidNumberErrorMessage = "max_participants_invalid_number_error_message"
 }

@@ -2,18 +2,14 @@ import SwiftUI
 import Combine
 
 class FirstRegistrationViewModel: ViewModel {
-    @Published private(set) var uiState = FirstRegistrationUiState()
+    @Published var uiState = FirstRegistrationUiState()
     
-    func onFirstNameChanged(_ firstName: String) -> String {
-        let firstName = validName(firstName)
-        uiState.firstName = firstName
-        return firstName
+    func onFirstNameChanged(_ firstName: String) {
+        uiState.firstName = validName(firstName)
     }
     
-    func onLastNameChanged(_ lastName: String) -> String {
-        let lastName = validName(lastName)
-        uiState.lastName = lastName
-        return lastName
+    func onLastNameChanged(_ lastName: String) {
+        uiState.lastName = validName(lastName)
     }
     
     func validateInputs() -> Bool {
@@ -31,8 +27,8 @@ class FirstRegistrationViewModel: ViewModel {
     }
     
     struct FirstRegistrationUiState {
-        fileprivate(set) var firstName: String = ""
-        fileprivate(set) var lastName: String = ""
+        var firstName: String = ""
+        var lastName: String = ""
         fileprivate(set) var firstNameError: String? = nil
         fileprivate(set) var lastNameError: String? = nil
     }

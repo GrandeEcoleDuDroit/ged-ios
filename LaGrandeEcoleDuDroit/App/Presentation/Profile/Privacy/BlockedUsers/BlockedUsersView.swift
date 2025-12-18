@@ -39,7 +39,7 @@ private struct BlockedUsersView: View {
     let onUnblockClick: (String) -> Void
     
     @State private var showUnblockAlert: Bool = false
-    @State private var clickedUser: User?
+    @State private var alertUser: User?
     @State private var selectedUser: User?
 
     var body: some View {
@@ -57,8 +57,8 @@ private struct BlockedUsersView: View {
                         user: user,
                         trailingContent: {
                             Button(stringResource(.unblock)) {
+                                alertUser = user
                                 showUnblockAlert = true
-                                clickedUser = user
                             }
                             .buttonStyle(.borderless)
                             .foregroundStyle(.gedPrimary)
@@ -67,10 +67,11 @@ private struct BlockedUsersView: View {
                     )
                     .contentShape(.rect)
                     .listRowTap(
-                        action: { onAccountClick(user) },
-                        selectedItem: $selectedUser,
-                        value: user
-                    )
+                        value: user,
+                        selectedItem: $selectedUser
+                    ) {
+                        onAccountClick(user)
+                    }
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .listRowBackground(selectedUser == user ? Color.click : Color.clear)
@@ -84,7 +85,8 @@ private struct BlockedUsersView: View {
         .alert(
             stringResource(.unblockUserAlertMessage),
             isPresented: $showUnblockAlert,
-            actions: {
+            presenting: alertUser,
+            actions: { user in
                 Button(
                     stringResource(.cancel),
                     role: .cancel,
@@ -92,9 +94,7 @@ private struct BlockedUsersView: View {
                 )
                 
                 Button(stringResource(.unblock)) {
-                    if let clickedUser {
-                        onUnblockClick(clickedUser.id)
-                    }
+                    onUnblockClick(user.id)
                     showUnblockAlert = false
                 }
             }

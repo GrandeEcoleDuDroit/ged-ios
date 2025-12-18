@@ -5,7 +5,7 @@ class ThirdRegistrationViewModel: ViewModel {
     private let registerUseCase: RegisterUseCase
     private let networkMonitor: NetworkMonitor
     
-    @Published private(set) var uiState: ThirdRegistrationUiState = ThirdRegistrationUiState()
+    @Published var uiState = ThirdRegistrationUiState()
     @Published private(set) var event: SingleUiEvent? = nil
     private let minPasswordLength: Int = 8
     
@@ -21,14 +21,15 @@ class ThirdRegistrationViewModel: ViewModel {
         uiState.errorMessage = nil
         let email = uiState.email.trim()
         let password = uiState.password
-        guard (validateInputs(email: email, password: password)) else {
+        
+        guard (validateInputs(email: email, password: password)) else { return }
+        guard uiState.legalNoticeChecked else {
+            uiState.errorMessage = stringResource(.legalNoticeError)
             return
         }
-        guard uiState.legalNoticeChecked else {
-            return uiState.errorMessage = stringResource(.legalNoticeError)
-        }
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
+            event = ErrorEvent(message: stringResource(.noInternetConectionError))
+            return
         }
         
         uiState.loading = true
@@ -47,19 +48,6 @@ class ThirdRegistrationViewModel: ViewModel {
                 self?.uiState.errorMessage = self?.mapErrorMessage(error)
             }
         }
-    }
-    
-    func onLegalNoticeCheckedChange(checked: Bool) {
-        uiState.legalNoticeChecked = checked
-    }
-    
-    func onEmailChange(_ email: String) -> String {
-        uiState.email = email
-        return email
-    }
-    
-    func onPasswordChange(_ password: String) {
-        uiState.password = password
     }
     
     private func validateInputs(email: String, password: String) -> Bool {
@@ -88,13 +76,9 @@ class ThirdRegistrationViewModel: ViewModel {
         }
     }
     
-    private func mapErrorMessage(_ e: Error) -> String {
-        mapNetworkErrorMessage(e) {
-            if let authError = e as? AuthenticationError {
-                 switch authError {
-                     default: stringResource(.unknownError)
-                 }
-            } else if let networkError = e as? NetworkError {
+    private func mapErrorMessage(_ error: Error) -> String {
+        mapNetworkErrorMessage(error) {
+            if let networkError = error as? NetworkError {
                 switch networkError {
                     case .forbidden: stringResource(.userNotWhiteListedError)
                     case .dupplicateData: stringResource(.emailAlreadyAssociatedError)
@@ -107,9 +91,9 @@ class ThirdRegistrationViewModel: ViewModel {
     }
     
     struct ThirdRegistrationUiState {
-        fileprivate(set) var email: String = ""
-        fileprivate(set) var password: String = ""
-        fileprivate(set) var legalNoticeChecked: Bool = false
+        var email: String = ""
+        var password: String = ""
+        var legalNoticeChecked: Bool = false
         fileprivate(set) var loading: Bool = false
         fileprivate(set) var emailError: String? = nil
         fileprivate(set) var passwordError: String? = nil

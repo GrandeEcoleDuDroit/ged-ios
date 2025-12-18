@@ -2,7 +2,6 @@ import SwiftUI
 
 struct MissionDetailsDestination: View {
     private let onBackClick: () -> Void
-    private let onEditMissionClick: (Mission) -> Void
     private let onManagerClick: (User) -> Void
     private let onParticipantClick: (User) -> Void
     
@@ -13,7 +12,6 @@ struct MissionDetailsDestination: View {
     init(
         missionId: String,
         onBackClick: @escaping () -> Void,
-        onEditMissionClick: @escaping (Mission) -> Void,
         onManagerClick: @escaping (User) -> Void,
         onParticipantClick: @escaping (User) -> Void
     ) {
@@ -21,10 +19,10 @@ struct MissionDetailsDestination: View {
             wrappedValue: MissionMainThreadInjector.shared.resolve(MissionDetailsViewModel.self, arguments: missionId)!
         )
         self.onBackClick = onBackClick
-        self.onEditMissionClick = onEditMissionClick
         self.onManagerClick = onManagerClick
         self.onParticipantClick = onParticipantClick
     }
+    
     var body: some View {
         if let currentUser = viewModel.uiState.currentUser,
            let mission = viewModel.uiState.mission
@@ -41,7 +39,6 @@ struct MissionDetailsDestination: View {
                 onManagerClick: onManagerClick,
                 onParticipantClick: onParticipantClick,
                 onRemoveParticipantsClick: viewModel.removeParticipant,
-                onEditMissionClick: onEditMissionClick,
                 onDeleteMissionClick: viewModel.deleteMission,
                 onReportMissionClick: viewModel.reportMission
             )
@@ -71,6 +68,7 @@ struct MissionDetailsDestination: View {
     }
 }
 
+
 private struct MissionDetailsView: View {
     let user: User
     let mission: Mission
@@ -83,7 +81,6 @@ private struct MissionDetailsView: View {
     let onManagerClick: (User) -> Void
     let onParticipantClick: (User) -> Void
     let onRemoveParticipantsClick: (String) -> Void
-    let onEditMissionClick: (Mission) -> Void
     let onDeleteMissionClick: () -> Void
     let onReportMissionClick: (MissionReport) -> Void
     
@@ -212,8 +209,7 @@ private struct MissionDetailsView: View {
                         mission: mission,
                         isAdminUser: user.admin,
                         onEditClick: {
-                            activeSheet = nil
-                            onEditMissionClick(mission)
+                            activeSheet = .editMission
                         },
                         onDeleteClick: {
                             activeSheet = nil
@@ -235,6 +231,7 @@ private struct MissionDetailsView: View {
                                 showRemoveParticipantAlert = true
                             }
                         )
+                        .foregroundStyle(.error)
                     }
                     
                 case .missionReport:
@@ -255,6 +252,12 @@ private struct MissionDetailsView: View {
                                 )
                             )
                         }
+                    )
+                    
+                case .editMission:
+                    EditMissionDestination(
+                        onBackClick: { activeSheet = nil },
+                        mission: mission
                     )
             }
         }
@@ -352,12 +355,14 @@ private enum MissionDetailsViewSheet: Identifiable {
     case mission
     case participant(User)
     case missionReport
+    case editMission
     
     var id: Int {
         switch self {
             case .mission: 0
             case .participant: 1
             case .missionReport: 2
+            case .editMission: 3
         }
     }
 }
@@ -376,7 +381,6 @@ private enum MissionDetailsViewSheet: Identifiable {
             onManagerClick: { _ in },
             onParticipantClick: { _ in },
             onRemoveParticipantsClick: { _ in },
-            onEditMissionClick: { _ in },
             onDeleteMissionClick: {},
             onReportMissionClick: { _ in }
         )

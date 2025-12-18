@@ -1,22 +1,22 @@
 import SwiftUI
 
-struct AnnouncementInput: View {
-    let title: String
-    let content: String
+struct AnnouncementInputs: View {
+    @Binding var title: String
+    @Binding var content: String
     let onTitleChange: (String) -> Void
     let onContentChange: (String) -> Void
-    var focusState: FocusState<Field?>.Binding
+    var focusState: FocusState<AnnouncementFocusField?>
     
     var body: some View {
         VStack(spacing: Dimens.mediumPadding) {
             AnnouncementTitleInput(
-                title: title,
+                title: $title,
                 onTitleChange: onTitleChange,
                 focusState: focusState
             )
             
             AnnouncementContentInput(
-                content: content,
+                content: $content,
                 onContentChange: onContentChange,
                 focusState: focusState
             )
@@ -26,53 +26,50 @@ struct AnnouncementInput: View {
 }
 
 private struct AnnouncementTitleInput: View {
-    let title: String
+    @Binding var title: String
     let onTitleChange: (String) -> Void
-    var focusState: FocusState<Field?>.Binding
+    var focusState: FocusState<AnnouncementFocusField?>
 
     var body: some View {
-        TextField(
+        TransparentTextField(
             stringResource(.title),
-            text: Binding(
-                get: { title },
-                set: onTitleChange
-            ),
-            axis: .vertical
+            text: $title,
+            focusState: focusState,
+            field: .title
         )
         .font(.titleMedium)
         .fontWeight(.semibold)
-        .focused(focusState, equals: .title)
+        .onChange(of: title, perform: onTitleChange)
     }
 }
 
 private struct AnnouncementContentInput: View {
-    let content: String
+    @Binding var content: String
     let onContentChange: (String) -> Void
-    var focusState: FocusState<Field?>.Binding
+    var focusState: FocusState<AnnouncementFocusField?>
 
     var body: some View {
-        TextField(
+        TransparentTextFieldArea(
             stringResource(.content),
-            text: Binding(
-                get: { content },
-                set: onContentChange
-            ),
-            axis: .vertical
+            text: $content,
+            focusState: focusState,
+            field: .content
         )
+        .scrollDismissesKeyboard(.interactively)
         .font(.bodyMedium)
-        .focused(focusState, equals: .content)
+        .onChange(of: content, perform: onContentChange)
     }
 }
 
 #Preview {
-    @FocusState var focusState: Field?
+    @FocusState var focusState: AnnouncementFocusField?
     
-    AnnouncementInput(
-        title: "",
-        content: "",
+    AnnouncementInputs(
+        title: .constant(""),
+        content: .constant(""),
         onTitleChange: {_ in },
         onContentChange: {_ in },
-        focusState: $focusState
+        focusState: _focusState
     )
     .padding(Dimens.mediumPadding)
 }

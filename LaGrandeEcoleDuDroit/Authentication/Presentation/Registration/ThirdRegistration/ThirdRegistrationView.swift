@@ -1,23 +1,19 @@
 import SwiftUI
 
 struct ThirdRegistrationDestination: View {
-    @StateObject private var viewModel = AuthenticationMainThreadInjector.shared.resolve(ThirdRegistrationViewModel.self)
-    @State private var isLoading: Bool = false
-    @State private var showErrorAlert = false
-    @State private var errorMessage: String = ""
-    
     let firstName: String
     let lastName: String
     let schoolLevel: SchoolLevel
     
+    @StateObject private var viewModel = AuthenticationMainThreadInjector.shared.resolve(ThirdRegistrationViewModel.self)
+    @State private var showErrorAlert = false
+    @State private var errorMessage: String = ""
+    
     var body: some View {
         ThirdRegistrationView(
-            email: viewModel.uiState.email,
-            onEmailChange: viewModel.onEmailChange,
-            password: viewModel.uiState.password,
-            onPasswordChange: viewModel.onPasswordChange,
-            legalNoticeChecked: viewModel.uiState.legalNoticeChecked,
-            onLegalNoticeCheckedChange: viewModel.onLegalNoticeCheckedChange,
+            email: $viewModel.uiState.email,
+            password: $viewModel.uiState.password,
+            legalNoticeChecked: $viewModel.uiState.legalNoticeChecked,
             loading: viewModel.uiState.loading,
             emailError: viewModel.uiState.emailError,
             passwordError: viewModel.uiState.passwordError,
@@ -49,65 +45,106 @@ struct ThirdRegistrationDestination: View {
 }
 
 private struct ThirdRegistrationView: View {
-    let email: String
-    let onEmailChange: (String) -> String
-    let password: String
-    let onPasswordChange: (String) -> Void
-    let legalNoticeChecked: Bool
-    let onLegalNoticeCheckedChange: (Bool) -> Void
+    @Binding var email: String
+    @Binding var password: String
+    @Binding var legalNoticeChecked: Bool
     let loading: Bool
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
     let onRegisterClick: () -> Void
     
-    @FocusState private var focusState: Field?
-
     var body: some View {
-        VStack(spacing: Dimens.mediumPadding) {
-            ThirdRegistrationForm(
-                email: email,
-                onEmailChange: onEmailChange,
-                password: password,
-                onPasswordChange: onPasswordChange,
-                loading: loading,
-                emailError: emailError,
-                passwordError: passwordError,
-                errorMessage: errorMessage,
-                legalNoticeChecked: legalNoticeChecked,
-                onLegalNoticeCheckedChange: onLegalNoticeCheckedChange,
-                focusState: _focusState
-            )
-            
-            if loading {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        VStack {
+            ScrollView {
+                VStack(spacing: Dimens.mediumPadding) {
+                    FormContent(
+                        email: $email,
+                        password: $password,
+                        legalNoticeChecked: $legalNoticeChecked,
+                        loading: loading,
+                        emailError: emailError,
+                        passwordError: passwordError,
+                        errorMessage: errorMessage,
+                    )
+                }
+                .padding(.horizontal)
             }
+            .scrollIndicators(.hidden)
+            
+            Spacer()
+            
+            Button(action: onRegisterClick) {
+                if loading {
+                    Text(stringResource(.next))
+                } else {
+                    Text(stringResource(.next))
+                        .foregroundStyle(.gedPrimary)
+                }
+            }
+            .disabled(loading)
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
+        .loading(loading)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .navigationBarTitleDisplayMode(.inline)
-        .contentShape(Rectangle())
-        .onTapGesture { focusState = nil }
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text(stringResource(.registration))
-            }
+        .navigationTitle(stringResource(.registration))
+    }
+}
+
+private struct FormContent: View {
+    @Binding var email: String
+    @Binding var password: String
+    @Binding var legalNoticeChecked: Bool
+    let loading: Bool
+    let emailError: String?
+    let passwordError: String?
+    let errorMessage: String?
+    
+    private let legalNoticeUrl = "https://grandeecoledudroit.github.io/ged-website/legal-notice.html"
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+            Text(stringResource(.enterEmailPassword))
+                .font(.title3)
             
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(
-                    action: onRegisterClick,
-                    label: {
-                        if loading {
-                            Text(stringResource(.next))
-                                .fontWeight(.semibold)
-                        } else {
-                            Text(stringResource(.next))
-                                .fontWeight(.semibold)
-                                .foregroundStyle(.gedPrimary)
-                        }
+            OutlinedTextField(
+                stringResource(.email),
+                text: $email,
+                disabled: loading,
+                errorMessage: emailError
+            )
+            .textContentType(.emailAddress)
+            .textInputAutocapitalization(.never)
+            
+            OutlinedPasswordTextField(
+                stringResource(.password),
+                text: $password,
+                disabled: loading,
+                errorMessage: passwordError
+            )
+            .textContentType(.password)
+            
+            HStack {
+                CheckBox(checked: legalNoticeChecked)
+                    .onTapGesture {
+                        legalNoticeChecked.toggle()
                     }
-                )
-                .disabled(loading)
+                
+                Group {
+                    Text(stringResource(.agreeTermsPrivacyBeginningText))
+                    + Text(" ")
+                    + Text(.init("[\(stringResource(.termsAndPrivacy))](\(legalNoticeUrl))")).underline()
+                    + Text(".")
+                }
+                .font(.footnote)
+            }
+
+            if let errorMessage {
+                Text(errorMessage)
+                    .font(.callout)
+                    .foregroundStyle(.error)
             }
         }
     }
@@ -116,12 +153,9 @@ private struct ThirdRegistrationView: View {
 #Preview {
     NavigationStack {
         ThirdRegistrationView(
-            email: "",
-            onEmailChange: { _ in "" },
-            password: "",
-            onPasswordChange: { _ in },
-            legalNoticeChecked: false,
-            onLegalNoticeCheckedChange: { _ in },
+            email: .constant(""),
+            password: .constant(""),
+            legalNoticeChecked: .constant(false),
             loading: false,
             emailError: nil,
             passwordError: nil,
