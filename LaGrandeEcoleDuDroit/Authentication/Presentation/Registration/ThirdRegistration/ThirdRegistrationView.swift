@@ -71,6 +71,7 @@ private struct ThirdRegistrationView: View {
                 .padding(.horizontal)
             }
             .scrollIndicators(.hidden)
+            .scrollDismissesKeyboard(.interactively)
             
             Spacer()
             
@@ -82,6 +83,7 @@ private struct ThirdRegistrationView: View {
                         .foregroundStyle(.gedPrimary)
                 }
             }
+            .fontWeight(.semibold)
             .disabled(loading)
             .padding()
             .frame(maxWidth: .infinity, alignment: .trailing)
