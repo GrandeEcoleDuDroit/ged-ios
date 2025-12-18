@@ -153,6 +153,7 @@
 "mission_duration_field" = "Durée (optionnel)";
 "add_manager" = "Ajouter gérant";
 "add_task" = "Ajouter tâche";
+"edit_task" = "Editer tâche";
 "enter_task" = "Entrer tâche";
 "full" = "Complet";
 "remaining_spots" = "%@ places restantes";
@@ -164,6 +165,7 @@
 "unregister_mission_alert_message" = "Se désinscrire de cette mission ?";
 "remove_participant_alert_message" = "Voulez-vous retirer %@ de cette mission ?";
 "edit_mission_school_level_supporting_text" = "Les participants avec un niveau scolaire non correspondant seront retirés.";
+"select_managers" = "Sélectionner gérants";
 
-"max_participants_inferior_than_particpant_count_error_message" = "Le nombre maximum de participants ne peut pas être inférieur au nombre actuel (%d).";
+"max_participants_lower_than_current_error_message" = "Le nombre maximum de participants ne peut pas être inférieur au nombre actuel (%d).";
 "max_participants_number_only_error_message" = "Veuillez saisir un nombre valide.";

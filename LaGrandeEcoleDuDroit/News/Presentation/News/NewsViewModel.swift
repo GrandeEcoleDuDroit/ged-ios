@@ -86,6 +86,10 @@ class NewsViewModel: ViewModel {
         }
     }
     
+    func getAnnouncement(announcementId: String) -> Announcement? {
+        announcementRepository.currentAnnouncements.first { $0.id == announcementId }
+    }
+    
     private func listenUser() {
         userRepository.user
             .receive(on: DispatchQueue.main)

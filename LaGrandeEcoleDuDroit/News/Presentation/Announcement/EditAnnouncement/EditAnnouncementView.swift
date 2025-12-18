@@ -18,39 +18,41 @@ struct EditAnnouncementDestination: View {
     }
     
     var body: some View {
-        EditAnnouncementView(
-            title: viewModel.uiState.title,
-            content: viewModel.uiState.content,
-            loading: viewModel.uiState.loading,
-            updateEnabled: viewModel.uiState.updateEnabled,
-            onTitleChange: viewModel.onTitleChange,
-            onContentChange: viewModel.onContentChange,
-            onUpdateAnnouncementClick: viewModel.updateAnnouncement,
-            onCancelClick: onCancelClick
-        )
-        .onReceive(viewModel.$event) { event in
-            if let errorEvent = event as? ErrorEvent {
-                errorMessage = errorEvent.message
-                showErrorAlert = true
-            } else if let _ = event as? SuccessEvent {
-                onCancelClick()
-            }
-        }
-        .alert(
-            errorMessage,
-            isPresented: $showErrorAlert,
-            actions: {
-                Button(stringResource(.ok)) {
-                    showErrorAlert = false
+        NavigationStack {
+            EditAnnouncementView(
+                title: $viewModel.uiState.title,
+                content: $viewModel.uiState.content,
+                loading: viewModel.uiState.loading,
+                updateEnabled: viewModel.uiState.updateEnabled,
+                onTitleChange: viewModel.onTitleChange,
+                onContentChange: viewModel.onContentChange,
+                onUpdateAnnouncementClick: viewModel.updateAnnouncement,
+                onCancelClick: onCancelClick
+            )
+            .onReceive(viewModel.$event) { event in
+                if let errorEvent = event as? ErrorEvent {
+                    errorMessage = errorEvent.message
+                    showErrorAlert = true
+                } else if let _ = event as? SuccessEvent {
+                    onCancelClick()
                 }
             }
-        )
+            .alert(
+                errorMessage,
+                isPresented: $showErrorAlert,
+                actions: {
+                    Button(stringResource(.ok)) {
+                        showErrorAlert = false
+                    }
+                }
+            )
+        }
     }
 }
 
 private struct EditAnnouncementView: View {
-    let title: String
-    let content: String
+    @Binding var title: String
+    @Binding var content: String
     let loading: Bool
     let updateEnabled: Bool
     let onTitleChange: (String) -> Void
@@ -58,15 +60,15 @@ private struct EditAnnouncementView: View {
     let onUpdateAnnouncementClick: () -> Void
     let onCancelClick: () -> Void
     
-    @FocusState private var focusState: Field?
+    @FocusState private var focusState: AnnouncementFocusField?
 
     var body: some View {
-        AnnouncementInput(
-            title: title,
-            content: content,
+        AnnouncementInputs(
+            title: $title,
+            content: $content,
             onTitleChange: onTitleChange,
             onContentChange: onContentChange,
-            focusState: $focusState
+            focusState: _focusState
         )
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
@@ -105,8 +107,8 @@ private struct EditAnnouncementView: View {
 #Preview {
     NavigationStack {
         EditAnnouncementView( 
-            title: announcementFixture.title ?? "",
-            content: announcementFixture.content,
+            title: .constant(announcementFixture.title!),
+            content: .constant(announcementFixture.content),
             loading: false,
             updateEnabled: false,
             onTitleChange: {_ in },

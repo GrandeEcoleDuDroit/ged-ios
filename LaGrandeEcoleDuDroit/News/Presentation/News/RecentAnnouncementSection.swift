@@ -44,23 +44,21 @@ struct RecentAnnouncementSection: View {
                         )
                         .contentShape(.rect)
                         .listRowTap(
-                            action: {
-                                if announcement.state == .published {
-                                    onAnnouncementClick(announcement.id)
-                                } else {
-                                    onUncreatedAnnouncementClick(announcement)
-                                }
-                            },
-                            selectedItem: $selectedAnnouncement,
-                            value: announcement
-                        )
+                            value: announcement,
+                            selectedItem: $selectedAnnouncement
+                        ) {
+                            if announcement.state == .published {
+                                onAnnouncementClick(announcement.id)
+                            } else {
+                                onUncreatedAnnouncementClick(announcement)
+                            }
+                        }
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(selectedAnnouncement == announcement ? Color.click : Color.clear)
                     }
                 }
             }
-            .scrollIndicators(.hidden)
             .listStyle(.plain)
         }
     }

@@ -2,8 +2,6 @@ import SwiftUI
 
 struct MissionDestination: View {
     let onMissionClick: (String) -> Void
-    let onCreateMissionClick: () -> Void
-    let onEditMissionClick: (Mission) -> Void
     
     @StateObject private var viewModel = MissionMainThreadInjector.shared.resolve(MissionViewModel.self)
     @State private var errorMessage: String = ""
@@ -16,8 +14,6 @@ struct MissionDestination: View {
                 missions: viewModel.uiState.missions,
                 loading: viewModel.uiState.loading,
                 onMissionClick: onMissionClick,
-                onCreateMissionClick: onCreateMissionClick,
-                onEditMissionClick: onEditMissionClick,
                 onDeleteMissionClick: viewModel.deleteMission,
                 onReportMissionClick: viewModel.reportMission,
                 onResendMissionClick: viewModel.resendMission,
@@ -50,8 +46,6 @@ private struct MissionView: View {
     let missions: [Mission]?
     let loading: Bool
     let onMissionClick: (String) -> Void
-    let onCreateMissionClick: () -> Void
-    let onEditMissionClick: (Mission) -> Void
     let onDeleteMissionClick: (Mission) -> Void
     let onReportMissionClick: (MissionReport) -> Void
     let onResendMissionClick: (Mission) -> Void
@@ -84,16 +78,15 @@ private struct MissionView: View {
                         .clipShape(ShapeDefaults.medium)
                         .contentShape(.rect)
                         .listRowTap(
-                            action: {
-                                if case .published = mission.state {
-                                    onMissionClick(mission.id)
-                                } else {
-                                    activeSheet = .mission(mission)
-                                }
-                            },
-                            selectedItem: $selectedMission,
-                            value: mission
-                        )
+                            value: mission,
+                            selectedItem: $selectedMission
+                        ) {
+                            if case .published = mission.state {
+                                onMissionClick(mission.id)
+                            } else {
+                                activeSheet = .mission(mission)
+                            }
+                        }
                         .padding(.horizontal)
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets())
@@ -115,10 +108,10 @@ private struct MissionView: View {
         .loading(loading)
         .navigationTitle(stringResource(.mission))
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .primaryAction) {
                 if user.admin {
                     Button(
-                        action: onCreateMissionClick,
+                        action: { activeSheet = .createMission },
                         label: { Image(systemName: "plus") }
                     )
                 }
@@ -131,8 +124,7 @@ private struct MissionView: View {
                         mission: mission,
                         isAdminUser: user.admin,
                         onEditClick: {
-                            activeSheet = nil
-                            onEditMissionClick(mission)
+                            activeSheet = .editMission(mission)
                         },
                         onDeleteClick: {
                             activeSheet = nil
@@ -166,6 +158,15 @@ private struct MissionView: View {
                         )
                     }
                 )
+                    
+                case .createMission:
+                    CreateMissionDestination(onBackClick: { activeSheet = nil })
+                    
+                case let .editMission(mission):
+                    EditMissionDestination(
+                        onBackClick: { activeSheet = nil },
+                        mission: mission
+                    )
             }
         }
         .alert(
@@ -191,11 +192,15 @@ private struct MissionView: View {
 private enum MissionViewSheet: Identifiable {
     case mission(Mission)
     case missionReport(Mission)
+    case createMission
+    case editMission(Mission)
     
     var id: Int {
         switch self {
             case .mission: 0
             case .missionReport: 1
+            case .createMission: 2
+            case .editMission: 3
         }
     }
 }
@@ -207,8 +212,6 @@ private enum MissionViewSheet: Identifiable {
             missions: missionsFixture,
             loading: false,
             onMissionClick: { _ in },
-            onCreateMissionClick: {},
-            onEditMissionClick: { _ in },
             onDeleteMissionClick: { _ in },
             onReportMissionClick: { _ in },
             onResendMissionClick: { _ in},

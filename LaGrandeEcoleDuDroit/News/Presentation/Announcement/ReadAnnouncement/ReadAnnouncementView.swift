@@ -136,12 +136,10 @@ private struct ReadAnnouncementView: View {
                     )
                     
                 case .editAnnouncement:
-                    NavigationStack {
-                        EditAnnouncementDestination(
-                            announcement: announcement,
-                            onCancelClick: { activeSheet = nil }
-                        )
-                    }
+                    EditAnnouncementDestination(
+                        announcement: announcement,
+                        onCancelClick: { activeSheet = nil }
+                    )
             }
         }
         .toolbar {
