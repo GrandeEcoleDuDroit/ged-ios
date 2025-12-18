@@ -156,7 +156,6 @@ enum Strings: String {
     case editTask = "edit_task"
     case enterTask = "enter_task"
     case full = "full"
-    case remainingSpots = "remaining_spots"
     case noParticipant = "no_participant"
     case registerMissionButtonText = "register_mission_button_text"
     case registeredMissionButtonText = "registered_mission_button_text"

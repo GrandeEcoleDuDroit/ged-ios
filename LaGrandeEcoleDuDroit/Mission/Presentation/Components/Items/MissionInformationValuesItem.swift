@@ -17,18 +17,6 @@ struct MissionInformationValuesItem: View {
     }
     
     private func missionInformationValues(mission: Mission) -> [MissionInformationValue] {
-        let remainingSpotText = if mission.full {
-            stringResource(.full)
-        } else {
-            stringResource(
-                .remainingSpots,
-                MissionUtilsPresentation.formatRemainingParticipants(
-                    participantsCount: mission.participants.count,
-                    maxParticipants: mission.maxParticipants
-                )
-            )
-        }
-        
         var missionInformationValues : [MissionInformationValue] = [
             .init(
                 imageSystemName: "calendar",
@@ -40,7 +28,10 @@ struct MissionInformationValuesItem: View {
             ),
             .init(
                 imageSystemName: "person.2",
-                text: remainingSpotText
+                text: MissionUtilsPresentation.formatParticipantNumber(
+                    participantsCount: mission.participants.count,
+                    maxParticipants: mission.maxParticipants
+                )
             )
         ]
         
