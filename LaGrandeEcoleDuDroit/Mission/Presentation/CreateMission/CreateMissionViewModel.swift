@@ -7,7 +7,7 @@ class CreateMissionViewModel: ViewModel {
     private let getUsersUseCase: GetUsersUseCase
     private let generateIdUseCase: GenerateIdUseCase
     
-    @Published private(set) var uiState = CreateMissionUiState()
+    @Published var uiState = CreateMissionUiState()
     private var defaultUsers: [User] = []
     private var cancellable: AnyCancellable?
     
@@ -24,6 +24,11 @@ class CreateMissionViewModel: ViewModel {
         
         initCurrentUser()
         initUsers()
+        print("INIT CreateMissionViewModel")
+    }
+    
+    deinit {
+        print("DEINIT CreateMissionViewModel")
     }
     
     func createMission(imageData: Data?) {
@@ -48,18 +53,16 @@ class CreateMissionViewModel: ViewModel {
         }
     }
     
-    func onTitleChange(_ title: String) -> String {
+    func onTitleChange(_ title: String) -> Void {
         let truncatedTitle = title.take(MissionUtilsPresentation.maxTitleLength)
         uiState.title = truncatedTitle
         uiState.createEnabled = validateCreate(title: truncatedTitle)
-        return truncatedTitle
     }
     
-    func onDescriptionChange(_ description: String) -> String {
+    func onDescriptionChange(_ description: String) -> Void {
         let truncatedDescription = description.take(MissionUtilsPresentation.maxDescriptionLength)
         uiState.description = truncatedDescription
         uiState.createEnabled = validateCreate(description: truncatedDescription)
-        return truncatedDescription
     }
     
     func onStartDateChange(_ startDate: Date) {
@@ -88,7 +91,7 @@ class CreateMissionViewModel: ViewModel {
         uiState.schoolLevels = schoolLevels
     }
     
-    func onMaxParticipantsChange(_ maxParticipants: String) -> String {
+    func onMaxParticipantsChange(_ maxParticipants: String) -> Void {
         let value = switch maxParticipants {
             case _ where maxParticipants.isEmpty: ""
             case _ where maxParticipants.toInt32OrDefault(-1) > 0: maxParticipants
@@ -97,13 +100,10 @@ class CreateMissionViewModel: ViewModel {
         
         uiState.maxParticipants = value
         uiState.createEnabled = validateCreate(maxParticipants: value)
-        return value
     }
     
-    func onDurationChange(_ duration: String) -> String {
-        let truncatedDuration = duration.take(MissionUtilsPresentation.maxDurationLength)
-        uiState.duration = truncatedDuration
-        return truncatedDuration
+    func onDurationChange(_ duration: String) -> Void {
+        uiState.duration = duration.take(MissionUtilsPresentation.maxDurationLength)
     }
     
     func onSaveManagers(_ managers: [User]) {
@@ -199,17 +199,17 @@ class CreateMissionViewModel: ViewModel {
     }
     
     struct CreateMissionUiState {
-        fileprivate(set) var user: User?
-        fileprivate(set) var title: String = ""
-        fileprivate(set) var description: String = ""
+        var title: String = ""
+        var description: String = ""
         fileprivate(set) var startDate: Date = Date()
         fileprivate(set) var endDate: Date = Date()
         let allSchoolLevels: [SchoolLevel] = SchoolLevel.allCases
         fileprivate(set) var schoolLevels: [SchoolLevel] = []
-        fileprivate(set) var duration: String = ""
         fileprivate(set) var managers: [User] = []
-        fileprivate(set) var maxParticipants: String = ""
+        var maxParticipants: String = ""
+        var duration: String = ""
         fileprivate(set) var missionTasks: [MissionTask] = []
+        fileprivate(set) var user: User?
         fileprivate(set) var users: [User] = []
         fileprivate(set) var userQuery: String = ""
         fileprivate(set) var createEnabled: Bool = false

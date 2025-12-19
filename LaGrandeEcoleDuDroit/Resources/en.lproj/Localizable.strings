@@ -110,7 +110,7 @@
 "user_not_exist_error" = "User doesn't exist.";
 "email_not_verified_error" = "Please validate your email address before to continue.";
 "email_already_associated_error" = "This email address is already used.";
-"user_not_white_listed_error" = "The registration is currently limited to authorized users.";
+"user_not_white_listed_error" = "Registration is currently limited to authorized users.";
 
 // News
 "news" = "News";
@@ -147,7 +147,7 @@
 "tasks" = "Tasks";
 "new_mission" = "New mission";
 "edit_mission" = "Edit mission";
-"participant_number" = "%d/%d";
+"participant_number" = "%d of %d participants";
 "no_mission" = "Aucune mission";
 "add_image" = "Add image";
 "mission_title_field" = "Title";
@@ -159,9 +159,9 @@
 "mission_duration_field" = "Duration (optional)";
 "add_manager" = "Add manager";
 "add_task" = "Add task";
+"edit_task" = "Edit task";
 "enter_task" = "Enter task";
 "full" = "Full";
-"remaining_spots" = "%@ remaining spots";
 "no_participant" = "No participant";
 "register_mission_button_text" = "Register";
 "registered_mission_button_text" = "Registered";
@@ -170,6 +170,7 @@
 "unregister_mission_alert_message" = "Unregister from this mission?";
 "remove_participant_alert_message" = "Do you want remove %@ from this mission ?";
 "edit_mission_school_level_supporting_text" = "Participants with unmatched school levels will be removed.";
+"select_managers" = "Select managers";
 
-"max_participants_inferior_than_particpant_count_error_message" = "Maximum participants cannot be less than the current participant count (%d).";
+"max_participants_lower_than_current_error_message" = "Maximum number of participants cannot be lower than the current count (%d).";
 "max_participants_invalid_number_error_message" = "Please enter a valid number.";

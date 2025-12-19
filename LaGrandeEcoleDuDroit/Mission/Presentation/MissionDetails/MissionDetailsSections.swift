@@ -110,7 +110,7 @@ struct MissionDetailsTaskSection: View {
     let missionTasks: [MissionTask]
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.smallPadding) {
+        VStack(alignment: .leading, spacing: Dimens.smallMediumPadding) {
             SectionTitle(title: stringResource(.tasks))
             
             VStack(spacing: Dimens.smallPadding) {

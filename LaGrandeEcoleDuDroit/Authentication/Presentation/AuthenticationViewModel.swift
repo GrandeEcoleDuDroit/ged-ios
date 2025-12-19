@@ -6,7 +6,7 @@ class AuthenticationViewModel: ViewModel {
     private let networkMonitor: NetworkMonitor
     private var cancellables: Set<AnyCancellable> = []
 
-    @Published private(set) var uiState: AuthenticationUiState = AuthenticationUiState()
+    @Published var uiState = AuthenticationUiState()
     @Published private(set) var event: SingleUiEvent? = nil
     
     init(
@@ -19,12 +19,11 @@ class AuthenticationViewModel: ViewModel {
     
     func login() {
         let (email, password) = (uiState.email, uiState.password)
-        guard validateInputs(email: email, password: password) else {
-            return
-        }
+        guard validateInputs(email: email, password: password) else { return }
         
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
+            event = ErrorEvent(message: stringResource(.noInternetConectionError))
+            return
         }
         
         uiState.loading = true
@@ -38,15 +37,6 @@ class AuthenticationViewModel: ViewModel {
                 self?.uiState.password = ""
             }
         }
-    }
-    
-    func onEmailChange(_ email: String) -> String {
-        uiState.email = email
-        return email
-    }
-    
-    func onPasswordChange(_ password: String) {
-        uiState.password = password
     }
     
     private func validateInputs(email: String, password: String) -> Bool {
@@ -86,11 +76,11 @@ class AuthenticationViewModel: ViewModel {
     }
     
     struct AuthenticationUiState {
-        fileprivate(set) var email: String = ""
-        fileprivate(set) var password: String = ""
+        var email: String = ""
+        var password: String = ""
+        fileprivate(set) var loading: Bool = false
         fileprivate(set) var emailError: String? = nil
         fileprivate(set) var passwordError: String? = nil
         fileprivate(set) var errorMessage: String? = nil
-        fileprivate(set) var loading: Bool = false
     }
 }

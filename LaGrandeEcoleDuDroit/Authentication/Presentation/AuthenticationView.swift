@@ -9,10 +9,8 @@ struct AuthenticationDestination: View {
     
     var body: some View {
         AuthenticationView(
-            email: viewModel.uiState.email,
-            onEmailChange: viewModel.onEmailChange,
-            password: viewModel.uiState.password,
-            onPasswordChange: viewModel.onPasswordChange,
+            email: $viewModel.uiState.email,
+            password: $viewModel.uiState.password,
             loading: viewModel.uiState.loading,
             emailError: viewModel.uiState.emailError,
             passwordError: viewModel.uiState.passwordError,
@@ -39,10 +37,8 @@ struct AuthenticationDestination: View {
 }
 
 private struct AuthenticationView: View {
-    let email: String
-    let onEmailChange: (String) -> String
-    let password: String
-    let onPasswordChange: (String) -> Void
+    @Binding var email: String
+    @Binding var password: String
     let loading: Bool
     let emailError: String?
     let passwordError: String?
@@ -50,35 +46,32 @@ private struct AuthenticationView: View {
     let onLoginClick: () -> Void
     let onRegisterClick: () -> Void
     
-    @FocusState private var focusState: Field?
-        
     var body: some View {
-        VStack(spacing: Dimens.largePadding) {
-            HeaderSection()
-            
-            CredentialsInputs(
-                email: email,
-                onEmailChange: onEmailChange,
-                password: password,
-                onPasswordChange: onPasswordChange,
-                loading: loading,
-                emailError: emailError,
-                passwordError: passwordError,
-                errorMessage: errorMessage,
-                focusState: _focusState
-            )
-            .padding(.top, Dimens.mediumPadding)
-            
-            Buttons(
-                loading: loading,
-                onLoginClick: onLoginClick,
-                onRegisterClick: onRegisterClick
-            )
+        ScrollView {
+            VStack(spacing: Dimens.largePadding) {
+                HeaderSection()
+                
+                CredentialsInputs(
+                    email: $email,
+                    password: $password,
+                    loading: loading,
+                    emailError: emailError,
+                    passwordError: passwordError,
+                    errorMessage: errorMessage,
+                )
+                .padding(.top, Dimens.mediumPadding)
+                
+                Buttons(
+                    loading: loading,
+                    onLoginClick: onLoginClick,
+                    onRegisterClick: onRegisterClick
+                )
+            }
+            .padding()
         }
-        .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .contentShape(Rectangle())
-        .onTapGesture { focusState = nil }
+        .scrollDismissesKeyboard(.interactively)
+        .scrollIndicators(.hidden)
     }
 }
 
@@ -108,38 +101,31 @@ private struct HeaderSection: View {
 }
 
 private struct CredentialsInputs: View {
-    let email: String
-    let onEmailChange: (String) -> String
-    let password: String
-    let onPasswordChange: (String) -> Void
+    @Binding var email: String
+    @Binding var password: String
     let loading: Bool
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
-    @FocusState var focusState: Field?
     
     var body: some View {
         VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
             OutlinedTextField(
-                initialText: email,
-                onTextChange: onEmailChange,
-                placeHolder: stringResource(.email),
+                stringResource(.email),
+                text: $email,
                 disabled: loading,
                 errorMessage: emailError
             )
-            .setTextFieldFocusState(focusState: _focusState, field: .email)
             .keyboardType(.emailAddress)
             .textContentType(.emailAddress)
             .textInputAutocapitalization(.never)
             
             OutlinedPasswordTextField(
-                label: stringResource(.password),
-                text: password,
-                onTextChange: onPasswordChange,
-                isDisable: loading,
+                stringResource(.password),
+                text: $password,
+                disabled: loading,
                 errorMessage: passwordError
             )
-            .setTextFieldFocusState(focusState: _focusState, field: .password)
             .textContentType(.password)
             
             if let errorMessage {
@@ -183,14 +169,12 @@ private struct Buttons: View {
 
 #Preview {
     AuthenticationView(
-        email: "",
-        onEmailChange: { _ in "" },
-        password: "",
-        onPasswordChange: { _ in },
+        email: .constant(""),
+        password: .constant(""),
         loading: false,
         emailError: nil,
         passwordError: nil,
-        errorMessage: "",
+        errorMessage: nil,
         onLoginClick: {},
         onRegisterClick: {}
     )

@@ -65,7 +65,7 @@
 "internal_server_error" = "Une erreur interne du serveur est survenue.";
 "unknown_network_error" = "Une erreur réseau est survenue.";
 "unknown_error" = "Une erreur inconnue est survenue.";
-"timeout_error" = "Le serveur a mis trop de temps à répondre. Veuillez réessayer.";
+"time_out_error" = "Le serveur a mis trop de temps à répondre. Veuillez réessayer.";
 "server_connection_error" = "Impossible de se connecter au serveur.";
 "empty_inputs_error" = "Veuillez remplir tous les champs.";
 "cannot_connect_to_host_error" = "Impossible de se connecter au serveur.";
@@ -87,7 +87,7 @@
 "register" = "S'inscrire";
 "registration" = "Inscription";
 "not_register_yet" = "Pas encore inscrit ?";
-"select_school_level" = "Sélectionnez votre niveau d'étude";
+"select_school_level" = "Sélectionnez votre niveau scolaire";
 "level" = "Niveau";
 "enter_names" = "Saisissez votre nom";
 "enter_email_password" = "Saisissez votre adresse mail et votre mot de passe";
@@ -141,7 +141,7 @@
 "tasks" = "Tâches";
 "new_mission" = "Nouvelle mission";
 "edit_mission" = "Editer mission";
-"participant_number" = "%d/%d";
+"participant_number" = "%d participant sur %d";
 "no_mission" = "No mission";
 "add_image" = "Ajouter image";
 "mission_title_field" = "Titre";
@@ -153,9 +153,9 @@
 "mission_duration_field" = "Durée (optionnel)";
 "add_manager" = "Ajouter gérant";
 "add_task" = "Ajouter tâche";
+"edit_task" = "Editer tâche";
 "enter_task" = "Entrer tâche";
 "full" = "Complet";
-"remaining_spots" = "%@ places restantes";
 "no_participant" = "Aucun participant";
 "register_mission_button_text" = "S'inscrire";
 "registered_mission_button_text" = "Inscrit";
@@ -164,6 +164,7 @@
 "unregister_mission_alert_message" = "Se désinscrire de cette mission ?";
 "remove_participant_alert_message" = "Voulez-vous retirer %@ de cette mission ?";
 "edit_mission_school_level_supporting_text" = "Les participants avec un niveau scolaire non correspondant seront retirés.";
+"select_managers" = "Sélectionner gérants";
 
-"max_participants_inferior_than_particpant_count_error_message" = "Le nombre maximum de participants ne peut pas être inférieur au nombre actuel (%d).";
+"max_participants_lower_than_current_error_message" = "Le nombre maximum de participants ne peut pas être inférieur au nombre actuel (%d).";
 "max_participants_number_only_error_message" = "Veuillez saisir un nombre valide.";

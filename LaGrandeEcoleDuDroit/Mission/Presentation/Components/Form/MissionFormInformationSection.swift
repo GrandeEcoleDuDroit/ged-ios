@@ -5,16 +5,16 @@ struct MissionFormInformationSection: View {
     let endDate: Date
     let schoolLevels: [SchoolLevel]
     let allSchoolLevels: [SchoolLevel]
-    let maxParticipants: String
-    let duration: String
+    @Binding var maxParticipants: String
+    @Binding var duration: String
     let schoolLevelSupportingText: String?
     let maxParticipantsError: String?
     
     let onStartDateChange: (Date) -> Void
     let onEndDateChange: (Date) -> Void
     let onSchoolLevelChange: (SchoolLevel) -> Void
-    let onMaxParticipantsChange: (String) -> String
-    let onDurationChange: (String) -> String
+    let onMaxParticipantsChange: (String) -> Void
+    let onDurationChange: (String) -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
@@ -41,20 +41,20 @@ struct MissionFormInformationSection: View {
             )
             
             OutlinedTextField(
-                initialText: maxParticipants,
-                onTextChange: onMaxParticipantsChange,
-                placeHolder: stringResource(.missionMaxParticipantsField),
+                stringResource(.missionMaxParticipantsField),
+                text: $maxParticipants,
                 errorMessage: maxParticipantsError,
                 leadingIcon: Image(systemName: "person.2")
             )
             .keyboardType(.decimalPad)
+            .onChange(of: maxParticipants, perform: onMaxParticipantsChange)
             
             OutlinedTextField(
-                initialText: duration,
-                onTextChange: onDurationChange,
-                placeHolder: stringResource(.missionDurationField),
+                stringResource(.missionDurationField),
+                text: $duration,
                 leadingIcon: Image(systemName: "clock")
             )
+            .onChange(of: duration, perform: onDurationChange)
         }
         .frame(maxWidth: .infinity)
     }
@@ -153,15 +153,15 @@ struct OutlinedSchoolLevelPicker: View {
         endDate: Date(),
         schoolLevels: [],
         allSchoolLevels: SchoolLevel.allCases,
-        maxParticipants: "",
-        duration: "",
+        maxParticipants: .constant(""),
+        duration: .constant(""),
         schoolLevelSupportingText: nil,
         maxParticipantsError: nil,
         onStartDateChange: { _ in },
         onEndDateChange: { _ in },
         onSchoolLevelChange: { _ in },
-        onMaxParticipantsChange: { _ in "" },
-        onDurationChange: { _ in "" }
+        onMaxParticipantsChange: { _ in },
+        onDurationChange: { _ in }
     )
 }
 

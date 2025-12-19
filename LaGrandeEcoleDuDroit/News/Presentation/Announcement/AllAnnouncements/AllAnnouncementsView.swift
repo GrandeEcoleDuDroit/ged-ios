@@ -79,16 +79,15 @@ private struct AllAnnouncementsView: View {
                     )
                     .contentShape(.rect)
                     .listRowTap(
-                        action: {
-                            if announcement.state == .published {
-                                onAnnouncementClick(announcement.id)
-                            } else {
-                                activeSheet = .announcement(announcement)
-                            }
-                        },
-                        selectedItem: $selectedAnnouncement,
-                        value: announcement
-                    )
+                        value: announcement,
+                        selectedItem: $selectedAnnouncement
+                    ) {
+                        if announcement.state == .published {
+                            onAnnouncementClick(announcement.id)
+                        } else {
+                            activeSheet = .announcement(announcement)
+                        }
+                    }
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(selectedAnnouncement == announcement ? Color.click : Color.clear)
                 }
@@ -147,12 +146,10 @@ private struct AllAnnouncementsView: View {
                     )
                     
                 case let .editAnnouncement(announcement):
-                    NavigationStack {
-                        EditAnnouncementDestination(
-                            announcement: announcement,
-                            onCancelClick: { activeSheet = nil }
-                        )
-                    }
+                    EditAnnouncementDestination(
+                        announcement: announcement,
+                        onCancelClick: { activeSheet = nil }
+                    )
             }
         }
         .alert(
@@ -191,7 +188,7 @@ private enum AllAnnouncementViewSheet: Identifiable {
     NavigationStack {
         AllAnnouncementsView(
             user: userFixture,
-            announcements: announcementsFixture,
+            announcements: announcementsFixture + announcementsFixture,
             loading: false,
             onRefresh: {},
             onAuthorClick: { _ in },
