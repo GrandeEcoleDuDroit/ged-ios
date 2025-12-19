@@ -5,53 +5,93 @@ struct CreateMissionDestination: View {
     let onBackClick: () -> Void
     
     @StateObject private var viewModel = MissionMainThreadInjector.shared.resolve(CreateMissionViewModel.self)
+    @State private var path: [CreateMissionSubDestination] = []
     
     var body: some View {
-        CreateMissionView(
-            title: viewModel.uiState.title,
-            description: viewModel.uiState.description,
-            startDate: viewModel.uiState.startDate,
-            endDate: viewModel.uiState.endDate,
-            allSchoolLevels: viewModel.uiState.allSchoolLevels,
-            schoolLevels: viewModel.uiState.schoolLevels,
-            duration: viewModel.uiState.duration,
-            maxParticipants: viewModel.uiState.maxParticipants,
-            users: viewModel.uiState.users,
-            managers: viewModel.uiState.managers,
-            userQuery: viewModel.uiState.userQuery,
-            missionTasks: viewModel.uiState.missionTasks,
-            missionState: .draft,
-            createEnabled: viewModel.uiState.createEnabled,
-            onTitleChange: viewModel.onTitleChange,
-            onDescriptionChange: viewModel.onDescriptionChange,
-            onStartDateChange: viewModel.onStartDateChange,
-            onEndDateChange: viewModel.onEndDateChange,
-            onSchoolLevelChange: viewModel.onSchoolLevelChange,
-            onMaxParticipantsChange: viewModel.onMaxParticipantsChange,
-            onDurationChange: viewModel.onDurationChange,
-            onSaveManagersClick: viewModel.onSaveManagers,
-            onRemoveManagerClick: viewModel.onRemoveManager,
-            onUserQueryChange: viewModel.onUserQueryChange,
-            onAddTaskClick: viewModel.onAddMissionTask,
-            onEditTaskClick: viewModel.onEditMissionTask,
-            onRemoveTaskClick: viewModel.onRemoveMissionTask,
-            onCreateMissionClick: {
-                viewModel.createMission(imageData: $0)
-                onBackClick()
+        NavigationStack(path: $path) {
+            CreateMissionView(
+                title: $viewModel.uiState.title,
+                description: $viewModel.uiState.description,
+                startDate: viewModel.uiState.startDate,
+                endDate: viewModel.uiState.endDate,
+                allSchoolLevels: viewModel.uiState.allSchoolLevels,
+                schoolLevels: viewModel.uiState.schoolLevels,
+                maxParticipants: $viewModel.uiState.maxParticipants,
+                duration: $viewModel.uiState.duration,
+                users: viewModel.uiState.users,
+                managers: viewModel.uiState.managers,
+                userQuery: viewModel.uiState.userQuery,
+                missionTasks: viewModel.uiState.missionTasks,
+                missionState: .draft,
+                createEnabled: viewModel.uiState.createEnabled,
+                onTitleChange: viewModel.onTitleChange,
+                onDescriptionChange: viewModel.onDescriptionChange,
+                onStartDateChange: viewModel.onStartDateChange,
+                onEndDateChange: viewModel.onEndDateChange,
+                onSchoolLevelChange: viewModel.onSchoolLevelChange,
+                onMaxParticipantsChange: viewModel.onMaxParticipantsChange,
+                onDurationChange: viewModel.onDurationChange,
+                onAddManagerClick: { path.append(.selectManager) },
+                onRemoveManagerClick: viewModel.onRemoveManager,
+                onAddTaskClick: { path.append(.addMissionTask) },
+                onEditTaskClick: { path.append(.editMissionTask($0)) },
+                onRemoveTaskClick: viewModel.onRemoveMissionTask,
+                onCreateMissionClick: {
+                    viewModel.createMission(imageData: $0)
+                    onBackClick()
+                },
+                onBackClick: onBackClick
+            )
+            .navigationDestination(for: CreateMissionSubDestination.self) { destination in
+                switch destination {
+                    case .selectManager:
+                        SelectManagerView(
+                            users: viewModel.uiState.users,
+                            selectedManagers: viewModel.uiState.managers.toSet(),
+                            onUserQueryChange: viewModel.onUserQueryChange,
+                            onSaveManagersClick: {
+                                viewModel.onSaveManagers($0)
+                                path.removeLast()
+                            }
+                        )
+                        
+                    case .addMissionTask:
+                        AddMissionTaskView(
+                            onAddTaskClick: {
+                                viewModel.onAddMissionTask($0)
+                                path.removeLast()
+                            }
+                        )
+                        
+                    case let .editMissionTask(missionTask):
+                        EditMissionTaskView(
+                            missionTask: missionTask,
+                            onSaveTaskClick: {
+                                viewModel.onEditMissionTask($0)
+                                path.removeLast()
+                            }
+                        )
+                }
             }
-        )
+        }
     }
 }
 
+private enum CreateMissionSubDestination: Hashable {
+    case selectManager
+    case addMissionTask
+    case editMissionTask(MissionTask)
+}
+
 private struct CreateMissionView: View {
-    let title: String
-    let description: String
+    @Binding var title: String
+    @Binding var description: String
     let startDate: Date
     let endDate: Date
     let allSchoolLevels: [SchoolLevel]
     let schoolLevels: [SchoolLevel]
-    let duration: String
-    let maxParticipants: String
+    @Binding var maxParticipants: String
+    @Binding var duration: String
     let users: [User]
     let managers: [User]
     let userQuery: String
@@ -59,40 +99,37 @@ private struct CreateMissionView: View {
     let missionState: Mission.MissionState
     let createEnabled: Bool
     
-    let onTitleChange: (String) -> String
-    let onDescriptionChange: (String) -> String
+    let onTitleChange: (String) -> Void
+    let onDescriptionChange: (String) -> Void
     let onStartDateChange: (Date) -> Void
     let onEndDateChange: (Date) -> Void
     let onSchoolLevelChange: (SchoolLevel) -> Void
-    let onMaxParticipantsChange: (String) -> String
-    let onDurationChange: (String) -> String
-    let onSaveManagersClick: ([User]) -> Void
+    let onMaxParticipantsChange: (String) -> Void
+    let onDurationChange: (String) -> Void
+    let onAddManagerClick: () -> Void
     let onRemoveManagerClick: (User) -> Void
-    let onUserQueryChange: (String) -> Void
-    let onAddTaskClick: (String) -> Void
+    let onAddTaskClick: () -> Void
     let onEditTaskClick: (MissionTask) -> Void
     let onRemoveTaskClick: (MissionTask) -> Void
     let onCreateMissionClick: (Data?) -> Void
+    let onBackClick: () -> Void
     
     @State private var imageData: Data?
-    @State private var activeSheet: CreateMissionViewSheet?
 
     var body: some View {
         MissionForm(
-            value: MissionFormValue(
-                title: title,
-                description: description,
-                startDate: startDate,
-                endDate: endDate,
-                allSchoolLevels: allSchoolLevels,
-                schoolLevels: schoolLevels,
-                duration: duration,
-                maxParticipants: maxParticipants,
-                managers: managers,
-                missionTasks: missionTasks,
-                missionState: missionState
-            ),
             imageData: $imageData,
+            title: $title,
+            description: $description,
+            startDate: startDate,
+            endDate: endDate,
+            allSchoolLevels: allSchoolLevels,
+            schoolLevels: schoolLevels,
+            maxParticipants: $maxParticipants,
+            duration: $duration,
+            managers: managers,
+            missionTasks: missionTasks,
+            missionState: missionState,
             onImageChange: {},
             onImageRemove: {},
             onTitleChange: onTitleChange,
@@ -102,117 +139,68 @@ private struct CreateMissionView: View {
             onSchoolLevelChange: onSchoolLevelChange,
             onMaxParticipantsChange: onMaxParticipantsChange,
             onDurationChange: onDurationChange,
-            onShowManagerListClick: { activeSheet = .selectManager },
+            onAddManagerClick: onAddManagerClick,
             onRemoveManagerClick: onRemoveManagerClick,
-            onAddTaskClick: { activeSheet = .addTask },
-            onEditTaskClick: { activeSheet = .editTask($0) },
+            onAddTaskClick: onAddTaskClick,
+            onEditTaskClick: onEditTaskClick,
             onRemoveTaskClick: onRemoveTaskClick
         )
         .navigationTitle(stringResource(.newMission))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .cancellationAction) {
                 Button(
-                    action: { onCreateMissionClick(imageData) },
-                    label: {
-                        if !createEnabled {
-                            Text(stringResource(.publish))
-                        } else {
-                            Text(stringResource(.publish))
-                                .foregroundStyle(.gedPrimary)
-                        }
-                    }
+                    stringResource(.cancel),
+                    action: onBackClick
                 )
-                .fontWeight(.semibold)
+            }
+            
+            ToolbarItem(placement: .confirmationAction) {
+                Button(action: { onCreateMissionClick(imageData) }) {
+                    if createEnabled {
+                        Text(stringResource(.publish))
+                            .foregroundStyle(.gedPrimary)
+                    } else {
+                        Text(stringResource(.publish))
+                    }
+                }
                 .disabled(!createEnabled)
             }
         }
-        .sheet(item: $activeSheet) {
-            switch $0 {
-                case .addTask:
-                    AddMissionTaskSheet(
-                        onAddTaskClick: {
-                            activeSheet = nil
-                            onAddTaskClick($0)
-                        },
-                        onCancelClick: { activeSheet = nil }
-                    )
-                    .presentationDetents([.medium])
-                    
-                case let .editTask(missionTask):
-                    EditMissionTaskSheet(
-                        missionTask: missionTask,
-                        onEditTaskClick: {
-                            activeSheet = nil
-                            onEditTaskClick($0)
-                        },
-                        onCancelClick: { activeSheet = nil }
-                    )
-                    .presentationDetents([.medium])
-                    
-                case .selectManager:
-                    SelectManagerSheet(
-                        users: users,
-                        selectedManagers: managers.toSet(),
-                        userQuery: userQuery,
-                        onUserQueryChange: onUserQueryChange,
-                        onSaveManagersClick: {
-                            activeSheet = nil
-                            onSaveManagersClick($0)
-                        },
-                        onCancelClick: { activeSheet = nil }
-                    )
-            }
-        }
     }
 }
-
-enum CreateMissionViewSheet: Identifiable {
-    case addTask
-    case editTask(MissionTask)
-    case selectManager
-
-    var id: Int {
-        switch self {
-            case .addTask: 0
-            case .editTask: 1
-            case .selectManager: 2
-        }
-    }
-}
-
 
 #Preview {
     NavigationStack {
         CreateMissionView(
-            title: "",
-            description: "",
+            title: .constant(""),
+            description: .constant(""),
             startDate: Date(),
             endDate: Date(),
             allSchoolLevels: SchoolLevel.allCases,
             schoolLevels: [],
-            duration: "",
-            maxParticipants: "",
+            maxParticipants: .constant(""),
+            duration: .constant(""),
             users: usersFixture,
             managers: [userFixture],
             userQuery: "",
             missionTasks: [missionTaskFixture],
             missionState: .draft,
             createEnabled: false,
-            onTitleChange: { _ in "" },
-            onDescriptionChange: { _ in "" },
+            onTitleChange: { _ in },
+            onDescriptionChange: { _ in },
             onStartDateChange: { _ in },
             onEndDateChange: { _ in },
             onSchoolLevelChange: { _ in },
-            onMaxParticipantsChange: { _ in "" },
-            onDurationChange: { _ in "" },
-            onSaveManagersClick: { _ in },
+            onMaxParticipantsChange: { _ in },
+            onDurationChange: { _ in },
+            onAddManagerClick: {},
             onRemoveManagerClick: { _ in },
-            onUserQueryChange: { _ in },
-            onAddTaskClick: { _ in },
+            onAddTaskClick: {},
             onEditTaskClick: { _ in },
             onRemoveTaskClick: { _ in },
-            onCreateMissionClick: { _ in }
+            onCreateMissionClick: { _ in },
+            onBackClick: {}
         )
         .background(.appBackground)
     }

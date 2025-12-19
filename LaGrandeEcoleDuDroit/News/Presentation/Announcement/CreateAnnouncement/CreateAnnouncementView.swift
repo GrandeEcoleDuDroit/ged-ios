@@ -6,39 +6,41 @@ struct CreateAnnouncementDestination: View {
     @StateObject private var viewModel = NewsMainThreadInjector.shared.resolve(CreateAnnouncementViewModel.self)
     
     var body: some View {
-        CreateAnnouncementView(
-            title: viewModel.uiState.title,
-            content: viewModel.uiState.content,
-            createEnabled: viewModel.uiState.createEnabled,
-            onTitleChange: viewModel.onTitleChange,
-            onContentChange: viewModel.onContentChange,
-            onCreateClick: {
-                viewModel.createAnnouncement()
-                onCancelClick()
-            },
-            onCancelClick: onCancelClick
-        )
+        NavigationStack {
+            CreateAnnouncementView(
+                title: $viewModel.uiState.title,
+                content: $viewModel.uiState.content,
+                createEnabled: viewModel.uiState.createEnabled,
+                onTitleChange: viewModel.onTitleChange,
+                onContentChange: viewModel.onContentChange,
+                onCreateClick: {
+                    viewModel.createAnnouncement()
+                    onCancelClick()
+                },
+                onCancelClick: onCancelClick
+            )
+        }
     }
 }
 
 private struct CreateAnnouncementView: View {
-    let title: String
-    let content: String
+    @Binding var title: String
+    @Binding var content: String
     let createEnabled: Bool
     let onTitleChange: (String) -> Void
     let onContentChange: (String) -> Void
     let onCreateClick: () -> Void
     let onCancelClick: () -> Void
     
-    @FocusState private var focusState: Field?
+    @FocusState private var focusState: AnnouncementFocusField?
     
     var body: some View {
-        AnnouncementInput(
-            title: title,
-            content: content,
+        AnnouncementInputs(
+            title: $title,
+            content: $content,
             onTitleChange: onTitleChange,
             onContentChange: onContentChange,
-            focusState: $focusState
+            focusState: _focusState
         )
         .onTapGesture { focusState = nil }
         .navigationTitle(stringResource(.newAnnouncement))
@@ -75,8 +77,8 @@ private struct CreateAnnouncementView: View {
 #Preview {
     NavigationStack {
         CreateAnnouncementView(
-            title: "",
-            content: "",
+            title: .constant(""),
+            content: .constant(""),
             createEnabled: false,
             onTitleChange: { _ in },
             onContentChange: { _ in },

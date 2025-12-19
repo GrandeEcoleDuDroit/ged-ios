@@ -76,7 +76,6 @@ private struct ConversationView: View {
                     .listRowInsets(EdgeInsets())
             }
         }
-        .scrollIndicators(.hidden)
         .listStyle(.plain)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .navigationTitle(stringResource(.messages))
@@ -158,10 +157,11 @@ private struct ConversationListContent: View {
                         }
                 )
                 .listRowTap(
-                    action: { onConversationClick(conversationUi.toConversation()) },
-                    selectedItem: $selectedConversationUi,
-                    value: conversationUi
-                )
+                    value: conversationUi,
+                    selectedItem: $selectedConversationUi
+                ) {
+                    onConversationClick(conversationUi.toConversation())
+                }
                 .listRowBackground(selectedConversationUi == conversationUi ? Color.click : Color.clear)
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets())

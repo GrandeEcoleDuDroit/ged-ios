@@ -1,37 +1,37 @@
 import SwiftUI
 
 struct MissionFormTitleDescriptionSection: View {
-    let title: String
-    let description: String
-    let onTitleChange: (String) -> String
-    let onDescriptionChange: (String) -> String
+    @Binding var title: String
+    @Binding var description: String
+    let onTitleChange: (String) -> Void
+    let onDescriptionChange: (String) -> Void
     
     var body: some View {
         VStack(spacing: Dimens.mediumPadding) {
             TransparentTextField(
-                initialText: title,
-                onTextChange: onTitleChange,
-                placeHolder: stringResource(.title)
+                stringResource(.title),
+                text: $title,
             )
             .font(MissionUtilsPresentation.titleFont)
+            .onChange(of: title, perform: onTitleChange)
             
             TransparentTextField(
-                initialText: description,
-                onTextChange: onDescriptionChange,
-                placeHolder: stringResource(.missionDescriptionField),
+                stringResource(.missionDescriptionField),
+                text: $description,
             )
             .font(MissionUtilsPresentation.descriptionFont)
             .lineLimit(4...)
+            .onChange(of: description, perform: onDescriptionChange)
         }
     }
 }
 
 #Preview {
     MissionFormTitleDescriptionSection(
-        title: "",
-        description: "",
-        onTitleChange: { _ in "" },
-        onDescriptionChange: { _ in "" }
+        title: .constant(""),
+        description: .constant(""),
+        onTitleChange: { _ in },
+        onDescriptionChange: { _ in }
     )
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

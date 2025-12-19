@@ -107,7 +107,7 @@ struct LoadingButton: View {
 }
 
 struct ClickStyle: ButtonStyle {
-    var backgroundColor: Color = Color(.systemGray4)
+    var backgroundColor: Color = .click
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -187,4 +187,5 @@ struct TextButton: View {
         }
         .buttonStyle(ClickStyle())
     }
+    .padding(.horizontal)
 }

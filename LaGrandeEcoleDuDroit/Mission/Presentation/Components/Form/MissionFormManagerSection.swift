@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MissionFormManagerSection: View {
     let managers: [User]
-    let onShowManagerListClick: () -> Void
+    let onAddManagerClick: () -> Void
     let onRemoveManagerClick: (User) -> Void
     
     var body: some View {
@@ -13,9 +13,10 @@ struct MissionFormManagerSection: View {
             Spacer()
                 .frame(height: Dimens.smallPadding)
             
-            Button(action: onShowManagerListClick) {
+            Button(action: onAddManagerClick) {
                 AddManagerItem()
-            }
+                    .contentShape(.rect)
+            }.buttonStyle(ClickStyle())
             
             VStack(spacing: .zero) {
                 ForEach(managers) { manager in
@@ -56,7 +57,7 @@ private struct AddManagerItem: View {
 #Preview {
     MissionFormManagerSection(
         managers: usersFixture,
-        onShowManagerListClick: {},
+        onAddManagerClick: {},
         onRemoveManagerClick: { _ in }
     )
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)

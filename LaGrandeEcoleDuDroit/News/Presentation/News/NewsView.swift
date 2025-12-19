@@ -19,7 +19,8 @@ struct NewsDestination: View {
                 onResendAnnouncementClick: viewModel.resendAnnouncement,
                 onDeleteAnnouncementClick: viewModel.deleteAnnouncement,
                 onReportAnnouncementClick: viewModel.reportAnnouncement,
-                onSeeAllAnnouncementClick: onSeeAllAnnouncementClick
+                onSeeAllAnnouncementClick: onSeeAllAnnouncementClick,
+                getAnnouncement: viewModel.getAnnouncement
             )
             .onReceive(viewModel.$event) { event in
                 if let errorEvent = event as? ErrorEvent {
@@ -53,6 +54,7 @@ private struct NewsView: View {
     let onDeleteAnnouncementClick: (Announcement) -> Void
     let onReportAnnouncementClick: (AnnouncementReport) -> Void
     let onSeeAllAnnouncementClick: () -> Void
+    let getAnnouncement: (String) -> Announcement?
     
     @State private var showDeleteAnnouncementAlert: Bool = false
     @State private var alertAnnouncement: Announcement?
@@ -95,7 +97,7 @@ private struct NewsView: View {
                 }
             }
             
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .primaryAction) {
                 if user.admin {
                     Button(
                         action: { activeSheet = .createAnnouncement },
@@ -111,7 +113,11 @@ private struct NewsView: View {
                         announcement: announcement,
                         isEditable: user.admin && announcement.author.id == user.id,
                         onEditClick: {
-                            activeSheet = .editAnnouncement(announcement)
+                            if let fullAnnouncement = getAnnouncement(announcement.id) {
+                                activeSheet = .editAnnouncement(fullAnnouncement)
+                            } else {
+                                activeSheet = nil
+                            }
                         },
                         onResendClick: {
                             activeSheet = nil
@@ -151,19 +157,15 @@ private struct NewsView: View {
                     )
                     
                 case .createAnnouncement:
-                    NavigationStack {
-                        CreateAnnouncementDestination(
-                            onCancelClick: { activeSheet = nil }
-                        )
-                    }
+                    CreateAnnouncementDestination(
+                        onCancelClick: { activeSheet = nil }
+                    )
                     
                 case let .editAnnouncement(announcement):
-                    NavigationStack {
-                        EditAnnouncementDestination(
-                            announcement: announcement,
-                            onCancelClick: { activeSheet = nil }
-                        )
-                    }
+                    EditAnnouncementDestination(
+                        announcement: announcement,
+                        onCancelClick: { activeSheet = nil }
+                    )
             }
         }
         .alert(
@@ -213,7 +215,8 @@ private enum NewsViewSheet: Identifiable {
             onResendAnnouncementClick: {_ in },
             onDeleteAnnouncementClick: {_ in },
             onReportAnnouncementClick: {_ in },
-            onSeeAllAnnouncementClick: {}
+            onSeeAllAnnouncementClick: {},
+            getAnnouncement: { _ in nil }
        )
        .background(.appBackground)
    }

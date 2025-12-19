@@ -9,7 +9,7 @@ class EditMissionViewModel: ViewModel {
     private let generateIdUseCase: GenerateIdUseCase
     private let networkMonitor: NetworkMonitor
 
-    @Published private(set) var uiState = EditMissionUiState()
+    @Published var uiState = EditMissionUiState()
     @Published private(set) var event: SingleUiEvent?
     private var defaultUsers: [User] = []
     private let missionUpdateState = CurrentValueSubject<EditMissionViewModel.MissionUpdateState, Never>(MissionUpdateState())
@@ -33,6 +33,11 @@ class EditMissionViewModel: ViewModel {
         initUiState()
         initUsers()
         listenMissionUpdateState()
+        print("INIT EditMissionViewModel")
+    }
+    
+    deinit {
+        print("DEINIT EditMissionViewModel")
     }
     
     func updateMission(imageData: Data?) {
@@ -114,7 +119,7 @@ class EditMissionViewModel: ViewModel {
         )
     }
     
-    func onTitleChange(_ title: String) -> String {
+    func onTitleChange(_ title: String) -> Void {
         let truncatedTitle = title.take(MissionUtilsPresentation.maxTitleLength)
         uiState.title = truncatedTitle
         missionUpdateState.send(
@@ -122,11 +127,9 @@ class EditMissionViewModel: ViewModel {
                 $0.titleUpdated = validateTitleUpdate(truncatedTitle)
             }
         )
-        
-        return truncatedTitle
     }
     
-    func onDescriptionChange(_ description: String) -> String {
+    func onDescriptionChange(_ description: String) -> Void {
         let truncatedDescription = description.take(MissionUtilsPresentation.maxDescriptionLength)
         uiState.description = truncatedDescription
         missionUpdateState.send(
@@ -134,8 +137,6 @@ class EditMissionViewModel: ViewModel {
                 $0.descriptionUpdated = validateDescriptionUpdate(truncatedDescription)
             }
         )
-        
-        return truncatedDescription
     }
     
     func onStartDateChange(_ startDate: Date) {
@@ -189,7 +190,7 @@ class EditMissionViewModel: ViewModel {
         }
     }
     
-    func onMaxParticipantsChange(_ maxParticipants: String) -> String {
+    func onMaxParticipantsChange(_ maxParticipants: String) -> Void {
         let value = switch maxParticipants {
             case _ where maxParticipants.isEmpty: ""
             case _ where maxParticipants.toInt32OrDefault(-1) > 0: maxParticipants
@@ -199,14 +200,12 @@ class EditMissionViewModel: ViewModel {
         uiState.maxParticipants = value
         missionUpdateState.send(
             missionUpdateState.value.copy {
-                $0.maxParticipantsUpdated = validateMaxParticipantsUpdate(maxParticipants)
+                $0.maxParticipantsUpdated = validateMaxParticipantsUpdate(value)
             }
         )
-        
-        return value
     }
     
-    func onDurationChange(_ duration: String) -> String {
+    func onDurationChange(_ duration: String) -> Void {
         let truncatedDuration = duration.take(MissionUtilsPresentation.maxDurationLength)
         uiState.duration = truncatedDuration
         missionUpdateState.send(
@@ -214,8 +213,6 @@ class EditMissionViewModel: ViewModel {
                 $0.durationUpdated = validateDurationUpdate(truncatedDuration)
             }
         )
-        
-        return truncatedDuration
     }
     
     func onSaveManagers(_ managers: [User]) {
@@ -353,7 +350,7 @@ class EditMissionViewModel: ViewModel {
                 stringResource(.maxParticipantsInvalidNumberErrorMessage)
             
             case _ where maxParticipantsNumber < mission.participants.count:
-                stringResource(.maxParticipantsInferiorThanParticpantCountErrorMessage, mission.participants.count)
+                stringResource(.maxParticipantsLowerThanCurrentErrorMessage, mission.participants.count)
                 
             default: nil
         }
@@ -415,15 +412,15 @@ class EditMissionViewModel: ViewModel {
     }
     
     struct EditMissionUiState {
-        fileprivate(set) var title: String = ""
-        fileprivate(set) var description: String = ""
+        var title: String = ""
+        var description: String = ""
         fileprivate(set) var startDate: Date = Date()
         fileprivate(set) var endDate: Date = Date()
         let allSchoolLevels: [SchoolLevel] = SchoolLevel.allCases
         fileprivate(set) var schoolLevels: [SchoolLevel] = []
-        fileprivate(set) var duration: String = ""
         fileprivate(set) var managers: [User] = []
-        fileprivate(set) var maxParticipants: String = ""
+        var maxParticipants: String = ""
+        var duration: String = ""
         fileprivate(set) var missionTasks: [MissionTask] = []
         fileprivate(set) var users: [User] = []
         fileprivate(set) var userQuery: String = ""

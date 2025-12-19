@@ -23,8 +23,6 @@ class MissionNavigationViewModel: ViewModel {
 }
 
 enum MissionRoute: Route {
-    case createMission
-    case editMission(mission: Mission)
     case missionDetails(missionId: String)
     case userProfile(user: User)
 }

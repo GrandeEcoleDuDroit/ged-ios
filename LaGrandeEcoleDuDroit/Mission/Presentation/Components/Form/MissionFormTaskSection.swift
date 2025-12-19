@@ -16,10 +16,10 @@ struct MissionFormTaskSection: View {
             
             Button(action: onAddTaskClick) {
                 AddMissionTaskItem()
+                    .padding()
                     .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.horizontal)
-            .padding(.vertical, 14)
+                    .contentShape(.rect)
+            }.buttonStyle(ClickStyle())
             
             ForEach(missionTasks) { missionTask in
                 Button(action: { onTaskClick(missionTask) }) {
@@ -27,9 +27,10 @@ struct MissionFormTaskSection: View {
                         missionTask: missionTask,
                         onRemoveTaskClick: { onRemoveTaskClick(missionTask) }
                     )
-                    .padding(.horizontal)
-                    .padding(.vertical, 14)
+                    .padding()
+                    .contentShape(.rect)
                 }
+                .buttonStyle(ClickStyle())
             }
         }.frame(maxWidth: .infinity)
     }
