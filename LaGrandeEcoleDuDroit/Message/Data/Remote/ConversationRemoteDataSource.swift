@@ -15,7 +15,7 @@ class ConversationRemoteDataSource {
     }
     
     func createConversation(conversation: Conversation, userId: String) async throws {
-        try await mapFirebaseException(
+        try await mapFirebaseError(
             block: {
                 let data = conversation.toRemote(userId: userId).toMap()
                 try await conversationApi.createConversation(conversationId: conversation.id, data: data)
@@ -26,7 +26,7 @@ class ConversationRemoteDataSource {
     }
     
     func updateConversationDeleteTime(conversationId: String, userId: String, deleteTime: Date) async throws {
-        try await mapFirebaseException(
+        try await mapFirebaseError(
             block: {
                 let data = ["\(ConversationField.Remote.deleteTime).\(userId)": Timestamp(date: deleteTime)]
                 try await conversationApi.updateConversation(conversationId: conversationId, data: data)

@@ -5,7 +5,7 @@ protocol AuthenticationRepository {
     
     func getAuthenticationState() -> AnyPublisher<Bool, Never>
     
-    func loginWithEmailAndPassword(email: String, password: String) async throws
+    func loginWithEmailAndPassword(email: String, password: String) async throws -> String
     
     func registerWithEmailAndPassword(email: String, password: String) async throws -> String
     

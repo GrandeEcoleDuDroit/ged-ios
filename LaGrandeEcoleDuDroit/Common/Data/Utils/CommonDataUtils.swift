@@ -1,7 +1,7 @@
 import Foundation
 import FirebaseFirestore
 
-func mapFirebaseException<T>(
+func mapFirebaseError<T>(
     block: () async throws -> T,
     tag: String = "Unknown tag",
     message: String? = nil,

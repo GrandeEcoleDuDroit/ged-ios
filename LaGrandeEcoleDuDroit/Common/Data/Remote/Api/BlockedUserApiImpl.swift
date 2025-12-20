@@ -9,7 +9,7 @@ class BlockedUserApiImpl: BlockedUserApi {
     }
     
     func getBlockedUserIds(currentUserId: String) async throws -> Set<String> {
-        try await mapFirebaseException(
+        try await mapFirebaseError(
             block: {  try await blockedUserFirestoreApi.getBlockedUserIds(currentUserId: currentUserId) },
             tag: tag,
             message: "Failed to get blocked user ids from Firestore"
@@ -17,7 +17,7 @@ class BlockedUserApiImpl: BlockedUserApi {
     }
     
     func blockUser(currentUserId: String, userId: String) async throws {
-        try await mapFirebaseException(
+        try await mapFirebaseError(
             block: {  try await blockedUserFirestoreApi.blockUser(currentUserId: currentUserId, userId: userId) },
             tag: tag,
             message: "Failed to block user with Firestore"
@@ -25,7 +25,7 @@ class BlockedUserApiImpl: BlockedUserApi {
     }
     
     func unblockUser(currentUserId: String, userId: String) async throws {
-        try await mapFirebaseException(
+        try await mapFirebaseError(
             block: {  try await blockedUserFirestoreApi.unblockUser(currentUserId: currentUserId, userId: userId) },
             tag: tag,
             message: "Failed to unblock user with Firestore"

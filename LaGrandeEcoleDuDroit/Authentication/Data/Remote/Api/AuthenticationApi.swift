@@ -7,7 +7,7 @@ protocol AuthenticationApi {
     
     func listenToken() -> AnyPublisher<String?, Never>
         
-    func login(email: String, password: String) async throws
+    func login(email: String, password: String)  async throws -> String
 
     func register(email: String, password: String) async throws -> String
         

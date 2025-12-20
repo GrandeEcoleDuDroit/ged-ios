@@ -6,7 +6,7 @@ class AuthenticationApiImpl: AuthenticationApi {
     private let tag = String(describing: AuthenticationApiImpl.self)
 
     func isAuthenticated() async throws -> Bool {
-        try await mapFirebaseException(
+        try await mapFirebaseError(
             block: { try await firebaseAuth.currentUser?.getIDTokenResult(forcingRefresh: true) != nil },
             tag: tag,
             message: "Failed to check if user is authenticated",
@@ -41,9 +41,12 @@ class AuthenticationApiImpl: AuthenticationApi {
         try await firebaseAuth.currentUser?.getIDTokenResult().token
     }
     
-    func login(email: String, password: String) async throws {
-        try await mapFirebaseException(
-            block: { try await firebaseAuth.signIn(withEmail: email, password: password) },
+    func login(email: String, password: String) async throws -> String {
+        try await mapFirebaseError(
+            block: {
+                let result = try await firebaseAuth.signIn(withEmail: email, password: password)
+                return result.user.uid
+            },
             tag: tag,
             message: "Failed to login with email and password",
             handleSpecificException: mapAuthError
@@ -51,7 +54,7 @@ class AuthenticationApiImpl: AuthenticationApi {
     }
     
     func register(email: String, password: String) async throws -> String {
-        try await mapFirebaseException(
+        try await mapFirebaseError(
             block: { try await firebaseAuth.createUser(withEmail: email, password: password) },
             tag: tag,
             message: "Failed to register with email and password",
@@ -64,7 +67,7 @@ class AuthenticationApiImpl: AuthenticationApi {
     }
     
     func resetPassword(email: String) async throws {
-        try await mapFirebaseException(
+        try await mapFirebaseError(
             block: { try await firebaseAuth.sendPasswordReset(withEmail: email) },
             tag: tag,
             message: "Failed to reset password",
@@ -73,7 +76,7 @@ class AuthenticationApiImpl: AuthenticationApi {
     }
     
     func deleteAuthUser() async throws {
-        try await mapFirebaseException(
+        try await mapFirebaseError(
             block: { try await firebaseAuth.currentUser?.delete() },
             tag: tag,
             message: "Failed to delete auth user",

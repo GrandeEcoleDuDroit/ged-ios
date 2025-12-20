@@ -44,18 +44,18 @@ class ConversationRepositoryImpl: ConversationRepository {
         }
     }
     
-    func fetchRemoteConversations(userId: String) -> AnyPublisher<Conversation, Error> {
+    func fetchRemoteConversations(user: User) -> AnyPublisher<Conversation, Error> {
         conversationRemoteDataSource
-            .listenConversations(userId: userId)
+            .listenConversations(userId: user.id)
             .flatMap { remoteConversation in
                 Future<FetchedInterlocutorResult, Never> { [weak self] promise in
-                    guard let interlocutorId = remoteConversation.participants.first(where: { $0 != userId }) else {
+                    guard let interlocutorId = remoteConversation.participants.first(where: { $0 != user.id }) else {
                         return promise(.success(.empty))
                     }
                     
                     Task {
                         if let interlocutor = await self?.fetchedInterlocutorsActor.getInterlocutor(interlocutorId: interlocutorId) {
-                            let conversation = remoteConversation.toConversation(userId: userId, interlocutor: interlocutor)
+                            let conversation = remoteConversation.toConversation(userId: user.id, interlocutor: interlocutor)
                             promise(.success(.fetched(conversation)))
                         } else {
                             promise(.success(.toFetch(remoteConversation, interlocutorId)))
@@ -68,7 +68,7 @@ class ConversationRepositoryImpl: ConversationRepository {
                     case let .fetched(conversation): Just(conversation).eraseToAnyPublisher()
                         
                     case let .toFetch(remoteConversation, interlocutorId):
-                        self.userRepository.getUserPublisher(userId: interlocutorId)
+                        self.userRepository.getUserPublisher(userId: interlocutorId, currentUser: user)
                             .catch{ error in
                                 e(tag, "Failed to listen interlocutor", error)
                                 return Empty<User?, Never>()
@@ -82,7 +82,7 @@ class ConversationRepositoryImpl: ConversationRepository {
                                     )
                                 }
                                 
-                                return remoteConversation.toConversation(userId: userId, interlocutor: interlocutor)
+                                return remoteConversation.toConversation(userId: user.id, interlocutor: interlocutor)
                             }
                             .eraseToAnyPublisher()
                         
