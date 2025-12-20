@@ -20,24 +20,20 @@ class UserRepositoryImpl: UserRepository {
         initUser()
     }
     
+    func getUsers() async -> [User] {
+        (try? await userRemoteDataSource.getUsers()) ?? []
+    }
+    
+    func getUserPublisher(userId: String, currentUser: User) -> AnyPublisher<User?, Error> {
+        userRemoteDataSource.listenUser(userId: userId, currentUser: currentUser)
+    }
+    
     func getCurrentUser() -> User? {
         userLocalDataSource.getUser()
     }
-        
-    func getUser(userId: String) async throws -> User? {
-        try await userRemoteDataSource.getUser(userId: userId)
-    }
     
-    func getUserWithEmail(email: String) async throws -> User? {
-        try await userRemoteDataSource.getUserWithEmail(email: email)
-    }
-    
-    func getUserPublisher(userId: String) -> AnyPublisher<User?, Error> {
-        userRemoteDataSource.listenUser(userId: userId)
-    }
-    
-    func getUsers() async -> [User] {
-        await userRemoteDataSource.getUsers()
+    func getUser(userId: String, tester: Bool) async throws -> User? {
+        try await userRemoteDataSource.getUser(userId: userId, tester: tester)
     }
     
     func createUser(user: User) async throws {
@@ -55,8 +51,8 @@ class UserRepositoryImpl: UserRepository {
         try await userRemoteDataSource.updateUser(user: user)
     }
     
-    func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {
-        try await userRemoteDataSource.updateProfilePictureFileName(userId: userId, fileName: profilePictureFileName)
+    func updateProfilePictureFileName(user: User, profilePictureFileName: String) async throws {
+        try await userRemoteDataSource.updateProfilePictureFileName(user: user, fileName: profilePictureFileName)
         try? userLocalDataSource.updateProfilePictureFileName(fileName: profilePictureFileName)
         let user = userSubject.value?.copy {
             $0.profilePictureUrl = UserUtils.ProfilePicture.url(fileName: profilePictureFileName)
@@ -69,8 +65,8 @@ class UserRepositoryImpl: UserRepository {
         userSubject.send(nil)
     }
     
-    func deleteProfilePictureFileName(userId: String) async throws {
-        try await userRemoteDataSource.deleteProfilePictureFileName(userId: userId)
+    func deleteProfilePictureFileName(user: User) async throws {
+        try await userRemoteDataSource.deleteProfilePictureFileName(user: user)
         try? userLocalDataSource.updateProfilePictureFileName(fileName: nil)
         let user = userSubject.value?.copy {
             $0.profilePictureUrl = nil

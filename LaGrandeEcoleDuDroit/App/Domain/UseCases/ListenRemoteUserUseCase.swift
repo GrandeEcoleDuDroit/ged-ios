@@ -21,7 +21,7 @@ class ListenRemoteUserUseCase {
                 old.id == new.id
             }
             .flatMap { [weak self] user in
-                self?.userRepository.getUserPublisher(userId: user.id)
+                self?.userRepository.getUserPublisher(userId: user.id, currentUser: user)
                     .catch{ error in
                         e(tag, "Failed to listen remote user", error)
                         return Empty<User?, Never>()

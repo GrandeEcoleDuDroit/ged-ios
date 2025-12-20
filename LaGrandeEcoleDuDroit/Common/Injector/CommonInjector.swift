@@ -158,6 +158,13 @@ class CommonInjector: Injector {
             GetUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
         }
         
+        container.register(GetBlockedUsersUseCase.self) { resolver in
+            GetBlockedUsersUseCase(
+                blockedUserRepository: resolver.resolve(BlockedUserRepository.self)!,
+                userRepository: resolver.resolve(UserRepository.self)!
+            )
+        }
+        
         // Others
         container.register(NetworkMonitor.self) { _ in
             NetworkMonitorImpl()

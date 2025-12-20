@@ -8,36 +8,32 @@ class UserRemoteDataSource {
         self.userApi = userApi
     }
     
-    func listenUser(userId: String) -> AnyPublisher<User?, Error> {
-        userApi.listenUser(userId: userId).eraseToAnyPublisher()
+    func listenUser(userId: String, currentUser: User) -> AnyPublisher<User?, Error> {
+        userApi.listenUser(userId: userId, currentUser: currentUser).eraseToAnyPublisher()
     }
     
-    func getUser(userId: String) async throws -> User? {
-        try await userApi.getUser(userId: userId)
+    func getUsers() async throws -> [User] {
+        try await userApi.getUsers()
     }
     
-    func getUserWithEmail(email: String) async throws -> User? {
-        try await userApi.getUserWithEmail(email: email)
-    }
-    
-    func getUsers() async -> [User] {
-        (try? await userApi.getUsers()) ?? []
+    func getUser(userId: String, tester: Bool) async throws -> User? {
+        try await userApi.getUser(userId: userId, tester: tester)
     }
     
     func createUser(user: User) async throws {
         try await userApi.createUser(user: user)
     }
     
-    func updateProfilePictureFileName(userId: String, fileName: String) async throws {
-        try await userApi.updateProfilePictureFileName(userId: userId, fileName: fileName)
+    func updateProfilePictureFileName(user: User, fileName: String) async throws {
+        try await userApi.updateProfilePictureFileName(user: user, fileName: fileName)
     }
     
     func updateUser(user: User) async throws {
         try await userApi.updateUser(user: user)
     }
     
-    func deleteProfilePictureFileName(userId: String) async throws {
-        try await userApi.deleteProfilePictureFileName(userId: userId)
+    func deleteProfilePictureFileName(user: User) async throws {
+        try await userApi.deleteProfilePictureFileName(user: user)
     }
     
     func reportUser(report: UserReport) async throws {

@@ -8,19 +8,17 @@ class MockUserRepository: UserRepository {
     
     var currentUser: User? { nil }
     
-    func getCurrentUser() -> User? { nil }
-        
-    func getUser(userId: String) async -> User? { nil }
+    func getUsers() async -> [User] { [] }
     
-    func getUserWithEmail(email: String) async -> User? { nil }
-    
-    func getUserPublisher(userId: String) -> AnyPublisher<User?, Error> {
+    func getUserPublisher(userId: String, currentUser: User) -> AnyPublisher<User?, Error> {
         Empty().eraseToAnyPublisher()
     }
     
-    func getUsers() async -> [User] { [] }
+    func getCurrentUser() -> User? { nil }
     
-    func getFilteredUsers(filter: String) async -> [User] { [] }
+    func getUser(userId: String, tester: Bool) async -> User? { nil }
+    
+    func getUsers(currentUser: User) async -> [User] { [] }
     
     func storeUser(_ user: User) {}
     
@@ -28,11 +26,11 @@ class MockUserRepository: UserRepository {
     
     func updateRemoteUser(user: User) async throws {}
     
-    func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws {}
+    func updateProfilePictureFileName(user: User, profilePictureFileName: String) async throws {}
         
     func deleteLocalUser() {}
     
-    func deleteProfilePictureFileName(userId: String) async throws {}
+    func deleteProfilePictureFileName(user: User) async throws {}
     
     func reportUser(report: UserReport) async throws {}
 }

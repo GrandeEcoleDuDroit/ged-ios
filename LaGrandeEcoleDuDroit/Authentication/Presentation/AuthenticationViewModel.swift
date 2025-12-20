@@ -67,6 +67,7 @@ class AuthenticationViewModel: ViewModel {
                 switch authError {
                     case .invalidCredentials: stringResource(.incorrectCredentialsError)
                     case .userDisabled: stringResource(.disabledUserError)
+                    case .userNotFound: stringResource(.userNotFound)
                     default: stringResource(.unknownError)
                 }
             } else {
