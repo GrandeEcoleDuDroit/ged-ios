@@ -46,19 +46,19 @@ class AccountInformationViewModel: ViewModel {
     
     func deleteProfilePicture() {
         guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
+            event = ErrorEvent(message: stringResource(.noInternetConectionError))
+            return
         }
-        guard let currentUser = uiState.user else {
-            return event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
+        guard let user = uiState.user else {
+            event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
+            return
         }
         
         uiState.loading = true
         
         Task { @MainActor [weak self] in
             do {
-                if let url = currentUser.profilePictureUrl {
-                    try await self?.deleteProfilePictureUseCase.execute(userId: currentUser.id, profilePictureUrl: url)
-                }
+                try await self?.deleteProfilePictureUseCase.execute(user: user)
                 self?.resetValues()
             } catch {
                 self?.resetValues()

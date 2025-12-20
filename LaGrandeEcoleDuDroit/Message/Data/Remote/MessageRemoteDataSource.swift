@@ -17,7 +17,7 @@ class MessageRemoteDataSource {
     }
     
     func createMessage(message: Message) async throws {
-        try await mapFirebaseException(
+        try await mapFirebaseError(
             block: {
                 let data = message.toRemote().toMap()
                 try await messageApi.createMessage(

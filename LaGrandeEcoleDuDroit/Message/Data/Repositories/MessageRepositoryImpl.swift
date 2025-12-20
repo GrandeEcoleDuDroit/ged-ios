@@ -93,7 +93,7 @@ class MessageRepositoryImpl: MessageRepository {
         )) ?? []
         
         try await messageLocalDataSource.updateSeenMessages(conversationId: conversationId, userId: currentUserId)
-        try await mapFirebaseException(
+        try await mapFirebaseError(
             block: {
                 for message in unreadMessages {
                     try? await messageRemoteDataSource.updateSeenMessage(message: message.copy { $0.seen = true })
@@ -106,7 +106,7 @@ class MessageRepositoryImpl: MessageRepository {
     
     func updateSeenMessage(message: Message) async throws {
         try await messageLocalDataSource.updateMessage(message: message.copy { $0.seen = true })
-        try await mapFirebaseException(
+        try await mapFirebaseError(
             block: { try? await messageRemoteDataSource.updateSeenMessage(message: message.copy { $0.seen = true })},
             tag: tag,
             message: "Failed to update seen messages"

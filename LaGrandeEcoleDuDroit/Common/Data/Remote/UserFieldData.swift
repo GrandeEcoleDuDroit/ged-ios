@@ -1,5 +1,9 @@
 struct UserField {
+    private init() {}
+    
     struct Server {
+        private init() {}
+        
         static let userId = "USER_ID"
         static let userFirstName = "USER_FIRST_NAME"
         static let userLastName = "USER_LAST_NAME"
@@ -12,6 +16,8 @@ struct UserField {
     }
     
     struct Firestore {
+        private init() {}
+        
         static let userId = "userId"
         static let firstName = "firstName"
         static let lastName = "lastName"

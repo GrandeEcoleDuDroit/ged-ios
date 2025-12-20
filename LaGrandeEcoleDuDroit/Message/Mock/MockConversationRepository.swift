@@ -10,7 +10,7 @@ class MockConversationRepository: ConversationRepository {
     
     func getLocalConversation(interlocutorId: String) async throws -> Conversation? { nil }
     
-    func fetchRemoteConversations(userId: String) -> AnyPublisher<Conversation, any Error> {
+    func fetchRemoteConversations(user: User) -> AnyPublisher<Conversation, any Error> {
         Empty()
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()

@@ -31,7 +31,7 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
             .eraseToAnyPublisher()
     }
     
-    func loginWithEmailAndPassword(email: String, password: String) async throws {
+    func loginWithEmailAndPassword(email: String, password: String) async throws -> String {
         try await authenticationRemoteDataSource.loginWithEmailAndPassword(email: email, password: password)
     }
     

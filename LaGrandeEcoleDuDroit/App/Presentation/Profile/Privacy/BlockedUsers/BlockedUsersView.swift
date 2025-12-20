@@ -33,7 +33,7 @@ struct BlockedUserDestination: View {
 }
 
 private struct BlockedUsersView: View {
-    let blockedUsers: [User]
+    let blockedUsers: [User]?
     let loading: Bool
     let onAccountClick: (User) -> Void
     let onUnblockClick: (String) -> Void
@@ -44,38 +44,43 @@ private struct BlockedUsersView: View {
 
     var body: some View {
         List {
-            if blockedUsers.isEmpty {
-                Text(stringResource(.noBlockedUser))
-                    .foregroundStyle(.informationText)
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            } else {
-                ForEach(blockedUsers) { user in
-                    UserItem(
-                        user: user,
-                        trailingContent: {
-                            Button(stringResource(.unblock)) {
-                                alertUser = user
-                                showUnblockAlert = true
+            if let blockedUsers {
+                if blockedUsers.isEmpty {
+                    Text(stringResource(.noBlockedUser))
+                        .foregroundStyle(.informationText)
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                } else {
+                    ForEach(blockedUsers) { user in
+                        UserItem(
+                            user: user,
+                            trailingContent: {
+                                Button(stringResource(.unblock)) {
+                                    alertUser = user
+                                    showUnblockAlert = true
+                                }
+                                .buttonStyle(.borderless)
+                                .foregroundStyle(.gedPrimary)
+                                .fontWeight(.medium)
                             }
-                            .buttonStyle(.borderless)
-                            .foregroundStyle(.gedPrimary)
-                            .fontWeight(.medium)
+                        )
+                        .contentShape(.rect)
+                        .listRowTap(
+                            value: user,
+                            selectedItem: $selectedUser
+                        ) {
+                            onAccountClick(user)
                         }
-                    )
-                    .contentShape(.rect)
-                    .listRowTap(
-                        value: user,
-                        selectedItem: $selectedUser
-                    ) {
-                        onAccountClick(user)
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(selectedUser == user ? Color.click : Color.clear)
                     }
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(selectedUser == user ? Color.click : Color.clear)
                 }
+            } else {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .listStyle(.plain)
