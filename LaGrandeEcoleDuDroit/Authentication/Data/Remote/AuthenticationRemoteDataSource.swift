@@ -11,7 +11,7 @@ class AuthenticationRemoteDataSource {
         try await authenticationApi.isAuthenticated()
     }
     
-    func loginWithEmailAndPassword(email: String, password: String) async throws {
+    func loginWithEmailAndPassword(email: String, password: String) async throws -> String {
         try await authenticationApi.login(email: email, password: password)
     }
     

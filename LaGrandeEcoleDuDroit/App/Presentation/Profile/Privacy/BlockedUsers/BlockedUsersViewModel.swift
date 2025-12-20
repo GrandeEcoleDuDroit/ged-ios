@@ -11,14 +11,15 @@ class BlockedUsersViewModel: ViewModel {
     init(
         blockedUserRepository: BlockedUserRepository,
         userRepository: UserRepository,
-        networkMonitor: NetworkMonitor
+        networkMonitor: NetworkMonitor,
+        getBlockedUsersUseCase: GetBlockedUsersUseCase
     ) {
         self.blockedUserRepository = blockedUserRepository
         self.userRepository = userRepository
         self.networkMonitor = networkMonitor
         
         Task { @MainActor in
-            await initBlockedUsers()
+            uiState.blockedUsers = await getBlockedUsersUseCase.execute().sorted { $0.fullName < $1.fullName }
         }
     }
     
@@ -35,7 +36,7 @@ class BlockedUsersViewModel: ViewModel {
         Task { @MainActor [weak self] in
             do {
                 try await self?.blockedUserRepository.unblockUser(currentUserId: currentUserId, userId: userId)
-                self?.uiState.blockedUsers.removeAll { $0.id == userId }
+                self?.uiState.blockedUsers?.removeAll { $0.id == userId }
                 self?.uiState.loading = false
             } catch {
                 self?.uiState.loading = false
@@ -43,33 +44,9 @@ class BlockedUsersViewModel: ViewModel {
             }
         }
     }
-
-    private func initBlockedUsers() async {
-        let blockedUserIds = blockedUserRepository.currentBlockedUserIds
-        
-        let blockedUsers = await withTaskGroup(of: User?.self) { [weak self] group in
-            var result: [User] = []
-            
-            for userId in blockedUserIds {
-                group.addTask {
-                    try? await self?.userRepository.getUser(userId: userId)
-                }
-            }
-            
-            for await user in group {
-                if let user {
-                    result.append(user)
-                }
-            }
-            
-            return result.sorted { $0.fullName < $1.fullName }
-        }
-        
-        uiState.blockedUsers = blockedUsers
-    }
     
     struct BlockedUsersUiState {
-        var blockedUsers: [User] = []
-        var loading: Bool = false
+        fileprivate(set) var blockedUsers: [User]?
+        fileprivate(set) var loading: Bool = false
     }
 }

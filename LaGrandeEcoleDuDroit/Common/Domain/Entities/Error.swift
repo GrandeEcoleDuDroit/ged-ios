@@ -6,6 +6,7 @@ enum NetworkError: Error, Equatable {
     case noInternetConnection
     case timeout
     case invalidURL(String)
+    case unknown
 }
 
 enum UserError: Error {

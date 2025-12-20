@@ -7,7 +7,7 @@ class LoginUseCaseTest {
     let password = "password123"
     
     @Test
-    func loginUseCase_should_throw_authentication_error_when_user_not_exist() async throws {
+    func loginUseCase_should_throw_user_not_found_when_user_not_exist() async throws {
         // Given
         let useCase = LoginUseCase(
             authenticationRepository: MockAuthenticationRepository(),
@@ -15,17 +15,17 @@ class LoginUseCaseTest {
         )
         
         // When
-        let error = await #expect(throws: AuthenticationError.invalidCredentials.self) {
+        let error = await #expect(throws: AuthenticationError.userNotFound.self) {
             try await useCase.execute(email: self.email, password: self.password)
         }
         
         // Then
-        #expect(error == AuthenticationError.invalidCredentials)
+        #expect(error == AuthenticationError.userNotFound)
     }
 }
 
 private class UserNotExist: MockUserRepository {
-    override func getUserWithEmail(email: String) async -> User? {
+    override func getUser(userId: String, tester: Bool) async -> User? {
         nil
     }
 }

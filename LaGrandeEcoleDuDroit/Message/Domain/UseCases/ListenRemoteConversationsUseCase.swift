@@ -27,7 +27,7 @@ class ListenRemoteConversationsUseCase {
         userRepository.user
             .map { user in
                 self.conversationRepository
-                    .fetchRemoteConversations(userId: user.id)
+                    .fetchRemoteConversations(user: user)
                     .catch { error -> Empty<Conversation, Never> in
                         e(tag, "Failed to fetch conversations", error)
                         return Empty()

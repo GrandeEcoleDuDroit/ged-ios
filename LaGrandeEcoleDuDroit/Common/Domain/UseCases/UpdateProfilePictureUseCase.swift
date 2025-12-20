@@ -18,7 +18,7 @@ class UpdateProfilePictureUseCase {
             let imagePath = UserUtils.ProfilePicture.relativePath(fileName: fileName)
             
             try await imageRepository.uploadImage(imageData: imageData, imagePath: imagePath)
-            try await userRepository.updateProfilePictureFileName(userId: user.id, profilePictureFileName: fileName)
+            try await userRepository.updateProfilePictureFileName(user: user, profilePictureFileName: fileName)
             
             if let oldFileName = UserUtils.ProfilePicture.getFileName(url: user.profilePictureUrl) {
                 let oldImagePath = UserUtils.ProfilePicture.relativePath(fileName: oldFileName)

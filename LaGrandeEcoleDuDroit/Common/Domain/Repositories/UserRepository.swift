@@ -5,27 +5,25 @@ protocol UserRepository {
     
     var currentUser: User? { get }
     
+    func getUsers() async -> [User]
+    
+    func getUserPublisher(userId: String, currentUser: User) -> AnyPublisher<User?, Error>
+    
     func getCurrentUser() -> User?
+    
+    func getUser(userId: String, tester: Bool) async throws -> User?
+    
+    func storeUser(_ user: User)
     
     func createUser(user: User) async throws
     
-    func getUser(userId: String) async throws -> User?
-    
-    func getUserWithEmail(email: String) async throws -> User?
-    
-    func getUserPublisher(userId: String) -> AnyPublisher<User?, Error>
-    
-    func getUsers() async -> [User]
-        
-    func storeUser(_ user: User)
-    
     func updateRemoteUser(user: User) async throws
     
-    func updateProfilePictureFileName(userId: String, profilePictureFileName: String) async throws
+    func updateProfilePictureFileName(user: User, profilePictureFileName: String) async throws
     
     func deleteLocalUser()
         
-    func deleteProfilePictureFileName(userId: String) async throws
+    func deleteProfilePictureFileName(user: User) async throws
     
     func reportUser(report: UserReport) async throws
 }
