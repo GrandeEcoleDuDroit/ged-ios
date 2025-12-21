@@ -39,7 +39,7 @@ class NewsViewModel: ViewModel {
     
     func resendAnnouncement(announcement: Announcement) {
         Task {
-            resendAnnouncementUseCase.execute(announcement: announcement)
+            await resendAnnouncementUseCase.execute(announcement: announcement)
         }
     }
     
