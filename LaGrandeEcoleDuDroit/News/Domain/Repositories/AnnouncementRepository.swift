@@ -19,7 +19,7 @@ protocol AnnouncementRepository {
     
     func deleteAnnouncements(userId: String) async throws
         
-    func deleteAnnouncement(announcementId: String) async throws
+    func deleteAnnouncement(announcementId: String, authorId: String) async throws
     
     func deleteLocalAnnouncement(announcementId: String) async throws
     
