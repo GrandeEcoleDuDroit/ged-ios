@@ -38,15 +38,8 @@ class NewsViewModel: ViewModel {
 
     
     func resendAnnouncement(announcement: Announcement) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
-        }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            await self?.resendAnnouncementUseCase.execute(announcement: announcement)
-            self?.uiState.loading = false
+        Task {
+            resendAnnouncementUseCase.execute(announcement: announcement)
         }
     }
     

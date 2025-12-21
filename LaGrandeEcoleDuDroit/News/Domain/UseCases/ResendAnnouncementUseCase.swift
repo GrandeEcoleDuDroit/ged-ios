@@ -5,7 +5,7 @@ class ResendAnnouncementUseCase {
         self.announcementRepository = announcementRepository
     }
     
-    func execute(announcement: Announcement) async {
+    func execute(announcement: Announcement) {
         do {
             try await announcementRepository.createAnnouncement(announcement: announcement.copy { $0.state = .publishing })
             try await announcementRepository.upsertLocalAnnouncement(announcement: announcement.copy { $0.state = .published })
