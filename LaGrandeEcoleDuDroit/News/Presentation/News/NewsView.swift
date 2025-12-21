@@ -65,12 +65,18 @@ private struct NewsView: View {
             if let announcements {
                 RecentAnnouncementSection(
                     announcements: announcements,
-                    onAnnouncementClick: onAnnouncementClick,
-                    onUncreatedAnnouncementClick: {
-                        activeSheet = .announcement($0)
+                    onAnnouncementClick: { announcement in
+                        switch announcement.state {
+                            case .published: onAnnouncementClick(announcement.id)
+                            case .error: activeSheet = .announcement(announcement)
+                            default: break
+                        }
                     },
-                    onAnnouncementOptionsClick: {
-                        activeSheet = .announcement($0)
+                    onAnnouncementOptionsClick: { announcement in
+                        switch announcement.state {
+                            case .published, .error: activeSheet = .announcement(announcement)
+                            default: break
+                        }
                     },
                     onSeeAllAnnouncementClick: onSeeAllAnnouncementClick
                 )
