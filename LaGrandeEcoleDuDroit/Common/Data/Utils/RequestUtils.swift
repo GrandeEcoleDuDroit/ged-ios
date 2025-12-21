@@ -9,7 +9,7 @@ class RequestUtils {
         return URLSession(configuration: config)
     }
     
-    static func formatOracleUrl(base: String, endPoint: String) throws -> URL {
+    static func formatOracleUrl(base: String, endPoint: String = "") throws -> URL {
         if let url = URL.oracleUrl(path: "/\(base)/\(endPoint)") {
             url
         } else {
@@ -64,8 +64,14 @@ class RequestUtils {
     
     static func sendRequest(session: URLSession, request: URLRequest) async throws -> (URLResponse, ServerResponse) {
         let (dataReceived, response) = try await session.data(for: request)
-        let serverResponse = try JSONDecoder().decode(ServerResponse.self, from: dataReceived)
-        return (response, serverResponse)
+        
+        if let serverResponse = try? JSONDecoder().decode(ServerResponse.self, from: dataReceived) {
+            return (response, serverResponse)
+        } else {
+            let message =  String(bytes: dataReceived, encoding: .utf8)
+            let serverResponse = ServerResponse(message: message.orEmpty())
+            return (response, serverResponse)
+        }
     }
     
     private static func simpleWriteRequest(

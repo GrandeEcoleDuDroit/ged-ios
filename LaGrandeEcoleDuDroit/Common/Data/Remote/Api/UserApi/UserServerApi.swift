@@ -9,7 +9,7 @@ class UserServerApi {
     }
     
     func getUsers() async throws -> (URLResponse, [ServerUser]) {
-        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "")
+        let url = try RequestUtils.formatOracleUrl(base: base)
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.simpleGetRequest(url: url, authToken: authToken)

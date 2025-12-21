@@ -26,7 +26,7 @@ class MockAnnouncementRepository: AnnouncementRepository {
     
     func deleteAnnouncements(userId: String) async throws {}
     
-    func deleteAnnouncement(announcementId: String) async throws {}
+    func deleteAnnouncement(announcementId: String, authorId: String) async throws {}
     
     func deleteLocalAnnouncements() async throws {}
     
