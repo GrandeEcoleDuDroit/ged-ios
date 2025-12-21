@@ -44,22 +44,18 @@ func mapServerError(
     message: String? = nil,
     specificHandle: ((URLResponse, ServerResponse) throws -> Void)? = nil
 ) async throws -> Void {
-    do {
-        let (urlResponse, serverResponse) = try await block()
-        
-        if let httpResponse = urlResponse as? HTTPURLResponse {
-            if httpResponse.statusCode >= 400 {
-                e(tag, "\(message.orEmpty()): \(serverResponse.error.orEmpty())")
-                guard specificHandle == nil else {
-                    return try specificHandle!(urlResponse, serverResponse)
-                }
-                
-                throw NetworkError.internalServer(serverResponse.error)
+    let (urlResponse, serverResponse) = try await block()
+    
+    if let httpResponse = urlResponse as? HTTPURLResponse {
+        if httpResponse.statusCode >= 400 {
+            e(tag, "\(message.orEmpty()): \(serverResponse.message)")
+
+            guard specificHandle == nil else {
+                return try specificHandle!(urlResponse, serverResponse)
             }
+            
+            throw NetworkError.internalServer(serverResponse.message)
         }
-    } catch {
-        e(tag, message.orEmpty(), error)
-        throw error
     }
 }
 
@@ -69,27 +65,22 @@ func mapServerError<T>(
     message: String? = nil,
     specificHandle: ((URLResponse, T) -> T)? = nil
 ) async throws -> T {
-    do {
-        let (urlResponse, data) = try await block()
-        
-        if let httpResponse = urlResponse as? HTTPURLResponse {
-            if httpResponse.statusCode >= 400 {
-                let serverResponse = data as? ServerResponse
-                e(tag, "\(message.orEmpty()): \(String(describing: serverResponse?.error))")
-                
-                guard specificHandle == nil else {
-                    return specificHandle!(urlResponse, data)
-                }
-                
-                throw NetworkError.internalServer(serverResponse?.error)
-            } else {
-                return data
+    let (urlResponse, data) = try await block()
+    
+    if let httpResponse = urlResponse as? HTTPURLResponse {
+        if httpResponse.statusCode >= 400 {
+            let serverResponse = data as? ServerResponse
+            e(tag, "\(message.orEmpty()): \(String(describing: serverResponse?.message))")
+
+            guard specificHandle == nil else {
+                return specificHandle!(urlResponse, data)
             }
+            
+            throw NetworkError.internalServer(serverResponse?.error)
         } else {
             return data
         }
-    } catch {
-        e(tag, message.orEmpty(), error)
-        throw error
+    } else {
+        return data
     }
 }
