@@ -37,7 +37,7 @@ class DeleteAnnouncementUseCaseTest {
 private class AnnouncementDeleted: MockAnnouncementRepository {
     private(set) var deleteAnnouncementCalled = false
     
-    override func deleteAnnouncement(announcementId: String) async throws {
+    override func deleteAnnouncement(announcementId: String, authorId: String) async throws {
         deleteAnnouncementCalled = true
     }
 }

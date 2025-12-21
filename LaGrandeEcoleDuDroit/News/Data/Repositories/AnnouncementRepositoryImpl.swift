@@ -73,8 +73,8 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
         try await announcementLocalDataSource.deleteAnnouncements(userId: userId)
     }
     
-    func deleteAnnouncement(announcementId: String) async throws {
-        try await announcementRemoteDataSource.deleteAnnouncement(announcementId: announcementId)
+    func deleteAnnouncement(announcementId: String, authorId: String) async throws {
+        try await announcementRemoteDataSource.deleteAnnouncement(announcementId: announcementId, authorId: authorId)
         try await announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
     }
     

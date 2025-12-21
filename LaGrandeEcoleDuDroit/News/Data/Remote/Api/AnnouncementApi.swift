@@ -9,7 +9,7 @@ protocol AnnouncementApi {
     
     func deleteAnnouncements(userId: String) async throws -> (URLResponse, ServerResponse)
     
-    func deleteAnnouncement(announcementId: String) async throws -> (URLResponse, ServerResponse)
+    func deleteAnnouncement(announcementId: String, authorId: String) async throws -> (URLResponse, ServerResponse)
     
     func reportAnnouncement(report: RemoteAnnouncementReport) async throws -> (URLResponse, ServerResponse)
 }
