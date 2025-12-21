@@ -2,8 +2,7 @@ import SwiftUI
 
 struct RecentAnnouncementSection: View {
     let announcements: [Announcement]
-    let onAnnouncementClick: (String) -> Void
-    let onUncreatedAnnouncementClick: (Announcement) -> Void
+    let onAnnouncementClick: (Announcement) -> Void
     let onAnnouncementOptionsClick: (Announcement) -> Void
     let onSeeAllAnnouncementClick: () -> Void
     
@@ -47,11 +46,7 @@ struct RecentAnnouncementSection: View {
                             value: announcement,
                             selectedItem: $selectedAnnouncement
                         ) {
-                            if announcement.state == .published {
-                                onAnnouncementClick(announcement.id)
-                            } else {
-                                onUncreatedAnnouncementClick(announcement)
-                            }
+                            onAnnouncementClick(announcement)
                         }
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets())
@@ -68,7 +63,6 @@ struct RecentAnnouncementSection: View {
     RecentAnnouncementSection(
         announcements: announcementsFixture,
         onAnnouncementClick: { _ in },
-        onUncreatedAnnouncementClick: { _ in },
         onAnnouncementOptionsClick: { _ in },
         onSeeAllAnnouncementClick: {}
     )
