@@ -10,7 +10,7 @@ class FetchMissionsUseCase {
         let remoteMissions = try await missionRepository.getRemoteMissions()
         
         let missionsToDelete = missions.filter {
-            !remoteMissions.contains($0)
+            $0.state.type == .publishedType && !remoteMissions.contains($0)
         }
         let missionsToUpsert = remoteMissions.filter {
             !missions.contains($0)

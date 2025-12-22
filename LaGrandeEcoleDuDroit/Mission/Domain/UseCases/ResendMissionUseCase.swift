@@ -13,31 +13,35 @@ class ResendMissionUseCase {
     }
     
     func execute(mission: Mission) async {
-        if case let .error(imagePath) = mission.state {
-            let imageData: Data? = if let imagePath {
-                try? await imageRepository.getLocalImage(imagePath: imagePath)
-            } else {
-                nil
-            }
+        let imagePath: String? = switch mission.state {
+            case let .publishing(imagePath: imagePath): imagePath
+            case let .error(imagePath: imagePath): imagePath
+            default: nil
+        }
+        
+        let imageData: Data? = if let imagePath {
+            try? await imageRepository.getLocalImage(imagePath: imagePath)
+        } else {
+            nil
+        }
+        
+        do {
+            try await missionRepository.createMission(
+                mission: mission.copy { $0.state = .publishing(imagePath: imagePath) },
+                imageData: imageData
+            )
             
-            do {
-                try await missionRepository.createMission(
-                    mission: mission.copy { $0.state = .publishing(imagePath: imagePath) },
-                    imageData: imageData
-                )
-                
-                try await missionRepository.upsertLocalMission(
-                    mission: mission.copy { $0.state = .published(imageUrl: imagePath) }
-                )
-                
-                if let imagePath {
-                    try? await imageRepository.deleteLocalImage(imagePath: imagePath)
-                }
-            } catch {
-                try? await missionRepository.upsertLocalMission(
-                    mission: mission.copy { $0.state = .error(imagePath: imagePath) }
-                )
+            try await missionRepository.upsertLocalMission(
+                mission: mission.copy { $0.state = .published(imageUrl: imagePath) }
+            )
+            
+            if let imagePath {
+                try? await imageRepository.deleteLocalImage(imagePath: imagePath)
             }
+        } catch {
+            try? await missionRepository.upsertLocalMission(
+                mission: mission.copy { $0.state = .error(imagePath: imagePath) }
+            )
         }
     }
 }

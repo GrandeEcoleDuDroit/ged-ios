@@ -62,12 +62,12 @@ class NewsInjector: Injector {
             )
         }
         
-        // Other
+        // Others
         container.register(StartupAnnouncementTask.self) { resolver in
             StartupAnnouncementTask(
                 networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
-                userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                announcementRepository: resolver.resolve(AnnouncementRepository.self)!
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
+                resendAnnouncementUseCase: resolver.resolve(ResendAnnouncementUseCase.self)!
             )
         }
     }

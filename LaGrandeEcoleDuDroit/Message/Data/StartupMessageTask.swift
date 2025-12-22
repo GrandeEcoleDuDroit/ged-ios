@@ -27,22 +27,22 @@ class StartupMessageTask {
     
     private func sendUnsentConversations() async {
         do {
-            guard let userId = self.userRepository.currentUser?.id else { return }
-            let conversations = try await self.conversationRepository.getLocalConversations()
+            guard let userId = userRepository.currentUser?.id else { return }
+            let conversations = try await conversationRepository.getLocalConversations()
             
             for conversation in conversations {
                 switch conversation.state {
                     case .creating:
-                        try await self.conversationRepository.createRemoteConversation(conversation: conversation, userId: userId)
+                        try await conversationRepository.createRemoteConversation(conversation: conversation, userId: userId)
                     
                     case .deleting:
                         if let deleteTime = conversation.deleteTime {
-                            try await self.conversationRepository.deleteConversation(
+                            try await conversationRepository.deleteConversation(
                                 conversation: conversation,
                                 userId: userId,
                                 deleteTime: deleteTime
                             )
-                            try await self.messageRepository.deleteLocalMessages(conversationId: conversation.id)
+                            try await messageRepository.deleteLocalMessages(conversationId: conversation.id)
                         }
                     
                     default: break
