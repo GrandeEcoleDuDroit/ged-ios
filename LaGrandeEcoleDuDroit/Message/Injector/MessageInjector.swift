@@ -132,27 +132,15 @@ class MessageInjector: Injector {
         }
         
         // Others
-        container.register(SendUnsentMessageUseCase.self) { resolver in
-            SendUnsentMessageUseCase(
+        container.register(StartupMessageTask.self) { resolver in
+            StartupMessageTask(
+                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
+                userRepository: CommonInjector.shared.resolve(UserRepository.self),
+                conversationRepository: resolver.resolve(ConversationRepository.self)!,
                 messageRepository: resolver.resolve(MessageRepository.self)!
             )
         }
         
-        container.register(SendUnsentConversationUseCase.self) { resolver in
-            SendUnsentConversationUseCase(
-                conversationRepository: resolver.resolve(ConversationRepository.self)!,
-                messageRepository: resolver.resolve(MessageRepository.self)!,
-                userRepository: CommonInjector.shared.resolve(UserRepository.self)
-            )
-        }
-        
-        container.register(StartupMessageTask.self) { resolver in
-            StartupMessageTask(
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
-                sendUnsentMessageUseCase: resolver.resolve(SendUnsentMessageUseCase.self)!,
-                sendUnsentConversationUseCase: resolver.resolve(SendUnsentConversationUseCase.self)!
-            )
-        }
         container.register(MessageNotificationManager.self) { resolver in
             MessageNotificationManager(
                 navigationRequestUseCase: CommonInjector.shared.resolve(NavigationRequestUseCase.self),

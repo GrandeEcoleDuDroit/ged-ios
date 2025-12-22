@@ -1,26 +1,35 @@
-import Combine
-
-class SendUnsentConversationUseCase {
+class StartupMessageTask {
+    private let networkMonitor: NetworkMonitor
+    private let userRepository: UserRepository
     private let conversationRepository: ConversationRepository
     private let messageRepository: MessageRepository
-    private let userRepository: UserRepository
-    
-    private let tag = String(describing: SendUnsentConversationUseCase.self)
+    private let tag = String(describing: StartupMessageTask.self)
     
     init(
+        networkMonitor: NetworkMonitor,
+        userRepository: UserRepository,
         conversationRepository: ConversationRepository,
-        messageRepository: MessageRepository,
-        userRepository: UserRepository
+        messageRepository: MessageRepository
     ) {
+        self.networkMonitor = networkMonitor
+        self.userRepository = userRepository
         self.conversationRepository = conversationRepository
         self.messageRepository = messageRepository
-        self.userRepository = userRepository
     }
     
-    func execute() async {
-        guard let userId = self.userRepository.currentUser?.id else { return }
+    func run() {
+        Task {
+            await networkMonitor.connected.values.first { $0 }
+            await sendUnsentConversations()
+            await sendUnsentMessage()
+        }
+    }
+    
+    private func sendUnsentConversations() async {
         do {
+            guard let userId = self.userRepository.currentUser?.id else { return }
             let conversations = try await self.conversationRepository.getLocalConversations()
+            
             for conversation in conversations {
                 switch conversation.state {
                     case .creating:
@@ -41,6 +50,18 @@ class SendUnsentConversationUseCase {
             }
         } catch {
             e(tag, "Failed to send unsent conversations", error)
+        }
+    }
+    
+    private func sendUnsentMessage() async {
+        do {
+            let messages = try await messageRepository.getUnsentMessages()
+            for message in messages {
+                try await messageRepository.createRemoteMessage(message: message)
+                try await messageRepository.updateLocalMessage(message: message.copy { $0.state = .sent })
+            }
+        } catch {
+            e(tag, "Failed to send unsent messages", error)
         }
     }
 }
