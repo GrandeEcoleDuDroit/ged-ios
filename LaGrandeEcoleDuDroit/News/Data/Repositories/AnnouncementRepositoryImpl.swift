@@ -46,8 +46,8 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
         }.eraseToAnyPublisher()
     }
     
-    func getLocalAnnouncements(authorId: String) async throws -> [Announcement] {
-        try await announcementLocalDataSource.getAnnouncements(authorId: authorId)
+    func getLocalAnnouncements() async throws -> [Announcement] {
+        try await announcementLocalDataSource.getAnnouncements()
     }
     
     func getRemoteAnnouncements() async throws -> [Announcement] {
@@ -56,10 +56,6 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
     
     func createAnnouncement(announcement: Announcement) async throws {
         try await announcementLocalDataSource.upsertAnnouncement(announcement: announcement)
-        try await announcementRemoteDataSource.createAnnouncement(announcement: announcement)
-    }
-    
-    func createRemoteAnnouncement(announcement: Announcement) async throws {
         try await announcementRemoteDataSource.createAnnouncement(announcement: announcement)
     }
     
