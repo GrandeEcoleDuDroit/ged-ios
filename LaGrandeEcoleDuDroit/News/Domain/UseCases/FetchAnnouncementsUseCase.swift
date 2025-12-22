@@ -17,7 +17,7 @@ class FetchAnnouncementsUseCase {
         
         let announcementToDelete = announcements.filter {
             ($0.state == .published && !remoteAnnouncements.contains($0)) ||
-            blockedUserIds.contains($0.author.id)
+                blockedUserIds.contains($0.author.id)
         }
         let announcementToUpsert = remoteAnnouncements.filter {
             !announcements.contains($0) && !blockedUserIds.contains($0.author.id)

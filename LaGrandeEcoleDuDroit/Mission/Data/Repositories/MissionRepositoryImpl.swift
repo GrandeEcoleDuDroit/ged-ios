@@ -33,6 +33,10 @@ class MissionRepositoryImpl: MissionRepository {
         .eraseToAnyPublisher()
     }
     
+    func getLocalMissions() async throws -> [Mission] {
+        try await missionLocalDataSource.getMissions()
+    }
+    
     func getRemoteMissions() async throws -> [Mission] {
         try await missionRemoteDataSource.getMissions()
     }

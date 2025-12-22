@@ -8,6 +8,8 @@ protocol MissionRepository {
     
     func getMissionPublisher(missionId: String) -> AnyPublisher<Mission, Never>
         
+    func getLocalMissions() async throws -> [Mission]
+    
     func getRemoteMissions() async throws -> [Mission]
     
     func createMission(mission: Mission, imageData: Data?) async throws

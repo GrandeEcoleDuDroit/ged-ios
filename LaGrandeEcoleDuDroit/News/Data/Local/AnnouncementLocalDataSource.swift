@@ -22,10 +22,6 @@ class AnnouncementLocalDataSource {
         .eraseToAnyPublisher()
     }
     
-    func getAnnouncements(authorId: String) async throws -> [Announcement] {
-        try await announcementActor.getAnnouncements(authorId: authorId)
-    }
-    
     func getAnnouncements() async throws -> [Announcement] {
         try await announcementActor.getAnnouncements()
     }
