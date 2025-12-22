@@ -61,6 +61,15 @@ class NewsInjector: Injector {
                 blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self)
             )
         }
+        
+        // Other
+        container.register(StartupAnnouncementTask.self) { resolver in
+            StartupAnnouncementTask(
+                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
+                userRepository: CommonInjector.shared.resolve(UserRepository.self),
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!
+            )
+        }
     }
     
     func resolve<T>(_ type: T.Type) -> T {

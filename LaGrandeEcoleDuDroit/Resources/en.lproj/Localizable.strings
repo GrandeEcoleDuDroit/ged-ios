@@ -67,7 +67,7 @@
 
 // Common error
 "mandatory_field_error" = "Mandatory field";
-"time_out_error" = "The service took too long to respond. Please try again.";
+"time_out_error" = "The service took too long to respond.";
 "no_internet_connection_error" = "No internet connection.";
 "internal_server_error" = "An internal server error has occurred.";
 "unknown_network_error" = "A network error has occurred.";
