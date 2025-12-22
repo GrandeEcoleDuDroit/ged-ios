@@ -35,10 +35,8 @@ struct ProfileNavigation: View {
                         .background(.profileSectionBackground)
                         
                     case .blockedUsers:
-                        BlockedUserDestination(
-                            onAccountClick: { viewModel.path.append(.user($0)) }
-                        )
-                        .background(.profileSectionBackground)
+                        BlockedUserDestination()
+                            .background(.profileSectionBackground)
                         
                     case let .user(user):
                         UserDestination(user: user)

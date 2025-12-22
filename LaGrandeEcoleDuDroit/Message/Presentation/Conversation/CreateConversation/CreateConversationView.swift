@@ -35,7 +35,6 @@ private struct CreateConversationView: View {
                     Text(stringResource(.userNotFound))
                         .foregroundStyle(.informationText)
                         .frame(maxWidth: .infinity, alignment: .center)
-                        .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
                 } else {
                     ForEach(users) { user in

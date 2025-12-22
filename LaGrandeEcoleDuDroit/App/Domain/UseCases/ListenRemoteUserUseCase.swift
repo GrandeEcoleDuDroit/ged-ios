@@ -21,15 +21,15 @@ class ListenRemoteUserUseCase {
                 old.id == new.id
             }
             .flatMap { [weak self] user in
-                self?.userRepository.getUserPublisher(userId: user.id, currentUser: user)
+                self?.userRepository.getUserPublisher(userId: user.id)
                     .catch{ error in
-                        e(tag, "Failed to listen remote user", error)
+                        e(tag, "Failed to listen remote user \(user.fullName)", error)
                         return Empty<User?, Never>()
                     }
                     .compactMap { $0 }
-                    .filter { $0  != user }
+                    .filter { $0 != user }
                     .eraseToAnyPublisher()
-                    ?? Empty().eraseToAnyPublisher()
+                ?? Empty().eraseToAnyPublisher()
             }
             .sink { [weak self] user in
                 self?.userRepository.storeUser(user)
