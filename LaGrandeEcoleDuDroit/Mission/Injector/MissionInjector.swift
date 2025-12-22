@@ -68,6 +68,16 @@ class MissionInjector: Injector {
                 imageRepository: CommonInjector.shared.resolve(ImageRepository.self)
             )
         }
+        
+        // Others
+        container.register(StartupMissionTask.self) { resolver in
+            StartupMissionTask(
+                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
+                missionRepository: resolver.resolve(MissionRepository.self)!,
+                resendMissionUseCase: resolver.resolve(ResendMissionUseCase.self)!
+            )
+        }
+        
     }
     
     func resolve<T>(_ type: T.Type) -> T {
