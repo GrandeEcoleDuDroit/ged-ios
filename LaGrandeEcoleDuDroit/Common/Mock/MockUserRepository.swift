@@ -10,13 +10,13 @@ class MockUserRepository: UserRepository {
     
     func getUsers() async -> [User] { [] }
     
-    func getUserPublisher(userId: String, currentUser: User) -> AnyPublisher<User?, Error> {
+    func getUserPublisher(userId: String) -> AnyPublisher<User?, Error> {
         Empty().eraseToAnyPublisher()
     }
     
     func getCurrentUser() -> User? { nil }
     
-    func getUser(userId: String, tester: Bool) async -> User? { nil }
+    func getUser(userId: String) async -> User? { nil }
     
     func getUsers(currentUser: User) async -> [User] { [] }
     

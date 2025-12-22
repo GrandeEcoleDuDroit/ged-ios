@@ -31,18 +31,18 @@ struct CacheAsyncImage: View {
         .onAppear {
             if phase.type != .successType {
                 Task {
-                    await loadImage()
+                    await loadImage(url: url)
                 }
             }
         }
         .onChange(of: url) { newUrl in
             Task {
-                await loadImage()
+                await loadImage(url: newUrl)
             }
         }
     }
     
-    private func loadImage() async {
+    private func loadImage(url: String) async {
         guard let url = URL(string: url) else {
             phase = .failure
             return

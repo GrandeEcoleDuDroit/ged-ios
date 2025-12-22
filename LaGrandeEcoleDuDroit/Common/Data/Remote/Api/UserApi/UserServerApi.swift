@@ -19,6 +19,17 @@ class UserServerApi {
         return (urlResponse, users)
     }
     
+    func getUser(userId: String) async throws -> (URLResponse, ServerUser?) {
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: userId)
+        let session = RequestUtils.getDefaultSession()
+        let authToken = await tokenProvider.getAuthToken()
+        let request = RequestUtils.simpleGetRequest(url: url, authToken: authToken)
+        
+        let (data, urlResponse) = try await session.data(for: request)
+        let user = try? JSONDecoder().decode(ServerUser.self, from: data)
+        return (urlResponse, user)
+    }
+    
     func createUser(serverUser: ServerUser) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "create")
         let session = RequestUtils.getDefaultSession()

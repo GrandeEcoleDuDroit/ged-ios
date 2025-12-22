@@ -11,7 +11,6 @@ class GetBlockedUsersUseCase {
     }
     
     func execute() async -> [User] {
-        guard let currentUser = userRepository.currentUser else { return [] }
         let blockedUserIds = blockedUserRepository.currentBlockedUserIds
     
         return await withTaskGroup(of: User?.self) { [weak self] group in
@@ -19,7 +18,7 @@ class GetBlockedUsersUseCase {
             
             for userId in blockedUserIds {
                 group.addTask {
-                    try? await self?.userRepository.getUser(userId: userId, tester: currentUser.tester)
+                    try? await self?.userRepository.getUser(userId: userId)
                 }
             }
             

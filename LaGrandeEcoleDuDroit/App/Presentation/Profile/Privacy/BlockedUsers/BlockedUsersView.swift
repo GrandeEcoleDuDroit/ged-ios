@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct BlockedUserDestination: View {
-    let onAccountClick: (User) -> Void
-    
     @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(BlockedUsersViewModel.self)
     @State private var errorMessage: String = ""
     @State private var showErrorAlert: Bool = false
@@ -11,7 +9,6 @@ struct BlockedUserDestination: View {
         BlockedUsersView(
             blockedUsers: viewModel.uiState.blockedUsers,
             loading: viewModel.uiState.loading,
-            onAccountClick: onAccountClick,
             onUnblockClick: viewModel.unblockUser
         )
         .onReceive(viewModel.$event) { event in
@@ -35,12 +32,10 @@ struct BlockedUserDestination: View {
 private struct BlockedUsersView: View {
     let blockedUsers: [User]?
     let loading: Bool
-    let onAccountClick: (User) -> Void
     let onUnblockClick: (String) -> Void
     
     @State private var showUnblockAlert: Bool = false
     @State private var alertUser: User?
-    @State private var selectedUser: User?
 
     var body: some View {
         List {
@@ -48,7 +43,6 @@ private struct BlockedUsersView: View {
                 if blockedUsers.isEmpty {
                     Text(stringResource(.noBlockedUser))
                         .foregroundStyle(.informationText)
-                        .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
                         .listRowBackground(Color.clear)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -66,21 +60,16 @@ private struct BlockedUsersView: View {
                                 .fontWeight(.medium)
                             }
                         )
-                        .contentShape(.rect)
-                        .listRowTap(
-                            value: user,
-                            selectedItem: $selectedUser
-                        ) {
-                            onAccountClick(user)
-                        }
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
-                        .listRowBackground(selectedUser == user ? Color.click : Color.clear)
+                        .listRowBackground(Color.clear)
                     }
                 }
             } else {
                 ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
             }
         }
         .listStyle(.plain)
@@ -112,7 +101,6 @@ private struct BlockedUsersView: View {
         BlockedUsersView(
             blockedUsers: usersFixture,
             loading: false,
-            onAccountClick: { _ in },
             onUnblockClick: { _ in }
         )
         .background(.profileSectionBackground)
