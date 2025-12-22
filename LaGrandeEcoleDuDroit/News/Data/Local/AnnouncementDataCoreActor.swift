@@ -7,6 +7,19 @@ actor AnnouncementCoreDataActor {
         self.context = context
     }
     
+    func getAnnouncements(authorId: String) async throws -> [Announcement] {
+        try await context.perform {
+            let fetchRequest = LocalAnnouncement.fetchRequest()
+            fetchRequest.predicate = NSPredicate(
+                format: "%K == %@",
+                AnnouncementField.Local.announcementAuthorId,
+                authorId
+            )
+            let announcements =  try self.context.fetch(fetchRequest)
+            return announcements.compactMap { $0.toAnnouncement() }
+        }
+    }
+    
     func getAnnouncements() async throws -> [Announcement] {
         try await context.perform {
             let fetchRequest = LocalAnnouncement.fetchRequest()

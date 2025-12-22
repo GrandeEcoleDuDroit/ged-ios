@@ -14,9 +14,13 @@ class MockAnnouncementRepository: AnnouncementRepository {
         Empty().eraseToAnyPublisher()
     }
     
+    func getLocalAnnouncements(authorId: String) async throws -> [Announcement] { [] }
+    
     func getRemoteAnnouncements() async throws -> [Announcement] { [] }
 
     func createAnnouncement(announcement: Announcement) async throws {}
+    
+    func createRemoteAnnouncement(announcement: Announcement) async throws {}
     
     func upsertLocalAnnouncement(announcement: Announcement) async throws {}
     

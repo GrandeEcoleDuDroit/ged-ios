@@ -8,6 +8,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     private lazy var fcmManager = AppInjector.shared.resolve(FcmManager.self)
     private lazy var fcmTokenUseCase: FcmTokenUseCase = AppInjector.shared.resolve(FcmTokenUseCase.self)
     private lazy var startupMessageTask: StartupMessageTask = MessageInjector.shared.resolve(StartupMessageTask.self)
+    private lazy var startupAnnouncementTask: StartupAnnouncementTask = NewsInjector.shared.resolve(StartupAnnouncementTask.self)
     private let tag = String(describing: AppDelegate.self)
     
     func application(
@@ -33,6 +34,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     
     private func runStartupTasks() {
         startupMessageTask.run()
+        startupAnnouncementTask.run()
     }
     
     private func listenEvents() {
