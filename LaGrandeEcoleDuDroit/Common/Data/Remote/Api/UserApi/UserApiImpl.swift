@@ -14,8 +14,8 @@ class UserApiImpl: UserApi {
         self.userServerApi = userServerApi
     }
     
-    func listenUser(userId: String, currentUser: User) -> AnyPublisher<User?, Error> {
-        userFirestoreApi.listenUser(userId: userId, tester: currentUser.tester)
+    func listenUser(userId: String) -> AnyPublisher<User?, Error> {
+        userFirestoreApi.listenUser(userId: userId)
             .map { $0?.toUser() }
             .eraseToAnyPublisher()
     }
@@ -28,11 +28,11 @@ class UserApiImpl: UserApi {
         ).map { $0.toUser() }
     }
     
-    func getUser(userId: String, tester: Bool) async throws -> User? {
-        try await mapFirebaseError(
-            block: { try await userFirestoreApi.getUser(userId: userId, tester: tester) },
+    func getUser(userId: String) async throws -> User? {
+        try await mapServerError(
+            block: { try await userServerApi.getUser(userId: userId) },
             tag: tag,
-            message: "Failed to get user \(userId) with firestore"
+            message: "Failed to get user \(userId)"
         )?.toUser()
     }
     
@@ -40,7 +40,7 @@ class UserApiImpl: UserApi {
         try await mapServerError(
             block: { try await userServerApi.createUser(serverUser: user.toServerUser()) },
             tag: tag,
-            message: "Failed to create user \(user.fullName) with server",
+            message: "Failed to create user \(user.fullName)",
             specificHandle: { urlResponse, serverResponse in
                 if let httpResponse = urlResponse as? HTTPURLResponse {
                     if httpResponse.statusCode == 403 {
@@ -50,31 +50,15 @@ class UserApiImpl: UserApi {
                 }
             }
         )
-        
-        try await mapFirebaseError(
-            block: { try userFirestoreApi.createUser(firestoreUser: user.toFirestoreUser()) },
-            tag: tag,
-            message: "Failed to create user \(user.fullName) with firestore"
-        )
     }
     
     func updateProfilePictureFileName(user: User, fileName: String) async throws {
         try await mapServerError(
             block: {
-                try await userServerApi.updateProfilePictureFileName(
-                    userId: user.id,
-                    fileName: fileName)
+                try await userServerApi.updateProfilePictureFileName(userId: user.id, fileName: fileName)
             },
             tag: tag,
             message: "Failed to update profile picture file name with server"
-        )
-        
-        try await mapFirebaseError(
-            block: {
-                userFirestoreApi.updateProfilePictureFileName(userId: user.id,fileName: fileName)
-            },
-            tag: tag,
-            message: "Failed to update profile picture file name with firestore"
         )
     }
     
@@ -84,12 +68,6 @@ class UserApiImpl: UserApi {
             tag: tag,
             message: "Failed to update user with server"
         )
-        
-        try await mapFirebaseError(
-            block: { try await userFirestoreApi.updateUser(firestoreUser: user.toFirestoreUser()) },
-            tag: tag,
-            message: "Failed to update user with firestore"
-        )
     }
     
     func deleteProfilePictureFileName(user: User) async throws {
@@ -97,12 +75,6 @@ class UserApiImpl: UserApi {
             block: { try await userServerApi.deleteProfilePictureFileName(userId: user.id) },
             tag: tag,
             message: "Failed to delete profile picture file name with server"
-        )
-        
-        try await mapFirebaseError(
-            block: { userFirestoreApi.deleteProfilePictureFileName(userId: user.id) },
-            tag: tag,
-            message: "Failed to delete profile picture file name with firestore"
         )
     }
     

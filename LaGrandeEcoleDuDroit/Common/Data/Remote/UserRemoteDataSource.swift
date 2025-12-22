@@ -8,16 +8,16 @@ class UserRemoteDataSource {
         self.userApi = userApi
     }
     
-    func listenUser(userId: String, currentUser: User) -> AnyPublisher<User?, Error> {
-        userApi.listenUser(userId: userId, currentUser: currentUser).eraseToAnyPublisher()
+    func listenUser(userId: String) -> AnyPublisher<User?, Error> {
+        userApi.listenUser(userId: userId).eraseToAnyPublisher()
     }
     
     func getUsers() async throws -> [User] {
         try await userApi.getUsers()
     }
     
-    func getUser(userId: String, tester: Bool) async throws -> User? {
-        try await userApi.getUser(userId: userId, tester: tester)
+    func getUser(userId: String) async throws -> User? {
+        try await userApi.getUser(userId: userId)
     }
     
     func createUser(user: User) async throws {

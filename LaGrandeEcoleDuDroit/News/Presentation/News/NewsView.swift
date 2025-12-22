@@ -62,31 +62,26 @@ private struct NewsView: View {
 
     var body: some View {
         Group {
-            if let announcements {
-                RecentAnnouncementSection(
-                    announcements: announcements,
-                    onAnnouncementClick: { announcement in
-                        switch announcement.state {
-                            case .published: onAnnouncementClick(announcement.id)
-                            case .error: activeSheet = .announcement(announcement)
-                            default: break
-                        }
-                    },
-                    onAnnouncementOptionsClick: { announcement in
-                        switch announcement.state {
-                            case .published, .error: activeSheet = .announcement(announcement)
-                            default: break
-                        }
-                    },
-                    onSeeAllAnnouncementClick: onSeeAllAnnouncementClick
-                )
-            } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            }
+            RecentAnnouncementSection(
+                announcements: announcements,
+                onAnnouncementClick: { announcement in
+                    switch announcement.state {
+                        case .published: onAnnouncementClick(announcement.id)
+                        case .error: activeSheet = .announcement(announcement)
+                        default: break
+                    }
+                },
+                onAnnouncementOptionsClick: { announcement in
+                    switch announcement.state {
+                        case .published, .error: activeSheet = .announcement(announcement)
+                        default: break
+                    }
+                },
+                onSeeAllAnnouncementClick: onSeeAllAnnouncementClick,
+                onRefreshAnnouncements: onRefreshAnnouncements
+            )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .refreshable { await onRefreshAnnouncements() }
         .padding(.top)
         .loading(loading)
         .toolbar {

@@ -29,7 +29,7 @@ private class UserStored: MockUserRepository {
         Just(userFixture).eraseToAnyPublisher()
     }
     
-    override func getUserPublisher(userId: String, currentUser: User) -> AnyPublisher<User?, Error> {
+    override func getUserPublisher(userId: String) -> AnyPublisher<User?, Error> {
         Just(userFixture2)
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()

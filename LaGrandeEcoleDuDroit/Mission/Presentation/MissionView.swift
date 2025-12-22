@@ -61,10 +61,9 @@ private struct MissionView: View {
             if let missions {
                 if missions.isEmpty {
                     Text(stringResource(.noMission))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                         .foregroundStyle(.informationText)
                         .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                 } else {
                     ForEach(missions) { mission in
@@ -97,7 +96,6 @@ private struct MissionView: View {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
             }
         }
