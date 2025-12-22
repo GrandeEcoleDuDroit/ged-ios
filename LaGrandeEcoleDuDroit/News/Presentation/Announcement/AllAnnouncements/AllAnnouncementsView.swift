@@ -9,10 +9,10 @@ struct AllAnnouncementsDestination: View {
     @State private var showErrorAlert: Bool = false
     
     var body: some View {
-        if let user = viewModel.uiState.user, let announcements = viewModel.uiState.announcements {
+        if let user = viewModel.uiState.user {
             AllAnnouncementsView(
                 user: user,
-                announcements: announcements,
+                announcements: viewModel.uiState.announcements,
                 loading: viewModel.uiState.loading,
                 onRefresh: viewModel.refreshAnnouncements,
                 onAuthorClick: onAuthorClick,
@@ -45,7 +45,7 @@ struct AllAnnouncementsDestination: View {
 
 private struct AllAnnouncementsView: View {
     let user: User
-    let announcements: [Announcement]
+    let announcements: [Announcement]?
     let loading: Bool
     let onRefresh: () async -> Void
     let onAuthorClick: (User) -> Void
@@ -61,36 +61,42 @@ private struct AllAnnouncementsView: View {
     
     var body: some View {
         List {
-            if announcements.isEmpty {
-                Text(stringResource(.noAnnouncement))
-                    .foregroundStyle(.informationText)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets())
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            } else {
-                ForEach(announcements) { announcement in
-                    ExtendedAnnouncementItem(
-                        announcement: announcement,
-                        onOptionsClick: {
-                            activeSheet = .announcement(announcement)
-                        },
-                        onAuthorClick: { onAuthorClick(announcement.author) },
-                    )
-                    .contentShape(.rect)
-                    .listRowTap(
-                        value: announcement,
-                        selectedItem: $selectedAnnouncement
-                    ) {
-                        if announcement.state == .published {
-                            onAnnouncementClick(announcement.id)
-                        } else {
-                            activeSheet = .announcement(announcement)
+            if let announcements {
+                if announcements.isEmpty {
+                    Text(stringResource(.noAnnouncement))
+                        .foregroundStyle(.informationText)
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                } else {
+                    ForEach(announcements) { announcement in
+                        ExtendedAnnouncementItem(
+                            announcement: announcement,
+                            onOptionsClick: {
+                                activeSheet = .announcement(announcement)
+                            },
+                            onAuthorClick: { onAuthorClick(announcement.author) },
+                        )
+                        .contentShape(.rect)
+                        .listRowTap(
+                            value: announcement,
+                            selectedItem: $selectedAnnouncement
+                        ) {
+                            if announcement.state == .published {
+                                onAnnouncementClick(announcement.id)
+                            } else {
+                                activeSheet = .announcement(announcement)
+                            }
                         }
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(selectedAnnouncement == announcement ? Color.click : Color.clear)
                     }
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(selectedAnnouncement == announcement ? Color.click : Color.clear)
                 }
+            } else {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
             }
         }
         .listStyle(.plain)
@@ -188,7 +194,7 @@ private enum AllAnnouncementViewSheet: Identifiable {
     NavigationStack {
         AllAnnouncementsView(
             user: userFixture,
-            announcements: announcementsFixture + announcementsFixture,
+            announcements: announcementsFixture,
             loading: false,
             onRefresh: {},
             onAuthorClick: { _ in },

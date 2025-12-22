@@ -1,15 +1,16 @@
 import SwiftUI
 
 struct RecentAnnouncementSection: View {
-    let announcements: [Announcement]
+    let announcements: [Announcement]?
     let onAnnouncementClick: (Announcement) -> Void
     let onAnnouncementOptionsClick: (Announcement) -> Void
     let onSeeAllAnnouncementClick: () -> Void
+    let onRefreshAnnouncements: () async -> Void
     
     @State private var selectedAnnouncement: Announcement?
     
     var body: some View {
-        VStack(alignment: .leading, spacing: .zero) {
+        VStack(alignment: .leading) {
             HStack(alignment: .center) {
                 Text(stringResource(.recentAnnouncements))
                     .font(.titleMedium)
@@ -27,34 +28,40 @@ struct RecentAnnouncementSection: View {
             .padding(.horizontal)
             
             List {
-                if announcements.isEmpty {
-                    Text(stringResource(.noAnnouncement))
-                        .foregroundStyle(.informationText)
-                        .padding()
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets())
-                        .frame(maxWidth: .infinity, alignment: .center)
-                } else {
-                    ForEach(announcements) { announcement in
-                        CompactAnnouncementItem(
-                            announcement: announcement,
-                            onOptionsClick: { onAnnouncementOptionsClick(announcement) }
-                        )
-                        .contentShape(.rect)
-                        .listRowTap(
-                            value: announcement,
-                            selectedItem: $selectedAnnouncement
-                        ) {
-                            onAnnouncementClick(announcement)
+                if let announcements {
+                    if announcements.isEmpty {
+                        Text(stringResource(.noAnnouncement))
+                            .foregroundStyle(.informationText)
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    } else {
+                        ForEach(announcements) { announcement in
+                            CompactAnnouncementItem(
+                                announcement: announcement,
+                                onOptionsClick: { onAnnouncementOptionsClick(announcement) }
+                            )
+                            .contentShape(.rect)
+                            .listRowTap(
+                                value: announcement,
+                                selectedItem: $selectedAnnouncement
+                            ) {
+                                onAnnouncementClick(announcement)
+                            }
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(selectedAnnouncement == announcement ? Color.click : Color.clear)
                         }
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(selectedAnnouncement == announcement ? Color.click : Color.clear)
                     }
+                } else {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
                 }
             }
             .listStyle(.plain)
+            .refreshable { await onRefreshAnnouncements() }
         }
     }
 }
@@ -64,7 +71,8 @@ struct RecentAnnouncementSection: View {
         announcements: announcementsFixture,
         onAnnouncementClick: { _ in },
         onAnnouncementOptionsClick: { _ in },
-        onSeeAllAnnouncementClick: {}
+        onSeeAllAnnouncementClick: {},
+        onRefreshAnnouncements: {}
     )
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

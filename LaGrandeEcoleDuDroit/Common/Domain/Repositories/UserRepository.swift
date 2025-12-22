@@ -7,11 +7,11 @@ protocol UserRepository {
     
     func getUsers() async -> [User]
     
-    func getUserPublisher(userId: String, currentUser: User) -> AnyPublisher<User?, Error>
+    func getUserPublisher(userId: String) -> AnyPublisher<User?, Error>
     
     func getCurrentUser() -> User?
     
-    func getUser(userId: String, tester: Bool) async throws -> User?
+    func getUser(userId: String) async throws -> User?
     
     func storeUser(_ user: User)
     

@@ -68,7 +68,7 @@ class ConversationRepositoryImpl: ConversationRepository {
                     case let .fetched(conversation): Just(conversation).eraseToAnyPublisher()
                         
                     case let .toFetch(remoteConversation, interlocutorId):
-                        self.userRepository.getUserPublisher(userId: interlocutorId, currentUser: user)
+                        self.userRepository.getUserPublisher(userId: interlocutorId)
                             .catch{ error in
                                 e(tag, "Failed to listen interlocutor", error)
                                 return Empty<User?, Never>()

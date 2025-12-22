@@ -73,7 +73,7 @@ private struct ConversationView: View {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
             }
         }
         .listStyle(.plain)
@@ -186,7 +186,6 @@ private struct EmptyConversationView: View {
         }
         .frame(maxWidth: .infinity, alignment: .center)
         .listRowBackground(Color.clear)
-        .listRowInsets(EdgeInsets())
         .listRowSeparator(.hidden)
     }
 }

@@ -25,7 +25,7 @@ class LoginUseCaseTest {
 }
 
 private class UserNotExist: MockUserRepository {
-    override func getUser(userId: String, tester: Bool) async -> User? {
+    override func getUser(userId: String) async -> User? {
         nil
     }
 }

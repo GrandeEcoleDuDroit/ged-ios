@@ -18,15 +18,12 @@ class LoginUseCase {
                 throw NetworkError.unknown
             }
             
-            for tester in [false, true] {
-                if let user = try await self?.userRepository.getUser(userId: uid, tester: tester) {
-                    self?.userRepository.storeUser(user)
-                    self?.authenticationRepository.setAuthenticated(true)
-                    return
-                }
+            if let user = try await self?.userRepository.getUser(userId: uid) {
+                self?.userRepository.storeUser(user)
+                self?.authenticationRepository.setAuthenticated(true)
+            } else {
+                throw AuthenticationError.userNotFound
             }
-
-            throw AuthenticationError.userNotFound
         }
     }
 }
