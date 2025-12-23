@@ -18,9 +18,7 @@ class DeleteMissionUseCase {
             case .draft: try await missionRepository.deleteLocalMission(missionId: mission.id)
                 
             case let .publishing(imagePath):
-                await missionTaskReferences.tasks[mission.id]?.cancel()
-                await missionTaskReferences.removeTaskReference(for: mission.id)
-                
+                await missionTaskReferences.cancelTask(for: mission.id)
                 try await missionRepository.deleteLocalMission(missionId: mission.id)
                 if let imagePath {
                     try await imageRepository.deleteLocalImage(imagePath: imagePath)

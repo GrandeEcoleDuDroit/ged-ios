@@ -15,7 +15,7 @@ class ResendMissionUseCase {
         self.missionTaskReferences = missionTaskReferences
     }
     
-    func execute(mission: Mission) {
+    func execute(mission: Mission) async {
         let task = Task {
             let imagePath: String? = switch mission.state {
                 case let .publishing(imagePath: imagePath): imagePath
@@ -52,8 +52,6 @@ class ResendMissionUseCase {
             }
         }
         
-        Task {
-            await missionTaskReferences.addTaskReference(task, for: mission.id)
-        }
+        await missionTaskReferences.addTaskReference(task, for: mission.id)
     }
 }

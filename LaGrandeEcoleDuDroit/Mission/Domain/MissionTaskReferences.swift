@@ -8,4 +8,9 @@ actor MissionTaskReferences {
     func removeTaskReference(for key: String) {
         tasks[key] = nil
     }
+    
+    func cancelTask(for key: String) {
+        tasks[key]?.cancel()
+        tasks[key] = nil
+    }
 }
