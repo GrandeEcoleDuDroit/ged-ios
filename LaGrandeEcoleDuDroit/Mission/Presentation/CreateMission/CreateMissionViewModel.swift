@@ -24,11 +24,6 @@ class CreateMissionViewModel: ViewModel {
         
         initCurrentUser()
         initUsers()
-        print("INIT CreateMissionViewModel")
-    }
-    
-    deinit {
-        print("DEINIT CreateMissionViewModel")
     }
     
     func createMission(imageData: Data?) {
@@ -48,9 +43,7 @@ class CreateMissionViewModel: ViewModel {
             state: .draft
         )
         
-        Task {
-            await createMissionUseCase.execute(mission: mission, imageData: imageData)
-        }
+        createMissionUseCase.execute(mission: mission, imageData: imageData)
     }
     
     func onTitleChange(_ title: String) -> Void {

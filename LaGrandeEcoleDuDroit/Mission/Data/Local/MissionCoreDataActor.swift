@@ -44,6 +44,24 @@ actor MissionCoreDataActor {
         }
     }
     
+    func update(mission: Mission) async throws {
+        try await context.perform {
+            let request = LocalMission.fetchRequest()
+            request.predicate = NSPredicate(
+                format: "%K == %@",
+                MissionField.Local.missionId, mission.id
+            )
+            
+            let localMission = try self.context.fetch(request).first
+            guard localMission?.equals(mission) != true else { return }
+            
+            if localMission != nil {
+                localMission?.modify(mission: mission)
+                try self.context.save()
+            }
+        }
+    }
+    
     func upsert(mission: Mission) async throws {
         try await context.perform {
             let request = LocalMission.fetchRequest()

@@ -3,41 +3,55 @@ import Foundation
 class CreateMissionUseCase {
     private let missionRepository: MissionRepository
     private let imageRepository: ImageRepository
+    private let missionJobReferences: MissionJobReferences
     
     init(
         missionRepository: MissionRepository,
-        imageRepository: ImageRepository
+        imageRepository: ImageRepository,
+        missionJobReferences: MissionJobReferences
     ) {
         self.missionRepository = missionRepository
         self.imageRepository = imageRepository
+        self.missionJobReferences = missionJobReferences
     }
     
-    func execute(mission: Mission, imageData: Data?) async {
-        var imagePath: String?
-        
-        if let imageData, let imageExtension = imageData.imageExtension() {
-            let fileName = MissionUtils.ImageFile.generateFileName(missionId: mission.id) + "." + imageExtension
-            imagePath = MissionUtils.ImageFile.relativePath(fileName: fileName)
-            try? await imageRepository.createLocalImage(imageData: imageData, imagePath: imagePath!)
+    func execute(mission: Mission, imageData: Data?) {
+        let task = Task {
+            var imagePath: String?
+            
+            if let imageData, let imageExtension = imageData.imageExtension() {
+                let fileName = MissionUtils.ImageFile.generateFileName(missionId: mission.id) + "." + imageExtension
+                imagePath = MissionUtils.ImageFile.relativePath(fileName: fileName)
+                try? await self.imageRepository.createLocalImage(imageData: imageData, imagePath: imagePath!)
+            }
+            
+            do {
+                try await self.missionRepository.createMission(
+                    mission: mission.copy { $0.state = .publishing(imagePath: imagePath) },
+                    imageData: imageData
+                )
+                
+                try await self.missionRepository.updateLocalMission(
+                    mission: mission.copy { $0.state = .published(imageUrl: imagePath) }
+                )
+                
+                await self.missionJobReferences.removeTaskReference(for: mission.id)
+                
+                if let imagePath {
+                    try await self.imageRepository.deleteLocalImage(imagePath: imagePath)
+                }
+            } catch is CancellationError {
+                await self.missionJobReferences.removeTaskReference(for: mission.id)
+            } catch {
+                try? await self.missionRepository.updateLocalMission(
+                    mission: mission.copy { $0.state = .error(imagePath: imagePath) }
+                )
+                await self.missionJobReferences.removeTaskReference(for: mission.id)
+            }
         }
         
-        do {
-            try await missionRepository.createMission(
-                mission: mission.copy { $0.state = .publishing(imagePath: imagePath) },
-                imageData: imageData
-            )
-            
-            try await missionRepository.upsertLocalMission(
-                mission: mission.copy { $0.state = .published(imageUrl: imagePath) }
-            )
-            
-            if let imagePath {
-                try await imageRepository.deleteLocalImage(imagePath: imagePath)
-            }
-        } catch {
-            try? await missionRepository.upsertLocalMission(
-                mission: mission.copy { $0.state = .error(imagePath: imagePath) }
-            )
+        Task {
+            await self.missionJobReferences.addTaskReference(task, for: mission.id)
         }
     }
 }
