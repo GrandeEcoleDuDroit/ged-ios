@@ -26,7 +26,7 @@ class MockAnnouncementRepository: AnnouncementRepository {
     
     func updateAnnouncement(announcement: Announcement) async throws {}
     
-    func updateLocalAnnouncement(announcement: Announcement) {}
+    func updateLocalAnnouncement(announcement: Announcement) async throws {}
     
     func deleteAnnouncements(userId: String) async throws {}
     
