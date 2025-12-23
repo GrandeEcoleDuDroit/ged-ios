@@ -2,17 +2,28 @@ import Foundation
 
 class CreateAnnouncementUseCase {
     private let announcementRepository: AnnouncementRepository
-    
-    init(announcementRepository: AnnouncementRepository) {
+    private let announcementTaskReferences: AnnouncementTaskReferences
+
+    init(
+        announcementRepository: AnnouncementRepository,
+        announcementTaskReferences: AnnouncementTaskReferences
+    ) {
         self.announcementRepository = announcementRepository
+        self.announcementTaskReferences = announcementTaskReferences
     }
     
     func execute(announcement: Announcement) async {
-        do {
-            try await announcementRepository.createAnnouncement(announcement: announcement.copy { $0.state = .publishing })
-            try await announcementRepository.updateLocalAnnouncement(announcement: announcement.copy { $0.state = .published })
-        } catch {
-            try? await announcementRepository.updateLocalAnnouncement(announcement: announcement.copy { $0.state = .error })
+        let task = Task {
+            do {
+                try await announcementRepository.createAnnouncement(announcement: announcement.copy { $0.state = .publishing })
+                try await announcementRepository.updateLocalAnnouncement(announcement: announcement.copy { $0.state = .published })
+                await announcementTaskReferences.removeTaskReference(for: announcement.id)
+            } catch {
+                try? await announcementRepository.updateLocalAnnouncement(announcement: announcement.copy { $0.state = .error })
+                await announcementTaskReferences.removeTaskReference(for: announcement.id)
+            }
         }
+        
+        await announcementTaskReferences.addTaskReference(task, for: announcement.id)
     }
 }

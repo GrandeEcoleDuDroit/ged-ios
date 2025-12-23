@@ -34,20 +34,25 @@ class NewsInjector: Injector {
         
         // Use cases
         container.register(CreateAnnouncementUseCase.self) { resolver in
-            CreateAnnouncementUseCase(announcementRepository: resolver.resolve(AnnouncementRepository.self)!)
-        }.inObjectScope(.container)
+            CreateAnnouncementUseCase(
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
+                announcementTaskReferences: resolver.resolve(AnnouncementTaskReferences.self)!
+            )
+        }.inObjectScope(.weak)
         
         container.register(DeleteAnnouncementUseCase.self) { resolver in
             DeleteAnnouncementUseCase(
-                announcementRepository: resolver.resolve(AnnouncementRepository.self)!
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
+                announcementTaskReferences: resolver.resolve(AnnouncementTaskReferences.self)!
             )
-        }.inObjectScope(.container)
+        }.inObjectScope(.weak)
         
         container.register(ResendAnnouncementUseCase.self) { resolver in
             ResendAnnouncementUseCase(
-                announcementRepository: resolver.resolve(AnnouncementRepository.self)!
+                announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
+                announcementTaskReferences: resolver.resolve(AnnouncementTaskReferences.self)!
             )
-        }.inObjectScope(.container)
+        }.inObjectScope(.weak)
         
         container.register(RefreshAnnouncementsUseCase.self) { resolver in
             RefreshAnnouncementsUseCase(
@@ -60,7 +65,7 @@ class NewsInjector: Injector {
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
                 blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self)
             )
-        }
+        }.inObjectScope(.weak)
         
         // Others
         container.register(StartupAnnouncementTask.self) { resolver in
@@ -69,7 +74,11 @@ class NewsInjector: Injector {
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
                 resendAnnouncementUseCase: resolver.resolve(ResendAnnouncementUseCase.self)!
             )
-        }
+        }.inObjectScope(.weak)
+        
+        container.register(AnnouncementTaskReferences.self) { resolver in
+            AnnouncementTaskReferences()
+        }.inObjectScope(.weak)
     }
     
     func resolve<T>(_ type: T.Type) -> T {
