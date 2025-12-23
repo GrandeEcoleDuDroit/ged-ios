@@ -7,9 +7,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     private let notificationMediator = AppInjector.shared.resolve(NotificationMediator.self)
     private lazy var fcmManager = AppInjector.shared.resolve(FcmManager.self)
     private lazy var fcmTokenUseCase: FcmTokenUseCase = AppInjector.shared.resolve(FcmTokenUseCase.self)
-    private lazy var startupMessageTask: StartupMessageTask = MessageInjector.shared.resolve(StartupMessageTask.self)
-    private lazy var startupAnnouncementTask: StartupAnnouncementTask = NewsInjector.shared.resolve(StartupAnnouncementTask.self)
-    private lazy var startupMissionTask: StartupMissionTask = MissionInjector.shared.resolve(StartupMissionTask.self)
     private let tag = String(describing: AppDelegate.self)
     
     func application(
@@ -34,6 +31,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     private func runStartupTasks() {
+        let startupMessageTask = MessageInjector.shared.resolve(StartupMessageTask.self)
+        let startupAnnouncementTask = NewsInjector.shared.resolve(StartupAnnouncementTask.self)
+        let startupMissionTask = MissionInjector.shared.resolve(StartupMissionTask.self)
+        
         startupMessageTask.run()
         startupAnnouncementTask.run()
         startupMissionTask.run()

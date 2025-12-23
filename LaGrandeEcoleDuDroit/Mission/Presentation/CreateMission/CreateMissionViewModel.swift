@@ -24,11 +24,6 @@ class CreateMissionViewModel: ViewModel {
         
         initCurrentUser()
         initUsers()
-        print("INIT CreateMissionViewModel")
-    }
-    
-    deinit {
-        print("DEINIT CreateMissionViewModel")
     }
     
     func createMission(imageData: Data?) {

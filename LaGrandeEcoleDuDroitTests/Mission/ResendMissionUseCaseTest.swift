@@ -11,14 +11,17 @@ class ResendMissionUseCaseTest {
         let imagePath = "imagePath"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
         let missionRepositoryTest = MissionRepositoryTest()
-        
+        let missionTaskReferences = MissionTaskReferences()
+
         // When
         let useCase = ResendMissionUseCase(
             missionRepository: missionRepositoryTest,
-            imageRepository: MockImageRepository()
+            imageRepository: MockImageRepository(),
+            missionTaskReferences: missionTaskReferences
         )
         await useCase.execute(mission: mission)
-        
+        await missionTaskReferences.tasks[mission.id]?.value
+
         // Then
         #expect(missionRepositoryTest.createdMissionState?.type == .publishingType)
         let pathResult: String? = if case let .publishing(path) = missionRepositoryTest.createdMissionState {
@@ -35,18 +38,21 @@ class ResendMissionUseCaseTest {
         let imagePath = "imagePath"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
         let missionRepositoryTest = MissionRepositoryTest()
-        
+        let missionTaskReferences = MissionTaskReferences()
+
         // When
         let useCase = ResendMissionUseCase(
             missionRepository: missionRepositoryTest,
-            imageRepository: MockImageRepository()
+            imageRepository: MockImageRepository(),
+            missionTaskReferences: missionTaskReferences
         )
         await useCase.execute(mission: mission)
+        await missionTaskReferences.tasks[mission.id]?.value
         
         // Then
-        #expect(missionRepositoryTest.upsertedMissionState?.type == .publishedType)
+        #expect(missionRepositoryTest.updatedMissionState?.type == .publishedType)
         
-        let pathResult: String? = if case let .published(path) = missionRepositoryTest.upsertedMissionState {
+        let pathResult: String? = if case let .published(path) = missionRepositoryTest.updatedMissionState {
             path
         } else {
             nil
@@ -62,14 +68,17 @@ class ResendMissionUseCaseTest {
         let imageData = pngImageDataFixture
         let missionRepositoryTest = MissionRepositoryTest()
         let imageRepositoryTest = ImageRepositoryTest(givenImageData: imageData)
-        
+        let missionTaskReferences = MissionTaskReferences()
+
         // When
         let useCase = ResendMissionUseCase(
             missionRepository: missionRepositoryTest,
-            imageRepository: imageRepositoryTest
+            imageRepository: imageRepositoryTest,
+            missionTaskReferences: missionTaskReferences
         )
         await useCase.execute(mission: mission)
-        
+        await missionTaskReferences.tasks[mission.id]?.value
+
         // Then
         #expect(missionRepositoryTest.transmittedImageData == imageData)
     }
@@ -80,17 +89,20 @@ class ResendMissionUseCaseTest {
         let imagePath = "/path/to/image"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
         let createMissionException = CreateMissionThrowsException()
+        let missionTaskReferences = MissionTaskReferences()
         
         // When
         let useCase = ResendMissionUseCase(
             missionRepository: createMissionException,
-            imageRepository: MockImageRepository()
+            imageRepository: MockImageRepository(),
+            missionTaskReferences: missionTaskReferences
         )
         await useCase.execute(mission: mission)
+        await missionTaskReferences.tasks[mission.id]?.value
         
         // Then
-        #expect(createMissionException.upsertedMissionState?.type == .errorType)
-        let pathResult: String? = if case let .error(path) = createMissionException.upsertedMissionState {
+        #expect(createMissionException.updatedMissionState?.type == .errorType)
+        let pathResult: String? = if case let .error(path) = createMissionException.updatedMissionState {
             path
         } else {
             nil
@@ -101,7 +113,7 @@ class ResendMissionUseCaseTest {
 
 private class MissionRepositoryTest: MockMissionRepository {
     var createdMissionState: Mission.MissionState?
-    var upsertedMissionState: Mission.MissionState?
+    var updatedMissionState: Mission.MissionState?
     var transmittedImageData: Data?
     
     override func createMission(mission: Mission, imageData: Data?) async throws {
@@ -109,8 +121,8 @@ private class MissionRepositoryTest: MockMissionRepository {
         transmittedImageData = imageData
     }
     
-    override func upsertLocalMission(mission: Mission) async throws {
-        upsertedMissionState = mission.state
+    override func updateLocalMission(mission: Mission) async throws {
+        updatedMissionState = mission.state
     }
 }
 
@@ -127,13 +139,13 @@ private class ImageRepositoryTest: MockImageRepository {
 }
 
 private class CreateMissionThrowsException: MockMissionRepository {
-    var upsertedMissionState: Mission.MissionState?
+    var updatedMissionState: Mission.MissionState?
 
     override func createMission(mission: Mission, imageData: Data?) async throws {
         throw NSError(domain: "", code: 0, userInfo: nil)
     }
     
-    override func upsertLocalMission(mission: Mission) async throws {
-        upsertedMissionState = mission.state
+    override func updateLocalMission(mission: Mission) async throws {
+        updatedMissionState = mission.state
     }
 }
