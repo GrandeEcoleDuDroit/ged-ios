@@ -37,7 +37,7 @@ class MissionInjector: Injector {
             CreateMissionUseCase(
                 missionRepository: resolver.resolve(MissionRepository.self)!,
                 imageRepository: CommonInjector.shared.resolve(ImageRepository.self),
-                missionJobReferences: resolver.resolve(MissionJobReferences.self)!
+                missionTaskReferences: resolver.resolve(MissionTaskReferences.self)!
             )
         }
         
@@ -45,7 +45,7 @@ class MissionInjector: Injector {
             DeleteMissionUseCase(
                 missionRepository: resolver.resolve(MissionRepository.self)!,
                 imageRepository: CommonInjector.shared.resolve(ImageRepository.self),
-                missionJobReferences: resolver.resolve(MissionJobReferences.self)!
+                missionTaskReferences: resolver.resolve(MissionTaskReferences.self)!
             )
         }
         
@@ -80,8 +80,8 @@ class MissionInjector: Injector {
             )
         }
         
-        container.register(MissionJobReferences.self) { _ in
-            MissionJobReferences()
+        container.register(MissionTaskReferences.self) { _ in
+            MissionTaskReferences()
         }.inObjectScope(.container)
     }
     
