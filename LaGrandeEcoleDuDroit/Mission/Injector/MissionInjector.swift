@@ -36,14 +36,16 @@ class MissionInjector: Injector {
         container.register(CreateMissionUseCase.self) { resolver in
             CreateMissionUseCase(
                 missionRepository: resolver.resolve(MissionRepository.self)!,
-                imageRepository: CommonInjector.shared.resolve(ImageRepository.self)
+                imageRepository: CommonInjector.shared.resolve(ImageRepository.self),
+                missionJobReferences: resolver.resolve(MissionJobReferences.self)!
             )
         }
         
         container.register(DeleteMissionUseCase.self) { resolver in
             DeleteMissionUseCase(
                 missionRepository: resolver.resolve(MissionRepository.self)!,
-                imageRepository: CommonInjector.shared.resolve(ImageRepository.self)
+                imageRepository: CommonInjector.shared.resolve(ImageRepository.self),
+                missionJobReferences: resolver.resolve(MissionJobReferences.self)!
             )
         }
         
@@ -78,6 +80,9 @@ class MissionInjector: Injector {
             )
         }
         
+        container.register(MissionJobReferences.self) { _ in
+            MissionJobReferences()
+        }.inObjectScope(.container)
     }
     
     func resolve<T>(_ type: T.Type) -> T {

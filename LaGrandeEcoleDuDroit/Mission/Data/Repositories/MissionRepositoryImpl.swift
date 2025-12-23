@@ -51,6 +51,10 @@ class MissionRepositoryImpl: MissionRepository {
         try await missionLocalDataSource.upsertMission(mission: mission)
     }
     
+    func updateLocalMission(mission: Mission) async throws {
+        try await missionLocalDataSource.updateMission(mission: mission)
+    }
+    
     func upsertLocalMission(mission: Mission) async throws {
         try await missionLocalDataSource.upsertMission(mission: mission)
     }
