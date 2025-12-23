@@ -6,13 +6,17 @@ class DeleteAnnouncementUseCaseTest {
     @Test
     func deleteAnnouncementUseCase_should_delete_announcement_when_state_is_published() async {
         // Given
+        let announcement = announcementFixture
         let announcementDeleted = AnnouncementDeleted()
+        let announcementTaskReferences = AnnouncementTaskReferences()
         let useCase = DeleteAnnouncementUseCase(
-            announcementRepository: announcementDeleted
+            announcementRepository: announcementDeleted,
+            announcementTaskReferences: announcementTaskReferences
         )
         
         // When
-        try? await useCase.execute(announcement: announcementFixture.copy{ $0.state = .published })
+        try? await useCase.execute(announcement: announcement.copy{ $0.state = .published })
+        await announcementTaskReferences.tasks[announcement.id]?.value
         
         // Then
         #expect(announcementDeleted.deleteAnnouncementCalled)
@@ -21,14 +25,18 @@ class DeleteAnnouncementUseCaseTest {
     @Test
     func deleteAnnouncementUseCase_should_delete_announcement_locally_when_state_is_not_published() async {
         // Given
+        let announcement = announcementFixture
         let announcementDeletedLocally = AnnouncementDeletedLocally()
+        let announcementTaskReferences = AnnouncementTaskReferences()
         let useCase = DeleteAnnouncementUseCase(
-            announcementRepository: announcementDeletedLocally
+            announcementRepository: announcementDeletedLocally,
+            announcementTaskReferences: announcementTaskReferences
         )
         
         // When
-        try? await useCase.execute(announcement: announcementFixture.copy{ $0.state = .draft })
-
+        try? await useCase.execute(announcement: announcement.copy{ $0.state = .draft })
+        await announcementTaskReferences.tasks[announcement.id]?.value
+        
         // Then
         #expect(announcementDeletedLocally.deleteLocalAnnouncementCalled)
     }

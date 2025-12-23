@@ -110,7 +110,7 @@ private struct AllAnnouncementsView: View {
                 case let .announcement(announcement):
                     AnnouncementSheet(
                         announcement: announcement,
-                        isEditable: user.admin && announcement.author.id == user.id,
+                        editable: user.admin && announcement.author.id == user.id,
                         onEditClick: {
                             activeSheet = .editAnnouncement(announcement)
                         },
