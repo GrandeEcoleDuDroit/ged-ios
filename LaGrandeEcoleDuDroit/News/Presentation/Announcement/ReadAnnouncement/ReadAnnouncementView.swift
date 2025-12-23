@@ -98,11 +98,10 @@ private struct ReadAnnouncementView: View {
                 case .announcement:
                     AnnouncementSheet(
                         announcement: announcement,
-                        isEditable: user.admin && announcement.author.id == user.id,
+                        editable: user.admin && announcement.author.id == user.id,
                         onEditClick: {
                             activeSheet = .editAnnouncement
                         },
-                        onResendClick: {},
                         onDeleteClick: {
                             activeSheet = nil
                             showDeleteAnnouncementAlert = true

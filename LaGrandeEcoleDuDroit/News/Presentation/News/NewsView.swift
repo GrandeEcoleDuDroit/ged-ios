@@ -67,15 +67,11 @@ private struct NewsView: View {
                 onAnnouncementClick: { announcement in
                     switch announcement.state {
                         case .published: onAnnouncementClick(announcement.id)
-                        case .error: activeSheet = .announcement(announcement)
-                        default: break
+                        default: activeSheet = .announcement(announcement)
                     }
                 },
                 onAnnouncementOptionsClick: { announcement in
-                    switch announcement.state {
-                        case .published, .error: activeSheet = .announcement(announcement)
-                        default: break
-                    }
+                    activeSheet = .announcement(announcement)
                 },
                 onSeeAllAnnouncementClick: onSeeAllAnnouncementClick,
                 onRefreshAnnouncements: onRefreshAnnouncements
@@ -112,7 +108,7 @@ private struct NewsView: View {
                 case let .announcement(announcement):
                     AnnouncementSheet(
                         announcement: announcement,
-                        isEditable: user.admin && announcement.author.id == user.id,
+                        editable: user.admin && announcement.author.id == user.id,
                         onEditClick: {
                             if let fullAnnouncement = getAnnouncement(announcement.id) {
                                 activeSheet = .editAnnouncement(fullAnnouncement)
