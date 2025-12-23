@@ -56,6 +56,10 @@ class MissionLocalDataSource {
         try await missionActor.getMissions().compactMap { $0.toMission(getImagePath: getImagePath) }
     }
     
+    func updateMission(mission: Mission) async throws {
+        try await missionActor.update(mission: mission)
+    }
+    
     func upsertMission(mission: Mission) async throws {
         try await missionActor.upsert(mission: mission)
     }

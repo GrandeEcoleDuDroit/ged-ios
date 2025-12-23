@@ -26,20 +26,74 @@ struct MissionSheet: View {
     
     var body: some View {
         switch mission.state {
-            case .error: ErrorMissionSheet(
-                onDeleteClick: onDeleteClick,
-                onResendClick: onResendClick
+            case .published:
+                PublishedMissionSheet(
+                    admin: isAdminUser,
+                    onEditClick: onEditClick,
+                    onDeleteClick: onDeleteClick,
+                    onReportClick: onReportClick
+                )
+                
+            case .publishing:
+                PublishingMissionSheet(onDeleteClick: onDeleteClick)
+                
+            case .error:
+                ErrorMissionSheet(
+                    onDeleteClick: onDeleteClick,
+                    onResendClick: onResendClick
+                )
+                
+            default: EmptyView()
+        }
+    }
+}
+
+private struct PublishedMissionSheet: View {
+    let admin: Bool
+    let onEditClick: () -> Void
+    let onDeleteClick: () -> Void
+    let onReportClick: () -> Void
+    
+    var body: some View {
+        if admin {
+            SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
+                ClickableTextItem(
+                    icon: Image(systemName: "pencil"),
+                    text: Text(stringResource(.edit)),
+                    onClick: onEditClick
+                )
+                
+                ClickableTextItem(
+                    icon: Image(systemName: "trash"),
+                    text: Text(stringResource(.delete)),
+                    onClick: onDeleteClick
+                )
+                .foregroundColor(.red)
+            }
+        } else {
+            SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
+                ClickableTextItem(
+                    icon: Image(systemName: "exclamationmark.bubble"),
+                    text: Text(stringResource(.report)),
+                    onClick: onReportClick
+                )
+                .foregroundColor(.red)
+            }
+        }
+    }
+}
+
+private struct PublishingMissionSheet: View {
+    let onDeleteClick: () -> Void
+    
+    var body: some View {
+        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
+            ClickableTextItem(
+                icon: Image(systemName: "trash"),
+                text: Text(stringResource(.delete)),
+                onClick: onDeleteClick
             )
-            
-            default:
-                if isAdminUser {
-                    EditableMissionSheet(
-                        onEditClick: onEditClick,
-                        onDeleteClick: onDeleteClick
-                    )
-                } else {
-                    NonEditableMissionSheet(onReportClick: onReportClick)
-                }
+            .foregroundColor(.red)
         }
     }
 }
@@ -60,43 +114,6 @@ private struct ErrorMissionSheet: View {
                 icon: Image(systemName: "trash"),
                 text: Text(stringResource(.delete)),
                 onClick: onDeleteClick
-            )
-            .foregroundColor(.red)
-        }
-    }
-}
-
-private struct EditableMissionSheet: View {
-    let onEditClick: () -> Void
-    let onDeleteClick: () -> Void
-    
-    var body: some View {
-        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
-            ClickableTextItem(
-                icon: Image(systemName: "pencil"),
-                text: Text(stringResource(.edit)),
-                onClick: onEditClick
-            )
-            
-            ClickableTextItem(
-                icon: Image(systemName: "trash"),
-                text: Text(stringResource(.delete)),
-                onClick: onDeleteClick
-            )
-            .foregroundColor(.red)
-        }
-    }
-}
-
-private struct NonEditableMissionSheet: View {
-    let onReportClick: () -> Void
-    
-    var body: some View {
-        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
-            ClickableTextItem(
-                icon: Image(systemName: "exclamationmark.bubble"),
-                text: Text(stringResource(.report)),
-                onClick: onReportClick
             )
             .foregroundColor(.red)
         }
