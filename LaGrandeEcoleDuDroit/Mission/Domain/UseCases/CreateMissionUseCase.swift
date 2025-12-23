@@ -15,7 +15,7 @@ class CreateMissionUseCase {
         self.missionTaskReferences = missionTaskReferences
     }
     
-    func execute(mission: Mission, imageData: Data?) {
+    func execute(mission: Mission, imageData: Data?) async {
         let task = Task {
             var imagePath: String?
             
@@ -47,9 +47,7 @@ class CreateMissionUseCase {
                 await self.missionTaskReferences.removeTaskReference(for: mission.id)
             }
         }
-        
-        Task {
-            await self.missionTaskReferences.addTaskReference(task, for: mission.id)
-        }
+    
+        await self.missionTaskReferences.addTaskReference(task, for: mission.id)
     }
 }
