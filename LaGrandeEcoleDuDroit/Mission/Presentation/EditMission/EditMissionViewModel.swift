@@ -33,11 +33,6 @@ class EditMissionViewModel: ViewModel {
         initUiState()
         initUsers()
         listenMissionUpdateState()
-        print("INIT EditMissionViewModel")
-    }
-    
-    deinit {
-        print("DEINIT EditMissionViewModel")
     }
     
     func updateMission(imageData: Data?) {
@@ -81,13 +76,8 @@ class EditMissionViewModel: ViewModel {
         }
         
         executeRequest { [weak self] in
-            guard let self else { return }
-            try await updateMissionUseCase.execute(
-                mission: missionToUpdate,
-                imageData: imageData,
-                previousMissionState: self.mission.state
-            )
-            event = SuccessEvent()
+            try await self?.updateMissionUseCase.execute(mission: missionToUpdate, imageData: imageData)
+            self?.event = SuccessEvent()
         }
     }
     

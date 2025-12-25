@@ -1,40 +1,18 @@
 class DeleteAccountUseCase {
     private let userRepository: UserRepository
     private let authenticationRepository: AuthenticationRepository
-    private let announcementRepository: AnnouncementRepository
-    private let imageRepository: ImageRepository
     
     init(
         userRepository: UserRepository,
-        authenticationRepository: AuthenticationRepository,
-        announcementRepository: AnnouncementRepository,
-        imageRepository: ImageRepository
+        authenticationRepository: AuthenticationRepository
     ) {
         self.userRepository = userRepository
         self.authenticationRepository = authenticationRepository
-        self.announcementRepository = announcementRepository
-        self.imageRepository = imageRepository
     }
 
     func execute(user: User, password: String) async throws {
         try await authenticationRepository.loginWithEmailAndPassword(email: user.email, password: password)
-        try await announcementRepository.deleteAnnouncements(userId: user.id)
-        try await deleteUser(user: user)
-        try await authenticationRepository.deleteAuthUser()
-    }
-    
-    private func deleteUser(user: User) async throws {
-        let deletedUser = user.copy {
-            $0.email = "\(user.id)@deleted.com";
-            $0.profilePictureUrl = nil;
-            $0.state = .deleted
-        }
-        
-        try await userRepository.updateRemoteUser(user: deletedUser)
-        if let fileName = UserUtils.ProfilePicture.getFileName(url: user.profilePictureUrl) {
-            let imagePath = UserUtils.ProfilePicture.relativePath(fileName: fileName)
-            try await imageRepository.deleteRemoteImage(imagePath: imagePath)
-        }
-        userRepository.deleteLocalUser()
+        try await userRepository.deleteUser(user: user)
+        authenticationRepository.setAuthenticated(false)
     }
 }

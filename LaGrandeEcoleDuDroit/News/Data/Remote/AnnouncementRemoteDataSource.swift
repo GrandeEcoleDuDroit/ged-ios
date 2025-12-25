@@ -32,14 +32,6 @@ class AnnouncementRemoteDataSource {
         )
     }
     
-    func deleteAnnouncements(userId: String) async throws {
-        try await mapServerError(
-            block: { try await announcementApi.deleteAnnouncements(userId: userId) },
-            tag: tag,
-            message: "Failed to delete remote announcements"
-        )
-    }
-    
     func deleteAnnouncement(announcementId: String, authorId: String) async throws {
         try await mapServerError(
             block: { try await announcementApi.deleteAnnouncement(announcementId: announcementId, authorId: authorId) },

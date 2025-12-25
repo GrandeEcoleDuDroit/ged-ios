@@ -8,7 +8,7 @@ class DeleteAnnouncementUseCaseTest {
         // Given
         let announcement = announcementFixture
         let announcementDeleted = AnnouncementDeleted()
-        let announcementTaskReferences = AnnouncementTaskReferences()
+        let announcementTaskReferences = AnnouncementTaskQueue()
         let useCase = DeleteAnnouncementUseCase(
             announcementRepository: announcementDeleted,
             announcementTaskReferences: announcementTaskReferences
@@ -27,7 +27,7 @@ class DeleteAnnouncementUseCaseTest {
         // Given
         let announcement = announcementFixture
         let announcementDeletedLocally = AnnouncementDeletedLocally()
-        let announcementTaskReferences = AnnouncementTaskReferences()
+        let announcementTaskReferences = AnnouncementTaskQueue()
         let useCase = DeleteAnnouncementUseCase(
             announcementRepository: announcementDeletedLocally,
             announcementTaskReferences: announcementTaskReferences

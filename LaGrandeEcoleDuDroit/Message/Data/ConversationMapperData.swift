@@ -75,7 +75,7 @@ extension LocalConversation {
             email: interlocutorEmail,
             schoolLevel: SchoolLevel(rawValue: interlocutorSchoolLevel) ?? SchoolLevel.unknown,
             admin: conversationInterlocutorAdmin,
-            profilePictureUrl: UserUtils.ProfilePicture.url(fileName: conversationInterlocutorProfilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePicture.getUrl(fileName: conversationInterlocutorProfilePictureFileName),
             state: User.UserState(rawValue: interlocutorState) ?? .active,
             tester: conversationInterlocutorTester
         )

@@ -30,10 +30,6 @@ class CommonInjector: Injector {
             )
         }.inObjectScope(.container)
         
-        container.register(ImageApi.self) { _ in
-            ImageApiImpl(tokenProvider: AppInjector.shared.resolve(TokenProvider.self))
-        }.inObjectScope(.container)
-        
         container.register(WhiteListApi.self) { _ in
             WhiteListApiImpl()
         }.inObjectScope(.container)
@@ -69,10 +65,6 @@ class CommonInjector: Injector {
             ImageLocalDataSource()
         }.inObjectScope(.container)
         
-        container.register(ImageRemoteDataSource.self) { resolver in
-            ImageRemoteDataSource(imageApi: resolver.resolve(ImageApi.self)!)
-        }.inObjectScope(.container)
-        
         container.register(FcmLocalDataSource.self) { _ in
             FcmLocalDataSource()
         }.inObjectScope(.container)
@@ -95,8 +87,7 @@ class CommonInjector: Injector {
         
         container.register(ImageRepository.self) { resolver in
             ImageRepositoryImpl(
-                imageLocalDataSource: resolver.resolve(ImageLocalDataSource.self)!,
-                imageRemoteDataSource: resolver.resolve(ImageRemoteDataSource.self)!
+                imageLocalDataSource: resolver.resolve(ImageLocalDataSource.self)!
             )
         }.inObjectScope(.container)
         
@@ -133,13 +124,6 @@ class CommonInjector: Injector {
             UpdateProfilePictureUseCase(
                 userRepository: resolver.resolve(UserRepository.self)!,
                 imageRepository: resolver.resolve(ImageRepository.self)!
-            )
-        }.inObjectScope(.container)
-        
-        container.register(DeleteProfilePictureUseCase.self) { resolver in
-            DeleteProfilePictureUseCase(
-                userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                imageRepository: CommonInjector.shared.resolve(ImageRepository.self)
             )
         }.inObjectScope(.container)
         

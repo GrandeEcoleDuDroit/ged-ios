@@ -17,3 +17,7 @@ enum UserError: Error {
 enum ImageError: Error {
     case invalidFormat
 }
+
+enum CommonError: Error {
+    case invalidArgument
+}

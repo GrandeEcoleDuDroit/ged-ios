@@ -15,7 +15,5 @@ protocol AuthenticationRepository {
     
     func resetPassword(email: String) async throws
     
-    func deleteAuthUser() async throws
-    
     func getToken() async throws -> String?
 }

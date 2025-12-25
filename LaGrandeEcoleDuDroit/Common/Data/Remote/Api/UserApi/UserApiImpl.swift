@@ -52,29 +52,32 @@ class UserApiImpl: UserApi {
         )
     }
     
-    func updateProfilePictureFileName(user: User, fileName: String) async throws {
+    func updateProfilePicture(user: User, imageData: Data, fileName: String) async throws {
         try await mapServerError(
             block: {
-                try await userServerApi.updateProfilePictureFileName(userId: user.id, fileName: fileName)
+                try await userServerApi.updateProfilePicture(serverUser: user.toServerUser(), imageData: imageData, fileName: fileName)
             },
             tag: tag,
-            message: "Failed to update profile picture file name with server"
+            message: "Failed to update profile picture with server"
         )
     }
     
-    func updateUser(user: User) async throws {
+    func deleteUser(user: User) async throws {
         try await mapServerError(
-            block: { try await userServerApi.updateUser(serverUser: user.toServerUser()) },
+            block: { try await userServerApi.deleteUser(serverUser: user.toServerUser()) },
             tag: tag,
-            message: "Failed to update user with server"
+            message: "Failed to delete user with server"
         )
     }
     
-    func deleteProfilePictureFileName(user: User) async throws {
+    func deleteProfilePicture(user: User) async throws {
+        guard let fileName = UserUtils.ProfilePicture.getFileName(url: user.profilePictureUrl) else {
+            throw CommonError.invalidArgument
+        }
         try await mapServerError(
-            block: { try await userServerApi.deleteProfilePictureFileName(userId: user.id) },
+            block: { try await userServerApi.deleteProfilePicture(userId: user.id, profilePictureFileName: fileName) },
             tag: tag,
-            message: "Failed to delete profile picture file name with server"
+            message: "Failed to delete profile picture with server"
         )
     }
     

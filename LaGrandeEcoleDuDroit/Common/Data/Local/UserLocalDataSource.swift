@@ -24,11 +24,11 @@ class UserLocalDataSource {
         }
         let localUser = try JSONDecoder().decode(LocalUser.self, from: localUserData)
         var user = localUser.toUser()
-        user.profilePictureUrl = UserUtils.ProfilePicture.url(fileName: fileName)
+        user.profilePictureUrl = UserUtils.ProfilePicture.getUrl(fileName: fileName)
         try storeUser(user: user)
     }
     
-    func removeUser() {
+    func deleteUser() {
         UserDefaults.standard.removeObject(forKey: userKey)
     }
 }
