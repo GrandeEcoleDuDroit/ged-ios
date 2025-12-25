@@ -11,17 +11,17 @@ class CreateMissionUseCaseTest {
     func createMissionsUseCase_should_create_local_image_when_image_data_is_not_null() async {
         // Given
         let mission = missionFixture
-        let missionTaskReferences = MissionTaskQueue()
+        let missionTaskQueue = MissionTaskQueue()
         let localImageCreated = LocalImageCreated()
         let useCase = CreateMissionUseCase(
             missionRepository: MockMissionRepository(),
             imageRepository: localImageCreated,
-            missionTaskReferences: missionTaskReferences
+            missionTaskQueue: missionTaskQueue
         )
         
         // When
         await useCase.execute(mission: mission, imageData: pngImageDataFixture)
-        await missionTaskReferences.tasks[mission.id]?.value
+        await missionTaskQueue.tasks[mission.id]?.value
         
         // Then
         #expect(localImageCreated.createLocalImageCalled)
@@ -31,18 +31,18 @@ class CreateMissionUseCaseTest {
     func createMissionsUseCase_should_create_mission_with_publishing_state_with_image_path() async {
         // Given
         let mission = missionFixture
-        let missionTaskReferences = MissionTaskQueue()
+        let missionTaskQueue = MissionTaskQueue()
         let localImageCreated = LocalImageCreated()
         let getMissionState = GetMissionMissionState()
         let useCase = CreateMissionUseCase(
             missionRepository: getMissionState,
             imageRepository: localImageCreated,
-            missionTaskReferences: missionTaskReferences
+            missionTaskQueue: missionTaskQueue
         )
         
         // When
         await useCase.execute(mission: mission, imageData: pngImageDataFixture)
-        await missionTaskReferences.tasks[mission.id]?.value
+        await missionTaskQueue.tasks[mission.id]?.value
 
         // Then
         #expect(getMissionState.createdMissionState?.type == .publishingType)
@@ -59,17 +59,17 @@ class CreateMissionUseCaseTest {
     func createMissionsUseCase_should_upsert_mission_with_published_state_when_succeed()  async{
         // Given
         let mission = missionFixture
-        let missionTaskReferences = MissionTaskQueue()
+        let missionTaskQueue = MissionTaskQueue()
         let getMissionState = GetMissionMissionState()
         let useCase = CreateMissionUseCase(
             missionRepository: getMissionState,
             imageRepository: MockImageRepository(),
-            missionTaskReferences: missionTaskReferences
+            missionTaskQueue: missionTaskQueue
         )
         
         // When
         await useCase.execute(mission: missionFixture, imageData: nil)
-        await missionTaskReferences.tasks[mission.id]?.value
+        await missionTaskQueue.tasks[mission.id]?.value
         
         // Then
         #expect(getMissionState.updatedMissionState?.type == .publishedType)
@@ -79,17 +79,17 @@ class CreateMissionUseCaseTest {
     func createMissionsUseCase_should_delete_created_local_image() async {
         // Given
         let mission = missionFixture
-        let missionTaskReferences = MissionTaskQueue()
+        let missionTaskQueue = MissionTaskQueue()
         let localImageDeleted = LocalImageDeleted()
         let useCase = CreateMissionUseCase(
             missionRepository: MockMissionRepository(),
             imageRepository: localImageDeleted,
-            missionTaskReferences: missionTaskReferences
+            missionTaskQueue: missionTaskQueue
         )
         
         // When
         await useCase.execute(mission: missionFixture, imageData: pngImageDataFixture)
-        await missionTaskReferences.tasks[mission.id]?.value
+        await missionTaskQueue.tasks[mission.id]?.value
         
         // Then
         #expect(localImageDeleted.deleteLocalImageCalled)
@@ -99,18 +99,18 @@ class CreateMissionUseCaseTest {
     func createMissionsUseCase_should_upsert_mission_with_error_state_and_image_path_when_exception_throwns() async {
         // Given
         let mission = missionFixture
-        let missionTaskReferences = MissionTaskQueue()
+        let missionTaskQueue = MissionTaskQueue()
         let localImageCreated = LocalImageCreated()
         let createMissionException = CreateMissionThrowsException()
         let useCase = CreateMissionUseCase(
             missionRepository: createMissionException,
             imageRepository: localImageCreated,
-            missionTaskReferences: missionTaskReferences
+            missionTaskQueue: missionTaskQueue
         )
         
         // When
         await useCase.execute(mission: missionFixture, imageData: pngImageDataFixture)
-        await missionTaskReferences.tasks[mission.id]?.value
+        await missionTaskQueue.tasks[mission.id]?.value
         
         // Then
         #expect(createMissionException.updatedMissionState?.type == .errorType)
