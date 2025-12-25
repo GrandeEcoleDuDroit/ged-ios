@@ -26,7 +26,7 @@ struct InboundRemoteAnnouncement: Codable {
     var userSchoolLevel: Int
     var userAdmin: Int
     var userProfilePictureFileName: String?
-    var userState: String
+    var userState: Int
     var userTester: Int
     
     enum CodingKeys: String, CodingKey {
@@ -57,7 +57,7 @@ struct InboundRemoteAnnouncement: Codable {
         userSchoolLevel: Int,
         userAdmin: Int,
         userProfilePictureFileName: String?,
-        userState: String,
+        userState: Int,
         userTester: Int
     ) {
         self.announcementId = announcementId
@@ -89,7 +89,7 @@ struct InboundRemoteAnnouncement: Codable {
         userSchoolLevel = try container.decode(Int.self, forKey: .userSchoolLevel)
         userAdmin = try container.decode(Int.self, forKey: .userAdmin)
         userProfilePictureFileName = try container.decodeIfPresent(String.self, forKey: .userProfilePictureFileName)
-        userState = try container.decode(String.self, forKey: .userState)
+        userState = try container.decode(Int.self, forKey: .userState)
         userTester = try container.decode(Int.self, forKey: .userTester)
     }
 }

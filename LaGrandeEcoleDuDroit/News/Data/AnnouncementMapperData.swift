@@ -59,7 +59,7 @@ extension LocalAnnouncement {
         announcementAuthorSchoolLevel = announcement.author.schoolLevel.rawValue
         announcementAuthorAdmin = announcement.author.admin
         announcementAuthorProfilePictureFileName = UserUtils.ProfilePicture.getFileName(url: announcement.author.profilePictureUrl)
-        announcementAuthorState = announcement.author.state.rawValue
+        announcementAuthorState = Int16(announcement.author.state.rawValue)
         announcementAuthorTester = announcement.author.tester
     }
     

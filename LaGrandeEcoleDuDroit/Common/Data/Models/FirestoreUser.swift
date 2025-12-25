@@ -6,7 +6,7 @@ struct FirestoreUser: Codable, Hashable {
     let schoolLevel: Int
     let admin: Bool
     let profilePictureFileName: String?
-    let state: String
+    let state: Int
     let tester: Bool
     
     func hash(into hasher: inout Hasher) {
@@ -33,7 +33,7 @@ struct FirestoreUser: Codable, Hashable {
         schoolLevel: Int,
         admin: Bool,
         profilePictureFileName: String?,
-        state: String,
+        state: Int,
         tester: Bool
     ) {
         self.userId = userId
@@ -57,7 +57,7 @@ struct FirestoreUser: Codable, Hashable {
         self.schoolLevel = try container.decode(Int.self, forKey: .schoolLevel)
         self.admin = try container.decode(Bool.self, forKey: .admin)
         self.profilePictureFileName = try container.decodeIfPresent(String.self, forKey: .profilePictureFileName)
-        self.state = try container.decode(String.self, forKey: .state)
+        self.state = try container.decode(Int.self, forKey: .state)
         self.tester = try container.decode(Bool.self, forKey: .tester)
     }
 }
