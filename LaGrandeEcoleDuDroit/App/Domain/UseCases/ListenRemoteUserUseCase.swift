@@ -27,7 +27,6 @@ class ListenRemoteUserUseCase {
                         return Empty<User?, Never>()
                     }
                     .compactMap { $0 }
-                    .filter { $0 != user }
                     .eraseToAnyPublisher()
                 ?? Empty().eraseToAnyPublisher()
             }

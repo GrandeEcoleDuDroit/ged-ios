@@ -41,7 +41,6 @@ class AppMainThreadInjector: MainThreadInjector {
         container.register(AccountInformationViewModel.self) { resolver in
             AccountInformationViewModel(
                 updateProfilePictureUseCase: CommonInjector.shared.resolve(UpdateProfilePictureUseCase.self),
-                deleteProfilePictureUseCase: CommonInjector.shared.resolve(DeleteProfilePictureUseCase.self),
                 networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 userRepository: CommonInjector.shared.resolve(UserRepository.self)
             )

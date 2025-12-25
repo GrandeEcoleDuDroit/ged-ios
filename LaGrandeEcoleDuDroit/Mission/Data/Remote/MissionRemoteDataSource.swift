@@ -42,13 +42,11 @@ class MissionRemoteDataSource {
         )
     }
     
-    func deleteMission(missionId: String, imageFileName: String?) async throws {
+    func deleteMission(mission: Mission) async throws {
         try await mapServerError(
-            block: {
-                try await missionApi.deleteMission(missionId: missionId, imageFileName: imageFileName)
-            },
+            block: { try await missionApi.deleteMission(remoteMission: mission.toRemote()!) },
             tag: tag,
-            message: "Failed to delete remote missions"
+            message: "Failed to delete remote mission"
         )
     }
     

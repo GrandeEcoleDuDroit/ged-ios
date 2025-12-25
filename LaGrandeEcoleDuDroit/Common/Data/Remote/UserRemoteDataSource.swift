@@ -24,16 +24,16 @@ class UserRemoteDataSource {
         try await userApi.createUser(user: user)
     }
     
-    func updateProfilePictureFileName(user: User, fileName: String) async throws {
-        try await userApi.updateProfilePictureFileName(user: user, fileName: fileName)
+    func updateProfilePicture(user: User, imageData: Data, fileName: String) async throws {
+        try await userApi.updateProfilePicture(user: user, imageData: imageData, fileName: fileName)
     }
     
-    func updateUser(user: User) async throws {
-        try await userApi.updateUser(user: user)
+    func deleteUser(user: User) async throws {
+        try await userApi.deleteUser(user: user)
     }
     
-    func deleteProfilePictureFileName(user: User) async throws {
-        try await userApi.deleteProfilePictureFileName(user: user)
+    func deleteProfilePicture(user: User) async throws {
+        try await userApi.deleteProfilePicture(user: user)
     }
     
     func reportUser(report: UserReport) async throws {

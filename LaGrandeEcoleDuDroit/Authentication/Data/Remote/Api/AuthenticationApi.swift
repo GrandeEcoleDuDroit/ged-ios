@@ -14,6 +14,4 @@ protocol AuthenticationApi {
     func logout()
     
     func resetPassword(email: String) async throws
-    
-    func deleteAuthUser() async throws
 }

@@ -8,7 +8,7 @@ class CreateAnnouncementUseCaseTest {
         // Given
         let announcement = announcementFixture
         let announcementSetPublished = AnnouncementSetPublished()
-        let announcementTaskReferences = AnnouncementTaskReferences()
+        let announcementTaskReferences = AnnouncementTaskQueue()
         let useCase = CreateAnnouncementUseCase(
             announcementRepository: announcementSetPublished,
             announcementTaskReferences: announcementTaskReferences
@@ -27,7 +27,7 @@ class CreateAnnouncementUseCaseTest {
         // Given
         let announcement = announcementFixture
         let announcementSetError = AnnouncementSetError()
-        let announcementTaskReferences = AnnouncementTaskReferences()
+        let announcementTaskReferences = AnnouncementTaskQueue()
         let useCase = CreateAnnouncementUseCase(
             announcementRepository: announcementSetError,
             announcementTaskReferences: announcementTaskReferences

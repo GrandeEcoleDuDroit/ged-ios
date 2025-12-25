@@ -9,7 +9,7 @@ class DeleteMissionUseCaseTest {
     func deleteMissionUseCase_should_delete_local_mission_when_state_is_draft() async {
         // Given
         let mission = missionFixture.copy { $0.state = .draft }
-        let missionTaskReferences = MissionTaskReferences()
+        let missionTaskReferences = MissionTaskQueue()
         let missionRepository = MissionRepositoryTest(
             givenMission: mission
         )
@@ -30,7 +30,7 @@ class DeleteMissionUseCaseTest {
     func deleteMissionUseCase_should_delete_local_mission_when_state_is_publishing() async {
         // Given
         let mission = missionFixture.copy { $0.state = .publishing() }
-        let missionTaskReferences = MissionTaskReferences()
+        let missionTaskReferences = MissionTaskQueue()
         let missionRepository = MissionRepositoryTest(
             givenMission: mission
         )
@@ -51,7 +51,7 @@ class DeleteMissionUseCaseTest {
     func deleteMissionUseCase_should_delete_task_when_state_is_publishing() async {
         // Given
         let mission = missionFixture.copy { $0.state = .publishing() }
-        let missionTaskReferences = MissionTaskReferences()
+        let missionTaskReferences = MissionTaskQueue()
         let missionRepository = MissionRepositoryTest(
             givenMission: mission
         )
@@ -73,7 +73,7 @@ class DeleteMissionUseCaseTest {
     func deleteMissionUseCase_should_delete_mission_when_state_is_published() async {
         // Given
         let mission = missionFixture.copy { $0.state = .published() }
-        let missionTaskReferences = MissionTaskReferences()
+        let missionTaskReferences = MissionTaskQueue()
         let missionRepository = MissionRepositoryTest(
             givenMission: mission
         )
@@ -94,7 +94,7 @@ class DeleteMissionUseCaseTest {
     func deleteMissionUseCase_should_delete_mission_when_state_is_error() async {
         // Given
         let mission = missionFixture.copy { $0.state = .error() }
-        let missionTaskReferences = MissionTaskReferences()
+        let missionTaskReferences = MissionTaskQueue()
         let missionRepository = MissionRepositoryTest(
             givenMission: mission
         )

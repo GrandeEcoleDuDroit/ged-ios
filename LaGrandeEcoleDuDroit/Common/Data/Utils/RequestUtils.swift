@@ -31,24 +31,24 @@ class RequestUtils {
     
     static func simplePostRequest(
         url: URL,
-        authToken: String? = nil,
         dataToSend: Encodable,
+        authToken: String? = nil
     ) throws -> URLRequest {
         try simpleWriteRequest(method: "POST", url: url, authToken: authToken, data: dataToSend)
     }
     
     static func simplePutRequest(
         url: URL,
-        authToken: String? = nil,
-        dataToSend: Encodable
+        dataToSend: Encodable,
+        authToken: String? = nil
     ) throws -> URLRequest {
         try simpleWriteRequest(method: "PUT", url: url, authToken: authToken, data: dataToSend)
     }
     
     static func simplePatchRequest(
         url: URL,
-        authToken: String? = nil,
-        dataToSend: Encodable
+        dataToSend: Encodable,
+        authToken: String? = nil
     ) throws -> URLRequest {
        try simpleWriteRequest(method: "PATCH", url: url, authToken: authToken, data: dataToSend)
     }

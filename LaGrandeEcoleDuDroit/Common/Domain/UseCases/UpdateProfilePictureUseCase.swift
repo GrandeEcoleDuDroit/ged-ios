@@ -15,15 +15,7 @@ class UpdateProfilePictureUseCase {
     func execute(user: User, imageData: Data) async throws {
         if let fileExtension = imageData.imageExtension() {
             let fileName = UserUtils.ProfilePicture.generateFileName(userId: user.id) + "." + fileExtension
-            let imagePath = UserUtils.ProfilePicture.relativePath(fileName: fileName)
-            
-            try await imageRepository.uploadImage(imageData: imageData, imagePath: imagePath)
-            try await userRepository.updateProfilePictureFileName(user: user, profilePictureFileName: fileName)
-            
-            if let oldFileName = UserUtils.ProfilePicture.getFileName(url: user.profilePictureUrl) {
-                let oldImagePath = UserUtils.ProfilePicture.relativePath(fileName: oldFileName)
-                try? await imageRepository.deleteRemoteImage(imagePath: oldImagePath)
-            }
+            try await userRepository.updateProfilePicture(user: user, imageData: imageData, fileName: fileName)
         } else {
             throw ImageError.invalidFormat
         }

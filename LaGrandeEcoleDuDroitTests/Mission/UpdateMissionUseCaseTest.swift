@@ -17,8 +17,7 @@ class UpdateMissionUseCaseTest {
         // When
         try? await useCase.execute(
             mission: missionFixture,
-            imageData: nil,
-            previousMissionState: .draft
+            imageData: nil
         )
         
         // Then
@@ -39,40 +38,18 @@ class UpdateMissionUseCaseTest {
         // When
         try? await useCase.execute(
             mission: mission,
-            imageData: pngImageDataFixture,
-            previousMissionState: .draft
+            imageData: pngImageDataFixture
         )
         
         // Then
         #expect(missionRepositoryTest.updatedMissionState?.type == .publishedType)
-        var newPath = false
+        var pathUpdated = false
         if case let .published(imagePath) = missionRepositoryTest.updatedMissionState {
-            let oldPath = MissionUtils.ImageFile.getImagePathFromUrl(url: mission.state.imageReference)
-            newPath = imagePath != oldPath
+            let fileName = MissionUtils.Image.getFileName(uri: mission.state.imageReference)!
+            let oldPath = MissionUtils.Image.getRelativePath(fileName: fileName)
+            pathUpdated = imagePath != oldPath
         }
-        #expect(newPath)
-    }
-    
-    @Test
-    func updateMissionUseCase_should_delete_previous_image() async {
-        // Given
-        let imageRepositoryTest = ImageRepositoryTest()
-        let useCase = UpdateMissionUseCase(
-            missionRepository: MockMissionRepository(),
-            imageRepository: imageRepositoryTest
-        )
-        let oldPath = "oldPath"
-        let oldUrl = "url/\(oldPath)"
-        
-        // When
-        try? await useCase.execute(
-            mission: missionFixture,
-            imageData: pngImageDataFixture,
-            previousMissionState: .published(imageUrl: oldUrl)
-        )
-        
-        // Then
-        #expect(imageRepositoryTest.deletedImagePath != oldPath)
+        #expect(pathUpdated)
     }
 }
 
@@ -83,13 +60,5 @@ private class MissionRepositoryTest: MockMissionRepository {
     override func updateMission(mission: Mission, imageData: Data?) async throws {
         missionUpdated = true
         updatedMissionState = mission.state
-    }
-}
-
-private class ImageRepositoryTest: MockImageRepository {
-    var deletedImagePath: String?
-
-    override func deleteRemoteImage(imagePath: String) async throws {
-        deletedImagePath = imagePath
     }
 }

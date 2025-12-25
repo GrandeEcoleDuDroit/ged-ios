@@ -74,6 +74,8 @@ enum Strings: String {
     case internetConnectionLostError = "internet_connection_lost_error"
     case disabledUserError = "disabled_user_error"
     case sendingError = "sending_error"
+    case networkConnectionLostError = "network_connection_lost_error"
+    case cannotFindHostError = "cannot_find_host_error"
 
     // Authentication
     case authenticationPageTitle = "authentication_page_title"

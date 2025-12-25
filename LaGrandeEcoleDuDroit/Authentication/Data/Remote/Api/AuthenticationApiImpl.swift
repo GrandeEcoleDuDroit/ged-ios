@@ -75,15 +75,6 @@ class AuthenticationApiImpl: AuthenticationApi {
         )
     }
     
-    func deleteAuthUser() async throws {
-        try await mapFirebaseError(
-            block: { try await firebaseAuth.currentUser?.delete() },
-            tag: tag,
-            message: "Failed to delete auth user",
-            handleSpecificException: mapAuthError
-        )
-    }
-    
     private func mapAuthError(error: Error) -> Error {
         let nsError = error as NSError
         return if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {

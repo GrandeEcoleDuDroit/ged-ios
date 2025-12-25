@@ -79,6 +79,8 @@
 "disabled_user_error" = "Your account has been disabled. Please contact the support.";
 "current_user_not_found_error" = "Current user not found. Please re-authenticate.";
 "sending_error" = "Sending error";
+"network_connection_lost_error" = "Network connection has been lost.";
+"cannot_find_host_error" = "Unable to connect to the server.";
 
 // Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";

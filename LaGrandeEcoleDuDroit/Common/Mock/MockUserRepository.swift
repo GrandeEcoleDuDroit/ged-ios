@@ -24,13 +24,13 @@ class MockUserRepository: UserRepository {
     
     func createUser(user: User) async throws {}
     
-    func updateRemoteUser(user: User) async throws {}
-    
-    func updateProfilePictureFileName(user: User, profilePictureFileName: String) async throws {}
+    func updateProfilePicture(user: User, imageData: Data, fileName: String) async throws {}
+
+    func deleteUser(user: User) async throws {}
         
     func deleteLocalUser() {}
-    
-    func deleteProfilePictureFileName(user: User) async throws {}
+
+    func deleteProfilePicture(user: User) async throws {}
     
     func reportUser(report: UserReport) async throws {}
 }
