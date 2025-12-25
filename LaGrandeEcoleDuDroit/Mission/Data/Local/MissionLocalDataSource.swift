@@ -88,7 +88,7 @@ class MissionLocalDataSource {
             in: .userDomainMask
         )
         .first?
-        .appending(path: MissionUtils.ImageFile.relativePath(fileName: fileName), directoryHint: .inferFromPath)
+        .appending(path: MissionUtils.Image.getRelativePath(fileName: fileName), directoryHint: .inferFromPath)
         .path()
     }
 }

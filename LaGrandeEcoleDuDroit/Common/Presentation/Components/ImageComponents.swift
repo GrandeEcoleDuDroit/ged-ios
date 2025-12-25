@@ -68,6 +68,10 @@ struct CacheAsyncImage: View {
                 await MainActor.run {
                     self.phase = .success(Image(uiImage: uiImage))
                 }
+            } else {
+                await MainActor.run {
+                    self.phase = .failure
+                }
             }
         } catch {
             await MainActor.run {

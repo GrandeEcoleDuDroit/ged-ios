@@ -126,7 +126,7 @@ private extension RemoteMessageNotification.Conversation.Interlocutor {
             email: email,
             schoolLevel: SchoolLevel(rawValue: schoolLevel) ?? .ged1,
             admin: admin,
-            profilePictureUrl: UserUtils.ProfilePicture.url(fileName: profilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePicture.getUrl(fileName: profilePictureFileName),
             state: User.UserState(rawValue: state) ?? .active,
             tester: tester
         )

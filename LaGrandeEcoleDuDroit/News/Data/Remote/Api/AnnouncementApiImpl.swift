@@ -24,7 +24,7 @@ class AnnouncementApiImpl: AnnouncementApi {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "create")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.simplePostRequest(url: url, authToken: authToken, dataToSend: remoteAnnouncement)
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: remoteAnnouncement, authToken: authToken)
         
         return try await RequestUtils.sendRequest(session: session, request: request)
     }
@@ -33,16 +33,7 @@ class AnnouncementApiImpl: AnnouncementApi {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "update")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.simplePostRequest(url: url, authToken: authToken, dataToSend: remoteAnnouncement)
-        
-        return try await RequestUtils.sendRequest(session: session, request: request)
-    }
-    
-    func deleteAnnouncements(userId: String) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "user/\(userId)")
-        let session = RequestUtils.getDefaultSession()
-        let authToken = await tokenProvider.getAuthToken()
-        let request = RequestUtils.simpleDeleteRequest(url: url, authToken: authToken)
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: remoteAnnouncement, authToken: authToken)
         
         return try await RequestUtils.sendRequest(session: session, request: request)
     }
@@ -55,11 +46,7 @@ class AnnouncementApiImpl: AnnouncementApi {
             AnnouncementField.Remote.announcementId: announcementId,
             AnnouncementField.Remote.userId: authorId
         ]
-        let request = try RequestUtils.simplePostRequest(
-            url: url,
-            authToken: authToken,
-            dataToSend: dataToSend
-        )
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: dataToSend, authToken: authToken)
         
         return try await RequestUtils.sendRequest(session: session, request: request)
     }
@@ -68,7 +55,7 @@ class AnnouncementApiImpl: AnnouncementApi {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "report")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.simplePostRequest(url: url, authToken: authToken, dataToSend: report)
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: report, authToken: authToken)
         
         return try await RequestUtils.sendRequest(session: session, request: request)
     }

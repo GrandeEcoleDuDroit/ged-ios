@@ -3,12 +3,12 @@ import Foundation
 class ResendMissionUseCase {
     private let missionRepository: MissionRepository
     private let imageRepository: ImageRepository
-    private let missionTaskReferences: MissionTaskReferences
+    private let missionTaskReferences: MissionTaskQueue
     
     init(
         missionRepository: MissionRepository,
         imageRepository: ImageRepository,
-        missionTaskReferences: MissionTaskReferences
+        missionTaskReferences: MissionTaskQueue
     ) {
         self.missionRepository = missionRepository
         self.imageRepository = imageRepository
@@ -39,7 +39,7 @@ class ResendMissionUseCase {
                     mission: mission.copy { $0.state = .published(imageUrl: imagePath) }
                 )
                 
-                await missionTaskReferences.removeTaskReference(for: mission.id)
+                await missionTaskReferences.removeTask(for: mission.id)
                 
                 if let imagePath {
                     try? await imageRepository.deleteLocalImage(imagePath: imagePath)
@@ -48,10 +48,10 @@ class ResendMissionUseCase {
                 try? await missionRepository.updateLocalMission(
                     mission: mission.copy { $0.state = .error(imagePath: imagePath) }
                 )
-                await missionTaskReferences.removeTaskReference(for: mission.id)
+                await missionTaskReferences.removeTask(for: mission.id)
             }
         }
         
-        await missionTaskReferences.addTaskReference(task, for: mission.id)
+        await missionTaskReferences.addTask(task, for: mission.id)
     }
 }

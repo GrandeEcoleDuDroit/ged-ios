@@ -6,9 +6,9 @@ func mapNetworkErrorMessage(
 ) -> String {
     return if let urlError = error as? URLError {
         switch urlError.code {
-            case .notConnectedToInternet,
-                    .cannotFindHost,
-                    .networkConnectionLost: stringResource(.internetConnectionLostError)
+            case .cannotFindHost: stringResource(.cannotFindHostError)
+            case .networkConnectionLost: stringResource(.networkConnectionLostError)
+            case .notConnectedToInternet: stringResource(.internetConnectionLostError)
             case .cannotConnectToHost: stringResource(.cannotConnectToHostError)
             case .timedOut: stringResource(.timeOutError)
             default: specificMap()

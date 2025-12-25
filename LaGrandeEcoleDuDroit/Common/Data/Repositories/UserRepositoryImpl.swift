@@ -47,22 +47,23 @@ class UserRepositoryImpl: UserRepository {
         userSubject.send(user)
     }
     
-    func updateRemoteUser(user: User) async throws {
-        try await userRemoteDataSource.updateUser(user: user)
+    func updateProfilePicture(user: User, imageData: Data, fileName: String) async throws {
+        try await userRemoteDataSource.updateProfilePicture(user: user, imageData: imageData, fileName: fileName)
+        try? userLocalDataSource.updateProfilePictureFileName(fileName: fileName)
     }
     
-    func updateProfilePictureFileName(user: User, profilePictureFileName: String) async throws {
-        try await userRemoteDataSource.updateProfilePictureFileName(user: user, fileName: profilePictureFileName)
-        try? userLocalDataSource.updateProfilePictureFileName(fileName: profilePictureFileName)
-    }
-    
-    func deleteLocalUser() {
-        userLocalDataSource.removeUser()
+    func deleteUser(user: User) async throws {
+        try await userRemoteDataSource.deleteUser(user: user)
+        userLocalDataSource.deleteUser()
         userSubject.send(nil)
     }
     
-    func deleteProfilePictureFileName(user: User) async throws {
-        try await userRemoteDataSource.deleteProfilePictureFileName(user: user)
+    func deleteLocalUser() {
+        userLocalDataSource.deleteUser()
+    }
+    
+    func deleteProfilePicture(user: User) async throws {
+        try await userRemoteDataSource.deleteProfilePicture(user: user)
         try? userLocalDataSource.updateProfilePictureFileName(fileName: nil)
     }
     

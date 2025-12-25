@@ -53,11 +53,6 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
         try await authenticationRemoteDataSource.resetPassword(email: email)
     }
     
-    func deleteAuthUser() async throws {
-        try await authenticationRemoteDataSource.deleteAuthUser()
-        setAuthenticated(false)
-    }
-    
     func getToken() async throws -> String? {
         token != nil ? token : try await authenticationRemoteDataSource.getToken()
     }

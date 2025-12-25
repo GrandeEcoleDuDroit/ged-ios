@@ -24,9 +24,9 @@ extension Mission {
         
         let imageFileName: String? = switch state {
             case .draft: nil
-            case let .publishing(imagePath): MissionUtils.ImageFile.extractFileNameFromPath(path: imagePath)
-            case let .published(imageUrl): MissionUtils.ImageFile.extractFileNameFromUrl(url: imageUrl)
-            case let .error(imagePath): MissionUtils.ImageFile.extractFileNameFromPath(path: imagePath)
+            case let .publishing(imagePath): MissionUtils.Image.getFileName(uri: imagePath)
+            case let .published(imageUrl): MissionUtils.Image.getFileName(uri: imageUrl)
+            case let .error(imagePath): MissionUtils.Image.getFileName(uri: imagePath)
         }
         
         return OutboundRemoteMission(
@@ -55,8 +55,7 @@ extension LocalMission {
               let missionDate = missionDate,
               let missionStartDate = missionStartDate,
               let missionEndDate = missionEndDate,
-              let missionManagers = missionManagers,
-              let missionState = missionState
+              let missionManagers = missionManagers
         else { return nil }
         
         let schoolLevelNumbers = (
@@ -94,14 +93,9 @@ extension LocalMission {
         }
         
         let state: Mission.MissionState = switch missionState {
-            case _ where missionState == Mission.MissionState.StateType.draftType.rawValue: .draft
-                
-            case _ where missionState == Mission.MissionState.StateType.publishingType.rawValue:
-                    .publishing(imagePath: imagePath)
-                
-            case _ where missionState == Mission.MissionState.StateType.publishedType.rawValue:
-                    .published(imageUrl: MissionUtils.ImageFile.url(fileName: missionImageFileName))
-                
+            case _ where missionState == Mission.MissionState.draft.id: .draft
+            case _ where missionState == Mission.MissionState.publishing().id: .publishing(imagePath: imagePath)
+            case _ where missionState == Mission.MissionState.published().id: .published(imageUrl: MissionUtils.Image.getUrl(fileName: missionImageFileName))
             default: Mission.MissionState.error(imagePath: imagePath)
         }
         
@@ -137,9 +131,9 @@ extension LocalMission {
         
         let imageFileName: String? = switch mission.state {
             case .draft: nil
-            case let .publishing(imagePath): MissionUtils.ImageFile.extractFileNameFromPath(path: imagePath)
-            case let .published(imageUrl): MissionUtils.ImageFile.extractFileNameFromUrl(url: imageUrl)
-            case let .error(imagePath): MissionUtils.ImageFile.extractFileNameFromPath(path: imagePath)
+            case let .publishing(imagePath): MissionUtils.Image.getFileName(uri: imagePath)
+            case let .published(imageUrl): MissionUtils.Image.getFileName(uri: imageUrl)
+            case let .error(imagePath): MissionUtils.Image.getFileName(uri: imagePath)
         }
         
         missionId = mission.id
@@ -170,49 +164,47 @@ extension LocalMission {
         }
         
         missionImageFileName = imageFileName
-        missionState = mission.state.description
+        missionState = Int16(mission.state.id)
     }
     
     func equals(_ mission: Mission) -> Bool {
         let schoolevelNumbers = mission.schoolLevels.map { $0.number }
-        let schoolLevelNumbersJsonData = try? JSONEncoder().encode(schoolevelNumbers)
-    
         let localManagers = mission.managers.map { $0.toLocal() }
-        let localManagersJsonData = try? JSONEncoder().encode(localManagers)
-        
         let localParticipants = mission.participants.map { $0.toLocal() }
-        let localParticipantsJsonData = try? JSONEncoder().encode(localParticipants)
-        
         let localMissionTasks = mission.tasks.map { $0.toLocal() }
+        
+        let schoolLevelNumbersJsonData = try? JSONEncoder().encode(schoolevelNumbers)
+        let localManagersJsonData = try? JSONEncoder().encode(localManagers)
+        let localParticipantsJsonData = try? JSONEncoder().encode(localParticipants)
         let localMissionTasksJsonData = try? JSONEncoder().encode(localMissionTasks)
         
         let imageFileName: String? = switch mission.state {
             case .draft: nil
-            case let .publishing(imagePath): MissionUtils.ImageFile.extractFileNameFromPath(path: imagePath)
-            case let .published(imageUrl): MissionUtils.ImageFile.extractFileNameFromUrl(url: imageUrl)
-            case let .error(imagePath): MissionUtils.ImageFile.extractFileNameFromPath(path: imagePath)
+            case let .publishing(imagePath): MissionUtils.Image.getFileName(uri: imagePath)
+            case let .published(imageUrl): MissionUtils.Image.getFileName(uri: imageUrl)
+            case let .error(imagePath): MissionUtils.Image.getFileName(uri: imagePath)
         }
         
-        let sameSchoolLevels = if let data = schoolLevelNumbersJsonData {
-            missionSchoolLevels == (String(data: data, encoding: .utf8) ?? "")
+        let sameSchoolLevels = if let schoolLevelNumbersJsonData {
+            missionSchoolLevels == (String(data: schoolLevelNumbersJsonData, encoding: .utf8) ?? "")
         } else {
             true
         }
         
-        let sameManagers = if let data = localManagersJsonData {
-            missionManagers == (String(data: data, encoding: .utf8) ?? "")
+        let sameManagers = if let localManagersJsonData {
+            missionManagers == (String(data: localManagersJsonData, encoding: .utf8) ?? "")
         } else {
             true
         }
         
-        let sameParticipants = if let data = localParticipantsJsonData {
-            missionParticipants == (String(data: data, encoding: .utf8) ?? "")
+        let sameParticipants = if let localParticipantsJsonData {
+            missionParticipants == (String(data: localParticipantsJsonData, encoding: .utf8) ?? "")
         } else {
             true
         }
         
-        let sameMissionTasks = if let data = localMissionTasksJsonData {
-            missionTasks == (String(data: data, encoding: .utf8) ?? "")
+        let sameMissionTasks = if let localMissionTasksJsonData {
+            missionTasks == (String(data: localMissionTasksJsonData, encoding: .utf8) ?? "")
         } else {
             true
         }
@@ -231,19 +223,18 @@ extension LocalMission {
             missionMaxParticipants == Int32(truncatingIfNeeded: mission.maxParticipants) &&
             sameMissionTasks &&
             missionImageFileName == imageFileName &&
-            missionState == mission.state.description
+            missionState == mission.state.id
         )
     }
 }
 
 extension InboundRemoteMission {
     func toMission() -> Mission {
-        let schoolLevelNumbers = (
-            try? JSONDecoder().decode(
-                [Int].self,
-                from: missionSchoolLevels?.data(using: .utf8) ?? Data()
-            )
-        ) ?? []
+        let schoolLevelNumbers: [Int] = if let data = missionSchoolLevels?.data(using: .utf8) {
+            (try? JSONDecoder().decode([Int].self, from: data)) ?? []
+        } else {
+            []
+        }
 
         return Mission(
             id: missionId,
@@ -258,7 +249,7 @@ extension InboundRemoteMission {
             participants: missionParticipants?.map { $0.toUser() } ?? [],
             maxParticipants: missionMaxParticipants,
             tasks: missionTasks?.map { $0.toMissionTask() } ?? [],
-            state: Mission.MissionState.published(imageUrl: MissionUtils.ImageFile.url(fileName: missionImageFileName))
+            state: Mission.MissionState.published(imageUrl: MissionUtils.Image.getUrl(fileName: missionImageFileName))
         )
     }
 }

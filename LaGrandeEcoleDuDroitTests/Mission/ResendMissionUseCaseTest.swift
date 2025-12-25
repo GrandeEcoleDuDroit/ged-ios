@@ -11,7 +11,7 @@ class ResendMissionUseCaseTest {
         let imagePath = "imagePath"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
         let missionRepositoryTest = MissionRepositoryTest()
-        let missionTaskReferences = MissionTaskReferences()
+        let missionTaskReferences = MissionTaskQueue()
 
         // When
         let useCase = ResendMissionUseCase(
@@ -38,7 +38,7 @@ class ResendMissionUseCaseTest {
         let imagePath = "imagePath"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
         let missionRepositoryTest = MissionRepositoryTest()
-        let missionTaskReferences = MissionTaskReferences()
+        let missionTaskReferences = MissionTaskQueue()
 
         // When
         let useCase = ResendMissionUseCase(
@@ -68,7 +68,7 @@ class ResendMissionUseCaseTest {
         let imageData = pngImageDataFixture
         let missionRepositoryTest = MissionRepositoryTest()
         let imageRepositoryTest = ImageRepositoryTest(givenImageData: imageData)
-        let missionTaskReferences = MissionTaskReferences()
+        let missionTaskReferences = MissionTaskQueue()
 
         // When
         let useCase = ResendMissionUseCase(
@@ -89,7 +89,7 @@ class ResendMissionUseCaseTest {
         let imagePath = "/path/to/image"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
         let createMissionException = CreateMissionThrowsException()
-        let missionTaskReferences = MissionTaskReferences()
+        let missionTaskReferences = MissionTaskQueue()
         
         // When
         let useCase = ResendMissionUseCase(

@@ -1,13 +1,15 @@
-extension MissionUtils.ImageFile {
-    static func url(fileName: String?) -> String? {
-        if let fileName {
-            "\(GedConfiguration.oracleBucketUrl)/\(relativePath(fileName: fileName))"
+extension MissionUtils.Image {
+    private static let folderName = "MissionImages"
+
+    static func getUrl(fileName: String?) -> String? {
+        return if let fileName {
+            "\(GedConfiguration.oracleBucketUrl)/\(folderName)/\(fileName)"
         } else {
             nil
         }
     }
     
-    static func extractFileNameFromPath(path: String?) -> String? {
-        path?.components(separatedBy: "/").last
+    static func getRelativePath(fileName: String) -> String {
+        "\(folderName)/\(fileName)"
     }
 }

@@ -66,7 +66,7 @@ struct Mission: Copying, Identifiable, Hashable {
         schoolLevels.isEmpty || schoolLevels.contains(schoolLevel)
     }
  
-    enum MissionState: Hashable {
+    enum MissionState: Hashable, Identifiable {
         case draft
         case publishing(imagePath: String? = nil)
         case published(imageUrl: String? = nil)
@@ -78,6 +78,15 @@ struct Mission: Copying, Identifiable, Hashable {
                 case .publishing: .publishingType
                 case .published: .publishedType
                 case .error: .errorType
+            }
+        }
+        
+        var id: Int {
+            switch self {
+                case .draft: 0
+                case .publishing: 1
+                case .published: 2
+                case .error: 3
             }
         }
         

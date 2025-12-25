@@ -11,7 +11,7 @@ class CreateMissionUseCaseTest {
     func createMissionsUseCase_should_create_local_image_when_image_data_is_not_null() async {
         // Given
         let mission = missionFixture
-        let missionTaskReferences = MissionTaskReferences()
+        let missionTaskReferences = MissionTaskQueue()
         let localImageCreated = LocalImageCreated()
         let useCase = CreateMissionUseCase(
             missionRepository: MockMissionRepository(),
@@ -31,7 +31,7 @@ class CreateMissionUseCaseTest {
     func createMissionsUseCase_should_create_mission_with_publishing_state_with_image_path() async {
         // Given
         let mission = missionFixture
-        let missionTaskReferences = MissionTaskReferences()
+        let missionTaskReferences = MissionTaskQueue()
         let localImageCreated = LocalImageCreated()
         let getMissionState = GetMissionMissionState()
         let useCase = CreateMissionUseCase(
@@ -59,7 +59,7 @@ class CreateMissionUseCaseTest {
     func createMissionsUseCase_should_upsert_mission_with_published_state_when_succeed()  async{
         // Given
         let mission = missionFixture
-        let missionTaskReferences = MissionTaskReferences()
+        let missionTaskReferences = MissionTaskQueue()
         let getMissionState = GetMissionMissionState()
         let useCase = CreateMissionUseCase(
             missionRepository: getMissionState,
@@ -79,7 +79,7 @@ class CreateMissionUseCaseTest {
     func createMissionsUseCase_should_delete_created_local_image() async {
         // Given
         let mission = missionFixture
-        let missionTaskReferences = MissionTaskReferences()
+        let missionTaskReferences = MissionTaskQueue()
         let localImageDeleted = LocalImageDeleted()
         let useCase = CreateMissionUseCase(
             missionRepository: MockMissionRepository(),
@@ -99,7 +99,7 @@ class CreateMissionUseCaseTest {
     func createMissionsUseCase_should_upsert_mission_with_error_state_and_image_path_when_exception_throwns() async {
         // Given
         let mission = missionFixture
-        let missionTaskReferences = MissionTaskReferences()
+        let missionTaskReferences = MissionTaskQueue()
         let localImageCreated = LocalImageCreated()
         let createMissionException = CreateMissionThrowsException()
         let useCase = CreateMissionUseCase(
