@@ -36,7 +36,7 @@ class NotificationMessageManagerTest {
         // Given
         let chatCurrentRoute = DefinedCurrentRoute(MessageRoute.chat(conversation: conversationFixture))
         let userInfo = getUserInfo(
-            conversation: conversationFixture.toRemoteNotificationMessageConversation(),
+            conversation: conversationFixture,
             message: messageFixture.toMessageContent()
         )
         var result: UNNotificationPresentationOptions = []
@@ -64,7 +64,7 @@ class NotificationMessageManagerTest {
         let navigate = Navigate()
         let nilCurrentRoute = NilCurrentRoute()
         let userInfo = getUserInfo(
-            conversation: conversationFixture.toRemoteNotificationMessageConversation(),
+            conversation: conversationFixture,
             message: messageFixture.toMessageContent()
         )
         let expectedResult = (
@@ -90,7 +90,7 @@ class NotificationMessageManagerTest {
     }
 }
 
-private func getUserInfo(conversation: RemoteMessageNotification.Conversation, message: MessageNotification.MessageContent) -> [AnyHashable: Any] {
+private func getUserInfo(conversation: Conversation, message: MessageNotification.MessageContent) -> [AnyHashable: Any] {
     let jsonEncoder = JSONEncoder()
     guard let conversationData = try? jsonEncoder.encode(conversation),
           let conversationJsonString = String(data: conversationData, encoding: .utf8),

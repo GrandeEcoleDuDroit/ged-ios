@@ -6,7 +6,7 @@ struct ServerUser: Codable {
     let userSchoolLevel: Int
     let userAdmin: Int
     let userProfilePictureFileName: String?
-    let userState: String
+    let userState: Int
     let userTester: Int
     
     enum CodingKeys: String, CodingKey {
@@ -29,7 +29,7 @@ struct ServerUser: Codable {
         userSchoolLevel: Int,
         userAdmin: Int,
         userProfilePictureFileName: String?,
-        userState: String,
+        userState: Int,
         userTester: Int
     ) {
         self.userId = userId
@@ -54,7 +54,7 @@ struct ServerUser: Codable {
         self.userSchoolLevel = try container.decode(Int.self, forKey: .userSchoolLevel)
         self.userAdmin = try container.decode(Int.self, forKey: .userAdmin)
         self.userProfilePictureFileName = try container.decodeIfPresent(String.self, forKey: .userProfilePictureFileName)
-        self.userState = try container.decode(String.self, forKey: .userState)
+        self.userState = try container.decode(Int.self, forKey: .userState)
         self.userTester = try container.decode(Int.self, forKey: .userTester)
     }
 }
