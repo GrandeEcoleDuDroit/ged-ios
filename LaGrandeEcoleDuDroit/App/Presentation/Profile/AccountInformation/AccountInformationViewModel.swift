@@ -3,7 +3,6 @@ import Combine
 
 class AccountInformationViewModel: ViewModel {
     private let updateProfilePictureUseCase: UpdateProfilePictureUseCase
-    private let deleteProfilePictureUseCase: DeleteProfilePictureUseCase
     private let networkMonitor: NetworkMonitor
     private let userRepository: UserRepository
 
@@ -13,12 +12,10 @@ class AccountInformationViewModel: ViewModel {
 
     init(
         updateProfilePictureUseCase: UpdateProfilePictureUseCase,
-        deleteProfilePictureUseCase: DeleteProfilePictureUseCase,
         networkMonitor: NetworkMonitor,
         userRepository: UserRepository
     ) {
         self.updateProfilePictureUseCase = updateProfilePictureUseCase
-        self.deleteProfilePictureUseCase = deleteProfilePictureUseCase
         self.networkMonitor = networkMonitor
         self.userRepository = userRepository
         
@@ -36,9 +33,9 @@ class AccountInformationViewModel: ViewModel {
         Task { @MainActor [weak self] in
             do {
                 try await self?.updateProfilePictureUseCase.execute(user: user, imageData: imageData)
-                self?.resetValues()
+                self?.resetScreenState()
             } catch {
-                self?.resetValues()
+                self?.resetScreenState()
                 self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
             }
         }
@@ -58,10 +55,10 @@ class AccountInformationViewModel: ViewModel {
         
         Task { @MainActor [weak self] in
             do {
-                try await self?.deleteProfilePictureUseCase.execute(user: user)
-                self?.resetValues()
+                try await self?.userRepository.deleteProfilePicture(user: user)
+                self?.resetScreenState()
             } catch {
-                self?.resetValues()
+                self?.resetScreenState()
                 self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
             }
         }
@@ -79,7 +76,7 @@ class AccountInformationViewModel: ViewModel {
             }.store(in: &cancellables)
     }
     
-    private func resetValues() {
+    private func resetScreenState() {
         uiState.screenState = .read
         uiState.loading = false
     }

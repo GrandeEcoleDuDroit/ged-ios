@@ -25,19 +25,14 @@ class MissionApiImpl: MissionApi {
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
         
-        if let imageFileName = remoteMission.missionImageFileName, let imageData {
+        if let imageData, let imageFileName = remoteMission.missionImageFileName {
             let fileExtension = (imageFileName as NSString).pathExtension
-            let imagePath = MissionUtils.ImageFile.relativePath(fileName: imageFileName)
             
             body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"image\"; fileName=\"\(imageFileName)\"\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(imageFileName)\"\r\n".data(using: .utf8)!)
             body.append("Content-Type: image/\(fileExtension)\r\n\r\n".data(using: .utf8)!)
             body.append(imageData)
             body.append("\r\n".data(using: .utf8)!)
-            
-            body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"imagePath\"\r\n\r\n".data(using: .utf8)!)
-            body.append("\(imagePath)\r\n".data(using: .utf8)!)
         }
         
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
@@ -67,19 +62,14 @@ class MissionApiImpl: MissionApi {
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
         
-        if let imageFileName = remoteMission.missionImageFileName, let imageData {
+        if let imageData, let imageFileName = remoteMission.missionImageFileName {
             let fileExtension = (imageFileName as NSString).pathExtension
-            let imagePath = MissionUtils.ImageFile.relativePath(fileName: imageFileName)
             
             body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"image\"; fileName=\"\(imageFileName)\"\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(imageFileName)\"\r\n".data(using: .utf8)!)
             body.append("Content-Type: image/\(fileExtension)\r\n\r\n".data(using: .utf8)!)
             body.append(imageData)
             body.append("\r\n".data(using: .utf8)!)
-            
-            body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"imagePath\"\r\n\r\n".data(using: .utf8)!)
-            body.append("\(imagePath)\r\n".data(using: .utf8)!)
         }
         
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
@@ -103,19 +93,11 @@ class MissionApiImpl: MissionApi {
         return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func deleteMission(missionId: String, imageFileName: String?) async throws -> (URLResponse, ServerResponse) {
+    func deleteMission(remoteMission: OutboundRemoteMission) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "delete")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        var dataToSend: [String: String] = [MissionField.Remote.missionId: missionId]
-        if let imageFileName {
-            dataToSend["imagePath"] = MissionUtils.ImageFile.relativePath(fileName: imageFileName)
-        }
-        let request = try RequestUtils.simplePostRequest(
-            url: url,
-            authToken: authToken,
-            dataToSend: dataToSend
-        )
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: remoteMission, authToken: authToken)
         
         return try await RequestUtils.sendRequest(session: session, request: request)
     }
@@ -124,11 +106,7 @@ class MissionApiImpl: MissionApi {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "add-participant")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.simplePostRequest(
-            url: url,
-            authToken: authToken,
-            dataToSend: remoteAddMissionParticipant
-        )
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: remoteAddMissionParticipant, authToken: authToken)
         
         return try await RequestUtils.sendRequest(session: session, request: request)
     }
@@ -136,15 +114,9 @@ class MissionApiImpl: MissionApi {
     func removeParticipant(missionId: String, userId: String) async throws -> (URLResponse, ServerResponse) {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "remove-participant")
         let session = RequestUtils.getDefaultSession()
+        let dataToSend = [MissionField.Remote.missionId: missionId, UserField.Server.userId: userId]
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.simplePostRequest(
-            url: url,
-            authToken: authToken,
-            dataToSend: [
-                MissionField.Remote.missionId: missionId,
-                UserField.Server.userId: userId
-            ]
-        )
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: dataToSend, authToken: authToken)
         
         return try await RequestUtils.sendRequest(session: session, request: request)
     }
@@ -153,11 +125,7 @@ class MissionApiImpl: MissionApi {
         let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "report")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.simplePostRequest(
-            url: url,
-            authToken: authToken,
-            dataToSend: report
-        )
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: report, authToken: authToken)
         
         return try await RequestUtils.sendRequest(session: session, request: request)
     }

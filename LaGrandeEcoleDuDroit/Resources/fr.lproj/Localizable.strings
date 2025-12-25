@@ -74,6 +74,8 @@
 "disabled_user_error" = "Votre compte a été désactivé. Veuillez contacter le support.";
 "current_user_not_found_error" = "Utilisateur actuel non trouvé. Veuillez vous réauthentifier.";
 "sending_error" = "Erreur d'envoi";
+"network_connection_lost_error" = "La connexion réseau a été perdue.";
+"cannot_find_host_error" = "Impossible de se connecter au server.";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";

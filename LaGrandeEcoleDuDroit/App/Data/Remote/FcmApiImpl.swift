@@ -13,7 +13,7 @@ class FcmApiImpl: FcmApi {
         let dataToSend: [String: String] = ["userId": userId, "token": value]
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.simplePostRequest(url: url, authToken: authToken, dataToSend: dataToSend)
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: dataToSend, authToken: authToken)
         
         return try await RequestUtils.sendRequest(session: session, request: request)
     }
@@ -23,7 +23,7 @@ class FcmApiImpl: FcmApi {
         let dataToSend: [String: String] = ["recipientId": recipientId,"fcmMessage": fcmMessage]
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.simplePostRequest(url: url, authToken: authToken, dataToSend: dataToSend)
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: dataToSend, authToken: authToken)
         
         return try await RequestUtils.sendRequest(session: session, request: request)
     }

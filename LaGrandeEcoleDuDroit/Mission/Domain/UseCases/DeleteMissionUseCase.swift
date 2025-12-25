@@ -1,12 +1,12 @@
 class DeleteMissionUseCase {
     private let missionRepository: MissionRepository
     private let imageRepository: ImageRepository
-    private let missionTaskReferences: MissionTaskReferences
+    private let missionTaskReferences: MissionTaskQueue
 
     init(
         missionRepository: MissionRepository,
         imageRepository: ImageRepository,
-        missionTaskReferences: MissionTaskReferences
+        missionTaskReferences: MissionTaskQueue
     ) {
         self.missionRepository = missionRepository
         self.imageRepository = imageRepository

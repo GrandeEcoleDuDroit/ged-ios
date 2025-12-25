@@ -36,21 +36,21 @@ class NewsInjector: Injector {
         container.register(CreateAnnouncementUseCase.self) { resolver in
             CreateAnnouncementUseCase(
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                announcementTaskReferences: resolver.resolve(AnnouncementTaskReferences.self)!
+                announcementTaskReferences: resolver.resolve(AnnouncementTaskQueue.self)!
             )
         }.inObjectScope(.weak)
         
         container.register(DeleteAnnouncementUseCase.self) { resolver in
             DeleteAnnouncementUseCase(
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                announcementTaskReferences: resolver.resolve(AnnouncementTaskReferences.self)!
+                announcementTaskReferences: resolver.resolve(AnnouncementTaskQueue.self)!
             )
         }.inObjectScope(.weak)
         
         container.register(ResendAnnouncementUseCase.self) { resolver in
             ResendAnnouncementUseCase(
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                announcementTaskReferences: resolver.resolve(AnnouncementTaskReferences.self)!
+                announcementTaskReferences: resolver.resolve(AnnouncementTaskQueue.self)!
             )
         }.inObjectScope(.weak)
         
@@ -76,8 +76,8 @@ class NewsInjector: Injector {
             )
         }.inObjectScope(.weak)
         
-        container.register(AnnouncementTaskReferences.self) { resolver in
-            AnnouncementTaskReferences()
+        container.register(AnnouncementTaskQueue.self) { resolver in
+            AnnouncementTaskQueue()
         }.inObjectScope(.weak)
     }
     

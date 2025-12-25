@@ -27,10 +27,6 @@ class AuthenticationRemoteDataSource {
         try await authenticationApi.resetPassword(email: email)
     }
     
-    func deleteAuthUser() async throws {
-        try await authenticationApi.deleteAuthUser()
-    }
-    
     func getToken() async throws -> String? {
         try await authenticationApi.getToken()
     }

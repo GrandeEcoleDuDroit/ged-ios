@@ -2,11 +2,11 @@ import Foundation
 
 class CreateAnnouncementUseCase {
     private let announcementRepository: AnnouncementRepository
-    private let announcementTaskReferences: AnnouncementTaskReferences
+    private let announcementTaskReferences: AnnouncementTaskQueue
 
     init(
         announcementRepository: AnnouncementRepository,
-        announcementTaskReferences: AnnouncementTaskReferences
+        announcementTaskReferences: AnnouncementTaskQueue
     ) {
         self.announcementRepository = announcementRepository
         self.announcementTaskReferences = announcementTaskReferences
