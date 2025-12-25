@@ -37,11 +37,12 @@ extension MessageNotification {
     
     func toRemote(currentUser: User) -> RemoteMessageNotification {
         RemoteMessageNotification(
-            conversation: RemoteMessageNotification.Conversation(
+            conversation: Conversation(
                 id: conversation.id,
-                interlocutor: currentUser.toIntelocutor(),
-                createdAt: conversation.createdAt.toEpochMilli(),
-                deleteTime: conversation.deleteTime?.toEpochMilli()
+                interlocutor: currentUser,
+                createdAt: conversation.createdAt,
+                state: conversation.state,
+                deleteTime: conversation.deleteTime
             ),
             message: message
         )
@@ -82,54 +83,8 @@ extension RemoteMessageNotification {
     
     func toNotificationMessage() -> MessageNotification {
         MessageNotification(
-            conversation: conversation.toConversation(),
+            conversation: conversation,
             message: message
         )
     }
 }
-
-private extension User {
-    func toIntelocutor() -> RemoteMessageNotification.Conversation.Interlocutor {
-        RemoteMessageNotification.Conversation.Interlocutor(
-            id: id,
-            firstName: firstName,
-            lastName: lastName,
-            fullName: fullName,
-            email: email,
-            schoolLevel: schoolLevel.rawValue,
-            admin: admin,
-            profilePictureFileName: UserUtils.ProfilePicture.getFileName(url: profilePictureUrl),
-            state: state.rawValue,
-            tester: tester
-        )
-    }
-}
-
-private extension RemoteMessageNotification.Conversation {
-    func toConversation() -> Conversation {
-        Conversation(
-            id: id,
-            interlocutor: interlocutor.toUser(),
-            createdAt: createdAt.toDate(),
-            state: .created,
-            deleteTime: deleteTime?.toDate()
-        )
-    }
-}
-
-private extension RemoteMessageNotification.Conversation.Interlocutor {
-    func toUser() -> User {
-        User(
-            id: id,
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            schoolLevel: SchoolLevel(rawValue: schoolLevel) ?? .ged1,
-            admin: admin,
-            profilePictureUrl: UserUtils.ProfilePicture.getUrl(fileName: profilePictureFileName),
-            state: User.UserState(rawValue: state) ?? .active,
-            tester: tester
-        )
-    }
-}
-
