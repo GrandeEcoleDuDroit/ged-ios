@@ -43,8 +43,8 @@ struct User: Codable, Hashable, Identifiable, Copying {
         }
     }
     
-    enum UserState: String, Codable {
-        case active = "active"
-        case deleted = "deleted"
+    enum UserState: Int, Codable {
+        case active = 1
+        case deleted = 2
     }
 }

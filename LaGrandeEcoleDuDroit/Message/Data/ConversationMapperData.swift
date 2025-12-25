@@ -15,7 +15,7 @@ extension Conversation {
         localConversation.conversationInterlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
         localConversation.conversationInterlocutorAdmin = interlocutor.admin
         localConversation.conversationInterlocutorProfilePictureFileName = UserUtils.ProfilePicture.getFileName(url: interlocutor.profilePictureUrl)
-        localConversation.conversationInterlocutorState = interlocutor.state.rawValue
+        localConversation.conversationInterlocutorState = Int16(interlocutor.state.rawValue)
         localConversation.conversationInterlocutorTester = interlocutor.tester
         return localConversation
     }
@@ -26,15 +26,6 @@ extension Conversation {
             participants: [userId, interlocutor.id],
             createdAt: Timestamp(date: createdAt),
             deleteTime: deleteTime.map { [userId: Timestamp(date: $0)] }
-        )
-    }
-    
-    func toRemoteNotificationMessageConversation() -> RemoteMessageNotification.Conversation {
-        RemoteMessageNotification.Conversation(
-            id: id,
-            interlocutor: interlocutor.toRemoteNotificationMessageConversationInterlocutor(),
-            createdAt: createdAt.toEpochMilli(),
-            deleteTime: deleteTime?.toEpochMilli()
         )
     }
     
@@ -49,7 +40,7 @@ extension Conversation {
         localConversation.conversationInterlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
         localConversation.conversationInterlocutorAdmin = interlocutor.admin
         localConversation.conversationInterlocutorProfilePictureFileName = UserUtils.ProfilePicture.getFileName(url: interlocutor.profilePictureUrl)
-        localConversation.conversationInterlocutorState = interlocutor.state.rawValue
+        localConversation.conversationInterlocutorState = Int16(interlocutor.state.rawValue)
         localConversation.conversationInterlocutorTester = interlocutor.tester
     }
 }
@@ -64,8 +55,7 @@ extension LocalConversation {
               let interlocutorFirstName = conversationInterlocutorFirstName,
               let interlocutorLastName = conversationInterlocutorLastName,
               let interlocutorEmail = conversationInterlocutorEmail,
-              let interlocutorSchoolLevel = conversationInterlocutorSchoolLevel,
-              let interlocutorState = conversationInterlocutorState
+              let interlocutorSchoolLevel = conversationInterlocutorSchoolLevel
         else { return nil }
         
         let interlocutor = User(
@@ -76,7 +66,7 @@ extension LocalConversation {
             schoolLevel: SchoolLevel(rawValue: interlocutorSchoolLevel) ?? SchoolLevel.unknown,
             admin: conversationInterlocutorAdmin,
             profilePictureUrl: UserUtils.ProfilePicture.getUrl(fileName: conversationInterlocutorProfilePictureFileName),
-            state: User.UserState(rawValue: interlocutorState) ?? .active,
+            state: User.UserState(rawValue: Int(conversationInterlocutorState)) ?? .active,
             tester: conversationInterlocutorTester
         )
         
@@ -101,7 +91,7 @@ extension LocalConversation {
         conversationInterlocutorSchoolLevel = conversation.interlocutor.schoolLevel.rawValue
         conversationInterlocutorAdmin = conversation.interlocutor.admin
         conversationInterlocutorProfilePictureFileName = UserUtils.ProfilePicture.getFileName(url: conversation.interlocutor.profilePictureUrl)
-        conversationInterlocutorState = conversation.interlocutor.state.rawValue
+        conversationInterlocutorState = Int16(conversation.interlocutor.state.rawValue)
         conversationInterlocutorTester = conversation.interlocutor.tester
     }
     
@@ -141,22 +131,5 @@ extension RemoteConversation {
         ] as [String: Any]
         deleteTime.map { data[ConversationField.Remote.deleteTime] = $0 }
         return data
-    }
-}
-
-private extension User {
-    func toRemoteNotificationMessageConversationInterlocutor() -> RemoteMessageNotification.Conversation.Interlocutor {
-        RemoteMessageNotification.Conversation.Interlocutor(
-            id: id,
-            firstName: firstName,
-            lastName: lastName,
-            fullName: fullName,
-            email: email,
-            schoolLevel: schoolLevel.rawValue,
-            admin: admin,
-            profilePictureFileName: UserUtils.ProfilePicture.getFileName(url: profilePictureUrl),
-            state: state.rawValue,
-            tester: tester
-        )
     }
 }
