@@ -20,7 +20,7 @@ class ConversationMessageRepositoryImpl: ConversationMessageRepository {
         listen()
     }
     
-    func clear() {
+    func deleteConversationMessage() {
         conversationsMessageSubject.value.removeAll()
         messageCancellables.forEach { $0.value.cancel() }
         messageCancellables.removeAll()

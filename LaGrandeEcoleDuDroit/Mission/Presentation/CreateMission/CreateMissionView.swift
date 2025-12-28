@@ -24,6 +24,7 @@ struct CreateMissionDestination: View {
                 missionTasks: viewModel.uiState.missionTasks,
                 missionState: .draft,
                 createEnabled: viewModel.uiState.createEnabled,
+                maxParticipantsError: viewModel.uiState.maxParticipantsError,
                 onTitleChange: viewModel.onTitleChange,
                 onDescriptionChange: viewModel.onDescriptionChange,
                 onStartDateChange: viewModel.onStartDateChange,
@@ -36,10 +37,7 @@ struct CreateMissionDestination: View {
                 onAddTaskClick: { path.append(.addMissionTask) },
                 onEditTaskClick: { path.append(.editMissionTask($0)) },
                 onRemoveTaskClick: viewModel.onRemoveMissionTask,
-                onCreateMissionClick: {
-                    viewModel.createMission(imageData: $0)
-                    onBackClick()
-                },
+                onCreateMissionClick: viewModel.createMission,
                 onBackClick: onBackClick
             )
             .navigationDestination(for: CreateMissionSubDestination.self) { destination in
@@ -73,6 +71,11 @@ struct CreateMissionDestination: View {
                         )
                 }
             }
+            .onReceive(viewModel.$event) { event in
+                if event is SuccessEvent {
+                    onBackClick()
+                }
+            }
         }
     }
 }
@@ -98,6 +101,8 @@ private struct CreateMissionView: View {
     let missionTasks: [MissionTask]
     let missionState: Mission.MissionState
     let createEnabled: Bool
+    
+    let maxParticipantsError: String?
     
     let onTitleChange: (String) -> Void
     let onDescriptionChange: (String) -> Void
@@ -130,6 +135,7 @@ private struct CreateMissionView: View {
             managers: managers,
             missionTasks: missionTasks,
             missionState: missionState,
+            maxParticipantsError: maxParticipantsError,
             onImageChange: {},
             onImageRemove: {},
             onTitleChange: onTitleChange,
@@ -187,6 +193,7 @@ private struct CreateMissionView: View {
             missionTasks: [missionTaskFixture],
             missionState: .draft,
             createEnabled: false,
+            maxParticipantsError: nil,
             onTitleChange: { _ in },
             onDescriptionChange: { _ in },
             onStartDateChange: { _ in },

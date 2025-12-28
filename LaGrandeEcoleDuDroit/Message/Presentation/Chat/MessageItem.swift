@@ -109,7 +109,7 @@ private struct MessageBubble: View {
 }
 
 struct MessageInput: View {
-    let text: String
+    @Binding var text: String
     let onTextChange: (String) -> Void
     let onSendClick: () -> Void
     
@@ -117,15 +117,13 @@ struct MessageInput: View {
         HStack(alignment: .center) {
             TextField(
                 "",
-                text: Binding(
-                    get: { text },
-                    set: onTextChange
-                ),
+                text: $text,
                 prompt: messagePlaceholder,
                 axis: .vertical
             )
             .lineLimit(6)
             .padding(.vertical, Dimens.smallPadding)
+            .onChange(of: text, perform: onTextChange)
             
             if !text.isBlank() {
                 Button(
@@ -166,19 +164,18 @@ struct NewMessageIndicator: View {
     let onClick: () -> Void
     
     var body: some View {
-        Button(action: onClick) {
-            ZStack {
-                Text(stringResource(.newMessages))
+        VStack {
+            Button(action: onClick) {
+                Text(stringResource(.newMessage))
                     .foregroundStyle(.black)
                     .font(.footnote)
                     .fontWeight(.medium)
                     .padding(.horizontal, Dimens.largePadding)
                     .padding(.vertical, Dimens.smallMediumPadding)
+                    .background(.white)
+                    .clipShape(ShapeDefaults.small)
+                    .shadow(radius: 10, x: 0, y: 0)
             }
-            .buttonStyle(ClickStyle())
-            .background(.white)
-            .clipShape(.rect(cornerRadius: 8))
-            .shadow(radius: 10, x: 0, y: 0)
         }
     }
 }
@@ -217,46 +214,47 @@ struct MessageBlockedUserIndicator: View {
 }
 
 #Preview {
-    VStack(spacing: Dimens.mediumPadding) {
-        ReceiveMessageItem(
-            message: messageFixture,
-            profilePictureUrl: nil,
-            displayProfilePicture: true,
-            onLongClick: {},
-            onInterlocutorProfilePictureClick: {}
-        )
-        
-        SentMessageItem(
-            message: messageFixture.copy { $0.state = .error },
-            showSeen: false,
-            onClick: {}
-        )
-        
-        SentMessageItem(
-            message: messageFixture.copy { $0.state = .sending },
-            showSeen: false,
-            onClick: {}
-        )
-        
-        SentMessageItem(
-            message: messageFixture,
-            showSeen: true,
-            onClick: {}
-        )
-        
-        NewMessageIndicator(onClick: {})
-        
-        MessageInput(
-            text: "",
-            onTextChange: { _ in },
-            onSendClick: {}
-        )
-        
-        MessageBlockedUserIndicator(
-            onDeleteChatClick: {},
-            onUnblockUserClick: {}
-        )
+    ScrollView {
+        VStack(spacing: 40) {
+            ReceiveMessageItem(
+                message: messageFixture,
+                profilePictureUrl: nil,
+                displayProfilePicture: true,
+                onLongClick: {},
+                onInterlocutorProfilePictureClick: {}
+            )
+            
+            SentMessageItem(
+                message: messageFixture.copy { $0.state = .error },
+                showSeen: false,
+                onClick: {}
+            )
+            
+            SentMessageItem(
+                message: messageFixture.copy { $0.state = .sending },
+                showSeen: false,
+                onClick: {}
+            )
+            
+            SentMessageItem(
+                message: messageFixture,
+                showSeen: true,
+                onClick: {}
+            )
+            
+            NewMessageIndicator(onClick: {})
+            
+            MessageInput(
+                text: .constant(""),
+                onTextChange: { _ in },
+                onSendClick: {}
+            )
+            
+            MessageBlockedUserIndicator(
+                onDeleteChatClick: {},
+                onUnblockUserClick: {}
+            )
+        }
+        .padding(.horizontal)
     }
-    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-    .padding(.horizontal)
 }

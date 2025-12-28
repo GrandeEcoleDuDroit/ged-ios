@@ -15,8 +15,9 @@ actor AnnouncementCoreDataActor {
                 ascending: false
             )]
             
-            let announcements =  try self.context.fetch(fetchRequest)
-            return announcements.compactMap { $0.toAnnouncement() }
+            return try self.context.fetch(fetchRequest).compactMap {
+                $0.toAnnouncement()
+            }
         }
     }
   
@@ -80,8 +81,10 @@ actor AnnouncementCoreDataActor {
     func deleteAll() async throws {
         try await context.perform {
             let request = LocalAnnouncement.fetchRequest()
-            let announcements = try self.context.fetch(request)
-            announcements.forEach { self.context.delete($0) }
+            
+            try self.context.fetch(request).forEach {
+                self.context.delete($0)
+            }
             
             try self.context.save()
         }
@@ -95,8 +98,9 @@ actor AnnouncementCoreDataActor {
                 AnnouncementField.Local.announcementAuthorId, userId
             )
             
-            let announcements = try self.context.fetch(request)
-            announcements.forEach { self.context.delete($0) }
+            try self.context.fetch(request).forEach {
+                self.context.delete($0)
+            }
             
             try self.context.save()
         }

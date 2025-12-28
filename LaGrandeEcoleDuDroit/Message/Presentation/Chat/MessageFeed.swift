@@ -6,67 +6,90 @@ struct MessageFeed: View {
     let conversation: Conversation
     let canLoadMoreMessages: Bool
     let loadMoreMessages: (Int) -> Void
+    let newMessagesEventPublisher: AnyPublisher<Bool, Never>
     let onErrorMessageClick: (Message) -> Void
     let onReceivedMessageLongClick: (Message) -> Void
     let onInterlocutorProfilePictureClick: () -> Void
-
+    
+    @State private var showNewMessagesIndicator: Bool = false
+    @State private var atBottom: Bool = true
+    
     var body: some View {
-        List(Array(messages.enumerated()), id: \.element) { index, message in
-            Content(
-                conversation: conversation,
-                messages: messages,
-                message: message,
-                index: index,
-                onErrorMessageClick: onErrorMessageClick,
-                onReceivedMessageLongClick: onReceivedMessageLongClick,
-                onInterlocutorProfilePictureClick: onInterlocutorProfilePictureClick
-            )
-            .listRowSeparator(.hidden)
-            .listRowInsets(EdgeInsets())
-            .onAppear {
-                if message == messages.last &&
-                    messages.count >= MessageConstant.loadLimit &&
-                    canLoadMoreMessages
-                {
-                    loadMoreMessages(index + 1)
-                    print("Load more messages")
+        ScrollViewReader { proxy in
+            ZStack(alignment: .bottom) {
+                List(Array(messages.enumerated()), id: \.element) { index, message in
+                    let previousMessage = index < messages.count - 1 ? messages[index + 1] : nil
+                    let messageCondition = MessageCondition(
+                        message: message,
+                        interlocutor: conversation.interlocutor,
+                        messagesCount: messages.count,
+                        index: index,
+                        previousMessage: previousMessage
+                    )
+                    
+                    MessageListContent(
+                        message: message,
+                        condition: messageCondition,
+                        interlocutor: conversation.interlocutor,
+                        onErrorMessageClick: onErrorMessageClick,
+                        onReceivedMessageLongClick: onReceivedMessageLongClick,
+                        onInterlocutorProfilePictureClick: onInterlocutorProfilePictureClick
+                    )
+                    .padding(.horizontal)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets())
+                    .onAppear {
+                        if message == messages.last &&
+                            messages.count >= MessageConstant.loadLimit &&
+                            canLoadMoreMessages
+                        {
+                            loadMoreMessages(index + 1)
+                        }
+                        
+                        if message == messages.first {
+                            showNewMessagesIndicator = false
+                        }
+                        
+                        atBottom = message == messages.first
+                    }
+                    .listRowBackground(Color.clear)
+                    .rotationEffect(.degrees(180))
+                    .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                    .id(index)
+                }
+                .scrollDismissesKeyboard(.interactively)
+                .rotationEffect(.degrees(180))
+                .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                .listStyle(.plain)
+                
+                if showNewMessagesIndicator {
+                    NewMessageIndicator(onClick: { proxy.scrollTo(0) })
                 }
             }
-            .listRowBackground(Color.clear)
-            .rotationEffect(.degrees(180))
-            .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
         }
-        .rotationEffect(.degrees(180))
-        .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
-        .listStyle(.plain)
+        .onReceive(newMessagesEventPublisher) { _ in
+            if !atBottom {
+                showNewMessagesIndicator = true
+            }
+        }
     }
 }
 
-private struct Content: View {
-    let conversation: Conversation
-    let messages: [Message]
+private struct MessageListContent: View {
     let message: Message
-    let index: Int
+    let condition: MessageCondition
+    let interlocutor: User
     let onErrorMessageClick: (Message) -> Void
     let onReceivedMessageLongClick: (Message) -> Void
     let onInterlocutorProfilePictureClick: () -> Void
     
     var body: some View {
-        let previousMessage = index < messages.count - 1 ? messages[index + 1] : nil
-        let condition = MessageCondition(
+        MessageItem(
             message: message,
-            interlocutor: conversation.interlocutor,
-            messagesCount: messages.count,
-            index: index,
-            previousMessage: previousMessage
-        )
-        
-        GetMessageItem(
-            message: message,
-            interlocutorId: conversation.interlocutor.id,
+            interlocutorId: interlocutor.id,
             showSeen: condition.showSeenMessage,
             displayProfilePicture: condition.displayProfilePicture,
-            profilePictureUrl: conversation.interlocutor.profilePictureUrl,
+            profilePictureUrl: interlocutor.profilePictureUrl,
             onErrorMessageClick: onErrorMessageClick,
             onLongClick: {
                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
@@ -74,23 +97,35 @@ private struct Content: View {
             },
             onInterlocutorProfilePictureClick: onInterlocutorProfilePictureClick
         )
-        .messageItemPadding(
-            sameSender: condition.sameSender,
-            sameTime: condition.sameTime,
-            sameDay: condition.sameDay
-        )
+        .padding(.top, messageTopPadding)
         
         if condition.isOldestMessage || !condition.sameDay {
-            Text(formatDate(date: message.date))
+            Text(message.date.formatted(date: .long, time: .omitted))
                 .foregroundStyle(.gray)
                 .padding(.vertical, Dimens.largePadding)
                 .font(.footnote)
                 .frame(maxWidth: .infinity, alignment: .center)
         }
     }
+    
+    var messageTopPadding: CGFloat {
+        let small = condition.sameSender && condition.sameTime
+        let smallMedium = condition.sameSender && !condition.sameTime && condition.sameDay
+        let zero = !condition.sameDay
+        
+        return if small {
+            2
+        } else if smallMedium {
+            Dimens.smallMediumPadding
+        } else if zero {
+            0
+        } else {
+            Dimens.mediumPadding
+        }
+    }
 }
 
-private struct GetMessageItem: View {
+private struct MessageItem: View {
     let message: Message
     let interlocutorId: String
     let showSeen: Bool
@@ -119,34 +154,6 @@ private struct GetMessageItem: View {
             }
         }
     }
-}
-
-private extension View {
-    func messageItemPadding(sameSender: Bool, sameTime: Bool, sameDay: Bool) -> some View {
-        let smallPadding = sameSender && sameTime
-        let mediumPadding = sameSender && !sameTime && sameDay
-        let noPadding = !sameDay
-        
-        return Group {
-            if smallPadding {
-                self.padding(.top, 2)
-            } else if mediumPadding {
-                self.padding(.top, Dimens.smallMediumPadding)
-            } else if noPadding {
-                self.padding(.top, 0)
-            } else {
-                self.padding(.top, Dimens.mediumPadding)
-            }
-        }
-    }
-}
-
-private func formatDate(date: Date) -> String {
-    let dateFormatter = DateFormatter()
-    dateFormatter.locale = Locale.current
-    dateFormatter.dateStyle = .long
-    dateFormatter.timeStyle = .none
-    return dateFormatter.string(from: date)
 }
 
 private struct MessageCondition {
@@ -185,11 +192,13 @@ private struct MessageCondition {
         previousSenderId = previousMessage?.senderId ?? ""
         sameSender = message.senderId == previousSenderId
         showSeenMessage = isNewestMessage && isSender && message.seen
+        
         sameTime = if let previousMessage {
             message.date.differenceMinutes(from: previousMessage.date) <= 1
         } else {
             false
         }
+        
         sameDay = if let previousMessage {
             Calendar.current.isDate(
                 previousMessage.date,
@@ -199,6 +208,7 @@ private struct MessageCondition {
         } else {
             false
         }
+        
         displayProfilePicture = !sameTime || isNewestMessage || !sameSender
     }
 }
@@ -209,6 +219,7 @@ private struct MessageCondition {
         conversation: conversationFixture,
         canLoadMoreMessages: true,
         loadMoreMessages: { _ in },
+        newMessagesEventPublisher: Empty().eraseToAnyPublisher(),
         onErrorMessageClick: { _ in },
         onReceivedMessageLongClick: { _ in },
         onInterlocutorProfilePictureClick: {}
