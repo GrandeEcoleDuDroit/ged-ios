@@ -11,7 +11,7 @@
 "new_profile_picture" = "New profile picture";
 "profile_picture_updated" = "Profile picture updated";
 "member" = "Member";
-"user_not_found" = "No user found";
+"user_not_found" = "User not found";
 "delete_profile_picture_alert_message" = "Do you want to delete your profile picture?";
 "user_not_white_listed" = "The registration is limited to authorized users.";
 "delete_account" = "Delete account";
@@ -62,6 +62,7 @@
 "block_user_alert_message" = "You will no longer see any of their content.";
 "unblock_user_alert_message" = "Do you want to unblock this user?";
 "no_user" = "No user";
+"no_user_found" = "No user found";
 "deleted_user_first_name" = "Deleted";
 "deleted_user_last_name" = "User";
 
@@ -81,6 +82,7 @@
 "sending_error" = "Sending error";
 "network_connection_lost_error" = "Network connection has been lost.";
 "cannot_find_host_error" = "Unable to connect to the server.";
+"number_field_error" = "Please enter a valid number.";
 
 // Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";
@@ -129,7 +131,6 @@
 
 // Message
 "messages" = "Messages";
-"no_user_found" = "No user found";
 "tap_to_chat" = "Tap to chat";
 "message_placeholder" = "Send a message";
 "no_conversation" = "Start a conversation with your friends.";
@@ -137,7 +138,7 @@
 "delete_conversation_alert_title" = "Delete conversation?";
 "delete_conversation_alert_message" = "This will delete the entire message history from your side only.";
 "seen" = "Seen";
-"new_messages" = "New messages";
+"new_message" = "New message";
 "delete_message_alert_content" = "Do you want to delete this message?";
 "chat_blocked_user_indicator_text" = "You cannot send messages to this user unless you unblock them.";
 
@@ -174,5 +175,4 @@
 "edit_mission_school_level_supporting_text" = "Participants with unmatched school levels will be removed.";
 "select_managers" = "Select managers";
 
-"max_participants_lower_than_current_error_message" = "Maximum number of participants cannot be lower than the current count (%d).";
-"max_participants_invalid_number_error_message" = "Please enter a valid number.";
+"max_participants_lower_than_current_error" = "Maximum number of participants cannot be lower than the current count (%d).";

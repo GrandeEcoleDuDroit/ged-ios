@@ -14,7 +14,7 @@ struct MissionForm: View {
     let missionTasks: [MissionTask]
     let missionState: Mission.MissionState
     var schoolLevelSupportingText: String? = nil
-    var maxParticipantsError: String? = nil
+    let maxParticipantsError: String?
     
     let onImageChange: () -> Void
     let onImageRemove: () -> Void

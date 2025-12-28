@@ -11,7 +11,7 @@
 "new_profile_picture" = "Nouvelle photo de profil";
 "profile_picture_updated" = "Photo de profil mise à jour";
 "member" = "Membre";
-"user_not_found" = "Aucun utilisateur trouvé";
+"user_not_found" = "Utilisateur non trouvé";
 "delete_profile_picture_alert_message" = "Voulez-vous supprimer votre photo de profil ?";
 "delete_account_text" = "Supprimer votre compte entraînera la suppression définitive de toutes vos données. Cette action est irréversible.";
 "delete_account" = "Supprimer le compte";
@@ -56,6 +56,7 @@
 "block_user_alert_message" = "Vous ne verrez plus aucun de ses contenus.";
 "unblock_user_alert_message" = "Voulez-vous débloquer cet utilisateur ?";
 "no_user" = "Aucun utilisateur";
+"no_user_found" = "Aucun utilisateur trouvé";
 "deleted_user_first_name" = "Utilisateur";
 "deleted_user_last_name" = "Supprimé";
 
@@ -76,6 +77,7 @@
 "sending_error" = "Erreur d'envoi";
 "network_connection_lost_error" = "La connexion réseau a été perdue.";
 "cannot_find_host_error" = "Impossible de se connecter au server.";
+"number_field_error" = "Veuillez entrer un nombre valide.";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";
@@ -131,7 +133,7 @@
 "delete_conversation_alert_title" = "Supprimer conversation ?";
 "delete_conversation_alert_message" = "Cela supprimera l'historique des messages de votre côté uniquement.";
 "seen" = "Vu";
-"new_messages" = "Nouveau messages";
+"new_message" = "Nouveau message";
 "delete_message_alert_content" = "Voulez-vous supprimer ce message ?";
 "chat_blocked_user_indicator_text" = "Vous ne pouvez pas envoyer de messages à cet utilisateur à moins que vous ne le débloquiez.";
 
@@ -144,7 +146,7 @@
 "new_mission" = "Nouvelle mission";
 "edit_mission" = "Editer mission";
 "participant_number" = "%d participant sur %d";
-"no_mission" = "No mission";
+"no_mission" = "Aucune mission";
 "add_image" = "Ajouter image";
 "mission_title_field" = "Titre";
 "mission_description_field" = "Description";
@@ -168,5 +170,4 @@
 "edit_mission_school_level_supporting_text" = "Les participants avec un niveau scolaire non correspondant seront retirés.";
 "select_managers" = "Sélectionner gérants";
 
-"max_participants_lower_than_current_error_message" = "Le nombre maximum de participants ne peut pas être inférieur au nombre actuel (%d).";
-"max_participants_number_only_error_message" = "Veuillez saisir un nombre valide.";
+"max_participants_lower_than_current_error" = "Le nombre maximum de participants ne peut pas être inférieur au nombre actuel (%d).";

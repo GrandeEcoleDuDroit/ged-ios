@@ -8,6 +8,7 @@ class CreateMissionViewModel: ViewModel {
     private let generateIdUseCase: GenerateIdUseCase
     
     @Published var uiState = CreateMissionUiState()
+    @Published var event: SingleUiEvent?
     private var defaultUsers: [User] = []
     private var cancellable: AnyCancellable?
     
@@ -27,25 +28,53 @@ class CreateMissionViewModel: ViewModel {
     }
     
     func createMission(imageData: Data?) {
+        let (
+            title,
+            description,
+            startDate,
+            endDate,
+            schoolLevels,
+            duration,
+            managers,
+            maxParticipants,
+            missionTasks
+        ) = (
+            uiState.title.trim(),
+            uiState.description.trim(),
+            uiState.startDate,
+            uiState.endDate,
+            uiState.schoolLevels,
+            uiState.duration.takeIf { $0.isNotBlank() }?.trim(),
+            uiState.managers,
+            uiState.maxParticipants.trim(),
+            uiState.missionTasks
+        )
+        
+        guard validateInputs(maxParticipants: maxParticipants) else {
+            return
+        }
+        
         let mission = Mission(
             id: generateIdUseCase.execute(),
-            title: uiState.title.trim(),
-            description: uiState.description.trim(),
+            title: title,
+            description: description,
             date: Date(),
-            startDate: uiState.startDate,
-            endDate: uiState.endDate,
-            schoolLevels: uiState.schoolLevels,
-            duration: uiState.duration.takeIf { $0.isNotBlank() }?.trim(),
-            managers: uiState.managers,
+            startDate: startDate,
+            endDate: endDate,
+            schoolLevels: schoolLevels,
+            duration: duration,
+            managers: managers,
             participants: [],
-            maxParticipants: uiState.maxParticipants.trim().toInt(),
-            tasks: uiState.missionTasks,
+            maxParticipants: maxParticipants.toInt(),
+            tasks: missionTasks,
             state: .draft
         )
         
         Task {
             await createMissionUseCase.execute(mission: mission, imageData: imageData)
         }
+        
+        event = SuccessEvent()
     }
     
     func onTitleChange(_ title: String) -> Void {
@@ -76,23 +105,26 @@ class CreateMissionViewModel: ViewModel {
     
     func onSchoolLevelChange(_ schoolLevel: SchoolLevel) {
         var schoolLevels = uiState.schoolLevels
+        
         if let index = schoolLevels.firstIndex(of: schoolLevel) {
             schoolLevels.remove(at: index)
         } else {
             schoolLevels.append(schoolLevel)
         }
-        schoolLevels = schoolLevels.sorted { $0.number < $1.number }
         
-        uiState.schoolLevels = schoolLevels
+        uiState.schoolLevels = schoolLevels.sorted { $0.number < $1.number }
     }
     
     func onMaxParticipantsChange(_ maxParticipants: String) -> Void {
+        let maxParticipantsNumber = maxParticipants.toInt32OrDefault(-1)
+        
         let value = switch maxParticipants {
             case _ where maxParticipants.isEmpty: ""
-            case _ where maxParticipants.toInt32OrDefault(-1) > 0: maxParticipants
-            default: uiState.maxParticipants
+            case _ where maxParticipantsNumber > 0: maxParticipantsNumber.description
+            default: uiState.previousMaxParticipants
         }
         
+        uiState.previousMaxParticipants = value
         uiState.maxParticipants = value
         uiState.createEnabled = validateCreate(maxParticipants: value)
     }
@@ -150,30 +182,32 @@ class CreateMissionViewModel: ViewModel {
         uiState.missionTasks.remove(missionTask)
     }
     
+    private func validateInputs(maxParticipants: String) -> Bool {
+        validateMaxParticipants(maxParticipants)
+    }
+    
     private func validateCreate(
         title: String? = nil,
         description: String? = nil,
         maxParticipants: String? = nil
     ) -> Bool {
-        validateTitle(title) &&
-            validateDescription(description) &&
-            validateMaxParticipants(maxParticipants)
-    }
-    
-    private func validateTitle(_ title: String?) -> Bool {
-        (title ?? uiState.title).isNotBlank()
-    }
-    
-    private func validateDescription(_ description: String?) -> Bool {
-        (description ?? uiState.description).isNotBlank()
+        (title ?? uiState.title).isNotBlank() &&
+            (description ?? uiState.description).isNotBlank() &&
+            (maxParticipants ?? uiState.maxParticipants).isNotBlank()
     }
     
     private func validateEndDate(startDate: Date?, endDate: Date?) -> Bool {
         (endDate ?? uiState.endDate) >= (startDate ?? uiState.startDate)
     }
     
-    private func validateMaxParticipants(_ maxParticipants: String?) -> Bool {
-        (maxParticipants ?? uiState.maxParticipants).isNotBlank()
+    private func validateMaxParticipants(_ maxParticipants: String) -> Bool {
+        uiState.maxParticipantsError = switch maxParticipants {
+            case _ where maxParticipants.isEmpty: stringResource(.mandatoryFieldError)
+            case _ where maxParticipants.toInt32OrDefault(-1) <= 0: stringResource(.numberFieldError)
+            default: nil
+        }
+        
+        return uiState.maxParticipantsError == nil
     }
     
     private func initCurrentUser() {
@@ -202,11 +236,14 @@ class CreateMissionViewModel: ViewModel {
         fileprivate(set) var schoolLevels: [SchoolLevel] = []
         fileprivate(set) var managers: [User] = []
         var maxParticipants: String = ""
+        fileprivate(set) var previousMaxParticipants: String = ""
         var duration: String = ""
         fileprivate(set) var missionTasks: [MissionTask] = []
         fileprivate(set) var user: User?
         fileprivate(set) var users: [User] = []
         fileprivate(set) var userQuery: String = ""
         fileprivate(set) var createEnabled: Bool = false
+        
+        fileprivate(set) var maxParticipantsError: String?
     }
 }

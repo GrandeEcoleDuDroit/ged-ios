@@ -57,6 +57,7 @@ enum Strings: String {
     case blockUserAlertMessage = "block_user_alert_message"
     case unblockUserAlertMessage = "unblock_user_alert_message"
     case noUser = "no_user"
+    case noUserFound = "no_user_found"
     case deletedUserFirstName = "deleted_user_first_name"
     case deletedUserLastName = "deleted_user_last_name"
     
@@ -76,6 +77,7 @@ enum Strings: String {
     case sendingError = "sending_error"
     case networkConnectionLostError = "network_connection_lost_error"
     case cannotFindHostError = "cannot_find_host_error"
+    case numberFieldError = "number_field_error"
 
     // Authentication
     case authenticationPageTitle = "authentication_page_title"
@@ -132,7 +134,7 @@ enum Strings: String {
     case deleteConversationAlertTitle = "delete_conversation_alert_title"
     case deleteConversationAlertMessage = "delete_conversation_alert_message"
     case seen = "seen"
-    case newMessages = "new_messages"
+    case newMessage = "new_message"
     case deleteMessageAlertContent = "delete_message_alert_content"
     case chatBlockedUserIndicatorText = "chat_blocked_user_indicator_text"
     
@@ -168,6 +170,5 @@ enum Strings: String {
     case editMissionSchoolLevelSupportingText = "edit_mission_school_level_supporting_text"
     case selectManagers = "select_managers"
     
-    case maxParticipantsLowerThanCurrentErrorMessage = "max_participants_lower_than_current_error_message"
-    case maxParticipantsInvalidNumberErrorMessage = "max_participants_invalid_number_error_message"
+    case maxParticipantsLowerThanCurrentError = "max_participants_lower_than_current_error"
 }

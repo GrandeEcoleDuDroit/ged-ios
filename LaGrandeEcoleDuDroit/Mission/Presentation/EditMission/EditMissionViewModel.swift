@@ -334,13 +334,15 @@ class EditMissionViewModel: ViewModel {
     }
     
     private func validateMaxParticipants(maxParticipants: String) -> String? {
-        let maxParticipantsNumber = maxParticipants.trim().toIntOrDefault(-1)
+        let maxParticipantsNumber = maxParticipants.toInt32OrDefault(-1)
+        
         return switch maxParticipantsNumber {
-            case _ where maxParticipantsNumber == -1:
-                stringResource(.maxParticipantsInvalidNumberErrorMessage)
+            case _ where maxParticipants.isEmpty: stringResource(.mandatoryFieldError)
+                
+            case _ where maxParticipantsNumber <= 0: stringResource(.numberFieldError)
             
             case _ where maxParticipantsNumber < mission.participants.count:
-                stringResource(.maxParticipantsLowerThanCurrentErrorMessage, mission.participants.count)
+                stringResource(.maxParticipantsLowerThanCurrentError, mission.participants.count)
                 
             default: nil
         }

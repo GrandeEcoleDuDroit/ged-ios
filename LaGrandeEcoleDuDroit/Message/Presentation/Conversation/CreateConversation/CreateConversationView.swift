@@ -32,7 +32,7 @@ private struct CreateConversationView: View {
         List {
             if let users {
                 if users.isEmpty {
-                    Text(stringResource(.userNotFound))
+                    Text(stringResource(.noUserFound))
                         .foregroundStyle(.informationText)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .listRowSeparator(.hidden)

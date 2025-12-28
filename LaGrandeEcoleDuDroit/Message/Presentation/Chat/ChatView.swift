@@ -27,10 +27,11 @@ struct ChatDestination: View {
         ChatView(
             conversation: conversation,
             messages: viewModel.uiState.messages,
-            messageText: viewModel.uiState.messageText,
+            messageText: $viewModel.uiState.messageText,
             loading: viewModel.uiState.loading,
             blockedUser: viewModel.uiState.blockedUser,
             canLoadMoreMessages: viewModel.uiState.canLoadMoreMessages,
+            newMessagesEventPublisher: viewModel.newMessagesEventPublisher,
             onSendMessagesClick: viewModel.sendMessage,
             onMessageTextChange: viewModel.onMessageTextChange,
             loadMoreMessages: viewModel.loadMoreMessages,
@@ -47,9 +48,9 @@ struct ChatDestination: View {
             if let errorEvent = event as? ErrorEvent {
                 errorMessage = errorEvent.message
                 showErrorAlert = true
-            } else if let messageEvent = event as? ChatViewModel.MessageEvent {
-                switch messageEvent {
-                    case .chatDeleted: onBackClick()
+            } else if let chatEvent = event as? ChatViewModel.ChatEvent {
+                if case .chatDeleted = chatEvent {
+                    onBackClick()
                 }
             }
         }
@@ -69,10 +70,12 @@ struct ChatDestination: View {
 private struct ChatView: View {
     let conversation: Conversation
     let messages: [Message]
-    let messageText: String
+    @Binding var messageText: String
     let loading: Bool
     let blockedUser: Bool
     let canLoadMoreMessages: Bool
+    let newMessagesEventPublisher: AnyPublisher<Bool, Never>
+    
     let onSendMessagesClick: () -> Void
     let onMessageTextChange: (String) -> Void
     let loadMoreMessages: (Int) -> Void
@@ -92,34 +95,35 @@ private struct ChatView: View {
     @State private var showUnblockUserAlert: Bool = false
     
     var body: some View {
-        VStack(spacing: Dimens.smallMediumPadding) {
-            MessageFeed(
-                messages: messages,
-                conversation: conversation,
-                canLoadMoreMessages: canLoadMoreMessages,
-                loadMoreMessages: loadMoreMessages,
-                onErrorMessageClick: {
-                    if $0.state == .error {
-                        activeSheet = .sentMessage($0)
-                    }
-                },
-                onReceivedMessageLongClick: {
-                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    activeSheet = .receivedMessage($0)
-                },
-                onInterlocutorProfilePictureClick: { onInterlocutorProfilePictureClick(conversation.interlocutor) }
-            )
-            
+        MessageFeed(
+            messages: messages,
+            conversation: conversation,
+            canLoadMoreMessages: canLoadMoreMessages,
+            loadMoreMessages: loadMoreMessages,
+            newMessagesEventPublisher: newMessagesEventPublisher,
+            onErrorMessageClick: {
+                if $0.state == .error {
+                    activeSheet = .sentMessage($0)
+                }
+            },
+            onReceivedMessageLongClick: {
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                activeSheet = .receivedMessage($0)
+            },
+            onInterlocutorProfilePictureClick: { onInterlocutorProfilePictureClick(conversation.interlocutor) }
+        )
+        .safeAreaInset(edge: .bottom) {
             MessageBottomSection(
                 blockedUser: blockedUser,
-                messageText: messageText,
+                messageText: $messageText,
                 onMessageTextChange: onMessageTextChange,
                 onSendMessagesClick: onSendMessagesClick,
                 onDeleteChatClick: { showDeleteChatAlert = true },
                 onUnblockUserClick: { showUnblockUserAlert = true }
             )
+            .padding(.top, 2)
+            .padding(.horizontal)
         }
-        .padding(.horizontal)
         .loading(loading)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -276,7 +280,7 @@ private struct ReceivedMessageSheet: View {
 
 private struct MessageBottomSection: View {
     let blockedUser: Bool
-    let messageText: String
+    @Binding var messageText: String
     let onMessageTextChange: (String) -> Void
     let onSendMessagesClick: () -> Void
     let onDeleteChatClick: () -> Void
@@ -290,7 +294,7 @@ private struct MessageBottomSection: View {
             )
         } else {
             MessageInput(
-                text: messageText,
+                text: $messageText,
                 onTextChange: onMessageTextChange,
                 onSendClick: onSendMessagesClick
             )
@@ -317,10 +321,11 @@ private enum ChatViewSheet: Identifiable {
         ChatView(
             conversation: conversationFixture,
             messages: messagesFixture,
-            messageText: "",
+            messageText: .constant(""),
             loading: false,
             blockedUser: false,
             canLoadMoreMessages: true,
+            newMessagesEventPublisher: Empty().eraseToAnyPublisher(),
             onSendMessagesClick: {},
             onMessageTextChange: { _ in },
             loadMoreMessages: { _ in },

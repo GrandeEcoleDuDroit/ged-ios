@@ -64,6 +64,10 @@ class MissionRepositoryImpl: MissionRepository {
         try await missionLocalDataSource.deleteMission(missionId: mission.id)
     }
     
+    func deleteLocalMissions() async throws {
+        try await missionLocalDataSource.deleteMissions()
+    }
+    
     func deleteLocalMission(missionId: String) async throws {
         try await missionLocalDataSource.deleteMission(missionId: missionId)
     }
