@@ -2,56 +2,72 @@ import FirebaseFirestore
 
 class BlockedUserApiImpl: BlockedUserApi {
     private let tag = String(describing: BlockedUserApiImpl.self)
-    private let blockedUserFirestoreApi: BlockedUserFirestoreApi
+    private let blockedUserServerApi: BlockedUserServerApi
     
-    init(blockedUserFirestoreApi: BlockedUserFirestoreApi) {
-        self.blockedUserFirestoreApi = blockedUserFirestoreApi
+    init(blockedUserServerApi: BlockedUserServerApi) {
+        self.blockedUserServerApi = blockedUserServerApi
     }
     
-    func getBlockedUserIds(currentUserId: String) async throws -> Set<String> {
-        try await mapFirebaseError(
-            block: {  try await blockedUserFirestoreApi.getBlockedUserIds(currentUserId: currentUserId) },
+    func getBlockedUserIds(currentUserId: String) async throws -> [String] {
+        try await mapServerError(
+            block: {  try await blockedUserServerApi.getBlockedUserIds(currentUserId: currentUserId) },
             tag: tag,
-            message: "Failed to get blocked user ids from Firestore"
+            message: "Failed to get blocked user ids from Server"
         )
     }
     
-    func blockUser(currentUserId: String, userId: String) async throws {
-        try await mapFirebaseError(
-            block: {  try await blockedUserFirestoreApi.blockUser(currentUserId: currentUserId, userId: userId) },
+    func blockUser(currentUserId: String, blockedUserId: String) async throws {
+        try await mapServerError(
+            block: {  try await blockedUserServerApi.addBlockedUser(currentUserId: currentUserId, blockedUserId: blockedUserId) },
             tag: tag,
-            message: "Failed to block user with Firestore"
+            message: "Failed to block user from Server"
         )
     }
     
-    func unblockUser(currentUserId: String, userId: String) async throws {
-        try await mapFirebaseError(
-            block: {  try await blockedUserFirestoreApi.unblockUser(currentUserId: currentUserId, userId: userId) },
+    func unblockUser(currentUserId: String, blockedUserId: String) async throws {
+        try await mapServerError(
+            block: {  try await blockedUserServerApi.removeBlockedUser(currentUserId: currentUserId, blockedUserId: blockedUserId) },
             tag: tag,
-            message: "Failed to unblock user with Firestore"
+            message: "Failed to unblock user from Firestore"
         )
     }
 }
 
-class BlockedUserFirestoreApi {
-    private let blockedUsersCollection: CollectionReference = Firestore.firestore().collection("blockedUsers")
-    private let dataKey = "userIds"
+class BlockedUserServerApi {
+    private let tokenProvider: TokenProvider
+    private let base = "blocked-users"
     
-    func getBlockedUserIds(currentUserId: String) async throws -> Set<String> {
-        let userIds = try await blockedUsersCollection.document(currentUserId)
-            .getDocument()
-            .data()?[dataKey] as? [String] ?? []
+    init(tokenProvider: TokenProvider) {
+        self.tokenProvider = tokenProvider
+    }
+    
+    func getBlockedUserIds(currentUserId: String) async throws -> (URLResponse, [String]) {
+        let url = try RequestUtils.formatOracleUrl(base: base)
+        let session = RequestUtils.getDefaultSession()
+        let authToken = await tokenProvider.getAuthToken()
+        let request = RequestUtils.simpleGetRequest(url: url, authToken: authToken)
         
-        return Set(userIds)
+        let (data, urlResponse) = try await session.data(for: request)
+        let blockedUserIds = try JSONDecoder().decode([String].self, from: data)
+        return (urlResponse, blockedUserIds)
     }
     
-    func blockUser(currentUserId: String, userId: String) async throws {
-        let data = [dataKey: FieldValue.arrayUnion([userId])]
-        try await blockedUsersCollection.document(currentUserId).setData(data, merge: true)
+    func addBlockedUser(currentUserId: String, blockedUserId: String) async throws -> (URLResponse, ServerResponse) {
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "create")
+        let session = RequestUtils.getDefaultSession()
+        let dataToSend = [BlockedUserField.Server.blockedUserId: blockedUserId]
+        let authToken = await tokenProvider.getAuthToken()
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: dataToSend, authToken: authToken)
+        
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func unblockUser(currentUserId: String, userId: String) async throws {
-        let data = [dataKey: FieldValue.arrayRemove([userId])]
-        try await blockedUsersCollection.document(currentUserId).setData(data, merge: true)
+    func removeBlockedUser(currentUserId: String, blockedUserId: String) async throws -> (URLResponse, ServerResponse) {
+        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: blockedUserId)
+        let session = RequestUtils.getDefaultSession()
+        let authToken = await tokenProvider.getAuthToken()
+        let request = RequestUtils.simpleDeleteRequest(url: url, authToken: authToken)
+        
+        return try await RequestUtils.sendRequest(session: session, request: request)
     }
 }

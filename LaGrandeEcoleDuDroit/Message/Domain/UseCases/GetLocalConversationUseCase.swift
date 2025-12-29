@@ -37,7 +37,7 @@ class GetLocalConversationUseCase {
             interlocutor: interlocutor,
             createdAt: Date(),
             state: .draft,
-            deleteTime: nil
+            effectiveFrom: nil
         )
     }
 }

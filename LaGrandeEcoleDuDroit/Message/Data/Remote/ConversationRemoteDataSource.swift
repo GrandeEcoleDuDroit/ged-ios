@@ -25,10 +25,10 @@ class ConversationRemoteDataSource {
         )
     }
     
-    func updateConversationDeleteTime(conversationId: String, userId: String, deleteTime: Date) async throws {
+    func updateConversationEffectiveFrom(conversationId: String, userId: String, date: Date) async throws {
         try await mapFirebaseError(
             block: {
-                let data = ["\(ConversationField.Remote.deleteTime).\(userId)": Timestamp(date: deleteTime)]
+                let data = ["\(ConversationField.Remote.effectiveFrom).\(userId)": Timestamp(date: date)]
                 try await conversationApi.updateConversation(conversationId: conversationId, data: data)
             }
         )

@@ -8,16 +8,16 @@ class BlockedUserLocalDataSource {
         UserDefaults.standard.stringArray(forKey: blockedUserKey)?.toSet() ?? Set<String>()
     }
 
-    func blockUser(userId: String) -> Set<String> {
+    func blockUser(blockedUserId: String) -> Set<String> {
         var blockedUserIds = getBlockedUserIds()
-        blockedUserIds.insert(userId)
+        blockedUserIds.insert(blockedUserId)
         UserDefaults.standard.set(Array(blockedUserIds), forKey: blockedUserKey)
         return blockedUserIds
     }
     
-    func unblockUser(userId: String) -> Set<String> {
+    func unblockUser(blockedUserId: String) -> Set<String> {
         var blockedUserIds = getBlockedUserIds()
-        blockedUserIds.remove(userId)
+        blockedUserIds.remove(blockedUserId)
         UserDefaults.standard.set(Array(blockedUserIds), forKey: blockedUserKey)
         return blockedUserIds
     }

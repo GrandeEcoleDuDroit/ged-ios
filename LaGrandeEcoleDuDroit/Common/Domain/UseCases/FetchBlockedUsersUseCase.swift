@@ -19,11 +19,11 @@ class FetchBlockedUsersUseCase {
         let usersToUnblock = localBlockedUserIds.subtracting(remoteBlockedUserIds)
         
         for userId in usersToBlock {
-            try await blockedUserRepository.blockUser(currentUserId: currentUserId, userId: userId)
+            try await blockedUserRepository.blockUser(currentUserId: currentUserId, blockedUserId: userId)
         }
         
         for userId in usersToUnblock {
-            try await blockedUserRepository.unblockUser(currentUserId: currentUserId, userId: userId)
+            try await blockedUserRepository.unblockUser(currentUserId: currentUserId, blockedUserId: userId)
         }
     }
 }

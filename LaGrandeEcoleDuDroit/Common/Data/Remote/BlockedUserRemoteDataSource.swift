@@ -8,14 +8,14 @@ class BlockedUserRemoteDataSource {
     }
     
     func getBlockedUserIds(currentUserId: String) async throws -> Set<String> {
-        try await blockedUserApi.getBlockedUserIds(currentUserId: currentUserId)
+        try await blockedUserApi.getBlockedUserIds(currentUserId: currentUserId).toSet()
     }
     
-    func blockUser(currentUserId: String, userId: String) async throws {
-        try await blockedUserApi.blockUser(currentUserId: currentUserId, userId: userId)
+    func blockUser(currentUserId: String, blockedUserId: String) async throws {
+        try await blockedUserApi.blockUser(currentUserId: currentUserId, blockedUserId: blockedUserId)
     }
     
-    func unblockUser(currentUserId: String, userId: String) async throws {
-        try await blockedUserApi.unblockUser(currentUserId: currentUserId, userId: userId)
+    func unblockUser(currentUserId: String, blockedUserId: String) async throws {
+        try await blockedUserApi.unblockUser(currentUserId: currentUserId, blockedUserId: blockedUserId)
     }
 }

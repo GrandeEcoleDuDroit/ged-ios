@@ -42,12 +42,12 @@ class CommonInjector: Injector {
             NotificationApiImpl(fcmApi: resolver.resolve(FcmApi.self)!)
         }.inObjectScope(.container)
         
-        container.register(BlockedUserFirestoreApi.self) { _ in
-            BlockedUserFirestoreApi()
+        container.register(BlockedUserServerApi.self) { _ in
+            BlockedUserServerApi(tokenProvider: AppInjector.shared.resolve(TokenProvider.self))
         }.inObjectScope(.container)
         
         container.register(BlockedUserApi.self) { resolver in
-            BlockedUserApiImpl(blockedUserFirestoreApi: resolver.resolve(BlockedUserFirestoreApi.self)!)
+            BlockedUserApiImpl(blockedUserServerApi: resolver.resolve(BlockedUserServerApi.self)!)
         }.inObjectScope(.container)
         
         // Data sources

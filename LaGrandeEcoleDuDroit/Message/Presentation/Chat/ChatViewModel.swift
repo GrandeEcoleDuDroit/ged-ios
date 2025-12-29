@@ -134,10 +134,7 @@ class ChatViewModel: ViewModel {
         
         Task { @MainActor [weak self] in
             do {
-                try await self?.blockedUserRepository.unblockUser(
-                    currentUserId: currentUserId,
-                    userId: userId
-                )
+                try await self?.blockedUserRepository.unblockUser(currentUserId: currentUserId, blockedUserId: userId)
                 self?.uiState.loading = false
             } catch {
                 self?.uiState.loading = false
@@ -159,9 +156,9 @@ class ChatViewModel: ViewModel {
                 }
                 
                 try await self?.conversationRepository.deleteConversation(
-                    conversation: conversation,
+                    conversationId: conversation.id,
                     userId: currentUserId,
-                    deleteTime: Date()
+                    date: Date()
                 )
                 try await self?.messageRepository.deleteLocalMessages(conversationId: conversation.id)
                 self?.uiState.loading = false

@@ -42,7 +42,7 @@ extension MessageNotification {
                 interlocutor: currentUser,
                 createdAt: conversation.createdAt,
                 state: conversation.state,
-                deleteTime: conversation.deleteTime
+                effectiveFrom: conversation.effectiveFrom
             ),
             message: message
         )

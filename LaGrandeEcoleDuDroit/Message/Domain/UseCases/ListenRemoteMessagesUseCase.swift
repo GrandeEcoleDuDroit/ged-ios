@@ -25,14 +25,14 @@ class ListenRemoteMessagesUseCase {
     
     func start(conversation: Conversation) {
         Task {
-            await messageCancellable.cancelAndRemove(forKey: conversation.id)
-            updateMessageCancellables(for: conversation)
+            await messageCancellable.cancelAndRemove(conversationId: conversation.id)
+            updateMessageCancellables(conversation: conversation)
         }
     }
     
-    func stop(userId: String) {
+    func stop(conversationId: String) {
         Task {
-            await messageCancellable.cancelAndRemove(forKey: userId)
+            await messageCancellable.cancelAndRemove(conversationId: conversationId)
         }
     }
     
@@ -43,14 +43,14 @@ class ListenRemoteMessagesUseCase {
         }
     }
     
-    private func updateMessageCancellables(for conversation: Conversation) {
+    private func updateMessageCancellables(conversation: Conversation) {
         Task {
             do {
                 let blockedUserIds = blockedUserRepository.currentBlockedUserIds
                 
                 if !blockedUserIds.contains(conversation.interlocutor.id) {
                     let cancellable = try await listenRemoteMessagesCancellable(conversation)
-                    await messageCancellable.set(cancellable, forKey: conversation.id)
+                    await messageCancellable.set(cancellable, conversationId: conversation.id)
                 }
             } catch {
                 e(tag, "Failed to listen remote messages for conversation with \(conversation.interlocutor.fullName)", error)
@@ -75,20 +75,20 @@ class ListenRemoteMessagesUseCase {
     }
         
     private func getOffsetTime(conversation: Conversation, lastMessage: Message?) -> Date? {
-        [conversation.deleteTime, lastMessage?.date].compactMap { $0 }.max()
+        [conversation.effectiveFrom, lastMessage?.date].compactMap { $0 }.max()
     }
 }
 
 private actor MessageCancellable {
     private var cancellables: [String: AnyCancellable] = [:]
 
-    func set(_ cancellable: AnyCancellable, forKey key: String) {
-        cancellables[key] = cancellable
+    func set(_ cancellable: AnyCancellable, conversationId: String) {
+        cancellables[conversationId] = cancellable
     }
     
-    func cancelAndRemove(forKey key: String) {
-        cancellables[key]?.cancel()
-        cancellables.removeValue(forKey: key)
+    func cancelAndRemove(conversationId: String) {
+        cancellables[conversationId]?.cancel()
+        cancellables.removeValue(forKey: conversationId)
     }
     
     func cancelAll() {
