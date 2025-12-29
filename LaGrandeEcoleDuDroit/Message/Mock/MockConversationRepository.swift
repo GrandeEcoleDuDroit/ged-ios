@@ -6,14 +6,12 @@ class MockConversationRepository: ConversationRepository {
         Empty().eraseToAnyPublisher()
     }
     
-    func getLocalConversations() async throws -> [Conversation] { [] }
+    func getLocalConversations() async -> [Conversation] { [] }
     
-    func getLocalConversation(interlocutorId: String) async throws -> Conversation? { nil }
+    func getLocalConversation(interlocutorId: String) async -> Conversation? { nil }
     
-    func fetchRemoteConversations(user: User) -> AnyPublisher<Conversation, any Error> {
-        Empty()
-            .setFailureType(to: Error.self)
-            .eraseToAnyPublisher()
+    func getRemoteConversationsPublisher(user: User) -> AnyPublisher<RemoteConversation, Never> {
+        Empty().eraseToAnyPublisher()
     }
     
     func createLocalConversation(conversation: Conversation) async throws {}
@@ -22,13 +20,13 @@ class MockConversationRepository: ConversationRepository {
     
     func updateLocalConversation(conversation: Conversation) async throws {}
     
-    func updateConversationDeleteTime(conversation: Conversation, currentUserId: String) async throws {}
+    func updateConversationEffectiveFrom(conversationId: String, currentUserId: String, effectiveFrom: Date) async throws {}
     
     func upsertLocalConversation(conversation: Conversation) async throws {}
     
     func deleteLocalConversations() async throws {}
     
-    func deleteConversation(conversation: Conversation, userId: String, deleteTime: Date) async throws {}
-    
+    func deleteConversation(conversationId: String, userId: String, date: Date) async throws {}
+
     func stopListenConversations() {}
 }

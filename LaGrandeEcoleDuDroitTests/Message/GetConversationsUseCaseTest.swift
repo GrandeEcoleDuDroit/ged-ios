@@ -52,7 +52,7 @@ class GetConversationUseCaseTest {
 }
 
 private class SingleConversation: MockConversationRepository {
-    override func getLocalConversation(interlocutorId: String) async throws -> Conversation? {
+    override func getLocalConversation(interlocutorId: String) async -> Conversation? {
         conversationFixture
     }
 }

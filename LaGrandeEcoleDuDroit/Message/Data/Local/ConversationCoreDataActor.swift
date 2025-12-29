@@ -91,6 +91,21 @@ actor ConversationCoreDataActor {
         }
     }
     
+    func updateConversationEffectiveFrom(conversationId: String, effectiveFrom: Date) async throws {
+        try await context.perform {
+            let request = LocalConversation.fetchRequest()
+            request.predicate = NSPredicate(
+                format: "%K == %@",
+                ConversationField.Local.conversationId, conversationId
+            )
+            
+            let localConversation = try self.context.fetch(request).first
+            localConversation?.conversationEffectiveFrom = effectiveFrom
+            
+            try self.context.save()
+        }
+    }
+    
     func deleteConversation(conversationId: String) async throws -> Conversation? {
         try await context.perform {
             let request = LocalConversation.fetchRequest()

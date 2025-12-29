@@ -22,8 +22,9 @@ class AppInjector: Injector {
             ListenBlockedUserEventsUseCase(
                 blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self),
                 announcementRepository: NewsInjector.shared.resolve(AnnouncementRepository.self),
+                conversationRepository: MessageInjector.shared.resolve(ConversationRepository.self),
                 listenRemoteMessagesUseCase: MessageInjector.shared.resolve(ListenRemoteMessagesUseCase.self),
-                updateConversationDeleteTimeUseCase: MessageInjector.shared.resolve(UpdateConversationDeleteTimeUseCase.self)
+                updateConversationEffectiveFromUseCase: MessageInjector.shared.resolve(UpdateConversationEffectiveFromUseCase.self)
             )
         }.inObjectScope(.container)
         

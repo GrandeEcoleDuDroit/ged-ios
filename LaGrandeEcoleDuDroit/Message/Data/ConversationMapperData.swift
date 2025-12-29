@@ -8,6 +8,7 @@ extension Conversation {
         localConversation.conversationId = id
         localConversation.conversationCreatedAt = createdAt
         localConversation.conversationState = state.rawValue
+        localConversation.conversationEffectiveFrom = effectiveFrom
         localConversation.conversationInterlocutorId = interlocutor.id
         localConversation.conversationInterlocutorFirstName = interlocutor.firstName
         localConversation.conversationInterlocutorLastName = interlocutor.lastName
@@ -25,7 +26,7 @@ extension Conversation {
             conversationId: id,
             participants: [userId, interlocutor.id],
             createdAt: Timestamp(date: createdAt),
-            deleteTime: deleteTime.map { [userId: Timestamp(date: $0)] }
+            effectiveFrom: effectiveFrom.map { [userId: Timestamp(date: $0)] }
         )
     }
     
@@ -33,6 +34,7 @@ extension Conversation {
         localConversation.conversationId = id
         localConversation.conversationCreatedAt = createdAt
         localConversation.conversationState = state.rawValue
+        localConversation.conversationEffectiveFrom = effectiveFrom
         localConversation.conversationInterlocutorId = interlocutor.id
         localConversation.conversationInterlocutorFirstName = interlocutor.firstName
         localConversation.conversationInterlocutorLastName = interlocutor.lastName
@@ -75,7 +77,7 @@ extension LocalConversation {
             interlocutor: interlocutor,
             createdAt: createdAt,
             state: state,
-            deleteTime: conversationDeleteTime
+            effectiveFrom: conversationEffectiveFrom
         )
     }
     
@@ -83,7 +85,7 @@ extension LocalConversation {
         conversationId = conversation.id
         conversationCreatedAt = conversation.createdAt
         conversationState = conversation.state.rawValue
-        conversationDeleteTime = conversation.deleteTime
+        conversationEffectiveFrom = conversation.effectiveFrom
         conversationInterlocutorId = conversation.interlocutor.id
         conversationInterlocutorFirstName = conversation.interlocutor.firstName
         conversationInterlocutorLastName = conversation.interlocutor.lastName
@@ -99,7 +101,7 @@ extension LocalConversation {
         conversationId == conversation.id &&
         conversationCreatedAt == conversation.createdAt &&
         conversationState == conversation.state.rawValue &&
-        conversationDeleteTime == conversation.deleteTime &&
+        conversationEffectiveFrom == conversation.effectiveFrom &&
         conversationInterlocutorId == conversation.interlocutor.id &&
         conversationInterlocutorFirstName == conversation.interlocutor.firstName &&
         conversationInterlocutorLastName == conversation.interlocutor.lastName &&
@@ -119,7 +121,7 @@ extension RemoteConversation {
             interlocutor: interlocutor,
             createdAt: createdAt.dateValue(),
             state: .created,
-            deleteTime: deleteTime?[userId]?.dateValue()
+            effectiveFrom: effectiveFrom?[userId]?.dateValue()
         )
     }
     
@@ -129,7 +131,7 @@ extension RemoteConversation {
             ConversationField.Remote.participants: participants,
             ConversationField.Remote.createdAt: createdAt
         ] as [String: Any]
-        deleteTime.map { data[ConversationField.Remote.deleteTime] = $0 }
+        effectiveFrom.map { data[ConversationField.Remote.effectiveFrom] = $0 }
         return data
     }
 }

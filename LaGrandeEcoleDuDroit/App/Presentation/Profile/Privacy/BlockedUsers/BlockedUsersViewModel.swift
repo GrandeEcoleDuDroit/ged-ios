@@ -35,7 +35,7 @@ class BlockedUsersViewModel: ViewModel {
         
         Task { @MainActor [weak self] in
             do {
-                try await self?.blockedUserRepository.unblockUser(currentUserId: currentUserId, userId: userId)
+                try await self?.blockedUserRepository.unblockUser(currentUserId: currentUserId, blockedUserId: userId)
                 self?.uiState.blockedUsers?.removeAll { $0.id == userId }
                 self?.uiState.loading = false
             } catch {

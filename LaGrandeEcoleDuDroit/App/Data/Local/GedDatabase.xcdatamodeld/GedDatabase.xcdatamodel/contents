@@ -18,7 +18,7 @@
     </entity>
     <entity name="LocalConversation" representedClassName="LocalConversation" syncable="YES" codeGenerationType="class">
         <attribute name="conversationCreatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="conversationDeleteTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="conversationEffectiveFrom" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="conversationId" attributeType="String"/>
         <attribute name="conversationInterlocutorAdmin" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="conversationInterlocutorEmail" optional="YES" attributeType="String"/>

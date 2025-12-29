@@ -32,17 +32,17 @@ class BlockedUserRepositoryImpl: BlockedUserRepository {
         try await blockedUserRemoteDataSource.getBlockedUserIds(currentUserId: currentUserId)
     }
     
-    func blockUser(currentUserId: String, userId: String) async throws {
-        try await blockedUserRemoteDataSource.blockUser(currentUserId: currentUserId, userId: userId)
-        let blockedUserIds = blockedUserLocalDataSource.blockUser(userId: userId)
+    func blockUser(currentUserId: String, blockedUserId: String) async throws {
+        try await blockedUserRemoteDataSource.blockUser(currentUserId: currentUserId, blockedUserId: blockedUserId)
+        let blockedUserIds = blockedUserLocalDataSource.blockUser(blockedUserId: blockedUserId)
         blockedUserIdsSubject.send(blockedUserIds)
-        blockedUserEventsSubject.send(.block(userId: userId))
+        blockedUserEventsSubject.send(.block(userId: blockedUserId))
     }
     
-    func unblockUser(currentUserId: String, userId: String) async throws {
-        try await blockedUserRemoteDataSource.unblockUser(currentUserId: currentUserId, userId: userId)
-        let blockedUserIds = blockedUserLocalDataSource.unblockUser(userId: userId)
+    func unblockUser(currentUserId: String, blockedUserId: String) async throws {
+        try await blockedUserRemoteDataSource.unblockUser(currentUserId: currentUserId, blockedUserId: blockedUserId)
+        let blockedUserIds = blockedUserLocalDataSource.unblockUser(blockedUserId: blockedUserId)
         blockedUserIdsSubject.send(blockedUserIds)
-        blockedUserEventsSubject.send(.unblock(userId: userId))
+        blockedUserEventsSubject.send(.unblock(userId: blockedUserId))
     }
 }

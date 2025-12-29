@@ -36,8 +36,8 @@ class MainViewModel: ObservableObject {
                 if authenticated {
                     Task {
                         await self?.checkUserValidityUseCase.execute()
-                        self?.listenDataUseCase.start()
                         self?.fetchDataUseCase.execute()
+                        self?.listenDataUseCase.start()
                     }
                 } else {
                     self?.listenDataUseCase.stop()
