@@ -44,7 +44,8 @@ class AppInjector: Injector {
                 messageRepository: MessageInjector.shared.resolve(MessageRepository.self),
                 conversationMessageRepository: MessageInjector.shared.resolve(ConversationMessageRepository.self),
                 announcementRepository: NewsInjector.shared.resolve(AnnouncementRepository.self),
-                missionRepository: MissionInjector.shared.resolve(MissionRepository.self)
+                missionRepository: MissionInjector.shared.resolve(MissionRepository.self),
+                blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self)
             )
         }
         

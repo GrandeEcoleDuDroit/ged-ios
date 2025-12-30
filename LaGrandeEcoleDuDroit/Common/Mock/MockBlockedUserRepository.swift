@@ -13,7 +13,13 @@ class MockBlockedUserRepository: BlockedUserRepository {
     
     func getRemoteBlockedUserIds(currentUserId: String) async throws -> Set<String> { Set<String>() }
     
-    func blockUser(currentUserId: String, blockedUserId: String) async throws {}
+    func addBlockedUser(currentUserId: String, blockedUserId: String) async throws {}
     
-    func unblockUser(currentUserId: String, blockedUserId: String) async throws {}
+    func addLocalBlockedUser(blockedUserId: String) async {}
+    
+    func removeBlockedUser(currentUserId: String, blockedUserId: String) async throws {}
+    
+    func removeLocalBlockedUser(blockedUserId: String) async {}
+    
+    func deleteLocalBlockedUsers() async {}
 }

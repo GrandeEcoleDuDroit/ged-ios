@@ -5,5 +5,5 @@ struct ConversationUi: Identifiable, Copying, Equatable {
     var interlocutor: User
     var lastMessage: Message
     var createdAt: Date
-    var state: ConversationState
+    var state: Conversation.ConversationState
 }

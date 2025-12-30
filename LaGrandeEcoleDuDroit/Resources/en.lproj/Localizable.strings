@@ -35,7 +35,7 @@
 "home" = "Home";
 "now" = "Now";
 "finish" = "Finish";
-"resend" = "Resend";
+"retry" = "Retry";
 "loading" = "Loading";
 "send" = "Send";
 "publish" = "Publish";
@@ -105,16 +105,15 @@
 "forgot_password_success" = "If an account with this email exists, a password reset email will be sent.";
 "agree_terms_privacy_beginning_text" = "I read and agree to the";
 "terms_and_privacy" = "Terms of Use and Privacy Policy";
-"legal_notice_error" = "Please accept the Terms of Use and Privacy Policy to continue.";
 
 // Authentification errors
 "incorrect_email_format_error" = "Please enter a valid email address.";
 "password_length_error" = "The password must be at least 8 characters long.";
 "incorrect_credentials_error" = "Incorrect email address or password.";
 "user_not_exist_error" = "User doesn't exist.";
-"email_not_verified_error" = "Please validate your email address before to continue.";
 "email_already_associated_error" = "This email address is already used.";
 "user_not_white_listed_error" = "Registration is currently limited to authorized users.";
+"legal_notice_error" = "Please accept the Terms of Use and Privacy Policy to continue.";
 
 // News
 "news" = "News";
@@ -141,6 +140,7 @@
 "new_message" = "New message";
 "delete_message_alert_content" = "Do you want to delete this message?";
 "chat_blocked_user_indicator_text" = "You cannot send messages to this user unless you unblock them.";
+"resend" = "Resend";
 
 // Mission
 "mission" = "Mission";

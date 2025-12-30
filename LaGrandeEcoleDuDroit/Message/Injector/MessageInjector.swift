@@ -130,6 +130,10 @@ class MessageInjector: Injector {
             )
         }
         
+        container.register(RecreateConversationUseCase.self) { resolver in
+            RecreateConversationUseCase(conversationRepository: resolver.resolve(ConversationRepository.self)!)
+        }
+        
         // Others
         container.register(StartupMessageTask.self) { resolver in
             StartupMessageTask(

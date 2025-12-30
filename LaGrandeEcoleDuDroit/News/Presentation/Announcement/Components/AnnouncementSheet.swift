@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AnnouncementSheet: View {
-    let announcement: Announcement
+    let announcementState: Announcement.AnnouncementState
     let editable: Bool
     let onEditClick: () -> Void
     let onResendClick: () -> Void
@@ -9,14 +9,14 @@ struct AnnouncementSheet: View {
     let onReportClick: () -> Void
     
     init(
-        announcement: Announcement,
+        announcementState: Announcement.AnnouncementState,
         editable: Bool,
         onEditClick: @escaping () -> Void,
         onResendClick: @escaping () -> Void = {},
         onDeleteClick: @escaping () -> Void,
         onReportClick: @escaping () -> Void
     ) {
-        self.announcement = announcement
+        self.announcementState = announcementState
         self.editable = editable
         self.onEditClick = onEditClick
         self.onResendClick = onResendClick
@@ -25,7 +25,7 @@ struct AnnouncementSheet: View {
     }
     
     var body: some View {
-        switch announcement.state {
+        switch announcementState {
             case .published:
                 PublishedAnnouncementSheet(
                     editable: editable,
@@ -105,8 +105,8 @@ private struct ErrorAnnouncementSheet: View {
     var body: some View {
         SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
             ClickableTextItem(
-                icon: Image(systemName: "paperplane"),
-                text: Text(stringResource(.resend)),
+                icon: Image(systemName: "arrow.clockwise"),
+                text: Text(stringResource(.retry)),
                 onClick: onResendClick
             )
             
@@ -122,7 +122,7 @@ private struct ErrorAnnouncementSheet: View {
 
 #Preview {
     AnnouncementSheet(
-        announcement: announcementFixture,
+        announcementState: announcementFixture.state,
         editable: true,
         onEditClick: {},
         onResendClick: {},

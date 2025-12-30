@@ -5,7 +5,7 @@ class NewsViewModel: ViewModel {
     private let userRepository: UserRepository
     private let announcementRepository: AnnouncementRepository
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
-    private let resendAnnouncementUseCase: ResendAnnouncementUseCase
+    private let recreateAnnouncementUseCase: RecreateAnnouncementUseCase
     private let refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
     private let networkMonitor: NetworkMonitor
     
@@ -17,14 +17,14 @@ class NewsViewModel: ViewModel {
         userRepository: UserRepository,
         announcementRepository: AnnouncementRepository,
         deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
-        resendAnnouncementUseCase: ResendAnnouncementUseCase,
+        recreateAnnouncementUseCase: RecreateAnnouncementUseCase,
         refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase,
         networkMonitor: NetworkMonitor
     ) {
         self.userRepository = userRepository
         self.announcementRepository = announcementRepository
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
-        self.resendAnnouncementUseCase = resendAnnouncementUseCase
+        self.recreateAnnouncementUseCase = recreateAnnouncementUseCase
         self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
         self.networkMonitor = networkMonitor
         
@@ -37,9 +37,9 @@ class NewsViewModel: ViewModel {
     }
 
     
-    func resendAnnouncement(announcement: Announcement) {
+    func recreateAnnouncement(announcement: Announcement) {
         Task {
-            await resendAnnouncementUseCase.execute(announcement: announcement)
+            await recreateAnnouncementUseCase.execute(announcement: announcement)
         }
     }
     

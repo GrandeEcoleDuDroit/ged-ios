@@ -16,7 +16,7 @@ struct NewsDestination: View {
                 loading: viewModel.uiState.loading,
                 onRefreshAnnouncements: viewModel.refreshAnnouncements,
                 onAnnouncementClick: onAnnouncementClick,
-                onResendAnnouncementClick: viewModel.resendAnnouncement,
+                onResendAnnouncementClick: viewModel.recreateAnnouncement,
                 onDeleteAnnouncementClick: viewModel.deleteAnnouncement,
                 onReportAnnouncementClick: viewModel.reportAnnouncement,
                 onSeeAllAnnouncementClick: onSeeAllAnnouncementClick,
@@ -107,7 +107,7 @@ private struct NewsView: View {
             switch $0 {
                 case let .announcement(announcement):
                     AnnouncementSheet(
-                        announcement: announcement,
+                        announcementState: announcement.state,
                         editable: user.admin && announcement.author.id == user.id,
                         onEditClick: {
                             if let fullAnnouncement = getAnnouncement(announcement.id) {

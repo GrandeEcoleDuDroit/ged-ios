@@ -6,6 +6,7 @@ class ConversationViewModel: ViewModel {
     private let deleteConversationUseCase: DeleteConversationUseCase
     private let getConversationsUiUseCase: GetConversationsUiUseCase
     private let getLocalConversationUseCase: GetLocalConversationUseCase
+    private let recreateConversationUseCase: RecreateConversationUseCase
 
     @Published private(set) var uiState: ConversationUiState = ConversationUiState()
     @Published private(set) var event: SingleUiEvent? = nil
@@ -16,12 +17,14 @@ class ConversationViewModel: ViewModel {
         userRepository: UserRepository,
         getConversationsUiUseCase: GetConversationsUiUseCase,
         deleteConversationUseCase: DeleteConversationUseCase,
-        getLocalConversationUseCase: GetLocalConversationUseCase
+        getLocalConversationUseCase: GetLocalConversationUseCase,
+        recreateConversationUseCase: RecreateConversationUseCase
     ) {
         self.userRepository = userRepository
         self.getConversationsUiUseCase = getConversationsUiUseCase
         self.deleteConversationUseCase = deleteConversationUseCase
         self.getLocalConversationUseCase = getLocalConversationUseCase
+        self.recreateConversationUseCase = recreateConversationUseCase
         
         listenConversations()
     }
@@ -46,6 +49,13 @@ class ConversationViewModel: ViewModel {
         } catch {
             event = ErrorEvent(message: mapNetworkErrorMessage(error))
             return nil
+        }
+    }
+    
+    func recreateConversation(conversation: Conversation) {
+        guard let currentUserId = userRepository.currentUser?.id else { return }
+        Task {
+            await recreateConversationUseCase.execute(conversation: conversation, userId: currentUserId)
         }
     }
     

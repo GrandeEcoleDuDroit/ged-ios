@@ -7,19 +7,13 @@ struct Conversation: Hashable, Codable, Copying {
     var state: ConversationState
     var effectiveFrom: Date?
     
-    func shouldBeCreated() -> Bool {
-        state == .draft ||
-        state == .error ||
-        state == .deleting
+    enum ConversationState: String, Equatable, Hashable, Codable {
+        case draft = "draft"
+        case creating = "creating"
+        case created = "created"
+        case deleting = "deleting"
+        case error = "error"
     }
-}
-
-enum ConversationState: String, Equatable, Hashable, Codable {
-    case draft = "draft"
-    case creating = "creating"
-    case created = "created"
-    case deleting = "deleting"
-    case error = "error"
 }
 
 extension Conversation {

@@ -1,7 +1,5 @@
 import SwiftUI
 
-private let previewTextFont: Font = .callout
-
 struct ConversationItem: View {
     private let conversationUi: ConversationUi
     private let lastMessage: Message
@@ -34,41 +32,46 @@ struct ConversationItem: View {
 
 private struct SwitchConversationItem: View {
     let interlocutor: User
-    let conversationState: ConversationState
+    let conversationState: Conversation.ConversationState
     let lastMessage: Message
     let isUnread: Bool
     let text: String
-    
-    private var loading: Bool {
-        conversationState == .creating || conversationState == .deleting
-    }
     
     private var elapsedTimeText: String {
         getElapsedTimeText(date: lastMessage.date)
     }
     
     var body: some View {
-        ZStack {
-            if loading {
-                LoadingConversationItem(
-                    interlocutor: interlocutor,
-                    text: text,
-                    elapsedTimeText: elapsedTimeText
-                )
-            } else {
-                if isUnread {
-                    UnreadConversationItem(
+        Group {
+            switch conversationState {
+                case .draft, .creating, .deleting:
+                    LoadingConversationItem(
                         interlocutor: interlocutor,
                         text: text,
                         elapsedTimeText: elapsedTimeText
                     )
-                } else {
-                    DefaultConversationItem(
+                    
+                case .created:
+                    if isUnread {
+                        UnreadConversationItem(
+                            interlocutor: interlocutor,
+                            text: text,
+                            elapsedTimeText: elapsedTimeText
+                        )
+                    } else {
+                        DefaultConversationItem(
+                            interlocutor: interlocutor,
+                            text: text,
+                            elapsedTimeText: elapsedTimeText
+                        )
+                    }
+                    
+                case .error:
+                    ErrorConversationItem(
                         interlocutor: interlocutor,
                         text: text,
                         elapsedTimeText: elapsedTimeText
                     )
-                }
             }
         }
         .padding(.horizontal)
@@ -145,23 +148,51 @@ private struct LoadingConversationItem: View {
         ).opacity(0.5)
     }
 }
+
+private struct ErrorConversationItem: View {
+    let interlocutor: User
+    let text: String
+    let elapsedTimeText: String
+    
+    var body: some View {
+        HStack(alignment: .center, spacing: Dimens.mediumPadding) {
+            Image(systemName: "exclamationmark.circle")
+                .foregroundStyle(.red)
+            
+            DefaultConversationItem(
+                interlocutor: interlocutor,
+                text: text,
+                elapsedTimeText: elapsedTimeText
+            )
+        }
+    }
+}
     
 #Preview {
-    DefaultConversationItem(
-        interlocutor: userFixture,
-        text: "Read message",
-        elapsedTimeText: "Now"
-    )
-    
-    UnreadConversationItem(
-        interlocutor: userFixture,
-        text: "Unread message",
-        elapsedTimeText: "Now"
-    )
-    
-    LoadingConversationItem(
-        interlocutor: userFixture,
-        text: "Loading..",
-        elapsedTimeText: "Now"
-    )
+    VStack(spacing: 20) {
+        DefaultConversationItem(
+            interlocutor: userFixture,
+            text: "Read message",
+            elapsedTimeText: "Now"
+        )
+        
+        UnreadConversationItem(
+            interlocutor: userFixture,
+            text: "Unread message",
+            elapsedTimeText: "Now"
+        )
+        
+        LoadingConversationItem(
+            interlocutor: userFixture,
+            text: "Loading..",
+            elapsedTimeText: "Now"
+        )
+        
+        ErrorConversationItem(
+            interlocutor: userFixture,
+            text: "Error conversation",
+            elapsedTimeText: "Now"
+        )
+    }
+    .padding(.horizontal)
 }

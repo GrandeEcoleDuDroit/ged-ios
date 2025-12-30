@@ -97,7 +97,7 @@ private struct ReadAnnouncementView: View {
             switch $0 {
                 case .announcement:
                     AnnouncementSheet(
-                        announcement: announcement,
+                        announcementState: announcement.state,
                         editable: user.admin && announcement.author.id == user.id,
                         onEditClick: {
                             activeSheet = .editAnnouncement

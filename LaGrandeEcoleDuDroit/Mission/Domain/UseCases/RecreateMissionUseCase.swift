@@ -1,6 +1,6 @@
 import Foundation
 
-class ResendMissionUseCase {
+class RecreateMissionUseCase {
     private let missionRepository: MissionRepository
     private let imageRepository: ImageRepository
     private let missionTaskReferences: MissionTaskQueue

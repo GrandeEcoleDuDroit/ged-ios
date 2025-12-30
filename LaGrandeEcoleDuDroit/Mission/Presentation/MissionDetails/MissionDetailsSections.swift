@@ -123,6 +123,7 @@ struct MissionDetailsTaskSection: View {
                         Text(missionTask.value)
                             .font(MissionUtilsPresentation.contentFont)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
         }

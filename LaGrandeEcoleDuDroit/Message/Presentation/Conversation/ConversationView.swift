@@ -20,7 +20,8 @@ struct ConversationDestination: View {
                         }
                     }
                 }
-            }
+            },
+            onRecreateConversationClick: viewModel.recreateConversation
         )
         .onReceive(viewModel.$event) { event in
             if let errorEvent = event as? ErrorEvent {
@@ -45,6 +46,7 @@ private struct ConversationView: View {
     let onConversationClick: (Conversation) -> Void
     let onDeleteConversationClick: (Conversation) -> Void
     let onCreateConversationClick: (User) -> Void
+    let onRecreateConversationClick: (Conversation) -> Void
     
     @State private var showDeleteAlert: Bool = false
     @State private var alertConversation: Conversation?
@@ -62,7 +64,13 @@ private struct ConversationView: View {
                 } else {
                     ConversationListContent(
                         conversationsUi: conversationsUi,
-                        onConversationClick: onConversationClick,
+                        onConversationClick: {
+                            if $0.state == .created {
+                                onConversationClick($0)
+                            } else {
+                                activeSheet = .conversation($0)
+                            }
+                        },
                         onLongConversationClick: {
                             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                             activeSheet = .conversation($0)
@@ -111,17 +119,18 @@ private struct ConversationView: View {
         .sheet(item: $activeSheet) {
             switch $0 {
                 case let .conversation(conversation):
-                    SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
-                        ClickableTextItem(
-                            icon: Image(systemName: "trash"),
-                            text: Text(stringResource(.delete))
-                        ) {
+                    ConversationSheet(
+                        conversationState: conversation.state,
+                        onRecreateClick: {
+                            activeSheet = nil
+                            onRecreateConversationClick(conversation)
+                        },
+                        onDeleteClick: {
                             activeSheet = nil
                             alertConversation = conversation
                             showDeleteAlert = true
                         }
-                        .foregroundStyle(.red)
-                    }
+                    )
                     
                 case .createConversation:
                     NavigationStack {
@@ -208,7 +217,8 @@ private enum ConversationViewSheet: Identifiable {
             conversationsUi: conversationsUiFixture,
             onConversationClick: {_ in},
             onDeleteConversationClick: {_ in},
-            onCreateConversationClick: { _ in}
+            onCreateConversationClick: { _ in},
+            onRecreateConversationClick: {_ in}
         )
         .background(.appBackground)
     }

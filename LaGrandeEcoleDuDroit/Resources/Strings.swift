@@ -34,7 +34,7 @@ enum Strings: String {
     case save = "save"
     case now = "now"
     case finish = "finish"
-    case resend = "resend"
+    case retry = "retry"
     case loading = "loading"
     case send = "send"
     case publish = "publish"
@@ -137,6 +137,7 @@ enum Strings: String {
     case newMessage = "new_message"
     case deleteMessageAlertContent = "delete_message_alert_content"
     case chatBlockedUserIndicatorText = "chat_blocked_user_indicator_text"
+    case resend = "resend"
     
     // Mission
     case mission = "mission"

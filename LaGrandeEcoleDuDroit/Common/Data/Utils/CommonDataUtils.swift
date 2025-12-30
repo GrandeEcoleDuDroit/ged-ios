@@ -48,13 +48,13 @@ func mapServerError(
     
     if let httpResponse = urlResponse as? HTTPURLResponse {
         if httpResponse.statusCode >= 400 {
-            e(tag, "\(message.orEmpty()): \(serverResponse.message)")
+            e(tag, "\(message.orEmpty()): \(serverResponse.error.orEmpty())")
 
             guard specificHandle == nil else {
                 return try specificHandle!(urlResponse, serverResponse)
             }
             
-            throw NetworkError.internalServer(serverResponse.message)
+            throw NetworkError.internalServer(serverResponse.error.orEmpty())
         }
     }
 }
@@ -70,7 +70,7 @@ func mapServerError<T>(
     if let httpResponse = urlResponse as? HTTPURLResponse {
         if httpResponse.statusCode >= 400 {
             let serverResponse = data as? ServerResponse
-            e(tag, "\(message.orEmpty()): \(String(describing: serverResponse?.message))")
+            e(tag, "\(message.orEmpty()): \(String(describing: serverResponse?.error))")
 
             guard specificHandle == nil else {
                 return specificHandle!(urlResponse, data)

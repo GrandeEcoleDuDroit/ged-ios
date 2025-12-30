@@ -1,4 +1,4 @@
-class ResendAnnouncementUseCase {
+class RecreateAnnouncementUseCase {
     private let announcementRepository: AnnouncementRepository
     private let announcementTaskReferences: AnnouncementTaskQueue
 

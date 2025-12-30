@@ -19,17 +19,10 @@ class SendMessageUseCase {
         do {
             try await createDataLocally(conversation: conversation, message: message)
             try await createDataRemotely(conversation: conversation, message: message, userId: userId)
-            let messageNotification = MessageNotification(
-                conversation: conversation,
-                message: MessageNotification.MessageContent(
-                    content: message.content,
-                    date: message.date.toEpochMilli()
-                )
-            )
-            await sendMessageNotificationUseCase.execute(notification: messageNotification)
+            await sendNotification(conversation: conversation, message: message)
         } catch {
             if conversation.state == .draft {
-                try? await conversationRepository.updateLocalConversation(conversation: conversation.copy { $0.state = .error })
+                try? await conversationRepository.upsertLocalConversation(conversation: conversation.copy { $0.state = .error })
             }
             try? await messageRepository.upsertLocalMessage(message: message.copy { $0.state = .error })
         }
@@ -37,20 +30,33 @@ class SendMessageUseCase {
     
     private func createDataLocally(conversation: Conversation, message: Message) async throws {
         if conversation.state == .draft {
-            try await conversationRepository.createLocalConversation(conversation: conversation.copy { $0.state = .creating })
+            try? await conversationRepository.createLocalConversation(conversation: conversation.copy { $0.state = .creating })
         }
         
         if message.state == .draft {
             try await messageRepository.createLocalMessage(message: message.copy { $0.state = .sending })
+        } else if message.state == .error {
+            try await messageRepository.updateLocalMessage(message: message.copy { $0.state = .sending })
         }
     }
     
     private func createDataRemotely(conversation: Conversation, message: Message, userId: String) async throws {
-        if conversation.shouldBeCreated() {
+        if conversation.state == .draft {
             try await conversationRepository.createRemoteConversation(conversation: conversation,userId: userId)
-            try await conversationRepository.updateLocalConversation(conversation: conversation.copy { $0.state = .created })
+            try? await conversationRepository.updateLocalConversation(conversation: conversation.copy { $0.state = .created })
         }
         try await messageRepository.createRemoteMessage(message: message)
         try await messageRepository.updateLocalMessage(message: message.copy { $0.state = .sent })
+    }
+    
+    private func sendNotification(conversation: Conversation, message: Message) async {
+        let messageNotification = MessageNotification(
+            conversation: conversation,
+            message: MessageNotification.MessageContent(
+                content: message.content,
+                date: message.date.toEpochMilli()
+            )
+        )
+        await sendMessageNotificationUseCase.execute(notification: messageNotification)
     }
 }

@@ -17,7 +17,7 @@ struct AllAnnouncementsDestination: View {
                 onRefresh: viewModel.refreshAnnouncements,
                 onAuthorClick: onAuthorClick,
                 onAnnouncementClick: onAnnouncementClick,
-                onResendAnnouncementClick: { viewModel.resendAnnouncement(announcement: $0) },
+                onResendAnnouncementClick: { viewModel.recreateAnnouncement(announcement: $0) },
                 onReportAnnouncementClick: { viewModel.reportAnnouncement(report: $0) },
                 onDeleteAnnouncementClick: { viewModel.deleteAnnouncement(announcement: $0) }
             )
@@ -109,7 +109,7 @@ private struct AllAnnouncementsView: View {
             switch $0 {
                 case let .announcement(announcement):
                     AnnouncementSheet(
-                        announcement: announcement,
+                        announcementState: announcement.state,
                         editable: user.admin && announcement.author.id == user.id,
                         onEditClick: {
                             activeSheet = .editAnnouncement(announcement)

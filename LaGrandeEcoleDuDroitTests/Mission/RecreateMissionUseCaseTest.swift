@@ -4,9 +4,9 @@ import Combine
 
 @testable import GrandeEcoleDuDroit
 
-class ResendMissionUseCaseTest {
+class RecreateMissionUseCaseTest {
     @Test
-    func resendMissionUseCase_should_create_mission_with_publishing_state_and_image_path() async {
+    func recreateMissionUseCase_should_create_mission_with_publishing_state_and_image_path() async {
         // Given
         let imagePath = "imagePath"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
@@ -14,7 +14,7 @@ class ResendMissionUseCaseTest {
         let missionTaskReferences = MissionTaskQueue()
 
         // When
-        let useCase = ResendMissionUseCase(
+        let useCase = RecreateMissionUseCase(
             missionRepository: missionRepositoryTest,
             imageRepository: MockImageRepository(),
             missionTaskReferences: missionTaskReferences
@@ -33,7 +33,7 @@ class ResendMissionUseCaseTest {
     }
     
     @Test
-    func resendMissionUseCase_should_update_mission_state_to_published_with_image_path_when_success() async {
+    func recreateMissionUseCase_should_update_mission_state_to_published_with_image_path_when_success() async {
         // Given
         let imagePath = "imagePath"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
@@ -41,7 +41,7 @@ class ResendMissionUseCaseTest {
         let missionTaskReferences = MissionTaskQueue()
 
         // When
-        let useCase = ResendMissionUseCase(
+        let useCase = RecreateMissionUseCase(
             missionRepository: missionRepositoryTest,
             imageRepository: MockImageRepository(),
             missionTaskReferences: missionTaskReferences
@@ -61,7 +61,7 @@ class ResendMissionUseCaseTest {
     }
     
     @Test
-    func resendMissionUseCase_should_pass_image_data_when_image_path_is_present() async {
+    func recreateMissionUseCase_should_pass_image_data_when_image_path_is_present() async {
         // Given
         let imagePath = "/path/to/image"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
@@ -71,7 +71,7 @@ class ResendMissionUseCaseTest {
         let missionTaskReferences = MissionTaskQueue()
 
         // When
-        let useCase = ResendMissionUseCase(
+        let useCase = RecreateMissionUseCase(
             missionRepository: missionRepositoryTest,
             imageRepository: imageRepositoryTest,
             missionTaskReferences: missionTaskReferences
@@ -84,7 +84,7 @@ class ResendMissionUseCaseTest {
     }
     
     @Test
-    func resendMissionUseCase_should_update_state_to_error_when_exception_occured() async {
+    func recreateMissionUseCase_should_update_state_to_error_when_exception_occured() async {
         // Given
         let imagePath = "/path/to/image"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
@@ -92,7 +92,7 @@ class ResendMissionUseCaseTest {
         let missionTaskReferences = MissionTaskQueue()
         
         // When
-        let useCase = ResendMissionUseCase(
+        let useCase = RecreateMissionUseCase(
             missionRepository: createMissionException,
             imageRepository: MockImageRepository(),
             missionTaskReferences: missionTaskReferences

@@ -16,7 +16,7 @@ struct MissionDestination: View {
                 onMissionClick: onMissionClick,
                 onDeleteMissionClick: viewModel.deleteMission,
                 onReportMissionClick: viewModel.reportMission,
-                onResendMissionClick: viewModel.resendMission,
+                onRecreateMissionClick: viewModel.recreateMission,
                 onRefreshMissions: viewModel.refreshMissions,
             )
             .onReceive(viewModel.$event) { event in
@@ -48,7 +48,7 @@ private struct MissionView: View {
     let onMissionClick: (String) -> Void
     let onDeleteMissionClick: (Mission) -> Void
     let onReportMissionClick: (MissionReport) -> Void
-    let onResendMissionClick: (Mission) -> Void
+    let onRecreateMissionClick: (Mission) -> Void
     let onRefreshMissions: () async -> Void
     
     @State private var activeSheet: MissionViewSheet?
@@ -134,7 +134,7 @@ private struct MissionView: View {
                         },
                         onResendClick: {
                             activeSheet = nil
-                            onResendMissionClick(mission)
+                            onRecreateMissionClick(mission)
                         }
                     )
                     
@@ -212,7 +212,7 @@ private enum MissionViewSheet: Identifiable {
             onMissionClick: { _ in },
             onDeleteMissionClick: { _ in },
             onReportMissionClick: { _ in },
-            onResendMissionClick: { _ in},
+            onRecreateMissionClick: { _ in},
             onRefreshMissions: {}
         )
         .background(.appBackground)

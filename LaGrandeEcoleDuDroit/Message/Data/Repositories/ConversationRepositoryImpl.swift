@@ -94,9 +94,7 @@ class ConversationRepositoryImpl: ConversationRepository {
     
     func deleteConversation(conversationId: String, userId: String, date: Date) async throws {
         try await conversationRemoteDataSource.updateConversationEffectiveFrom(conversationId: conversationId, userId: userId, date: date)
-        if let deletedConversation = try await conversationLocalDataSource.deleteConversation(conversationId: conversationId) {
-            conversationChangesSubject.send(CoreDataChange(deleted: [deletedConversation]))
-        }
+        try await deleteLocalConversation(conversationId: conversationId)
     }
     
     func deleteLocalConversations() async throws {
@@ -105,6 +103,17 @@ class ConversationRepositoryImpl: ConversationRepository {
             conversationChangesSubject.send(CoreDataChange(deleted: deletedConversations))
         } catch {
             e(tag, "Failed to delete local conversations", error)
+            throw error
+        }
+    }
+    
+    func deleteLocalConversation(conversationId: String) async throws {
+        do {
+            if let deletedConversation = try await conversationLocalDataSource.deleteConversation(conversationId: conversationId) {
+                conversationChangesSubject.send(CoreDataChange(deleted: [deletedConversation]))
+            }
+        } catch {
+            e(tag, "Failed to delete local conversation", error)
             throw error
         }
     }
