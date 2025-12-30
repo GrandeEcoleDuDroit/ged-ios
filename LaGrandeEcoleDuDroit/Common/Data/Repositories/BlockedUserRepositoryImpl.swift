@@ -32,17 +32,36 @@ class BlockedUserRepositoryImpl: BlockedUserRepository {
         try await blockedUserRemoteDataSource.getBlockedUserIds(currentUserId: currentUserId)
     }
     
-    func blockUser(currentUserId: String, blockedUserId: String) async throws {
+    func addBlockedUser(currentUserId: String, blockedUserId: String) async throws {
         try await blockedUserRemoteDataSource.blockUser(currentUserId: currentUserId, blockedUserId: blockedUserId)
-        let blockedUserIds = blockedUserLocalDataSource.blockUser(blockedUserId: blockedUserId)
-        blockedUserIdsSubject.send(blockedUserIds)
+        blockedUserLocalDataSource.addBlockedUser(blockedUserId: blockedUserId)
         blockedUserEventsSubject.send(.block(userId: blockedUserId))
+        emitBlockedUserIds()
     }
     
-    func unblockUser(currentUserId: String, blockedUserId: String) async throws {
-        try await blockedUserRemoteDataSource.unblockUser(currentUserId: currentUserId, blockedUserId: blockedUserId)
-        let blockedUserIds = blockedUserLocalDataSource.unblockUser(blockedUserId: blockedUserId)
-        blockedUserIdsSubject.send(blockedUserIds)
+    func addLocalBlockedUser(blockedUserId: String) async {
+        blockedUserLocalDataSource.addBlockedUser(blockedUserId: blockedUserId)
+        emitBlockedUserIds()
+    }
+    
+    func removeBlockedUser(currentUserId: String, blockedUserId: String) async throws {
+        try await blockedUserRemoteDataSource.removeBlockedUser(currentUserId: currentUserId, blockedUserId: blockedUserId)
+        blockedUserLocalDataSource.removeBlockedUser(blockedUserId: blockedUserId)
         blockedUserEventsSubject.send(.unblock(userId: blockedUserId))
+        emitBlockedUserIds()
+    }
+    
+    func removeLocalBlockedUser(blockedUserId: String) async {
+        blockedUserLocalDataSource.removeBlockedUser(blockedUserId: blockedUserId)
+        emitBlockedUserIds()
+    }
+    
+    func deleteLocalBlockedUsers() async {
+        blockedUserLocalDataSource.deleteAll()
+    }
+    
+    private func emitBlockedUserIds() {
+        let blockedUserIds = blockedUserLocalDataSource.getBlockedUserIds()
+        blockedUserIdsSubject.send(blockedUserIds)
     }
 }

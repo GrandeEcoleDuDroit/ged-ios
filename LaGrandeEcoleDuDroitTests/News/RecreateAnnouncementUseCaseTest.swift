@@ -2,14 +2,14 @@ import Testing
 
 @testable import GrandeEcoleDuDroit
 
-class ResendAnnouncementUseCaseTest {
+class RecreateAnnouncementUseCaseTest {
     @Test
-    func resendAnnouncementUseCase_should_set_announcement_state_to_pbulished() async throws {
+    func recreateAnnouncementUseCase_should_set_announcement_state_to_pbulished() async throws {
         // Given
         let announcement = announcementFixture
         let announcementSetPublished = AnnouncementSetPublished()
         let announcementTaskReferences = AnnouncementTaskQueue()
-        let useCase = ResendAnnouncementUseCase(
+        let useCase = RecreateAnnouncementUseCase(
             announcementRepository: announcementSetPublished,
             announcementTaskReferences: announcementTaskReferences
         )
@@ -23,12 +23,12 @@ class ResendAnnouncementUseCaseTest {
     }
     
     @Test
-    func resendAnnouncementUseCase_should_set_announcement_state_to_error_when_exception_thrown() async {
+    func recreateAnnouncementUseCase_should_set_announcement_state_to_error_when_exception_thrown() async {
         // Given
         let announcement = announcementFixture
         let announcementSetError = AnnouncementSetError()
         let announcementTaskReferences = AnnouncementTaskQueue()
-        let useCase = ResendAnnouncementUseCase(
+        let useCase = RecreateAnnouncementUseCase(
             announcementRepository: announcementSetError,
             announcementTaskReferences: announcementTaskReferences
         )

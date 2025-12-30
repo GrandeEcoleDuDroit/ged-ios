@@ -23,7 +23,7 @@ class MissionMainThreadInjector: MainThreadInjector {
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
                 refreshMissionsUseCase: MissionInjector.shared.resolve(RefreshMissionsUseCase.self),
                 deleteMissionUseCase: MissionInjector.shared.resolve(DeleteMissionUseCase.self),
-                resendMissionUseCase: MissionInjector.shared.resolve(ResendMissionUseCase.self),
+                recreateMissionUseCase: MissionInjector.shared.resolve(RecreateMissionUseCase.self),
                 networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
             )
         }

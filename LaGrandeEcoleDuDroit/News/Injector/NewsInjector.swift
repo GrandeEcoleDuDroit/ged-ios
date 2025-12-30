@@ -47,8 +47,8 @@ class NewsInjector: Injector {
             )
         }.inObjectScope(.weak)
         
-        container.register(ResendAnnouncementUseCase.self) { resolver in
-            ResendAnnouncementUseCase(
+        container.register(RecreateAnnouncementUseCase.self) { resolver in
+            RecreateAnnouncementUseCase(
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
                 announcementTaskReferences: resolver.resolve(AnnouncementTaskQueue.self)!
             )
@@ -72,7 +72,7 @@ class NewsInjector: Injector {
             StartupAnnouncementTask(
                 networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
-                resendAnnouncementUseCase: resolver.resolve(ResendAnnouncementUseCase.self)!
+                recreateAnnouncementUseCase: resolver.resolve(RecreateAnnouncementUseCase.self)!
             )
         }.inObjectScope(.weak)
         

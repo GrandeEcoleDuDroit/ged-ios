@@ -5,7 +5,7 @@ class AllAnnouncementsViewModel: ViewModel {
     private let userRepository: UserRepository
     private let announcementRepository: AnnouncementRepository
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
-    private let resendAnnouncementUseCase: ResendAnnouncementUseCase
+    private let recreateAnnouncementUseCase: RecreateAnnouncementUseCase
     private let refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
     private let networkMonitor: NetworkMonitor
     
@@ -17,14 +17,14 @@ class AllAnnouncementsViewModel: ViewModel {
         userRepository: UserRepository,
         announcementRepository: AnnouncementRepository,
         deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
-        resendAnnouncementUseCase: ResendAnnouncementUseCase,
+        recreateAnnouncementUseCase: RecreateAnnouncementUseCase,
         refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase,
         networkMonitor: NetworkMonitor
     ) {
         self.userRepository = userRepository
         self.announcementRepository = announcementRepository
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
-        self.resendAnnouncementUseCase = resendAnnouncementUseCase
+        self.recreateAnnouncementUseCase = recreateAnnouncementUseCase
         self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
         self.networkMonitor = networkMonitor
         
@@ -37,7 +37,7 @@ class AllAnnouncementsViewModel: ViewModel {
     }
 
     
-    func resendAnnouncement(announcement: Announcement) {
+    func recreateAnnouncement(announcement: Announcement) {
         guard networkMonitor.isConnected else {
             return event = ErrorEvent(message: stringResource(.noInternetConectionError))
         }
@@ -45,7 +45,7 @@ class AllAnnouncementsViewModel: ViewModel {
         uiState.loading = true
         
         Task { @MainActor [weak self] in
-            await self?.resendAnnouncementUseCase.execute(announcement: announcement)
+            await self?.recreateAnnouncementUseCase.execute(announcement: announcement)
             self?.uiState.loading = false
         }
     }

@@ -134,7 +134,7 @@ class ChatViewModel: ViewModel {
         
         Task { @MainActor [weak self] in
             do {
-                try await self?.blockedUserRepository.unblockUser(currentUserId: currentUserId, blockedUserId: userId)
+                try await self?.blockedUserRepository.removeBlockedUser(currentUserId: currentUserId, blockedUserId: userId)
                 self?.uiState.loading = false
             } catch {
                 self?.uiState.loading = false

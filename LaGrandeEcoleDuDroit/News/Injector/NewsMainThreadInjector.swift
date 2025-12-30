@@ -16,7 +16,7 @@ class NewsMainThreadInjector: MainThreadInjector {
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
                 announcementRepository: NewsInjector.shared.resolve(AnnouncementRepository.self),
                 deleteAnnouncementUseCase: NewsInjector.shared.resolve(DeleteAnnouncementUseCase.self),
-                resendAnnouncementUseCase: NewsInjector.shared.resolve(ResendAnnouncementUseCase.self),
+                recreateAnnouncementUseCase: NewsInjector.shared.resolve(RecreateAnnouncementUseCase.self),
                 refreshAnnouncementsUseCase: NewsInjector.shared.resolve(RefreshAnnouncementsUseCase.self),
                 networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
             )
@@ -61,7 +61,7 @@ class NewsMainThreadInjector: MainThreadInjector {
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
                 announcementRepository: NewsInjector.shared.resolve(AnnouncementRepository.self),
                 deleteAnnouncementUseCase: NewsInjector.shared.resolve(DeleteAnnouncementUseCase.self),
-                resendAnnouncementUseCase: NewsInjector.shared.resolve(ResendAnnouncementUseCase.self),
+                recreateAnnouncementUseCase: NewsInjector.shared.resolve(RecreateAnnouncementUseCase.self),
                 refreshAnnouncementsUseCase: NewsInjector.shared.resolve(RefreshAnnouncementsUseCase.self),
                 networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
             )

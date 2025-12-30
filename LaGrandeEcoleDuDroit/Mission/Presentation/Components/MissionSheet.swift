@@ -105,8 +105,8 @@ private struct ErrorMissionSheet: View {
     var body: some View {
         SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
             ClickableTextItem(
-                icon: Image(systemName: "paperplane"),
-                text: Text(stringResource(.resend)),
+                icon: Image(systemName: "arrow.clockwise"),
+                text: Text(stringResource(.retry)),
                 onClick: onResendClick
             )
             

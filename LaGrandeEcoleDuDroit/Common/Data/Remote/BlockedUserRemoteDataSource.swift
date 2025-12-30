@@ -15,7 +15,7 @@ class BlockedUserRemoteDataSource {
         try await blockedUserApi.blockUser(currentUserId: currentUserId, blockedUserId: blockedUserId)
     }
     
-    func unblockUser(currentUserId: String, blockedUserId: String) async throws {
+    func removeBlockedUser(currentUserId: String, blockedUserId: String) async throws {
         try await blockedUserApi.unblockUser(currentUserId: currentUserId, blockedUserId: blockedUserId)
     }
 }

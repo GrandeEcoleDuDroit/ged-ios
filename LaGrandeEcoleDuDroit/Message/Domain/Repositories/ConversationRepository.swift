@@ -21,6 +21,8 @@ protocol ConversationRepository {
     func upsertLocalConversation(conversation: Conversation) async throws
     
     func deleteConversation(conversationId: String, userId: String, date: Date) async throws
+    
+    func deleteLocalConversation(conversationId: String) async throws
 
     func deleteLocalConversations() async throws
     

@@ -52,7 +52,7 @@ extension LocalConversation {
         guard let id = conversationId,
               let createdAt = conversationCreatedAt,
               let conversationState = conversationState,
-              let state = ConversationState(rawValue: conversationState),
+              let state = Conversation.ConversationState(rawValue: conversationState),
               let interlocutorId = conversationInterlocutorId,
               let interlocutorFirstName = conversationInterlocutorFirstName,
               let interlocutorLastName = conversationInterlocutorLastName,

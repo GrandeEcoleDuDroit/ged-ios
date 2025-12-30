@@ -34,7 +34,7 @@
 "home" = "Accueil";
 "now" = "Maintenant";
 "finish" = "Terminer";
-"resend" = "Renvoyer";
+"retry" = "Réessayer";
 "loading" = "Chargement";
 "send" = "Envoyer";
 "publish" = "Publier";
@@ -100,16 +100,15 @@
 "forgot_password_success" = "Si un compte associé à cette adresse e-mail existe, un lien de réinitialisation vous sera envoyé.";
 "agree_terms_privacy_beginning_text" = "J’ai lu et j’accepte les";
 "terms_and_privacy" = "Conditions d'utilisation et la Politique de Confidentialité";
-"legal_notice_error" = "Veuillez accepter les Conditions d’utilisation et la Politique de Confidentialité pour continuer.";
 
 // Authtentication errors
 "incorrect_email_format_error" = "Veuillez entrer une adresse e-mail valide.";
 "password_length_error" = "Le mot de passe doit faire au moins 8 caractères.";
 "incorrect_credentials_error" = "Adresse e-mail ou mot de passe incorrect.";
 "user_not_exist_error" = "L'utilisateur n'existe pas.";
-"email_not_verified_error" = "Veuillez validez votre adresse e-mail avant de continuer.";
 "email_already_associated" = "Cette adresse e-mail est déjà utilisée.";
 "user_not_white_listed_error" = "L'inscription est actuellement limitée aux utilisateurs autorisés.";
+"legal_notice_error" = "Veuillez accepter les Conditions d’utilisation et la Politique de Confidentialité pour continuer.";
 
 // News
 "news" = "Actualités";
@@ -136,6 +135,7 @@
 "new_message" = "Nouveau message";
 "delete_message_alert_content" = "Voulez-vous supprimer ce message ?";
 "chat_blocked_user_indicator_text" = "Vous ne pouvez pas envoyer de messages à cet utilisateur à moins que vous ne le débloquiez.";
+"resend" = "Renvoyer";
 
 // Mission
 "mission" = "Mission";

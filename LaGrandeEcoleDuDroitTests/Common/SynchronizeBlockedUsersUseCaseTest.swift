@@ -47,7 +47,7 @@ private class BlockedUsers: MockBlockedUserRepository {
         self.usersIds = usersIds
     }
     
-    override func blockUser(currentUserId: String, blockedUserId: String) async throws {
+    override func addBlockedUser(currentUserId: String, blockedUserId: String) async throws {
         userBlockedIds.insert(blockedUserId)
     }
     
@@ -72,7 +72,7 @@ private class UnblockedUsers: MockBlockedUserRepository {
         self.usersIds = usersIds
     }
     
-    override func unblockUser(currentUserId: String, blockedUserId: String) async throws {
+    override func removeBlockedUser(currentUserId: String, blockedUserId: String) async throws {
         unblockedUserIds.insert(blockedUserId)
     }
 }

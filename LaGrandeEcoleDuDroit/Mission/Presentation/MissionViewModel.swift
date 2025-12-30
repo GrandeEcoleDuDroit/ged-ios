@@ -6,7 +6,7 @@ class MissionViewModel: ViewModel {
     private let userRepository: UserRepository
     private let refreshMissionsUseCase: RefreshMissionsUseCase
     private let deleteMissionUseCase: DeleteMissionUseCase
-    private let resendMissionUseCase: ResendMissionUseCase
+    private let recreateMissionUseCase: RecreateMissionUseCase
     private let networkMonitor: NetworkMonitor
     
     @Published private(set) var uiState = MissionUiState()
@@ -18,14 +18,14 @@ class MissionViewModel: ViewModel {
         userRepository: UserRepository,
         refreshMissionsUseCase: RefreshMissionsUseCase,
         deleteMissionUseCase: DeleteMissionUseCase,
-        resendMissionUseCase: ResendMissionUseCase,
+        recreateMissionUseCase: RecreateMissionUseCase,
         networkMonitor: NetworkMonitor
     ) {
         self.missionRepository = missionRepository
         self.userRepository = userRepository
         self.refreshMissionsUseCase = refreshMissionsUseCase
         self.deleteMissionUseCase = deleteMissionUseCase
-        self.resendMissionUseCase = resendMissionUseCase
+        self.recreateMissionUseCase = recreateMissionUseCase
         self.networkMonitor = networkMonitor
         
         listenMissions()
@@ -61,9 +61,9 @@ class MissionViewModel: ViewModel {
         }
     }
     
-    func resendMission(mission: Mission) {
+    func recreateMission(mission: Mission) {
         Task {
-            await resendMissionUseCase.execute(mission: mission)
+            await recreateMissionUseCase.execute(mission: mission)
         }
     }
     

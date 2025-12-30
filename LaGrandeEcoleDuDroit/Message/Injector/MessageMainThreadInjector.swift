@@ -16,7 +16,8 @@ class MessageMainThreadInjector: MainThreadInjector {
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
                 getConversationsUiUseCase: MessageInjector.shared.resolve(GetConversationsUiUseCase.self),
                 deleteConversationUseCase: MessageInjector.shared.resolve(DeleteConversationUseCase.self),
-                getLocalConversationUseCase: MessageInjector.shared.resolve(GetLocalConversationUseCase.self)
+                getLocalConversationUseCase: MessageInjector.shared.resolve(GetLocalConversationUseCase.self),
+                recreateConversationUseCase: MessageInjector.shared.resolve(RecreateConversationUseCase.self)
             )
         }
         

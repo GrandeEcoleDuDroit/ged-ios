@@ -1,17 +1,17 @@
 class StartupAnnouncementTask {
     private let networkMonitor: NetworkMonitor
     private let announcementRepository: AnnouncementRepository
-    private let resendAnnouncementUseCase: ResendAnnouncementUseCase
+    private let recreateAnnouncementUseCase: RecreateAnnouncementUseCase
     private let tag = String(describing: StartupAnnouncementTask.self)
 
     init(
         networkMonitor: NetworkMonitor,
         announcementRepository: AnnouncementRepository,
-        resendAnnouncementUseCase: ResendAnnouncementUseCase
+        recreateAnnouncementUseCase: RecreateAnnouncementUseCase
     ) {
         self.networkMonitor = networkMonitor
         self.announcementRepository = announcementRepository
-        self.resendAnnouncementUseCase = resendAnnouncementUseCase
+        self.recreateAnnouncementUseCase = recreateAnnouncementUseCase
     }
     
     func run() {
@@ -26,7 +26,7 @@ class StartupAnnouncementTask {
             let announcements = try await announcementRepository.getLocalAnnouncements()
             for announcement in announcements {
                 if case .publishing = announcement.state {
-                    await resendAnnouncementUseCase.execute(announcement: announcement)
+                    await recreateAnnouncementUseCase.execute(announcement: announcement)
                 }
             }
         } catch {
