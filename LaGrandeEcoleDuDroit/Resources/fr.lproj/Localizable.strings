@@ -152,6 +152,7 @@
 "mission_description_field" = "Description";
 "mission_start_date_field" = "Date de début";
 "mission_end_date_field" = "Date de fin";
+"mission_school_level_field" = "Niveau scolaire";
 "everyone" = "Tout le monde";
 "mission_max_participants_field" = "Participants max";
 "mission_duration_field" = "Durée (optionnel)";

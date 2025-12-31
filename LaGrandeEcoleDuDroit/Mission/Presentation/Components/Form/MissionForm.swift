@@ -6,8 +6,8 @@ struct MissionForm: View {
     @Binding var description: String
     let startDate: Date
     let endDate: Date
+    let selectedSchoolLevels: [SchoolLevel]
     let allSchoolLevels: [SchoolLevel]
-    let schoolLevels: [SchoolLevel]
     @Binding var maxParticipants: String
     @Binding var duration: String
     let managers: [User]
@@ -55,7 +55,7 @@ struct MissionForm: View {
                 MissionFormInformationSection(
                     startDate: startDate,
                     endDate: endDate,
-                    schoolLevels: schoolLevels,
+                    selectedSchoolLevels: selectedSchoolLevels,
                     allSchoolLevels: allSchoolLevels,
                     maxParticipants: $maxParticipants,
                     duration: $duration,
@@ -101,8 +101,8 @@ struct MissionForm: View {
         description: .constant(""),
         startDate: Date(),
         endDate: Date(),
-        allSchoolLevels: SchoolLevel.allCases,
-        schoolLevels: [],
+        selectedSchoolLevels: [],
+        allSchoolLevels: SchoolLevel.all,
         maxParticipants: .constant(""),
         duration: .constant(""),
         managers: [userFixture],

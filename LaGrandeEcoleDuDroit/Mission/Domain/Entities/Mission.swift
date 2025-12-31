@@ -51,7 +51,7 @@ struct Mission: Copying, Identifiable, Hashable {
     
     var schoolLevelRestricted: Bool {
         !schoolLevels.isEmpty &&
-            schoolLevels.count < SchoolLevel.allCases.count
+            schoolLevels.count < SchoolLevel.all.count
     }
     
     var full: Bool {

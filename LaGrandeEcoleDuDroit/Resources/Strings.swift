@@ -153,6 +153,7 @@ enum Strings: String {
     case missionDescriptionField = "mission_description_field"
     case missionStartDateField = "mission_start_date_field"
     case missionEndDateField = "mission_end_date_field"
+    case missionSchoolLevelField = "mission_school_level_field"
     case everyone = "everyone"
     case missionMaxParticipantsField = "mission_max_participants_field"
     case missionDurationField = "mission_duration_field"

@@ -80,7 +80,7 @@ private struct SecondRegistrationView: View {
             firstName: "",
             lastName: "",
             schoolLevel: .constant(SchoolLevel.ged1),
-            schoolLevels: SchoolLevel.allCases,
+            schoolLevels: SchoolLevel.all,
             onNextClick: {}
         )
         .background(.appBackground)

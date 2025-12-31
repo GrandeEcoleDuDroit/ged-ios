@@ -15,7 +15,7 @@ struct MissionUtilsPresentation {
     static let contentFont: Font = .callout
     
     static func formatSchoolLevels(schoolLevels: [SchoolLevel]) -> String {
-        if schoolLevels.count == SchoolLevel.allCases.count || schoolLevels.isEmpty {
+        if schoolLevels.count == SchoolLevel.all.count {
             stringResource(.everyone)
         } else {
             schoolLevels.sorted { $0.number < $1.number }

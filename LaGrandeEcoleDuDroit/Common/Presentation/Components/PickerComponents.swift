@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MultiSelectionPicker: View {
     let text: String
+    let placeholder: String
     let items: [String]
     let leadingIcon: Image?
     let seletctedItems: [String]
@@ -10,11 +11,13 @@ struct MultiSelectionPicker: View {
     
     init(
         text: String,
+        placeholder: String,
         items: [String],
         seletctedItems: [String],
         onItemSelected: @escaping (String) -> Void
     ) {
         self.text = text
+        self.placeholder = placeholder
         self.items = items
         self.leadingIcon = nil
         self.seletctedItems = seletctedItems
@@ -23,6 +26,7 @@ struct MultiSelectionPicker: View {
     
     init(
         text: String,
+        placeholder: String,
         items: [String],
         leadingIcon: Image,
         seletctedItems: [String],
@@ -30,6 +34,7 @@ struct MultiSelectionPicker: View {
         supportingText: String? = nil
     ) {
         self.text = text
+        self.placeholder = placeholder
         self.items = items
         self.leadingIcon = leadingIcon
         self.seletctedItems = seletctedItems
@@ -58,7 +63,11 @@ struct MultiSelectionPicker: View {
                             .frame(width: Dimens.inputIconSize, height: Dimens.inputIconSize)
                             .foregroundStyle(.onSurfaceVariant)
                         
-                        Text(text)
+                        if seletctedItems.isEmpty {
+                            Text(placeholder).foregroundStyle(.onSurfaceVariant)
+                        } else {
+                            Text(text)
+                        }
                     }
                     
                     Spacer()
@@ -82,9 +91,10 @@ struct MultiSelectionPicker: View {
 
 #Preview {
     MultiSelectionPicker(
-        text: "Select item",
+        text: "",
+        placeholder: "Select item",
         items: ["1", "2", "3"],
-        seletctedItems: ["1"],
+        seletctedItems: [],
         onItemSelected: { _ in }
-    )
+    ).padding(.horizontal)
 }

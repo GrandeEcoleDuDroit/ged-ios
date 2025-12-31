@@ -52,7 +52,7 @@ class EditMissionViewModel: ViewModel {
             uiState.description.trim(),
             uiState.startDate,
             uiState.endDate,
-            uiState.schoolLevels,
+            uiState.selectedSchoolLevels,
             uiState.duration.takeIf { $0.isNotBlank() }?.trim(),
             uiState.managers,
             uiState.maxParticipants.trim(),
@@ -155,29 +155,20 @@ class EditMissionViewModel: ViewModel {
     }
     
     func onSchoolLevelChange(_ schoolLevel: SchoolLevel) {
-        var schoolLevels = uiState.schoolLevels
+        var schoolLevels = uiState.selectedSchoolLevels
         if let index = schoolLevels.firstIndex(of: schoolLevel) {
             schoolLevels.remove(at: index)
         } else {
             schoolLevels.append(schoolLevel)
         }
-        schoolLevels = schoolLevels.sorted { $0.number < $1.number }
         
-        uiState.schoolLevels = schoolLevels
+        schoolLevels = schoolLevels.sorted { $0.number < $1.number }
+        uiState.selectedSchoolLevels = schoolLevels
         missionUpdateState.send(
             missionUpdateState.value.copy {
                 $0.schoolLevelsUpdated = validateSchoolLevelsUpdate(schoolLevels)
             }
         )
-        
-        if schoolLevels != mission.schoolLevels &&
-            !schoolLevels.isEmpty &&
-            schoolLevels.count < SchoolLevel.allCases.count
-        {
-            uiState.schoolLevelSupportingText = stringResource(.editMissionSchoolLevelSupportingText)
-        } else {
-            uiState.schoolLevelSupportingText = nil
-        }
     }
     
     func onMaxParticipantsChange(_ maxParticipants: String) -> Void {
@@ -314,7 +305,7 @@ class EditMissionViewModel: ViewModel {
     }
     
     private func validateSchoolLevelsUpdate(_ schoolLevels: [SchoolLevel]) -> Bool {
-        schoolLevels != mission.schoolLevels
+        schoolLevels != mission.schoolLevels && !schoolLevels.isEmpty
     }
     
     private func validateMaxParticipantsUpdate(_ maxParticipants: String) -> Bool {
@@ -359,7 +350,7 @@ class EditMissionViewModel: ViewModel {
         uiState.description = mission.description
         uiState.startDate = mission.startDate
         uiState.endDate = mission.endDate
-        uiState.schoolLevels = mission.schoolLevels
+        uiState.selectedSchoolLevels = mission.schoolLevels
         uiState.duration = mission.duration.orEmpty()
         uiState.managers = mission.managers
         uiState.maxParticipants = mission.maxParticipants.description
@@ -408,8 +399,8 @@ class EditMissionViewModel: ViewModel {
         var description: String = ""
         fileprivate(set) var startDate: Date = Date()
         fileprivate(set) var endDate: Date = Date()
-        let allSchoolLevels: [SchoolLevel] = SchoolLevel.allCases
-        fileprivate(set) var schoolLevels: [SchoolLevel] = []
+        fileprivate(set) var selectedSchoolLevels: [SchoolLevel] = []
+        let allSchoolLevels: [SchoolLevel] = SchoolLevel.all
         fileprivate(set) var managers: [User] = []
         var maxParticipants: String = ""
         var duration: String = ""
@@ -419,7 +410,7 @@ class EditMissionViewModel: ViewModel {
         fileprivate(set) var loading: Bool = false
         fileprivate(set) var missionState: Mission.MissionState = .draft
         fileprivate(set) var updateEnabled: Bool = false
-        fileprivate(set) var schoolLevelSupportingText: String? = nil
+        let schoolLevelSupportingText: String = stringResource(.editMissionSchoolLevelSupportingText)
         
         fileprivate(set) var maxParticipantsError: String? = nil
     }

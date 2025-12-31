@@ -1,4 +1,4 @@
-enum SchoolLevel: String, CaseIterable, Identifiable, Codable {
+enum SchoolLevel: String, Identifiable, Codable {
     case ged1 = "GED 1"
     case ged2 = "GED 2"
     case ged3 = "GED 3"
@@ -25,7 +25,7 @@ enum SchoolLevel: String, CaseIterable, Identifiable, Codable {
         }
     }
     
-    static var allCases: [SchoolLevel] {
+    static var all: [SchoolLevel] {
         [.ged1, .ged2, .ged3, .ged4]
     }
     
