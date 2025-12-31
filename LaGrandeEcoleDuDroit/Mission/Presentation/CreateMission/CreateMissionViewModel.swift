@@ -43,7 +43,7 @@ class CreateMissionViewModel: ViewModel {
             uiState.description.trim(),
             uiState.startDate,
             uiState.endDate,
-            uiState.schoolLevels,
+            uiState.selectedSchoolLevels,
             uiState.duration.takeIf { $0.isNotBlank() }?.trim(),
             uiState.managers,
             uiState.maxParticipants.trim(),
@@ -104,7 +104,7 @@ class CreateMissionViewModel: ViewModel {
     }
     
     func onSchoolLevelChange(_ schoolLevel: SchoolLevel) {
-        var schoolLevels = uiState.schoolLevels
+        var schoolLevels = uiState.selectedSchoolLevels
         
         if let index = schoolLevels.firstIndex(of: schoolLevel) {
             schoolLevels.remove(at: index)
@@ -112,7 +112,8 @@ class CreateMissionViewModel: ViewModel {
             schoolLevels.append(schoolLevel)
         }
         
-        uiState.schoolLevels = schoolLevels.sorted { $0.number < $1.number }
+        uiState.selectedSchoolLevels = schoolLevels.sorted { $0.number < $1.number }
+        uiState.createEnabled = validateCreate()
     }
     
     func onMaxParticipantsChange(_ maxParticipants: String) -> Void {
@@ -189,10 +190,12 @@ class CreateMissionViewModel: ViewModel {
     private func validateCreate(
         title: String? = nil,
         description: String? = nil,
+        selectedSchoolLevels: [SchoolLevel]? = nil,
         maxParticipants: String? = nil
     ) -> Bool {
         (title ?? uiState.title).isNotBlank() &&
             (description ?? uiState.description).isNotBlank() &&
+            !(selectedSchoolLevels ?? uiState.selectedSchoolLevels).isEmpty &&
             (maxParticipants ?? uiState.maxParticipants).isNotBlank()
     }
     
@@ -232,8 +235,8 @@ class CreateMissionViewModel: ViewModel {
         var description: String = ""
         fileprivate(set) var startDate: Date = Date()
         fileprivate(set) var endDate: Date = Date()
-        let allSchoolLevels: [SchoolLevel] = SchoolLevel.allCases
-        fileprivate(set) var schoolLevels: [SchoolLevel] = []
+        fileprivate(set) var selectedSchoolLevels: [SchoolLevel] = SchoolLevel.all
+        let allSchoolLevels: [SchoolLevel] = SchoolLevel.all
         fileprivate(set) var managers: [User] = []
         var maxParticipants: String = ""
         fileprivate(set) var previousMaxParticipants: String = ""
