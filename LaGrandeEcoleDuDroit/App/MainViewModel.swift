@@ -8,6 +8,7 @@ class MainViewModel: ObservableObject {
     private let listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase
     private let fetchDataUseCase: FetchDataUseCase
     private let checkUserValidityUseCase: CheckUserValidityUseCase
+    private let fcmTokenUseCase: FcmTokenUseCase
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -17,7 +18,8 @@ class MainViewModel: ObservableObject {
         clearDataUseCase: ClearDataUseCase,
         listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase,
         fetchDataUseCase: FetchDataUseCase,
-        checkUserValidityUseCase: CheckUserValidityUseCase
+        checkUserValidityUseCase: CheckUserValidityUseCase,
+        fcmTokenUseCase: FcmTokenUseCase
     ) {
         self.userRepository = userRepository
         self.listenDataUseCase = listenDataUseCase
@@ -25,6 +27,7 @@ class MainViewModel: ObservableObject {
         self.listenAuthenticationStateUseCase = listenAuthenticationStateUseCase
         self.fetchDataUseCase = fetchDataUseCase
         self.checkUserValidityUseCase = checkUserValidityUseCase
+        self.fcmTokenUseCase = fcmTokenUseCase
         
         updateDataOnAuthChange()
     }
@@ -38,6 +41,7 @@ class MainViewModel: ObservableObject {
                         await self?.checkUserValidityUseCase.execute()
                         self?.fetchDataUseCase.execute()
                         self?.listenDataUseCase.start()
+                        await self?.fcmTokenUseCase.sendUnsentToken()
                     }
                 } else {
                     self?.listenDataUseCase.stop()

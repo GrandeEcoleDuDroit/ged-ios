@@ -9,7 +9,8 @@ class NotificationMediatorImpl: NotificationMediator {
     
     func presentNotification(userInfo: [AnyHashable : Any], completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         guard let typeString = userInfo["type"] as? String,
-              let type = FcmDataType(rawValue: typeString) else {
+              let type = FcmDataType(rawValue: typeString)
+        else {
             completionHandler([])
             return
         }
@@ -24,7 +25,8 @@ class NotificationMediatorImpl: NotificationMediator {
     
     func receiveNotification(userInfo: [AnyHashable : Any]) {
         guard let typeString = userInfo["type"] as? String,
-              let type = FcmDataType(rawValue: typeString) else {
+              let type = FcmDataType(rawValue: typeString)
+        else {
             return
         }
         

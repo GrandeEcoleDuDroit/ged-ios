@@ -9,7 +9,7 @@ class ListenRemoteMessagesUseCase {
     private let messageRepository: MessageRepository
     private let blockedUserRepository: BlockedUserRepository
 
-    private let messageCancellable: MessageCancellable = MessageCancellable()
+    private let messageCancellableActor = MessageCancellableActor()
     
     init(
         userRepository: UserRepository,
@@ -25,21 +25,21 @@ class ListenRemoteMessagesUseCase {
     
     func start(conversation: Conversation) {
         Task {
-            await messageCancellable.cancelAndRemove(conversationId: conversation.id)
+            await messageCancellableActor.cancelAndRemove(conversationId: conversation.id)
             updateMessageCancellables(conversation: conversation)
         }
     }
     
     func stop(conversationId: String) {
         Task {
-            await messageCancellable.cancelAndRemove(conversationId: conversationId)
+            await messageCancellableActor.cancelAndRemove(conversationId: conversationId)
         }
     }
     
     func stopAll() {
         messageRepository.stopListeningMessages()
         Task {
-            await messageCancellable.cancelAll()
+            await messageCancellableActor.cancelAll()
         }
     }
     
@@ -50,7 +50,7 @@ class ListenRemoteMessagesUseCase {
                 
                 if !blockedUserIds.contains(conversation.interlocutor.id) {
                     let cancellable = try await listenRemoteMessagesCancellable(conversation)
-                    await messageCancellable.set(cancellable, conversationId: conversation.id)
+                    await messageCancellableActor.set(cancellable, conversationId: conversation.id)
                 }
             } catch {
                 e(tag, "Failed to listen remote messages for conversation with \(conversation.interlocutor.fullName)", error)
@@ -79,7 +79,7 @@ class ListenRemoteMessagesUseCase {
     }
 }
 
-private actor MessageCancellable {
+private actor MessageCancellableActor {
     private var cancellables: [String: AnyCancellable] = [:]
 
     func set(_ cancellable: AnyCancellable, conversationId: String) {

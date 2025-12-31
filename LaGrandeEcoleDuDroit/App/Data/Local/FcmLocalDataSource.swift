@@ -1,15 +1,13 @@
 import Foundation
 
 class FcmLocalDataSource {
-    private let fcmTokenKey = "FCM_TOKEN_KEY"
+    private let fcmTokenKey = "fcmTokenKey"
     
     func getFcmToken() -> FcmToken? {
-        guard let localFcmTokenData = UserDefaults.standard.data(forKey: fcmTokenKey) else {
+        guard let data = UserDefaults.standard.data(forKey: fcmTokenKey) else {
             return nil
         }
-        
-        let localFcmToken = try? JSONDecoder().decode(FcmToken.self, from: localFcmTokenData)
-        return localFcmToken
+        return try? JSONDecoder().decode(FcmToken.self, from: data)
     }
     
     func storeFcmToken(_ fcmToken: FcmToken) throws {
@@ -17,7 +15,7 @@ class FcmLocalDataSource {
         UserDefaults.standard.set(fcmTokenJson, forKey: fcmTokenKey)
     }
     
-    func removeFcmToken() {
+    func deleteFcmToken() {
         UserDefaults.standard.removeObject(forKey: fcmTokenKey)
     }
 }

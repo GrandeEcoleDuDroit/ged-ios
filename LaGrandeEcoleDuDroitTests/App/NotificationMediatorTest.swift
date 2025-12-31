@@ -9,7 +9,7 @@ class NotificationMediatorTest {
     @Test
     func presentNotification_should_redirect_to_the_right_notif_manager() {
         // Give
-        let messageNotifManager = MessageNotifManager()
+        let messageNotifManager = TestMessageNotificationManager()
         let useCase = NotificationMediatorImpl(messageNotificationManager: messageNotifManager)
         let userInfo = getUserInfo()
         
@@ -23,7 +23,7 @@ class NotificationMediatorTest {
     @Test
     func receiveNotification_should_redirect_to_the_right_notif_manager() {
         // Give
-        let messageNotifManager = MessageNotifManager()
+        let messageNotifManager = TestMessageNotificationManager()
         let useCase = NotificationMediatorImpl(messageNotificationManager: messageNotifManager)
         let userInfo = getUserInfo()
         
@@ -39,7 +39,7 @@ private func getUserInfo() -> [AnyHashable: Any] {
     return ["type": FcmDataType.message.rawValue]
 }
 
-private class MessageNotifManager: MockMessageNotificationManager {
+private class TestMessageNotificationManager: MockMessageNotificationManager {
     var isPresented = false
     var isReceived = false
         

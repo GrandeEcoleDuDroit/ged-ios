@@ -17,27 +17,30 @@ open class MessageNotificationManager: NotificationManager {
         userInfo: [AnyHashable : Any],
         completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        var presentationOptions: UNNotificationPresentationOptions = [.banner, .sound, .badge]
-        if let notificationMessage = parseNotificationMessage(userInfo: userInfo) {
-            if isCurrentMessageView(conversationId: notificationMessage.conversation.id) {
-                presentationOptions = []
-            }
+        guard let messageNotification = parseMessageNotification(userInfo: userInfo) else {
+            completionHandler([])
+            return
         }
-        completionHandler(presentationOptions)
+        
+        if !isCurrentMessageView(conversationId: messageNotification.conversation.id) {
+            completionHandler([.banner, .sound, .badge])
+        } else {
+            completionHandler([])
+        }
     }
     
     func receiveNotification(userInfo: [AnyHashable : Any]) {
-        guard let notificationMessage = parseNotificationMessage(userInfo: userInfo) else { return }
+        guard let messageNotification = parseMessageNotification(userInfo: userInfo) else { return }
         let routeToNavigate = RouteToNavigate(
             mainRoute: MessageMainRoute.conversation,
-            routes: [MessageRoute.chat(conversation: notificationMessage.conversation)]
+            routes: [MessageRoute.chat(conversation: messageNotification.conversation)]
         )
         navigationRequestUseCase.navigate(to: routeToNavigate)
     }
     
     func clearNotifications(conversationId: String) {
         let center = UNUserNotificationCenter.current()
-        let prefix = NotificationMessageUtils.formatNotificationIdPrefix(conversationId: conversationId)
+        let prefix = MessageNotificationUtils.formatNotificationIdPrefix(conversationId: conversationId)
 
         center.getDeliveredNotifications { notifications in
             let matchingIds = notifications
@@ -54,6 +57,8 @@ open class MessageNotificationManager: NotificationManager {
             
             center.removeDeliveredNotifications(withIdentifiers: matchingIds)
         }
+        
+        UNUserNotificationCenter.current().setBadgeCount(0)
     }
         
     private func isCurrentMessageView(conversationId: String) -> Bool {
@@ -67,13 +72,14 @@ open class MessageNotificationManager: NotificationManager {
         }
     }
     
-    private func parseNotificationMessage(userInfo: [AnyHashable : Any]) -> MessageNotification? {
-        guard let valueString = userInfo["value"] as? String else { return nil }
-        let remoteNotificationMessage = try? JSONDecoder().decode(
-            RemoteMessageNotification.self,
-            from: valueString.data(using: .utf8)!
-        )
-        
-        return remoteNotificationMessage?.toNotificationMessage()
+    private func parseMessageNotification(userInfo: [AnyHashable : Any]) -> MessageNotification? {
+        guard let dataValue = userInfo["value"] as? String,
+              let dataValueString = try? JSONDecoder().decode(String.self, from: dataValue.data(using: .utf8)!)
+        else {
+            return nil
+        }
+
+        let remoteMessageNotification = try? JSONDecoder().decode(RemoteMessageNotification.self, from: dataValueString.data(using: .utf8)!)
+        return remoteMessageNotification?.toMessageNotification()
     }
 }

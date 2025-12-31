@@ -1,6 +1,6 @@
 import Foundation
 
-class NotificationMessageUtils {
+class MessageNotificationUtils {
     static func formatNotificationId(conversationId: String) -> String {
         let notificationIdPrefix = formatNotificationIdPrefix(conversationId: conversationId)
         let uuidShort = UUID().uuidString.prefix(6)

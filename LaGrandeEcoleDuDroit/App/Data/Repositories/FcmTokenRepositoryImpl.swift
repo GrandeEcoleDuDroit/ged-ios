@@ -13,27 +13,31 @@ class FcmTokenRepositoryImpl: FcmTokenRepository {
         self.fcmApi = fcmApi
     }
     
-    func getUnsetToken() async -> FcmToken? {
+    func getFcmToken() -> FcmToken? {
         fcmLocalDataSource.getFcmToken()
     }
     
-    func sendFcmToken(token: FcmToken) async throws {
-        guard let userId = token.userId else {
-            throw NSError()
-        }
-        
+    func sendFcmToken(userId: String, token: String) async throws {
         try await mapServerError(
-            block: { try await fcmApi.addToken(userId: userId, value: token.value) },
+            block: { try await fcmApi.addToken(userId: userId, value: token) },
             tag: tag,
-            message: "Faield to add fcm token"
+            message: "Error sending fcm token"
         )
     }
     
-    func storeUnsetToken(token: FcmToken) async throws {
-        try fcmLocalDataSource.storeFcmToken(token)
+    func storeFcmToken(fcmToken: FcmToken) throws {
+        try fcmLocalDataSource.storeFcmToken(fcmToken)
     }
     
-    func removeUnsetToken() async throws {
-        fcmLocalDataSource.removeFcmToken()
+    func deleteToken(userId: String) async throws {
+        if let token = fcmLocalDataSource.getFcmToken()?.token {
+            try await mapServerError(
+                block: { try await fcmApi.deleteToken(userId: userId, value: token) },
+                tag: tag,
+                message: "Error deleting fcm token"
+            )
+            
+            fcmLocalDataSource.deleteFcmToken()
+        }
     }
 }
