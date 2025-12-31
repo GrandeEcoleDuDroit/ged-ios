@@ -3,23 +3,31 @@ import Combine
 
 class ProfileViewModel: ViewModel {
     private let userRepository: UserRepository
-    private let authenticationRepository: AuthenticationRepository
+    private let logoutUseCase: LogoutUseCase
     
     @Published private(set) var uiState: ProfileUiState = ProfileUiState()
+    @Published var event: SingleUiEvent?
     private var cancellables: Set<AnyCancellable> = []
 
     init(
         userRepository: UserRepository,
-        authenticationRepository: AuthenticationRepository
+        logoutUseCase: LogoutUseCase
     ) {
         self.userRepository = userRepository
-        self.authenticationRepository = authenticationRepository
+        self.logoutUseCase = logoutUseCase
         initUser()
     }
     
     func logout() {
         uiState.loading = true
-        authenticationRepository.logout()
+        Task { @MainActor [weak self] in
+            do {
+                try await self?.logoutUseCase.execute()
+            } catch {
+                self?.uiState.loading = false
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
+            }
+        }
     }
     
     private func initUser() {

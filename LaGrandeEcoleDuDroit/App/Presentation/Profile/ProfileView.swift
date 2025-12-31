@@ -6,6 +6,8 @@ struct ProfileDestination: View {
     let onPrivacyClick: () -> Void
     
     @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(ProfileViewModel.self)
+    @State private var errorMessage: String = ""
+    @State private var showErrorAlert: Bool = false
     
     var body: some View {
         ProfileView(
@@ -14,6 +16,21 @@ struct ProfileDestination: View {
             onAccountClick: onAccountClick,
             onPrivacyClick: onPrivacyClick,
             onLogoutClick: viewModel.logout
+        )
+        .onReceive(viewModel.$event) { event in
+            if let errorEvent = event as? ErrorEvent {
+                errorMessage = errorEvent.message
+                showErrorAlert = true
+            }
+        }
+        .alert(
+            errorMessage,
+            isPresented: $showErrorAlert,
+            actions: {
+                Button(stringResource(.ok)) {
+                    showErrorAlert = false
+                }
+            }
         )
     }
 }

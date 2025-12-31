@@ -75,7 +75,7 @@ class SendMessageUseCaseTest {
     @Test
     func sendMessageUseCase_should_send_message_notification() async throws {
         // Given
-        let messageNotificationSent = MessageNotificationSent()
+        let messageNotificationSent = TestSendMessageNotificationUseCase()
         
         let useCase = SendMessageUseCase(
             messageRepository: MockMessageRepository(),
@@ -134,7 +134,7 @@ private class RemoteConversationCreated: MockConversationRepository {
     }
 }
 
-private class MessageNotificationSent: MockSendMessageNotificationUseCase {
+private class TestSendMessageNotificationUseCase: MockSendMessageNotificationUseCase {
     private(set) var sendMessageNotificationCalled = false
     
     override func execute(notification: MessageNotification) async {

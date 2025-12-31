@@ -45,18 +45,17 @@ class AppInjector: Injector {
                 conversationMessageRepository: MessageInjector.shared.resolve(ConversationMessageRepository.self),
                 announcementRepository: NewsInjector.shared.resolve(AnnouncementRepository.self),
                 missionRepository: MissionInjector.shared.resolve(MissionRepository.self),
-                blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self)
+                blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self),
+                fcmTokenRepository: CommonInjector.shared.resolve(FcmTokenRepository.self)
             )
         }
         
         container.register(FcmTokenUseCase.self) { resolver in
             FcmTokenUseCase(
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                fcmTokenRepository: CommonInjector.shared.resolve(FcmTokenRepository.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
-                listenAuthenticationStateUseCase: AuthenticationInjector.shared.resolve(ListenAuthenticationStateUseCase.self)
+                fcmTokenRepository: CommonInjector.shared.resolve(FcmTokenRepository.self)
             )
-        }.inObjectScope(.container)
+        }.inObjectScope(.weak)
         
         container.register(DeleteAccountUseCase.self) { resolver in
             DeleteAccountUseCase(
@@ -90,7 +89,8 @@ class AppInjector: Injector {
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!,
                 listenAuthenticationStateUseCase: AuthenticationInjector.shared.resolve(ListenAuthenticationStateUseCase.self),
                 fetchDataUseCase: resolver.resolve(FetchDataUseCase.self)!,
-                checkUserValidityUseCase: resolver.resolve(CheckUserValidityUseCase.self)!
+                checkUserValidityUseCase: resolver.resolve(CheckUserValidityUseCase.self)!,
+                fcmTokenUseCase: resolver.resolve(FcmTokenUseCase.self)!
             )
         }
         
