@@ -7,9 +7,13 @@ struct MissionDetailsTitleAndDescriptionSection: View {
         VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
             Text(mission.title)
                 .font(MissionUtilsPresentation.titleFont)
+                .fontWeight(.semibold)
+                .lineSpacing(3)
+                .multilineTextAlignment(.leading)
             
             Text(mission.description)
-                .font(MissionUtilsPresentation.descriptionFont)
+                .font(MissionUtilsPresentation.contentFont)
+                .multilineTextAlignment(.leading)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

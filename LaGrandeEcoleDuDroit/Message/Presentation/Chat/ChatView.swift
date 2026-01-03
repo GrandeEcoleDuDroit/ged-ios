@@ -127,18 +127,21 @@ private struct ChatView: View {
         .loading(loading)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                HStack(spacing: Dimens.smallMediumPadding) {
-                    ProfilePicture(
-                        url: conversation.interlocutor.profilePictureUrl,
-                        scale: 0.3
-                    )
-                    
-                    Text(conversation.interlocutor.displayedName)
-                        .fontWeight(.medium)
-                }
+                ProfilePicture(
+                    url: conversation.interlocutor.profilePictureUrl,
+                    scale: 0.3
+                )
                 .onTapGesture {
                     onInterlocutorClick(conversation.interlocutor)
                 }
+            }
+            
+            ToolbarItem(placement: .topBarLeading) {
+                Text(conversation.interlocutor.displayedName)
+                    .fontWeight(.medium)
+                    .onTapGesture {
+                        onInterlocutorClick(conversation.interlocutor)
+                    }
             }
         }
         .sheet(item: $activeSheet) {

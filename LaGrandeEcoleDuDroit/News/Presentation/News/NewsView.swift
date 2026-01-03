@@ -61,22 +61,20 @@ private struct NewsView: View {
     @State private var activeSheet:  NewsViewSheet?
 
     var body: some View {
-        Group {
-            RecentAnnouncementSection(
-                announcements: announcements,
-                onAnnouncementClick: { announcement in
-                    switch announcement.state {
-                        case .published: onAnnouncementClick(announcement.id)
-                        default: activeSheet = .announcement(announcement)
-                    }
-                },
-                onAnnouncementOptionsClick: { announcement in
-                    activeSheet = .announcement(announcement)
-                },
-                onSeeAllAnnouncementClick: onSeeAllAnnouncementClick,
-                onRefreshAnnouncements: onRefreshAnnouncements
-            )
-        }
+        RecentAnnouncementSection(
+            announcements: announcements,
+            onAnnouncementClick: { announcement in
+                switch announcement.state {
+                    case .published: onAnnouncementClick(announcement.id)
+                    default: activeSheet = .announcement(announcement)
+                }
+            },
+            onAnnouncementOptionsClick: { announcement in
+                activeSheet = .announcement(announcement)
+            },
+            onSeeAllAnnouncementClick: onSeeAllAnnouncementClick,
+            onRefreshAnnouncements: onRefreshAnnouncements
+        )
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding(.top)
         .loading(loading)
@@ -86,7 +84,7 @@ private struct NewsView: View {
                     Image(ImageResource.gedLogo)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 38, height: 38)
+                        .frame(width: 40, height: 40)
                     
                     Text(stringResource(.appName))
                         .font(.title2)

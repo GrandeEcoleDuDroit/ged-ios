@@ -146,6 +146,7 @@
 "new_mission" = "Nouvelle mission";
 "edit_mission" = "Editer mission";
 "participant_number" = "%d participant sur %d";
+"short_participant_number" = "%d / %d";
 "no_mission" = "Aucune mission";
 "add_image" = "Ajouter image";
 "mission_title_field" = "Titre";

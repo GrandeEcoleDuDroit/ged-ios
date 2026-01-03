@@ -6,7 +6,7 @@ struct SentMessageItem: View {
     let onClick: () -> Void
         
     var body: some View {
-        HStack(alignment: .center) {
+        HStack(alignment: .bottom) {
             VStack(alignment: .trailing) {
                 Button(action: onClick) {
                     MessageBubble(
@@ -33,13 +33,13 @@ struct SentMessageItem: View {
                 case .sending:
                     Image(systemName: "paperplane")
                         .resizable()
+                        .frame(width: 16, height: 16)
                         .foregroundColor(.gray)
-                        .frame(width: 18, height: 18)
                     
                 case .error:
                     Image(systemName: "exclamationmark.circle")
                         .resizable()
-                        .frame(width: 18, height: 18)
+                        .frame(width: 16, height: 16)
                         .foregroundColor(.red)
                     
                 default:
@@ -104,7 +104,7 @@ private struct MessageBubble: View {
         .padding(.vertical, 10)
         .padding(.horizontal, Dimens.mediumPadding)
         .background(backgroundColor)
-        .clipShape(.rect(cornerRadius: 24))
+        .clipShape(.rect(cornerRadius: 20))
     }
 }
 
@@ -186,29 +186,26 @@ struct MessageBlockedUserIndicator: View {
     
     var body: some View {
         VStack(spacing: Dimens.mediumPadding) {
-            VStack(spacing: Dimens.smallPadding) {
+            VStack(spacing: Dimens.smallMediumPadding) {
                 Text(stringResource(.blockedUser))
-                    .font(.titleSmall)
+                    .font(.headline)
                 
                 Text(stringResource(.chatBlockedUserIndicatorText))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.informationText)
-                    .font(.bodySmall)
+                    .font(.subheadline)
             }
                 
             HStack {
-                Button(stringResource(.delete)) {
-                    onDeleteChatClick()
-                }
-                .foregroundStyle(.red)
-                .frame(maxWidth: .infinity, alignment: .center)
+                Button(stringResource(.delete), action: onDeleteChatClick)
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .center)
                 
-                Button(stringResource(.unblock)) {
-                    onUnblockUserClick()
-                }
-                .foregroundStyle(.gedPrimary)
-                .frame(maxWidth: .infinity, alignment: .center)
-            }.frame(maxWidth: .infinity, alignment: .center)
+                Button(stringResource(.unblock), action: onUnblockUserClick)
+                    .foregroundStyle(.gedPrimary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
         }
     }
 }

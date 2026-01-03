@@ -21,6 +21,7 @@ struct UserItem<TrailingContent: View>: View {
                 )
                 
                 Text(user.displayedName)
+                    .lineLimit(2)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 

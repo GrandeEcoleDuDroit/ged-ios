@@ -6,13 +6,12 @@ struct MissionUtilsPresentation {
     
     static let maxTitleLength: Int = 100
     static let maxDescriptionLength: Int = 1000
-    static let maxDurationLength: Int = 200
+    static let maxDurationLength: Int = 100
     static let maxTaskLength: Int = 300
     static let missionImageHeight: CGFloat = 200
     
-    static let titleFont: Font = .title
-    static let descriptionFont: Font = .body
-    static let contentFont: Font = .callout
+    static let titleFont: Font = .title2
+    static let contentFont: Font = .body
     
     static func formatSchoolLevels(schoolLevels: [SchoolLevel]) -> String {
         if schoolLevels.count == SchoolLevel.all.count {
@@ -33,14 +32,10 @@ struct MissionUtilsPresentation {
     }
     
     static func formatParticipantNumber(participantsCount: Int, maxParticipants: Int) -> String {
-        if participantsCount == maxParticipants {
-            stringResource(.full)
-        } else {
-            stringResource(
-                .participantNumber,
-                participantsCount,
-                maxParticipants
-            )
-        }
+        participantsCount == maxParticipants ? stringResource(.full) : stringResource(.participantNumber, participantsCount,maxParticipants)
+    }
+    
+    static func formatShortParticipantNumber(participantsCount: Int, maxParticipants: Int) -> String {
+        participantsCount == maxParticipants ? stringResource(.full) : stringResource(.shortParticipantNumber, participantsCount,maxParticipants)
     }
 }

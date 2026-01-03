@@ -84,7 +84,7 @@ private struct MissionDetailsView: View {
     let onDeleteMissionClick: () -> Void
     let onReportMissionClick: (MissionReport) -> Void
     
-    @State private var imageTopBar: Bool = true
+    @State private var defaultTopBar: Bool = false
     @State private var scrollPosition: CGPoint = .zero
     @State private var showDeleteMissionAlert: Bool = false
     @State private var showUnregisterMissionAlert: Bool = false
@@ -100,6 +100,7 @@ private struct MissionDetailsView: View {
                         missionState: mission.state,
                         defaultImageScale: 1.4
                     )
+                    .ignoresSafeArea(.all)
                     .frame(height: MissionUtilsPresentation.missionImageHeight)
                     .clipped()
                     
@@ -159,18 +160,25 @@ private struct MissionDetailsView: View {
             }
             .coordinateSpace(name: "scroll")
             .onChange(of: scrollPosition) { newValue in
-                imageTopBar = scrollPosition.y >= -200
+                defaultTopBar = scrollPosition.y <= -200
             }
             
-            MissionDetailsTopBar(
-                title: mission.title,
-                imageTopBar: imageTopBar,
-                onBackClick: onBackClick,
-                onOptionsClick: { activeSheet = .mission }
-            )
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            if !defaultTopBar {
+                MissionImageTopBar(
+                    onBackClick: onBackClick,
+                    onOptionsClick: { activeSheet = .mission }
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            }
         }
-        .navigationBarBackButtonHidden(true)
+        .navigationBarBackButtonHidden(!defaultTopBar)
+        .navigationTitle(defaultTopBar ? mission.title : "")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                OptionsButton(action: { activeSheet = .mission })
+            }
+        }
+        .toolbar(defaultTopBar ? .visible : .hidden, for: .navigationBar)
         .safeAreaInset(edge: .bottom) {
             Group {
                 switch buttonState {
