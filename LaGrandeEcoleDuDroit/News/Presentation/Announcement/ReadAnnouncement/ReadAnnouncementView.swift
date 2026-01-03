@@ -78,13 +78,13 @@ private struct ReadAnnouncementView: View {
                 
                 if let title = announcement.title {
                     Text(title)
-                        .font(.titleMedium)
+                        .font(AnnouncementUtilsPresentation.titleFont)
                         .fontWeight(.semibold)
+                        .lineSpacing(3)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
                 Text(announcement.content)
-                    .font(.bodyMedium)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
@@ -182,8 +182,8 @@ private enum ReadAnnouncementViewSheet: Identifiable {
 #Preview {
     NavigationStack {
         ReadAnnouncementView(
-            announcement: announcementFixture,
-            user: announcementFixture.author,
+            announcement: longAnnouncementFixture,
+            user: longAnnouncementFixture.author,
             loading: false,
             onDeleteAnnouncementClick: {},
             onReportAnnouncementClick: { _ in },

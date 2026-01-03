@@ -3,11 +3,9 @@ import Foundation
 let missionFixture = Mission(
     id: "1",
     title: "Long title example to test ellipsis in the mission card component",
-    description: """
-        This is the description of the first mission. It can be quite long and detailed. It provides all the necessary information about the mission.
-        The mission aims to help students improve their skills and gain practical experience in various fields. Participants will have the opportunity to work on real projects and collaborate with professionals.
-        We encourage all interested students to apply and take advantage of this unique learning experience.
-    """.trim(),
+    description:"This is the description of the first mission. It can be quite long and detailed. It provides all the necessary information about the mission." +
+    "The mission aims to help students improve their skills and gain practical experience in various fields. Participants will have the opportunity to work on real projects and collaborate with professionals." +
+    "We encourage all interested students to apply and take advantage of this unique learning experience.",
     date: Date(),
     startDate: Date(),
     endDate: Date().plusDays(1),

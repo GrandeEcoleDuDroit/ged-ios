@@ -43,7 +43,7 @@ private struct DefaultItem: View {
             HStack {
                 AnnouncementHeader(
                     announcement: announcement,
-                    onAuthorClick: onAuthorClick
+                    onAuthorClick: onAuthorClick,
                 )
                 
                 OptionsButton(action: onOptionsClick)
@@ -52,13 +52,12 @@ private struct DefaultItem: View {
             
             if let title = announcement.title, !title.isEmpty {
                 Text(title)
-                    .font(.titleMedium)
+                    .font(.headline)
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             
             Text(announcement.content)
-                .font(.bodyMedium)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
@@ -88,10 +87,7 @@ private struct ErrorItem: View {
     
     var body: some View {
         VStack(spacing: Dimens.mediumPadding) {
-            HStack(
-                alignment: .center,
-                spacing: Dimens.smallMediumPadding
-            ) {
+            HStack(alignment: .center, spacing: Dimens.smallMediumPadding) {
                 Image(systemName: "exclamationmark.circle")
                     .foregroundStyle(.red)
                 
@@ -106,13 +102,11 @@ private struct ErrorItem: View {
             
             if let title = announcement.title {
                 Text(title)
-                    .font(.titleMedium)
-                    .fontWeight(.semibold)
+                    .font(.title3)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             
             Text(announcement.content)
-                .font(.bodyMedium)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding()
@@ -121,21 +115,25 @@ private struct ErrorItem: View {
 }
 
 #Preview {
-    ExtendedAnnouncementItem(
-        announcement: announcementFixture,
-        onOptionsClick: {},
-        onAuthorClick: {}
-    )
-    
-    ExtendedAnnouncementItem(
-        announcement: announcementFixture.copy { $0.state = .publishing },
-        onOptionsClick: {},
-        onAuthorClick: {}
-    )
-    
-    ExtendedAnnouncementItem(
-        announcement: announcementFixture.copy { $0.state = .error },
-        onOptionsClick: {},
-        onAuthorClick: {}
-    )
+    ScrollView {
+        VStack {
+            ExtendedAnnouncementItem(
+                announcement: longAnnouncementFixture,
+                onOptionsClick: {},
+                onAuthorClick: {}
+            )
+            
+            ExtendedAnnouncementItem(
+                announcement: longAnnouncementFixture.copy { $0.state = .publishing },
+                onOptionsClick: {},
+                onAuthorClick: {}
+            )
+            
+            ExtendedAnnouncementItem(
+                announcement: longAnnouncementFixture.copy { $0.state = .error },
+                onOptionsClick: {},
+                onAuthorClick: {}
+            )
+        }
+    }
 }

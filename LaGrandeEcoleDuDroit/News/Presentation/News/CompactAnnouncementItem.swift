@@ -9,7 +9,7 @@ struct CompactAnnouncementItem: View {
     }
     
     var body: some View {
-        ZStack {
+        Group {
             switch (announcement.state) {
                 case .published, .draft:
                     DefaultItem(
@@ -43,6 +43,14 @@ private struct DefaultItem: View {
     let announcement: Announcement
     let elapsedTimeText: String
     let onOptionsClick: () -> Void
+    
+    var content: String {
+        if let title = announcement.title, !title.isEmpty {
+            title
+        } else {
+            announcement.content
+        }
+    }
         
     var body: some View {
         HStack(spacing: Dimens.mediumPadding) {
@@ -54,25 +62,19 @@ private struct DefaultItem: View {
             VStack(alignment: .leading, spacing: Dimens.extraSmallPadding) {
                 HStack {
                     Text(announcement.author.displayedName)
-                        .fontWeight(.medium)
+                        .font(AnnouncementUtilsPresentation.authorNameFont)
+                        .fontWeight(.semibold)
                         .lineLimit(1)
                     
                     Text(elapsedTimeText)
+                        .font(.subheadline)
                         .foregroundStyle(.supportingText)
-                        .font(.bodySmall)
                 }
                 
-                if let title = announcement.title, !title.isEmpty {
-                    Text(title)
-                        .foregroundStyle(.supportingText)
-                        .font(.bodyMedium)
-                        .lineLimit(1)
-                } else {
-                    Text(announcement.content)
-                        .foregroundStyle(.supportingText)
-                        .font(.bodyMedium)
-                        .lineLimit(1)
-                }
+                Text(content)
+                    .foregroundStyle(.supportingText)
+                    .font(.subheadline)
+                    .lineLimit(1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             

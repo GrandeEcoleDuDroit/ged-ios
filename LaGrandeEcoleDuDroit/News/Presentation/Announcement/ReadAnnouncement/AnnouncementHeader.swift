@@ -9,22 +9,21 @@ struct AnnouncementHeader: View {
     }
 
     var body: some View {
-        HStack(alignment: .center, spacing: Dimens.smallPadding) {
-            HStack {
-                ProfilePicture(
-                    url: announcement.author.profilePictureUrl,
-                    scale: 0.4
-                )
-                
-                Text(announcement.author.displayedName)
-                    .font(.titleSmall)
-                
-                Text(elapsedTimeText)
-                    .foregroundStyle(.supportingText)
-                    .font(.bodySmall)
-            }
-            .onTapGesture(perform: onAuthorClick)
+        HStack(spacing: Dimens.smallMediumPadding) {
+            ProfilePicture(
+                url: announcement.author.profilePictureUrl,
+                scale: 0.4
+            )
+            
+            Text(announcement.author.displayedName)
+                .font(AnnouncementUtilsPresentation.authorNameFont)
+                .fontWeight(.semibold)
+            
+            Text(elapsedTimeText)
+                .font(.subheadline)
+                .foregroundStyle(.supportingText)
         }
+        .onTapGesture(perform: onAuthorClick)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

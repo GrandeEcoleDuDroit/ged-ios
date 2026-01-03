@@ -11,10 +11,8 @@ struct RecentAnnouncementSection: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            HStack(alignment: .center) {
-                Text(stringResource(.recentAnnouncements))
-                    .font(.titleMedium)
-                    .fontWeight(.semibold)
+            HStack(spacing: Dimens.smallPadding) {
+                SectionTitle(title: stringResource(.recentAnnouncements))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Button(

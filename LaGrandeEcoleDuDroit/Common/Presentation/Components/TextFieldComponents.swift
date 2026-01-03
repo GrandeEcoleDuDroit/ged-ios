@@ -313,7 +313,7 @@ struct TransparentTextFieldArea<FocusField: Hashable>: View {
             if text.isEmpty {
                 Text(placeHolder)
                     .foregroundColor(.onSurfaceVariant)
-                    .padding(.horizontal, Dimens.extraSmallPadding)
+                    .padding(.horizontal, 5)
                     .padding(.vertical, Dimens.smallPadding)
             }
         }

@@ -93,15 +93,17 @@ private struct DefaultConversationItem: View {
             VStack(alignment: .leading, spacing: Dimens.extraSmallPadding) {
                 HStack {
                     Text(interlocutor.displayedName)
+                        .font(.headline)
                         .fontWeight(fontWeight)
                         .lineLimit(1)
                     
                     Text(elapsedTimeText)
+                        .font(.subheadline)
                         .foregroundStyle(textColor)
-                        .font(.bodySmall)
                 }
                 
                 Text(text)
+                    .font(.subheadline)
                     .fontWeight(fontWeight)
                     .foregroundStyle(textColor)
                     .lineLimit(1)

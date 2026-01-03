@@ -148,6 +148,7 @@ enum Strings: String {
     case newMission = "new_mission"
     case editMission = "edit_mission"
     case participantNumber = "participant_number"
+    case shortParticipantNumber = "short_participant_number"
     case noMission = "no_mission"
     case addImage = "add_image"
     case missionDescriptionField = "mission_description_field"

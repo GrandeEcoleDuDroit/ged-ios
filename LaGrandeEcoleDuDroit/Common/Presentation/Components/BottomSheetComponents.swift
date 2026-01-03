@@ -18,7 +18,7 @@ struct ReportSheet<T: CustomStringConvertible>: View {
     var body: some View {
         VStack(spacing: Dimens.largePadding) {
             Text(stringResource(.report))
-                .font(.titleMedium)
+                .font(.headline)
                 .frame(maxWidth: .infinity, alignment: .center)
             
             SheetContainer(fraction: fraction) {

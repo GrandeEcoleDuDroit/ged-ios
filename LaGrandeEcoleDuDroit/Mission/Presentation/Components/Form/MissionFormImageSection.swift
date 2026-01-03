@@ -69,7 +69,8 @@ private struct EmptyImage: View {
                 .font(.system(size: 60))
             
             Text(stringResource(.addImage))
-                .font(.bodyLarge)
+                .font(.headline)
+                .fontWeight(.regular)
         }
         .foregroundStyle(.onSurfaceVariant)
         .frame(maxWidth: .infinity, maxHeight: .infinity)

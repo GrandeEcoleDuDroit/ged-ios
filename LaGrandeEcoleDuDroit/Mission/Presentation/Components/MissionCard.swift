@@ -35,6 +35,7 @@ private struct DefaultMissionCard: View {
                     .clipped()
                 
                 OptionsButton(action: onOptionsClick)
+                    .font(.title3)
                     .padding()
                     .padding(Dimens.extraSmallPadding)
                     .frame(
@@ -52,8 +53,8 @@ private struct DefaultMissionCard: View {
                 
                 CardSubtitle(mission: mission)
                 
-                CardContent(description: mission.description)
-                
+                CardBody(description: mission.description)
+
                 if mission.schoolLevelRestricted {
                     CardFooter(schoolLevels: mission.schoolLevels)
                 }
@@ -103,7 +104,7 @@ private struct ErrorMissionCard: View {
                 
                 CardSubtitle(mission: mission)
                 
-                CardContent(description: mission.description)
+                CardBody(description: mission.description)
                 
                 if mission.schoolLevelRestricted {
                     CardFooter(schoolLevels: mission.schoolLevels)
@@ -125,7 +126,9 @@ private struct CardTitle: View {
     
     var body: some View {
         Text(title)
-            .font(.titleLarge)
+            .font(.title3)
+            .fontWeight(.semibold)
+            .lineSpacing(2)
             .fixedSize(horizontal: false, vertical: true)
             .lineLimit(2)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -143,23 +146,23 @@ private struct CardSubtitle: View {
                 spacing: Dimens.smallPadding
             )
             .foregroundStyle(Color.gray)
-            .font(.bodyMedium)
+            .font(.subheadline)
                         
             TextIcon(
                 icon: Image(systemName: "person.2"),
-                text: MissionUtilsPresentation.formatParticipantNumber(
+                text: MissionUtilsPresentation.formatShortParticipantNumber(
                     participantsCount: mission.participants.count,
                     maxParticipants: mission.maxParticipants
                 ),
                 spacing: Dimens.smallPadding
             )
             .foregroundStyle(Color.gray)
-            .font(.bodyMedium)
+            .font(.subheadline)
         }
     }
 }
 
-private struct CardContent: View {
+private struct CardBody: View {
     let description: String
     
     var body: some View {
@@ -175,18 +178,17 @@ private struct CardFooter: View {
     
     var body: some View {
         Text(MissionUtilsPresentation.formatSchoolLevels(schoolLevels: schoolLevels))
-            .font(.caption)
-            .fontWeight(.semibold)
+            .font(.footnote)
     }
 }
 
 private struct ErrorBanner: View {
     var body: some View {
-        TextIcon(
-            icon: Image(systemName: "exclamationmark.circle"),
-            text: stringResource(.sendingError)
-        )
-        .font(.callout)
+        HStack(spacing: Dimens.smallPadding) {
+            Image(systemName: "exclamationmark.circle")
+            Text(stringResource(.sendingError))
+        }
+        .font(.subheadline)
         .foregroundStyle(.error)
         .padding(.vertical, Dimens.smallMediumPadding)
         .padding(.horizontal, Dimens.mediumPadding)
@@ -197,7 +199,7 @@ private struct ErrorBanner: View {
 
 #Preview {
     ScrollView {
-        VStack(spacing: Dimens.mediumPadding) {
+        VStack(spacing: 20) {
             DefaultMissionCard(
                 mission: missionFixture,
                 onOptionsClick: {}

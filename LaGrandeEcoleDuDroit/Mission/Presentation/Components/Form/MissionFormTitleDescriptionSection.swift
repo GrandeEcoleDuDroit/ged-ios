@@ -13,13 +13,14 @@ struct MissionFormTitleDescriptionSection: View {
                 text: $title,
             )
             .font(MissionUtilsPresentation.titleFont)
+            .fontWeight(.semibold)
             .onChange(of: title, perform: onTitleChange)
             
             TransparentTextField(
                 stringResource(.missionDescriptionField),
                 text: $description,
             )
-            .font(MissionUtilsPresentation.descriptionFont)
+            .font(MissionUtilsPresentation.contentFont)
             .lineLimit(4...)
             .onChange(of: description, perform: onDescriptionChange)
         }
