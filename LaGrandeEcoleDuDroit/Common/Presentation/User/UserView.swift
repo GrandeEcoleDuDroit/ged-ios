@@ -169,22 +169,22 @@ private struct UserSheet: View {
     var body: some View {
         SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
             if blockedUser {
-                ClickableTextItem(
+                SheetItem(
                     icon: Image(systemName: "nosign"),
-                    text: Text(stringResource(.unblock)),
+                    text: stringResource(.unblock),
                     onClick: onUnblockUserClick
                 )
             } else {
-                ClickableTextItem(
+                SheetItem(
                     icon: Image(systemName: "nosign"),
-                    text: Text(stringResource(.block)),
+                    text: stringResource(.block),
                     onClick: onBlockUserClick
                 )
             }
             
-            ClickableTextItem(
+            SheetItem(
                 icon: Image(systemName: "exclamationmark.bubble"),
-                text: Text(stringResource(.report)),
+                text: stringResource(.report),
                 onClick: onReportUserClick
             )
             .foregroundColor(.error)

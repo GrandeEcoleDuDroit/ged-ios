@@ -54,55 +54,44 @@ private struct MissionView: View {
     @State private var activeSheet: MissionViewSheet?
     @State private var showDeleteMissionAlert: Bool = false
     @State private var alertMission: Mission?
-    @State private var selectedMission: Mission?
     
     var body: some View {
-        List {
+        Group {
             if let missions {
-                if missions.isEmpty {
-                    Text(stringResource(.noMission))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                        .foregroundStyle(.informationText)
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                } else {
-                    ForEach(missions) { mission in
+                PlainTableView(
+                    modifier: PlainTableModifier(
+                        backgroundColor: .appBackground,
+                        selectionStyle: .none,
+                        onRefresh: onRefreshMissions
+                    ),
+                    values: missions,
+                    onRowClick: { mission in
+                        if case .published = mission.state {
+                            onMissionClick(mission.id)
+                        } else {
+                            activeSheet = .mission(mission)
+                        }
+                    },
+                    emptyContent: {
+                        Text(stringResource(.noMission))
+                            .foregroundStyle(.informationText)
+                    },
+                    content: { mission in
                         MissionCard(
                             mission: mission,
-                            onOptionsClick: {
-                                activeSheet = .mission(mission)
-                            }
+                            onOptionsClick: { activeSheet = .mission(mission) }
                         )
-                        .background(selectedMission == mission ? Color.click : Color.clear)
-                        .clipShape(ShapeDefaults.medium)
-                        .contentShape(.rect)
-                        .listRowTap(
-                            value: mission,
-                            selectedItem: $selectedMission
-                        ) {
-                            if case .published = mission.state {
-                                onMissionClick(mission.id)
-                            } else {
-                                activeSheet = .mission(mission)
-                            }
-                        }
                         .padding(.horizontal)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.clear)
+                        .padding(.vertical, Dimens.smallMediumPadding)
                     }
-                }
+                )
             } else {
                 ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .background(.appBackground)
+                    .padding(.top)
             }
         }
-        .listStyle(.plain)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .listRowSpacing(Dimens.largePadding)
-        .refreshable { await onRefreshMissions() }
         .loading(loading)
         .navigationTitle(stringResource(.mission))
         .toolbar {
@@ -215,7 +204,6 @@ private enum MissionViewSheet: Identifiable {
             onRecreateMissionClick: { _ in},
             onRefreshMissions: {}
         )
-        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

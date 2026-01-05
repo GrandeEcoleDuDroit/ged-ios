@@ -152,7 +152,7 @@ private struct CardSubtitle: View {
                     participantsCount: mission.participants.count,
                     maxParticipants: mission.maxParticipants
                 ),
-                spacing: Dimens.smallPadding
+                spacing: Dimens.smallMediumPadding
             )
         }
         .foregroundStyle(Color.informationText)

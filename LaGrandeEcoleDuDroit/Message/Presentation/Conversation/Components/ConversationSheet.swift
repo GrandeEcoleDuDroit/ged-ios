@@ -23,9 +23,9 @@ private struct DefaultAnnouncementSheet: View {
     
     var body: some View {
         SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
-            ClickableTextItem(
+            SheetItem(
                 icon: Image(systemName: "trash"),
-                text: Text(stringResource(.delete)),
+                text: stringResource(.delete),
                 onClick: onDeleteClick
             )
             .foregroundColor(.red)
@@ -39,15 +39,15 @@ private struct ErrorConversationSheet: View {
     
     var body: some View {
         SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
-            ClickableTextItem(
+            SheetItem(
                 icon: Image(systemName: "arrow.clockwise"),
-                text: Text(stringResource(.retry)),
+                text: stringResource(.retry),
                 onClick: onRecreateClick
             )
             
-            ClickableTextItem(
+            SheetItem(
                 icon: Image(systemName: "trash"),
-                text: Text(stringResource(.delete)),
+                text: stringResource(.delete),
                 onClick: onDeleteClick
             )
             .foregroundColor(.red)

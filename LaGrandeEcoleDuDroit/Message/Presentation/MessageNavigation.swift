@@ -10,7 +10,6 @@ struct MessageNavigation: View {
                     viewModel.path.append(.chat(conversation: conversation))
                 }
             )
-            .background(Color.appBackground.ignoresSafeArea(.all))
             .toolbar(viewModel.path.isEmpty ? .visible : .hidden, for: .tabBar)
             .navigationDestination(for: MessageRoute.self) { route in
                 switch route {

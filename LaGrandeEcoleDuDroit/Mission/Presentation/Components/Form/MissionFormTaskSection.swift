@@ -11,15 +11,12 @@ struct MissionFormTaskSection: View {
             SectionTitle(title: stringResource(.tasks))
                 .padding(.horizontal)
             
-            Spacer()
-                .frame(height: Dimens.smallPadding)
+            Spacer().frame(height: Dimens.smallPadding)
             
             Button(action: onAddTaskClick) {
                 AddMissionTaskItem()
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(.rect)
-            }.buttonStyle(ClickStyle())
+            }
+            .buttonStyle(ClickStyle())
             
             ForEach(missionTasks) { missionTask in
                 Button(action: { onTaskClick(missionTask) }) {
@@ -27,8 +24,6 @@ struct MissionFormTaskSection: View {
                         missionTask: missionTask,
                         onRemoveTaskClick: { onRemoveTaskClick(missionTask) }
                     )
-                    .padding()
-                    .contentShape(.rect)
                 }
                 .buttonStyle(ClickStyle())
             }
@@ -38,12 +33,17 @@ struct MissionFormTaskSection: View {
 
 private struct AddMissionTaskItem: View {
     var body: some View {
-        HStack(spacing: Dimens.smallPadding) {
-            Image(systemName: "plus")
-            
-            Text(stringResource(.addTask))
-        }
+        PlainListItem(
+            headlineContent: {
+                Text(stringResource(.addTask))
+            },
+            leadingContent: {
+                Image(systemName: "plus")
+            }
+        )
+        .padding(.vertical, Dimens.extraSmallPadding)
         .foregroundStyle(.onSurfaceVariant)
+        .contentShape(.rect)
     }
 }
 
@@ -52,12 +52,16 @@ struct MissionTaskItem: View {
     let onRemoveTaskClick: () -> Void
     
     var body: some View {
-        HStack {
-            Text(missionTask.value)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            RemoveButton(action: onRemoveTaskClick)
-        }
+        PlainListItem(
+            headlineContent: {
+                Text(missionTask.value)
+            },
+            trailingContent: {
+                RemoveButton(action: onRemoveTaskClick)
+            }
+        )
+        .padding(.vertical, Dimens.extraSmallPadding)
+        .contentShape(.rect)
     }
 }
 

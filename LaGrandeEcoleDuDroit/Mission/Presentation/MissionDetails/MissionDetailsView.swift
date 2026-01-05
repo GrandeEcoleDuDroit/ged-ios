@@ -230,9 +230,9 @@ private struct MissionDetailsView: View {
                     
                 case let .participant(user):
                     SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
-                        ClickableTextItem(
+                        SheetItem(
                             icon: Image(systemName: "person.badge.minus"),
-                            text: Text(stringResource(.remove)),
+                            text: stringResource(.remove),
                             onClick: {
                                 activeSheet = nil
                                 alertParticipant = user

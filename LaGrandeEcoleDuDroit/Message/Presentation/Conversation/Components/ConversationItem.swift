@@ -42,40 +42,36 @@ private struct SwitchConversationItem: View {
     }
     
     var body: some View {
-        Group {
-            switch conversationState {
-                case .draft, .creating, .deleting:
-                    LoadingConversationItem(
+        switch conversationState {
+            case .draft, .creating, .deleting:
+                LoadingConversationItem(
+                    interlocutor: interlocutor,
+                    text: text,
+                    elapsedTimeText: elapsedTimeText
+                )
+                
+            case .created:
+                if isUnread {
+                    UnreadConversationItem(
                         interlocutor: interlocutor,
                         text: text,
                         elapsedTimeText: elapsedTimeText
                     )
-                    
-                case .created:
-                    if isUnread {
-                        UnreadConversationItem(
-                            interlocutor: interlocutor,
-                            text: text,
-                            elapsedTimeText: elapsedTimeText
-                        )
-                    } else {
-                        DefaultConversationItem(
-                            interlocutor: interlocutor,
-                            text: text,
-                            elapsedTimeText: elapsedTimeText
-                        )
-                    }
-                    
-                case .error:
-                    ErrorConversationItem(
+                } else {
+                    DefaultConversationItem(
                         interlocutor: interlocutor,
                         text: text,
                         elapsedTimeText: elapsedTimeText
                     )
-            }
+                }
+                
+            case .error:
+                ErrorConversationItem(
+                    interlocutor: interlocutor,
+                    text: text,
+                    elapsedTimeText: elapsedTimeText
+                )
         }
-        .padding(.horizontal)
-        .padding(.vertical, Dimens.smallMediumPadding)
     }
 }
 
@@ -83,55 +79,72 @@ private struct DefaultConversationItem: View {
     let interlocutor: User
     let text: String
     let elapsedTimeText: String
-    var textColor: Color = .supportingText
-    var fontWeight: Font.Weight = .regular
     
     var body: some View {
-        HStack(spacing: Dimens.mediumPadding) {
-            ProfilePicture(url: interlocutor.profilePictureUrl, scale: 0.5)
-            
-            VStack(alignment: .leading, spacing: Dimens.extraSmallPadding) {
+        PlainListItem(
+            headlineContent: {
                 HStack {
                     Text(interlocutor.displayedName)
                         .font(.headline)
-                        .fontWeight(fontWeight)
                         .lineLimit(1)
                     
                     Text(elapsedTimeText)
                         .font(.subheadline)
-                        .foregroundStyle(textColor)
+                        .foregroundStyle(.supportingText)
                 }
-                
+            },
+            leadingContent: {
+                ProfilePicture(
+                    url: interlocutor.profilePictureUrl,
+                    scale: 0.5
+                )
+            },
+            supportingContent: {
                 Text(text)
                     .font(.subheadline)
-                    .fontWeight(fontWeight)
-                    .foregroundStyle(textColor)
+                    .foregroundStyle(.supportingText)
                     .lineLimit(1)
             }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        )
     }
 }
-    
+
 private struct UnreadConversationItem: View {
     let interlocutor: User
     let text: String
     let elapsedTimeText: String
     
     var body: some View {
-        HStack {
-            DefaultConversationItem(
-                interlocutor: interlocutor,
-                text: text,
-                elapsedTimeText: elapsedTimeText,
-                textColor: .primary,
-                fontWeight: .semibold
-            )
-            
-            Circle()
-                .fill(.red)
-                .frame(width: 10, height: 10)
-        }
+        PlainListItem(
+            headlineContent: {
+                HStack {
+                    Text(interlocutor.displayedName)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .lineLimit(1)
+                    
+                    Text(elapsedTimeText)
+                        .font(.subheadline)
+                }
+            },
+            leadingContent: {
+                ProfilePicture(
+                    url: interlocutor.profilePictureUrl,
+                    scale: 0.5
+                )
+            },
+            trailingContent: {
+                Circle()
+                    .fill(.red)
+                    .frame(width: 10, height: 10)
+            },
+            supportingContent: {
+                Text(text)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .lineLimit(1)
+            }
+        )
     }
 }
 
@@ -157,44 +170,61 @@ private struct ErrorConversationItem: View {
     let elapsedTimeText: String
     
     var body: some View {
-        HStack(alignment: .center, spacing: Dimens.mediumPadding) {
-            Image(systemName: "exclamationmark.circle")
-                .foregroundStyle(.red)
-            
-            DefaultConversationItem(
-                interlocutor: interlocutor,
-                text: text,
-                elapsedTimeText: elapsedTimeText
-            )
-        }
+        PlainListItem(
+            headlineContent: {
+                HStack {
+                    Text(interlocutor.displayedName)
+                        .font(.headline)
+                        .lineLimit(1)
+                    
+                    Text(elapsedTimeText)
+                        .font(.subheadline)
+                        .foregroundStyle(.supportingText)
+                }
+            },
+            leadingContent: {
+                HStack(spacing: Dimens.mediumPadding) {
+                    Image(systemName: "exclamationmark.circle")
+                        .foregroundStyle(.red)
+                    
+                    ProfilePicture(
+                        url: interlocutor.profilePictureUrl,
+                        scale: 0.5
+                    )
+                }
+            },
+            supportingContent: {
+                Text(text)
+                    .font(.subheadline)
+                    .foregroundStyle(.supportingText)
+                    .lineLimit(1)
+            }
+        )
     }
 }
     
 #Preview {
-    VStack(spacing: 20) {
-        DefaultConversationItem(
-            interlocutor: userFixture,
-            text: "Read message",
-            elapsedTimeText: "Now"
-        )
-        
-        UnreadConversationItem(
-            interlocutor: userFixture,
-            text: "Unread message",
-            elapsedTimeText: "Now"
-        )
-        
-        LoadingConversationItem(
-            interlocutor: userFixture,
-            text: "Loading..",
-            elapsedTimeText: "Now"
-        )
-        
-        ErrorConversationItem(
-            interlocutor: userFixture,
-            text: "Error conversation",
-            elapsedTimeText: "Now"
-        )
-    }
-    .padding(.horizontal)
+    DefaultConversationItem(
+        interlocutor: userFixture,
+        text: "Read message",
+        elapsedTimeText: "Now"
+    )
+    
+    UnreadConversationItem(
+        interlocutor: userFixture,
+        text: "Unread message",
+        elapsedTimeText: "Now"
+    )
+    
+    LoadingConversationItem(
+        interlocutor: userFixture,
+        text: "Loading..",
+        elapsedTimeText: "Now"
+    )
+    
+    ErrorConversationItem(
+        interlocutor: userFixture,
+        text: "Error conversation",
+        elapsedTimeText: "Now"
+    )
 }
