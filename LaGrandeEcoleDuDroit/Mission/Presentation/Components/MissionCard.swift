@@ -145,8 +145,6 @@ private struct CardSubtitle: View {
                 text: MissionUtilsPresentation.formatDate(startDate: mission.startDate, endDate: mission.endDate),
                 spacing: Dimens.smallPadding
             )
-            .foregroundStyle(Color.gray)
-            .font(.subheadline)
                         
             TextIcon(
                 icon: Image(systemName: "person.2"),
@@ -156,9 +154,9 @@ private struct CardSubtitle: View {
                 ),
                 spacing: Dimens.smallPadding
             )
-            .foregroundStyle(Color.gray)
-            .font(.subheadline)
         }
+        .foregroundStyle(Color.informationText)
+        .font(.subheadline)
     }
 }
 
