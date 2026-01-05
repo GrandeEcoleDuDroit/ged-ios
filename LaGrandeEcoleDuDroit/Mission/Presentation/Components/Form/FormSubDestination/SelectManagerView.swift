@@ -56,7 +56,7 @@ struct SelectManagerView: View {
                             )
                         }
                         .contentShape(.rect)
-                        .padding(.horizontal)
+                        .padding(.leading)
                     }
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())

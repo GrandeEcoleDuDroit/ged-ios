@@ -6,9 +6,7 @@ struct RecentAnnouncementSection: View {
     let onAnnouncementOptionsClick: (Announcement) -> Void
     let onSeeAllAnnouncementClick: () -> Void
     let onRefreshAnnouncements: () async -> Void
-    
-    @State private var selectedAnnouncement: Announcement?
-    
+        
     var body: some View {
         VStack(alignment: .leading) {
             HStack(spacing: Dimens.smallPadding) {
@@ -25,41 +23,30 @@ struct RecentAnnouncementSection: View {
             }
             .padding(.horizontal)
             
-            List {
-                if let announcements {
-                    if announcements.isEmpty {
+            if let announcements {
+                PlainTableView(
+                    modifier: PlainTableModifier(
+                        backgroundColor: .appBackground,
+                        onRefresh: onRefreshAnnouncements
+                    ),
+                    values: announcements,
+                    onRowClick: onAnnouncementClick,
+                    emptyContent: {
                         Text(stringResource(.noAnnouncement))
                             .foregroundStyle(.informationText)
-                            .listRowBackground(Color.clear)
-                            .listRowSeparator(.hidden)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    } else {
-                        ForEach(announcements) { announcement in
-                            CompactAnnouncementItem(
-                                announcement: announcement,
-                                onOptionsClick: { onAnnouncementOptionsClick(announcement) }
-                            )
-                            .contentShape(.rect)
-                            .listRowTap(
-                                value: announcement,
-                                selectedItem: $selectedAnnouncement
-                            ) {
-                                onAnnouncementClick(announcement)
-                            }
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets())
-                            .listRowBackground(selectedAnnouncement == announcement ? Color.click : Color.clear)
-                        }
+                    },
+                    content: { announcement in
+                        CompactAnnouncementItem(
+                            announcement: announcement,
+                            onOptionsClick: { onAnnouncementOptionsClick(announcement) }
+                        )
                     }
-                } else {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                }
+                )
+            } else {
+                ProgressView()
+                    .padding(.top)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
-            .listStyle(.plain)
-            .refreshable { await onRefreshAnnouncements() }
         }
     }
 }
@@ -72,5 +59,6 @@ struct RecentAnnouncementSection: View {
         onSeeAllAnnouncementClick: {},
         onRefreshAnnouncements: {}
     )
+    .background(.appBackground)
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

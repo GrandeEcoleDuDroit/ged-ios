@@ -48,7 +48,7 @@ private struct ProfileView: View {
         List {
             if let user {
                 Section {
-                    Button(action: onAccountInfosClick) {
+                    NavigationListItem(onClick: onAccountInfosClick) {
                         HStack(spacing: Dimens.mediumPadding) {
                             ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
                             
@@ -71,35 +71,31 @@ private struct ProfileView: View {
                                     .foregroundStyle(.secondary)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.gray)
                         }
                     }
                 }
                 
                 Section {
-                    Button(action: onAccountClick) {
-                        ListItem(
-                            image: Image(systemName: "key"),
-                            text: Text(stringResource(.account))
-                        )
-                    }
-                    
-                    Button(action: onPrivacyClick) {
-                        ListItem(
-                            image: Image(systemName: "lock"),
-                            text: Text(stringResource(.privacy))
-                        )
-                    }
+                    NavigationListItem(
+                        image: Image(systemName: "key"),
+                        text: stringResource(.account),
+                        onClick: onAccountClick
+                    )
+
+                    NavigationListItem(
+                        image: Image(systemName: "lock"),
+                        text: stringResource(.privacy),
+                        onClick: onPrivacyClick
+                    )
                 }
                 
                 Section {
-                    ClickableTextItem(
-                        icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
-                        text: Text(stringResource(.logout)),
-                        onClick: { showLogoutAlert = true }
-                    )
+                    Button(action: { showLogoutAlert = true }) {
+                        TextIcon(
+                            icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
+                            text: stringResource(.logout)
+                        )
+                    }
                     .foregroundStyle(.red)
                 }
             } else {

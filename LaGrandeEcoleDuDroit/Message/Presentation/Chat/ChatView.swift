@@ -250,15 +250,15 @@ private struct SentMessageSheet: View {
     
     var body: some View {
         SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
-            ClickableTextItem(
+            SheetItem(
                 icon: Image(systemName: "paperplane"),
-                text: Text(stringResource(.resend)),
+                text: stringResource(.resend),
                 onClick: onResendMessage
             )
                             
-            ClickableTextItem(
+            SheetItem(
                 icon: Image(systemName: "trash"),
-                text: Text(stringResource(.delete)),
+                text: stringResource(.delete),
                 onClick: onDeleteMessage
             )
             .foregroundColor(.red)
@@ -271,9 +271,9 @@ private struct ReceivedMessageSheet: View {
     
     var body: some View {
         SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
-            ClickableTextItem(
+            SheetItem(
                 icon: Image(systemName: "exclamationmark.bubble"),
-                text: Text(stringResource(.report)),
+                text: stringResource(.report),
                 onClick: onReportClick
             )
             .foregroundColor(.red)

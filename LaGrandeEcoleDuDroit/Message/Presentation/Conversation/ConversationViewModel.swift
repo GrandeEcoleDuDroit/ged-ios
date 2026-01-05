@@ -82,7 +82,7 @@ class ConversationViewModel: ViewModel {
     }
     
     struct ConversationUiState {
-        var conversations: [ConversationUi] = []
+        var conversations: [ConversationUi]? = nil
         var loading = true
     }
 }

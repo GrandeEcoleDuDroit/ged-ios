@@ -101,9 +101,9 @@ private struct AccountInformationView: View {
             switch $0 {
                 case .accountInformation:
                     SheetContainer(fraction: Dimens.sheetFraction(itemCount: user.profilePictureUrl == nil ? 1 : 2)) {
-                        ClickableTextItem(
+                        SheetItem(
                             icon: Image(systemName: "photo"),
-                            text: Text(stringResource(.newProfilePicture)),
+                            text: stringResource(.newProfilePicture),
                             onClick: {
                                 activeSheet = nil
                                 showPhotosPicker = true
@@ -111,9 +111,9 @@ private struct AccountInformationView: View {
                         )
                         
                         if user.profilePictureUrl != nil {
-                            ClickableTextItem(
+                            SheetItem(
                                 icon: Image(systemName: "trash"),
-                                text: Text(stringResource(.delete)),
+                                text: stringResource(.delete),
                                 onClick: {
                                     activeSheet = nil
                                     showDeleteAlert = true

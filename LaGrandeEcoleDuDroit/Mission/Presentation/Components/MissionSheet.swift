@@ -57,24 +57,24 @@ private struct PublishedMissionSheet: View {
     var body: some View {
         if admin {
             SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
-                ClickableTextItem(
+                SheetItem(
                     icon: Image(systemName: "pencil"),
-                    text: Text(stringResource(.edit)),
+                    text: stringResource(.edit),
                     onClick: onEditClick
                 )
                 
-                ClickableTextItem(
+                SheetItem(
                     icon: Image(systemName: "trash"),
-                    text: Text(stringResource(.delete)),
+                    text: stringResource(.delete),
                     onClick: onDeleteClick
                 )
                 .foregroundColor(.red)
             }
         } else {
             SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
-                ClickableTextItem(
+                SheetItem(
                     icon: Image(systemName: "exclamationmark.bubble"),
-                    text: Text(stringResource(.report)),
+                    text: stringResource(.report),
                     onClick: onReportClick
                 )
                 .foregroundColor(.red)
@@ -88,9 +88,9 @@ private struct PublishingMissionSheet: View {
     
     var body: some View {
         SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
-            ClickableTextItem(
+            SheetItem(
                 icon: Image(systemName: "trash"),
-                text: Text(stringResource(.delete)),
+                text: stringResource(.delete),
                 onClick: onDeleteClick
             )
             .foregroundColor(.red)
@@ -104,15 +104,15 @@ private struct ErrorMissionSheet: View {
     
     var body: some View {
         SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
-            ClickableTextItem(
+            SheetItem(
                 icon: Image(systemName: "arrow.clockwise"),
-                text: Text(stringResource(.retry)),
+                text: stringResource(.retry),
                 onClick: onResendClick
             )
             
-            ClickableTextItem(
+            SheetItem(
                 icon: Image(systemName: "trash"),
-                text: Text(stringResource(.delete)),
+                text: stringResource(.delete),
                 onClick: onDeleteClick
             )
             .foregroundColor(.red)

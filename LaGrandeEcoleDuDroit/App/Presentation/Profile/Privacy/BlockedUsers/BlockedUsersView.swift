@@ -57,6 +57,7 @@ private struct BlockedUsersView: View {
                                 }
                                 .foregroundStyle(.gedPrimary)
                                 .fontWeight(.medium)
+                                .buttonStyle(.borderless)
                             }
                         )
                         .listRowInsets(EdgeInsets())

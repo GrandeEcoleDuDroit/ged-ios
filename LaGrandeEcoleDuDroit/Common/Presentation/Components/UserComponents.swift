@@ -13,29 +13,24 @@ struct UserItem<TrailingContent: View>: View {
     }
     
     var body: some View {
-        HStack(alignment: .center) {
-            HStack(spacing: Dimens.mediumPadding) {
+        PlainListItem(
+            headlineContent: {
+                Text(user.displayedName).lineLimit(2)
+            },
+            leadingContent: {
                 ProfilePicture(
                     url: user.profilePictureUrl,
                     scale: 0.5
                 )
-                
-                Text(user.displayedName)
-                    .lineLimit(2)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            trailingContent()
-        }
-        .padding(.vertical, Dimens.smallPadding)
-        .padding(.horizontal)
-        .frame(maxWidth: .infinity, alignment: .leading)
+            },
+            trailingContent: trailingContent
+        )
     }
 }
 
 #Preview {
     UserItem(
         user: userFixture,
-        trailingContent: {  Text("Trailing") }
+        trailingContent: { Text("Trailing") }
     )
 }

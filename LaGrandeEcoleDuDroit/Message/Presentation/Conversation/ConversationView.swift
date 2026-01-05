@@ -53,39 +53,32 @@ private struct ConversationView: View {
     @State private var activeSheet: ConversationViewSheet?
 
     var body: some View {
-        List {
+        Group {
             if let conversationsUi {
-                if conversationsUi.isEmpty {
-                    EmptyConversationView(
-                        onNewConversationClick: {
-                            activeSheet = .createConversation
+                ConversationList(
+                    conversationsUi: conversationsUi,
+                    onConversationClick: {
+                        if $0.state == .created {
+                            onConversationClick($0.toConversation())
+                        } else {
+                            activeSheet = .conversation($0.toConversation())
                         }
-                    )
-                } else {
-                    ConversationListContent(
-                        conversationsUi: conversationsUi,
-                        onConversationClick: {
-                            if $0.state == .created {
-                                onConversationClick($0)
-                            } else {
-                                activeSheet = .conversation($0)
-                            }
-                        },
-                        onLongConversationClick: {
-                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                            activeSheet = .conversation($0)
-                        }
-                    )
-                }
+                    },
+                    onLongConversationClick: {
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                        activeSheet = .conversation($0.toConversation())
+                    },
+                    onNewConversationClick: {
+                        activeSheet = .createConversation
+                    }
+                )
             } else {
                 ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
+                    .padding(.top)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .background(.appBackground)
             }
         }
-        .listStyle(.plain)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .navigationTitle(stringResource(.messages))
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -148,33 +141,29 @@ private struct ConversationView: View {
     }
 }
 
-private struct ConversationListContent: View {
+private struct ConversationList: View {
     let conversationsUi: [ConversationUi]
-    let onConversationClick: (Conversation) -> Void
-    let onLongConversationClick: (Conversation) -> Void
+    let onConversationClick: (ConversationUi) -> Void
+    let onLongConversationClick: (ConversationUi) -> Void
+    let onNewConversationClick: () -> Void
     
-    @State private var selectedConversationUi: ConversationUi?
-
     var body: some View {
-        ForEach(conversationsUi) { conversationUi in
-            ConversationItem(conversationUi: conversationUi)
-                .contentShape(.rect)
-                .simultaneousGesture(
-                    LongPressGesture()
-                        .onEnded { _ in
-                            onLongConversationClick(conversationUi.toConversation())
-                        }
+        PlainTableView(
+            modifier: PlainTableModifier(
+                backgroundColor: .appBackground,
+                onRowLongClick: onLongConversationClick
+            ),
+            values: conversationsUi,
+            onRowClick: onConversationClick,
+            emptyContent: {
+                EmptyConversationView(
+                    onNewConversationClick: onNewConversationClick
                 )
-                .listRowTap(
-                    value: conversationUi,
-                    selectedItem: $selectedConversationUi
-                ) {
-                    onConversationClick(conversationUi.toConversation())
-                }
-                .listRowBackground(selectedConversationUi == conversationUi ? Color.click : Color.clear)
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets())
-        }
+            },
+            content: {
+                ConversationItem(conversationUi: $0)
+            }
+        )
     }
 }
 
@@ -193,9 +182,6 @@ private struct EmptyConversationView: View {
             .fontWeight(.semibold)
             .foregroundStyle(.gedPrimary)
         }
-        .frame(maxWidth: .infinity, alignment: .center)
-        .listRowBackground(Color.clear)
-        .listRowSeparator(.hidden)
     }
 }
 
@@ -220,7 +206,6 @@ private enum ConversationViewSheet: Identifiable {
             onCreateConversationClick: { _ in},
             onRecreateConversationClick: {_ in}
         )
-        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }
