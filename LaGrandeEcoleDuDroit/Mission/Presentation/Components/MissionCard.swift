@@ -7,10 +7,17 @@ struct MissionCard: View {
     var body: some View {
         switch mission.state {
             case .published:
-                DefaultMissionCard(
-                    mission: mission,
-                    onOptionsClick: onOptionsClick
-                )
+                if mission.completed {
+                    CompletedMissionCard(
+                        mission: mission,
+                        onOptionsClick: onOptionsClick
+                    )
+                } else {
+                    DefaultMissionCard(
+                        mission: mission,
+                        onOptionsClick: onOptionsClick
+                    )
+                }
                 
             case .error: ErrorMissionCard(mission: mission)
                 
@@ -29,24 +36,10 @@ private struct DefaultMissionCard: View {
     
     var body: some View {
         VStack(spacing: Dimens.smallMediumPadding + 2) {
-            ZStack {
-                MissionImage(missionState: mission.state)
-                    .frame(height: 180)
-                    .clipped()
-                
-                OptionsButton(action: onOptionsClick)
-                    .font(.title3)
-                    .padding()
-                    .padding(Dimens.extraSmallPadding)
-                    .frame(
-                        maxWidth: .infinity,
-                        maxHeight: .infinity,
-                        alignment: .topTrailing
-                    )
-                    .buttonStyle(.borderless)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 180)
+            CardHeader(
+                missionState: mission.state,
+                onOptionsClick: onOptionsClick
+            )
             
             VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
                 CardTitle(title: mission.title)
@@ -61,6 +54,50 @@ private struct DefaultMissionCard: View {
             }
             .padding(.horizontal)
             .padding(.bottom)
+        }
+        .overlay(
+            ShapeDefaults.medium
+                .stroke(.outlineVariant, lineWidth: 2)
+        )
+        .clipShape(ShapeDefaults.medium)
+    }
+}
+
+private struct CompletedMissionCard: View {
+    let mission: Mission
+    let onOptionsClick: () -> Void
+    
+    var body: some View {
+        VStack(spacing: Dimens.smallMediumPadding + 2) {
+            CardHeader(
+                missionState: mission.state,
+                onOptionsClick: onOptionsClick
+            )
+                
+            VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+                CardTitle(title: mission.title)
+                
+                CardSubtitle(mission: mission)
+                
+                CardBody(description: mission.description)
+                
+                if mission.schoolLevelRestricted {
+                    CardFooter(schoolLevels: mission.schoolLevels)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.bottom)
+        }
+        .overlay {
+            ZStack {
+                Text(stringResource(.completed))
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            }
+            .background(.overlayContent.opacity(0.6))
+            .frame(height: 180)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
         .overlay(
             ShapeDefaults.medium
@@ -118,6 +155,32 @@ private struct ErrorMissionCard: View {
                 .stroke(.outlineVariant, lineWidth: 2)
         )
         .clipShape(ShapeDefaults.medium)
+    }
+}
+
+private struct CardHeader: View {
+    let missionState: Mission.MissionState
+    let onOptionsClick: () -> Void
+    
+    var body: some View {
+        ZStack {
+            MissionImage(missionState: missionState)
+                .frame(height: 180)
+                .clipped()
+            
+            OptionsButton(action: onOptionsClick)
+                .font(.title3)
+                .padding()
+                .padding(Dimens.extraSmallPadding)
+                .frame(
+                    maxWidth: .infinity,
+                    maxHeight: .infinity,
+                    alignment: .topTrailing
+                )
+                .buttonStyle(.borderless)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 180)
     }
 }
 
@@ -199,6 +262,11 @@ private struct ErrorBanner: View {
     ScrollView {
         VStack(spacing: 20) {
             DefaultMissionCard(
+                mission: missionFixture,
+                onOptionsClick: {}
+            )
+            
+            CompletedMissionCard(
                 mission: missionFixture,
                 onOptionsClick: {}
             )

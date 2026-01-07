@@ -73,8 +73,8 @@ private struct DefaultItem: View {
             },
             supportingContent: {
                 Text(content)
-                    .foregroundStyle(.supportingText)
                     .font(.subheadline)
+                    .foregroundStyle(.supportingText)
                     .lineLimit(1)
             }
         )

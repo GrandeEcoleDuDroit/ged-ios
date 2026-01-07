@@ -58,14 +58,10 @@ struct Mission: Copying, Identifiable, Hashable {
         participants.count >= maxParticipants
     }
     
-    var complete: Bool {
-        endDate.isAlmostBefore(to: Date())
+    var completed: Bool {
+        endDate.isBefore(to: Date())
     }
     
-    func schoolLevelPermitted(schoolLevel: SchoolLevel) -> Bool {
-        schoolLevels.isEmpty || schoolLevels.contains(schoolLevel)
-    }
- 
     enum MissionState: Hashable, Identifiable {
         case draft
         case publishing(imagePath: String? = nil)

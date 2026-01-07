@@ -43,7 +43,7 @@ struct MissionDetailsManagerSection: View {
                 .padding(.horizontal)
             
             ScrollView {
-                LazyVStack(spacing: .zero) {
+                VStack(spacing: .zero) {
                     ForEach(managers) { manager in
                         Button(action: { onManagerClick(manager) }) {
                             MissionUserItem(
@@ -68,7 +68,6 @@ struct MissionDetailsManagerSection: View {
 struct MissionDetailsParticipantSection: View {
     let participants: [User]
     let onParticipantClick: (User) -> Void
-    let onLongParticipantClick: (User) -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: Dimens.smallPadding) {
@@ -93,13 +92,6 @@ struct MissionDetailsParticipantSection: View {
                                 .contentShape(.rect)
                             }
                             .buttonStyle(ClickStyle())
-                            .simultaneousGesture(
-                                LongPressGesture()
-                                    .onEnded { _ in
-                                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                        onLongParticipantClick(participant)
-                                    }
-                            )
                         }
                     }
                 }
@@ -137,6 +129,7 @@ struct MissionDetailsTaskSection: View {
 
 #Preview("Title and description section") {
     MissionDetailsTitleAndDescriptionSection(mission: missionFixture)
+        .padding(.horizontal)
 }
 
 #Preview("Information section") {
@@ -153,8 +146,7 @@ struct MissionDetailsTaskSection: View {
 #Preview("Participants section") {
     MissionDetailsParticipantSection(
         participants: missionFixture.participants,
-        onParticipantClick: { _ in },
-        onLongParticipantClick: { _ in }
+        onParticipantClick: { _ in }
     )
 }
 

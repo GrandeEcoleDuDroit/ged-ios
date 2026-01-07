@@ -163,9 +163,17 @@
 "enter_task" = "Entrer tâche";
 "full" = "Complet";
 "no_participant" = "Aucun participant";
+"see_profile" = "Voir profil";
+"completed" = "Terminée";
+
 "register_mission_button_text" = "S'inscrire";
 "registered_mission_button_text" = "Inscrit";
-"complete_mission_button_text" = "Complet";
+"completed_mission_button_text" = "Terminée";
+"registration_closed_mission_button_text" = "Inscription fermée";
+"unavailable_mission_button_text" = "Non disponible";
+"full_mission_information_text" = "Nombre maximal de participant atteint.";
+"non_matching_school_level_information_text" = "Reservé aux **%@**.";
+"completed_mission_information_text" = "Mission terminée.";
 "delete_mission_alert_message" = "Voulez-vous supprimer cette mission ?";
 "unregister_mission_alert_message" = "Se désinscrire de cette mission ?";
 "remove_participant_alert_message" = "Voulez-vous retirer %@ de cette mission ?";
