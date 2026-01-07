@@ -9,12 +9,12 @@ extension Date {
         abs(self.timeIntervalSince(other)) < tolerance
     }
     
-    func isAlmostBefore(to other: Date, tolerance: TimeInterval = 0.001) -> Bool {
-        abs(self.timeIntervalSince(other)) < -tolerance
+    func isBefore(to other: Date, tolerance: TimeInterval = 0.001) -> Bool {
+        Calendar.current.compare(self, to: other, toGranularity: .day) == .orderedAscending
     }
     
-    func isAlmostAfter(to other: Date, tolerance: TimeInterval = 0.001) -> Bool {
-        abs(self.timeIntervalSince(other)) > tolerance
+    func isAfter(to other: Date, tolerance: TimeInterval = 0.001) -> Bool {
+        Calendar.current.compare(self, to: other, toGranularity: .day) == .orderedDescending
     }
     
     func differenceMinutes(from date: Date) -> Int {

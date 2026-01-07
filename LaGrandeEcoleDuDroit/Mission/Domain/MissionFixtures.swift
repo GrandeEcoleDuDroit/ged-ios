@@ -11,8 +11,8 @@ let missionFixture = Mission(
     endDate: Date().plusDays(1),
     schoolLevels: [.ged1, .ged2, .ged3],
     duration: "Once a week",
-    managers: [userFixture],
-    participants: [userFixture2],
+    managers: [userFixture, userFixture2],
+    participants: [userFixture2.copy { $0.id = "10" }, userFixture3],
     maxParticipants: 20,
     tasks: missionTasksFixture,
     state: .published()

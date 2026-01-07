@@ -28,6 +28,8 @@ struct PrimaryButton: View {
         Button(action: action) {
             if enabled {
                 Text(label)
+                    .fontWeight(.medium)
+                    .font(.callout)
                     .frame(maxWidth: maxWidth)
                     .padding(10)
                     .foregroundStyle(contentColor)

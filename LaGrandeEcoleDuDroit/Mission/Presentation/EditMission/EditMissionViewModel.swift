@@ -172,12 +172,15 @@ class EditMissionViewModel: ViewModel {
     }
     
     func onMaxParticipantsChange(_ maxParticipants: String) -> Void {
+        let maxParticipantsNumber = maxParticipants.toInt32OrDefault(-1)
+
         let value = switch maxParticipants {
             case _ where maxParticipants.isEmpty: ""
-            case _ where maxParticipants.toInt32OrDefault(-1) > 0: maxParticipants
-            default: uiState.maxParticipants
+            case _ where maxParticipantsNumber > 0: maxParticipantsNumber.description
+            default: uiState.previousMaxParticipants
         }
         
+        uiState.previousMaxParticipants = value
         uiState.maxParticipants = value
         missionUpdateState.send(
             missionUpdateState.value.copy {
@@ -301,7 +304,7 @@ class EditMissionViewModel: ViewModel {
     
     private func validateEndDateUpdate(startDate: Date, endDate: Date) -> Bool {
         endDate != mission.endDate &&
-            (endDate.isAlmostEqual(to: startDate) || endDate.isAlmostAfter(to: startDate))
+            (endDate.isAlmostEqual(to: startDate) || endDate.isAfter(to: startDate))
     }
     
     private func validateSchoolLevelsUpdate(_ schoolLevels: [SchoolLevel]) -> Bool {
@@ -354,6 +357,7 @@ class EditMissionViewModel: ViewModel {
         uiState.duration = mission.duration.orEmpty()
         uiState.managers = mission.managers
         uiState.maxParticipants = mission.maxParticipants.description
+        uiState.previousMaxParticipants = mission.maxParticipants.description
         uiState.missionTasks = mission.tasks
         uiState.missionState = mission.state
     }
@@ -403,6 +407,7 @@ class EditMissionViewModel: ViewModel {
         let allSchoolLevels: [SchoolLevel] = SchoolLevel.all
         fileprivate(set) var managers: [User] = []
         var maxParticipants: String = ""
+        fileprivate(set) var previousMaxParticipants: String = ""
         var duration: String = ""
         fileprivate(set) var missionTasks: [MissionTask] = []
         fileprivate(set) var users: [User] = []

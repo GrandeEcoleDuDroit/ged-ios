@@ -14,10 +14,15 @@ class UpdateMissionUseCase {
     
     func execute(mission: Mission, imageData: Data?) async throws {
         var missionToUpdate = mission
+        let missionSchoolLevelsSet = Set(mission.schoolLevels.map(\.number))
         
         if let imageData, let imageExtension = imageData.imageExtension() {
             let fileName = "\(MissionUtils.Image.generateFileName(missionId: mission.id)).\(imageExtension)"
-            missionToUpdate = mission.copy { $0.state = .published(imageUrl: fileName) }
+            missionToUpdate.state = .published(imageUrl: fileName)
+        }
+        
+        missionToUpdate.participants = missionToUpdate.participants.filter {
+            missionSchoolLevelsSet.contains($0.schoolLevel.number)
         }
         
         try await missionRepository.updateMission(mission: missionToUpdate, imageData: imageData)

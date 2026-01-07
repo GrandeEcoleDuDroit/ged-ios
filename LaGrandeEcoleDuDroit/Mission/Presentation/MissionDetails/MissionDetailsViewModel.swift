@@ -125,19 +125,28 @@ class MissionDetailsViewModel: ViewModel {
         }.store(in: &cancellables)
     }
     
-    private func updateButtonState(user: User, mission: Mission, isManager: Bool) -> MissionButtonState {
+    private func updateButtonState(user: User, mission: Mission, isManager: Bool) -> MissionButtonState? {
         if isManager {
-            return MissionButtonState.hidden
+            return nil
         }
-        else if mission.complete {
-            return MissionButtonState.complete
+        else if mission.completed {
+            return MissionButtonState.completed
         }
         else if mission.participants.contains(where: { $0.id == user.id }) {
             return MissionButtonState.registered
         }
+        else if !mission.schoolLevels.contains(user.schoolLevel) {
+            let formattedSchoolLevels = mission.schoolLevels
+                .sorted { $0.number < $1.number }
+                .map { $0.rawValue }
+                .joined(separator: ", ")
+            return MissionButtonState.unavailable(reason: stringResource(.nonMatchingSchoolLevelInformationText, formattedSchoolLevels))
+        }
+        else if mission.full {
+            return MissionButtonState.registrationClosed(reason: stringResource(.fullMissionInformationText))
+        }
         else {
-            let enabled = !mission.full && mission.schoolLevelPermitted(schoolLevel: user.schoolLevel)
-            return MissionButtonState.register(enabled: enabled)
+            return MissionButtonState.register
         }
     }
     
@@ -146,7 +155,7 @@ class MissionDetailsViewModel: ViewModel {
         fileprivate(set) var mission: Mission? = nil
         fileprivate(set) var isManager: Bool = false
         fileprivate(set) var loading: Bool = false
-        fileprivate(set) var buttonState: MissionButtonState = .hidden
+        fileprivate(set) var buttonState: MissionButtonState? = nil
     }
     
     enum MissionDetailsUiEvent: SingleUiEvent {
@@ -154,9 +163,10 @@ class MissionDetailsViewModel: ViewModel {
     }
     
     enum MissionButtonState: Equatable {
-        case register(enabled: Bool = true)
+        case register
         case registered
-        case complete
-        case hidden
+        case completed
+        case registrationClosed(reason: String)
+        case unavailable(reason: String)
     }
 }

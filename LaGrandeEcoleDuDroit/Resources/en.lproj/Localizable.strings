@@ -168,9 +168,17 @@
 "enter_task" = "Enter task";
 "full" = "Full";
 "no_participant" = "No participant";
+"see_profile" = "See profile";
+"completed" = "Completed";
+
 "register_mission_button_text" = "Register";
 "registered_mission_button_text" = "Registered";
-"complete_mission_button_text" = "Complete";
+"completed_mission_button_text" = "Completed";
+"registration_closed_mission_button_text" = "Registration closed";
+"unavailable_mission_button_text" = "Unavailable";
+"full_mission_information_text" = "Maximal number of participant reached.";
+"non_matching_school_level_information_text" = "Reserved for **%@**.";
+"completed_mission_information_text" = "Mission completed.";
 "delete_mission_alert_message" = "Do you want to delete this mission?";
 "unregister_mission_alert_message" = "Unregister from this mission?";
 "remove_participant_alert_message" = "Do you want remove %@ from this mission ?";

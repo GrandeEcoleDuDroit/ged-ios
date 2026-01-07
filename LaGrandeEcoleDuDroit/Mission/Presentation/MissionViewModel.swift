@@ -95,7 +95,7 @@ class MissionViewModel: ViewModel {
         missionRepository.missions
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.uiState.missions = $0
+                self?.uiState.missions = $0.missionSorting()
             }.store(in: &cancellables)
     }
     
