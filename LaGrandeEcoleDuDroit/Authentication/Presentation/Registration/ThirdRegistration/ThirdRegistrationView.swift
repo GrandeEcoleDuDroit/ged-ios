@@ -6,8 +6,6 @@ struct ThirdRegistrationDestination: View {
     let schoolLevel: SchoolLevel
     
     @StateObject private var viewModel = AuthenticationMainThreadInjector.shared.resolve(ThirdRegistrationViewModel.self)
-    @State private var showErrorAlert = false
-    @State private var errorMessage: String = ""
     
     var body: some View {
         ThirdRegistrationView(
@@ -24,21 +22,6 @@ struct ThirdRegistrationDestination: View {
                     lastName: lastName,
                     schoolLevel: schoolLevel
                 )
-            }
-        )
-        .onReceive(viewModel.$event) { event in
-            if let errorEvent = event as? ErrorEvent {
-                errorMessage = errorEvent.message
-                showErrorAlert = true
-            }
-        }
-        .alert(
-            errorMessage,
-            isPresented: $showErrorAlert,
-            actions: {
-                Button(stringResource(.ok), role: .cancel) {
-                    showErrorAlert = false
-                }
             }
         )
     }

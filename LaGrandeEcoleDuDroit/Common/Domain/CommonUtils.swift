@@ -10,3 +10,29 @@ func stringResource(_ value: Strings, _ args: CVarArg...) -> String {
         arguments: args
     )
 }
+
+@MainActor
+func performUiBlockingRequest(
+    block: @escaping () async throws -> Void,
+    onLoading: @escaping () -> Void,
+    onError: @escaping (Error) -> Void,
+    onFinally: @escaping () -> Void
+) {
+    var loadingTask: Task<Void, Error>?
+    
+    Task { @MainActor in
+        do {
+            loadingTask = Task { @MainActor in
+                try await Task.sleep(for: .milliseconds(300))
+                onLoading()
+            }
+            
+            try await block()
+        } catch {
+            onError(error)
+        }
+        
+        loadingTask?.cancel()
+        onFinally()
+    }
+}

@@ -58,7 +58,6 @@ class AppMainThreadInjector: MainThreadInjector {
             BlockedUsersViewModel(
                 blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self),
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 getBlockedUsersUseCase: CommonInjector.shared.resolve(GetBlockedUsersUseCase.self)
             )
         }

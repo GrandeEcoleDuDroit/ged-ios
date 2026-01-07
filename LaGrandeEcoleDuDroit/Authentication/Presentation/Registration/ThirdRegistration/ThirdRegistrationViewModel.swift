@@ -6,7 +6,6 @@ class ThirdRegistrationViewModel: ViewModel {
     private let networkMonitor: NetworkMonitor
     
     @Published var uiState = ThirdRegistrationUiState()
-    @Published private(set) var event: SingleUiEvent? = nil
     private let minPasswordLength: Int = 8
     
     init(
@@ -19,23 +18,16 @@ class ThirdRegistrationViewModel: ViewModel {
     
     func register(firstName: String, lastName: String, schoolLevel: SchoolLevel) {
         uiState.errorMessage = nil
-        let email = uiState.email.trim()
-        let password = uiState.password
+        let (email, password) = (uiState.email.trim(), uiState.password)
         
         guard (validateInputs(email: email, password: password)) else { return }
         guard uiState.legalNoticeChecked else {
             uiState.errorMessage = stringResource(.legalNoticeError)
             return
         }
-        guard networkMonitor.isConnected else {
-            event = ErrorEvent(message: stringResource(.noInternetConectionError))
-            return
-        }
         
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
+        performUiBlockingRequest(
+            block: { [weak self] in
                 try await self?.registerUseCase.execute(
                     email: email,
                     password: password,
@@ -43,11 +35,18 @@ class ThirdRegistrationViewModel: ViewModel {
                     lastName: lastName,
                     schoolLevel: schoolLevel
                 )
-            } catch {
+            },
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                guard let self else { return }
+                self.uiState.errorMessage = self.mapErrorMessage($0)
+            },
+            onFinally: { [weak self] in
                 self?.uiState.loading = false
-                self?.uiState.errorMessage = self?.mapErrorMessage(error)
             }
-        }
+        )
     }
     
     private func validateInputs(email: String, password: String) -> Bool {

@@ -75,7 +75,7 @@ class EditMissionViewModel: ViewModel {
             $0.state = missionState
         }
         
-        executeRequest { [weak self] in
+        performRequest { [weak self] in
             try await self?.updateMissionUseCase.execute(mission: missionToUpdate, imageData: imageData)
             self?.event = SuccessEvent()
         }
@@ -342,6 +342,21 @@ class EditMissionViewModel: ViewModel {
         }
     }
     
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+            },
+            onFinally: { [weak self] in
+                self?.uiState.loading = false
+            }
+        )
+    }
+    
     private func listenMissionUpdateState() {
         missionUpdateState.sink { [weak self] missionUpdateState in
             self?.uiState.updateEnabled = missionUpdateState.updated
@@ -371,30 +386,6 @@ class EditMissionViewModel: ViewModel {
             
             self?.uiState.users = users
             self?.defaultUsers = users
-        }
-    }
-    
-    private func executeRequest(block: @escaping () async throws -> Void) {
-        var loadingTask: Task<Void, Error>?
-        
-        Task { @MainActor in
-            do {
-                if !networkMonitor.isConnected {
-                    throw NetworkError.noInternetConnection
-                }
-                
-                loadingTask = Task { @MainActor in
-                    try await Task.sleep(for: .milliseconds(300))
-                    uiState.loading = true
-                }
-                
-                try await block()
-            } catch {
-                event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
-            
-            loadingTask?.cancel()
-            uiState.loading = false
         }
     }
     

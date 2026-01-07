@@ -38,48 +38,36 @@ class AllAnnouncementsViewModel: ViewModel {
 
     
     func recreateAnnouncement(announcement: Announcement) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
-        }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            await self?.recreateAnnouncementUseCase.execute(announcement: announcement)
-            self?.uiState.loading = false
+        Task {
+            await recreateAnnouncementUseCase.execute(announcement: announcement)
         }
     }
     
     func deleteAnnouncement(announcement: Announcement) {
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.deleteAnnouncementUseCase.execute(announcement: announcement)
-                self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        performRequest { [weak self] in
+            try await self?.deleteAnnouncementUseCase.execute(announcement: announcement)
         }
     }
     
     func reportAnnouncement(report: AnnouncementReport) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
+        performRequest { [weak self] in
+            try await self?.announcementRepository.reportAnnouncement(report: report)
         }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.announcementRepository.reportAnnouncement(report: report)
+    }
+    
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+            },
+            onFinally: { [weak self] in
                 self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
             }
-        }
+        )
     }
     
     private func listenUser() {

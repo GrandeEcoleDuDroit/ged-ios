@@ -5,7 +5,6 @@ class UserViewModel: ViewModel {
     private let userId: String
     private let userRepository: UserRepository
     private let blockedUserRepository: BlockedUserRepository
-    private let networkMonitor: NetworkMonitor
     
     @Published private(set) var uiState: UserUiState = UserUiState()
     @Published private(set) var event: SingleUiEvent? = nil
@@ -14,78 +13,59 @@ class UserViewModel: ViewModel {
     init(
         userId: String,
         userRepository: UserRepository,
-        blockedUserRepository: BlockedUserRepository,
-        networkMonitor: NetworkMonitor
+        blockedUserRepository: BlockedUserRepository
     ) {
         self.userId = userId
         self.userRepository = userRepository
         self.blockedUserRepository = blockedUserRepository
-        self.networkMonitor = networkMonitor
         
         listenCurrentUser()
         listenBlockedUserIds(userId: userId)
     }
     
     func reportUser(report: UserReport) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
-        }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.userRepository.reportUser(report: report)
-                self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        performRequest { [weak self] in
+            try await self?.userRepository.reportUser(report: report)
         }
     }
     
     func blockUser(userId: String) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
-        }
         guard let currentUserId = userRepository.currentUser?.id else {
             return
         }
         
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.blockedUserRepository.addBlockedUser(currentUserId: currentUserId, blockedUserId: userId)
-                self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        performRequest { [weak self] in
+            try await self?.blockedUserRepository.addBlockedUser(currentUserId: currentUserId, blockedUserId: userId)
         }
     }
     
     func unblockUser(userId: String) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
-        }
         guard let currentUserId = userRepository.currentUser?.id else {
             return
         }
         
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.blockedUserRepository.removeBlockedUser(currentUserId: currentUserId, blockedUserId: userId)
-                self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        performRequest { [weak self] in
+            try await self?.blockedUserRepository.removeBlockedUser(
+                currentUserId: currentUserId,
+                blockedUserId: userId
+            )
         }
     }
-
+    
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+            },
+            onFinally: { [weak self] in
+                self?.uiState.loading = false
+            }
+        )
+    }
     
     private func listenCurrentUser() {
         userRepository.user

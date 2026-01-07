@@ -41,7 +41,7 @@ class MissionDetailsViewModel: ViewModel {
             user: currentUser
         )
         
-        executeRequest { [weak self] in
+        performRequest { [weak self] in
             try await self?.missionRepository.addParticipant(addMissionParticipant: addMissionparticipant)
         }
     }
@@ -51,7 +51,7 @@ class MissionDetailsViewModel: ViewModel {
             return
         }
         
-        executeRequest { [weak self] in
+        performRequest { [weak self] in
             guard let self = self else { return }
             try await self.missionRepository.removeParticipant(missionId: self.missionId, userId: currentUser.id)
         }
@@ -62,7 +62,7 @@ class MissionDetailsViewModel: ViewModel {
             return
         }
         
-        executeRequest { [weak self] in
+        performRequest { [weak self] in
             try await self?.deleteMissionUseCase.execute(mission: mission)
             self?.event = MissionDetailsUiEvent.missionDeleted
         }
@@ -73,40 +73,32 @@ class MissionDetailsViewModel: ViewModel {
               let userId = uiState.currentUser?.id
         else { return }
         
-        executeRequest { [weak self] in
+        performRequest { [weak self] in
             try await self?.missionRepository.removeParticipant(missionId: missionId, userId: userId)
         }
     }
     
     func reportMission(report: MissionReport) {
-        executeRequest { [weak self] in
+        performRequest { [weak self] in
             try await self?.missionRepository.reportMission(report: report)
         }
     }
     
-    private func executeRequest(block: @escaping () async throws -> Void) {
-        var loadingTask: Task<Void, Error>?
-        
-        Task { @MainActor in
-            do {
-                if !networkMonitor.isConnected {
-                    throw NetworkError.noInternetConnection
-                }
-                
-                loadingTask = Task { @MainActor in
-                    try await Task.sleep(for: .milliseconds(300))
-                    uiState.loading = true
-                }
-                
-                try await block()
-            } catch {
-                event = ErrorEvent(message: mapNetworkErrorMessage(error))
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+            },
+            onFinally: { [weak self] in
+                self?.uiState.loading = false
             }
-            
-            loadingTask?.cancel()
-            uiState.loading = false
-        }
+        )
     }
+
     
     private func listenUserAndMission() {
         Publishers.CombineLatest(
