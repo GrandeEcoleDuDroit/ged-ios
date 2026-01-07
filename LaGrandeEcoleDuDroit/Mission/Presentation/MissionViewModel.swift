@@ -37,26 +37,13 @@ class MissionViewModel: ViewModel {
     }
     
     func deleteMission(mission: Mission) {
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.deleteMissionUseCase.execute(mission: mission)
-                self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(
-                    message: mapNetworkErrorMessage(
-                        error,
-                        specificMap: { stringResource(.unknownError) }
-                    )
-                )
-            }
+        performRequest { [weak self] in
+            try await self?.deleteMissionUseCase.execute(mission: mission)
         }
     }
     
     func reportMission(report: MissionReport) {
-        executeRequest { [weak self] in
+        performRequest { [weak self] in
             try await self?.missionRepository.reportMission(report: report)
         }
     }
@@ -67,28 +54,19 @@ class MissionViewModel: ViewModel {
         }
     }
     
-    private func executeRequest(block: @escaping () async throws -> Void) {
-        var loadingTask: Task<Void, Error>?
-        
-        Task { @MainActor in
-            do {
-                if !networkMonitor.isConnected {
-                    throw NetworkError.noInternetConnection
-                }
-                
-                loadingTask = Task { @MainActor in
-                    try await Task.sleep(for: .milliseconds(300))
-                    uiState.loading = true
-                }
-                
-                try await block()
-            } catch {
-                event = ErrorEvent(message: mapNetworkErrorMessage(error))
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+            },
+            onFinally: { [weak self] in
+                self?.uiState.loading = false
             }
-            
-            loadingTask?.cancel()
-            uiState.loading = false
-        }
+        )
     }
     
     private func listenMissions() {

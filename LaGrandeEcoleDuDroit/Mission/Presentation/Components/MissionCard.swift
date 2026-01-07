@@ -36,10 +36,24 @@ private struct DefaultMissionCard: View {
     
     var body: some View {
         VStack(spacing: Dimens.smallMediumPadding + 2) {
-            CardHeader(
-                missionState: mission.state,
-                onOptionsClick: onOptionsClick
-            )
+            ZStack {
+                MissionImage(missionState: mission.state)
+                    .frame(height: 180)
+                    .clipped()
+                
+                OptionsButton(action: onOptionsClick)
+                    .font(.title3)
+                    .padding()
+                    .padding(Dimens.extraSmallPadding)
+                    .frame(
+                        maxWidth: .infinity,
+                        maxHeight: .infinity,
+                        alignment: .topTrailing
+                    )
+                    .buttonStyle(.borderless)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 180)
             
             VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
                 CardTitle(title: mission.title)
@@ -69,10 +83,16 @@ private struct CompletedMissionCard: View {
     
     var body: some View {
         VStack(spacing: Dimens.smallMediumPadding + 2) {
-            CardHeader(
-                missionState: mission.state,
-                onOptionsClick: onOptionsClick
-            )
+            MissionImage(missionState: mission.state)
+                .frame(height: 180)
+                .clipped()
+                .overlay {
+                    Text(stringResource(.completed))
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                        .background(.overlayContent.opacity(0.6))
+                }
                 
             VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
                 CardTitle(title: mission.title)
@@ -87,17 +107,6 @@ private struct CompletedMissionCard: View {
             }
             .padding(.horizontal)
             .padding(.bottom)
-        }
-        .overlay {
-            ZStack {
-                Text(stringResource(.completed))
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            }
-            .background(.overlayContent.opacity(0.6))
-            .frame(height: 180)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
         .overlay(
             ShapeDefaults.medium
@@ -155,32 +164,6 @@ private struct ErrorMissionCard: View {
                 .stroke(.outlineVariant, lineWidth: 2)
         )
         .clipShape(ShapeDefaults.medium)
-    }
-}
-
-private struct CardHeader: View {
-    let missionState: Mission.MissionState
-    let onOptionsClick: () -> Void
-    
-    var body: some View {
-        ZStack {
-            MissionImage(missionState: missionState)
-                .frame(height: 180)
-                .clipped()
-            
-            OptionsButton(action: onOptionsClick)
-                .font(.title3)
-                .padding()
-                .padding(Dimens.extraSmallPadding)
-                .frame(
-                    maxWidth: .infinity,
-                    maxHeight: .infinity,
-                    alignment: .topTrailing
-                )
-                .buttonStyle(.borderless)
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: 180)
     }
 }
 

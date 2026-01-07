@@ -20,29 +20,15 @@ class DeleteAccountViewModel: ViewModel {
     }
     
     func deleteUserAccount() {
-        guard let currentUser = userRepository.currentUser else {
-            return event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
-        }
         let password = uiState.password
-        
-        guard validateInput(password: password) else {
+        guard let currentUser = userRepository.currentUser else {
+            event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
             return
         }
+        guard validateInput(password: password) else { return }
         
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
-        }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.deleteUserAccountUseCase.execute(user: currentUser, password: password)
-                self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.uiState.errorMessage = self?.mapErrorMessage(error)
-            }
+        performRequest { [weak self] in
+            try await self?.deleteUserAccountUseCase.execute(user: currentUser, password: password)
         }
     }
     
@@ -57,6 +43,22 @@ class DeleteAccountViewModel: ViewModel {
         } else {
             nil
         }
+    }
+    
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                guard let self else { return }
+                self.event = ErrorEvent(message: self.mapErrorMessage($0))
+            },
+            onFinally: { [weak self] in
+                self?.uiState.loading = false
+            }
+        )
     }
     
     private func mapErrorMessage(_ e: Error) -> String {

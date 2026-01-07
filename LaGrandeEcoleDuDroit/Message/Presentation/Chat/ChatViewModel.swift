@@ -98,26 +98,14 @@ class ChatViewModel: ViewModel {
             do {
                 try await self?.messageRepository.deleteLocalMessage(message: message)
             } catch {
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
+                self?.event = ErrorEvent(message: error.localizedDescription)
             }
         }
     }
     
     func reportMessage(_ report: MessageReport) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
-        }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.messageRepository.reportMessage(report: report)
-                self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        performRequest { [weak self] in
+            try await self?.messageRepository.reportMessage(report: report)
         }
     }
     
@@ -129,45 +117,42 @@ class ChatViewModel: ViewModel {
     
     func unblockUser(userId: String) {
         guard let currentUserId = currentUser?.id else { return }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.blockedUserRepository.removeBlockedUser(currentUserId: currentUserId, blockedUserId: userId)
-                self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        performRequest { [weak self] in
+            try await self?.blockedUserRepository.removeBlockedUser(
+                currentUserId: currentUserId,
+                blockedUserId: userId
+            )
         }
     }
     
     func deleteChat() {
         guard let currentUserId = currentUser?.id else { return }
+        let conversation = conversation
         
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                guard let conversation = self?.conversation else {
-                    self?.uiState.loading = false
-                    return
-                }
-                
-                try await self?.conversationRepository.deleteConversation(
-                    conversationId: conversation.id,
-                    userId: currentUserId,
-                    date: Date()
-                )
-                try await self?.messageRepository.deleteLocalMessages(conversationId: conversation.id)
-                self?.uiState.loading = false
-                self?.event = ChatEvent.chatDeleted
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        performRequest { [weak self] in
+            try await self?.conversationRepository.deleteConversation(
+                conversationId: conversation.id,
+                userId: currentUserId,
+                date: Date()
+            )
+            try await self?.messageRepository.deleteLocalMessages(conversationId: conversation.id)
+            self?.event = ChatEvent.chatDeleted
         }
+    }
+    
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+            },
+            onFinally: { [weak self] in
+                self?.uiState.loading = false
+            }
+        )
     }
     
     private func listenMessages() {

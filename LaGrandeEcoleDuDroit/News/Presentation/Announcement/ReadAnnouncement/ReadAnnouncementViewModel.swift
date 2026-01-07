@@ -30,23 +30,34 @@ class ReadAnnouncementViewModel: ViewModel {
     }
     
     func reportAnnouncement(report: AnnouncementReport) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
-        }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.announcementRepository.reportAnnouncement(report: report)
-                self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        performRequest { [weak self] in
+            try await self?.announcementRepository.reportAnnouncement(report: report)
         }
     }
         
+    func deleteAnnouncement() {
+        guard let announcement = uiState.announcement else { return }
+        performRequest { [weak self] in
+            try await self?.deleteAnnouncementUseCase.execute(announcement: announcement)
+            self?.event = SuccessEvent()
+        }
+    }
+    
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+            },
+            onFinally: { [weak self] in
+                self?.uiState.loading = false
+            }
+        )
+    }
+    
     private func listenAnnouncement() {
         announcementRepository.getAnnouncementPublisher(announcementId: announcementId)
             .compactMap { $0 }
@@ -66,28 +77,6 @@ class ReadAnnouncementViewModel: ViewModel {
             .sink { [weak self] user in
                 self?.uiState.user = user
             }.store(in: &cancellables)
-    }
-    
-    func deleteAnnouncement() {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
-        }
-        guard let announcement = uiState.announcement else {
-            return
-        }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.deleteAnnouncementUseCase.execute(announcement: announcement)
-                self?.uiState.loading = false
-                self?.event = SuccessEvent()
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
-        }
     }
     
     struct ReadAnnouncementUiState: Withable {
