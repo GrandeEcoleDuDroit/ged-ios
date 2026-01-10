@@ -31,12 +31,12 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
         }.eraseToAnyPublisher()
     }
     
-    func getLocalAnnouncements() async -> [Announcement] {
+    func getLocalAnnouncements() async throws -> [Announcement] {
         do {
             return try await announcementLocalDataSource.getAnnouncements()
         } catch {
             e(tag, "Error getting local announcements", error)
-            return []
+            throw error
         }
     }
     
@@ -45,7 +45,7 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
             return try await announcementRemoteDataSource.getAnnouncements()
         } catch {
             e(tag, "Error getting remote announcements", error)
-            return []
+            throw error
         }
     }
     

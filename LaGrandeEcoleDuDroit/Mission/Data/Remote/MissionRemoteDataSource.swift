@@ -12,17 +12,11 @@ class MissionRemoteDataSource {
     }
     
     func createMission(mission: Mission, imageData: Data?) async throws {
-        try await missionApi.createMission(
-            remoteMission: mission.toRemote()!,
-            imageData: imageData
-        )
+        try await missionApi.createMission(remoteMission: mission.toRemote()!, imageData: imageData)
     }
     
     func updateMission(mission: Mission, imageData: Data?) async throws {
-        try await missionApi.updateMission(
-            remoteMission: mission.toRemote()!,
-            imageData: imageData
-        )
+        try await missionApi.updateMission(remoteMission: mission.toRemote()!, imageData: imageData)
     }
     
     func deleteMission(mission: Mission) async throws {

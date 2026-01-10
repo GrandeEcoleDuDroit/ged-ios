@@ -7,7 +7,7 @@ protocol AnnouncementRepository {
                 
     func getAnnouncementPublisher(announcementId: String) -> AnyPublisher<Announcement?, Never>
     
-    func getLocalAnnouncements() async -> [Announcement]
+    func getLocalAnnouncements() async throws -> [Announcement]
     
     func getRemoteAnnouncements() async throws -> [Announcement]
         

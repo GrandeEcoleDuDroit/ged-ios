@@ -8,6 +8,6 @@ class WhiteListApiImpl: WhiteListApi {
         let session = RequestUtils.getDefaultSession()
         let request = try RequestUtils.simplePostRequest(url: url, dataToSend: [UserField.Oracle.userEmail: email])
         
-        return try await RequestUtils.sendDataRequest(session: session, request: request) ?? false
+        return try await RequestUtils.sendDataRequest(session: session, request: request)!
     }
 }

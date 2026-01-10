@@ -14,7 +14,7 @@ class MissionApiImpl: MissionApi {
         let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.simpleGetRequest(url: url, authToken: authToken)
         
-        return try await RequestUtils.sendDataRequest(session: session, request: request) ?? []
+        return try await RequestUtils.sendDataRequest(session: session, request: request)!
     }
     
     func createMission(remoteMission: OutboundRemoteMission, imageData: Data?) async throws {
