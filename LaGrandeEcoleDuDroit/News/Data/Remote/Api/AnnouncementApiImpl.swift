@@ -15,7 +15,7 @@ class AnnouncementApiImpl: AnnouncementApi {
         let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.simpleGetRequest(url: url, authToken: authToken)
         
-        return try await RequestUtils.sendDataRequest(session: session, request: request) ?? []
+        return try await RequestUtils.sendDataRequest(session: session, request: request)!
     }
     
     func createAnnouncement(remoteAnnouncement: OutbondRemoteAnnouncement) async throws {

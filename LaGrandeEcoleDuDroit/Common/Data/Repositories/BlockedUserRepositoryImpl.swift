@@ -34,7 +34,7 @@ class BlockedUserRepositoryImpl: BlockedUserRepository {
             return try await blockedUserRemoteDataSource.getBlockedUserIds(currentUserId: currentUserId)
         } catch {
             e(tag, "Error getting blocked user ids of current user \(currentUserId)", error)
-            return Set()
+            throw error
         }
     }
     

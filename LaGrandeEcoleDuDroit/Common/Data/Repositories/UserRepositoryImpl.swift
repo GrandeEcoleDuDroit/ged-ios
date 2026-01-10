@@ -21,12 +21,12 @@ class UserRepositoryImpl: UserRepository {
         initUser()
     }
     
-    func getUsers() async -> [User] {
+    func getUsers() async throws -> [User] {
         do {
             return try await userRemoteDataSource.getUsers()
         } catch {
             e(tag, "Error getting users", error)
-            return []
+            throw error
         }
     }
     

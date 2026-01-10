@@ -40,7 +40,7 @@ class BlockedUserServerApi {
         let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.simpleGetRequest(url: url, authToken: authToken)
         
-        return try await RequestUtils.sendDataRequest(session: session, request: request) ?? []
+        return try await RequestUtils.sendDataRequest(session: session, request: request)!
     }
     
     func addBlockedUser(currentUserId: String, blockedUserId: String) async throws {

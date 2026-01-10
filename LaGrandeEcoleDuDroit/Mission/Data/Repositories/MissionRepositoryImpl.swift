@@ -34,12 +34,12 @@ class MissionRepositoryImpl: MissionRepository {
         .eraseToAnyPublisher()
     }
     
-    func getLocalMissions() async -> [Mission] {
+    func getLocalMissions() async throws -> [Mission] {
         do {
             return try await missionLocalDataSource.getMissions()
         } catch {
             e(tag, "Error getting local missions", error)
-            return []
+            throw error
         }
     }
     
@@ -48,7 +48,7 @@ class MissionRepositoryImpl: MissionRepository {
             return try await missionRemoteDataSource.getMissions()
         } catch {
             e(tag, "Error getting remote missions", error)
-            return []
+            throw error
         }
     }
     
