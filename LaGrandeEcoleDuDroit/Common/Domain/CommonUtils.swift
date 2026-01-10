@@ -16,7 +16,7 @@ func performUiBlockingRequest(
     block: @escaping () async throws -> Void,
     onLoading: @escaping () -> Void,
     onError: @escaping (Error) -> Void,
-    onFinally: @escaping () -> Void
+    onFinshed: @escaping () -> Void = {}
 ) {
     var loadingTask: Task<Void, Error>?
     
@@ -33,6 +33,6 @@ func performUiBlockingRequest(
         }
         
         loadingTask?.cancel()
-        onFinally()
+        onFinshed()
     }
 }

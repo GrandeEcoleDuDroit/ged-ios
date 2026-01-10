@@ -7,7 +7,6 @@ class AllAnnouncementsViewModel: ViewModel {
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
     private let recreateAnnouncementUseCase: RecreateAnnouncementUseCase
     private let refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
-    private let networkMonitor: NetworkMonitor
     
     @Published private(set) var uiState: AllAnnouncementsUiState = AllAnnouncementsUiState()
     @Published private(set) var event: SingleUiEvent? = nil
@@ -18,15 +17,13 @@ class AllAnnouncementsViewModel: ViewModel {
         announcementRepository: AnnouncementRepository,
         deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
         recreateAnnouncementUseCase: RecreateAnnouncementUseCase,
-        refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase,
-        networkMonitor: NetworkMonitor
+        refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
     ) {
         self.userRepository = userRepository
         self.announcementRepository = announcementRepository
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
         self.recreateAnnouncementUseCase = recreateAnnouncementUseCase
         self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
-        self.networkMonitor = networkMonitor
         
         listenUser()
         listenAnnouncements()
@@ -62,9 +59,9 @@ class AllAnnouncementsViewModel: ViewModel {
                 self?.uiState.loading = true
             },
             onError: { [weak self] in
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+                self?.event = ErrorEvent(message: $0.localizedDescription)
             },
-            onFinally: { [weak self] in
+            onFinshed: { [weak self] in
                 self?.uiState.loading = false
             }
         )

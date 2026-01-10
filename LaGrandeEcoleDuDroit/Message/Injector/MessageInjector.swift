@@ -144,8 +144,8 @@ class MessageInjector: Injector {
             )
         }
         
-        container.register(MessageNotificationManager.self) { resolver in
-            MessageNotificationManager(
+        container.register(MessageNotificationPresenter.self) { resolver in
+            MessageNotificationPresenter(
                 navigationRequestUseCase: CommonInjector.shared.resolve(NavigationRequestUseCase.self),
                 routeRepository: CommonInjector.shared.resolve(RouteRepository.self)
             )

@@ -6,8 +6,7 @@ class ChatViewModel: ViewModel {
     private let messageRepository: MessageRepository
     private let conversationRepository: ConversationRepository
     private let sendMessageUseCase: SendMessageUseCase
-    private let notificationMessageManager: MessageNotificationManager
-    private let networkMonitor: NetworkMonitor
+    private let notificationMessageManager: MessageNotificationPresenter
     private let blockedUserRepository: BlockedUserRepository
     private let generateIdUseCase: GenerateIdUseCase
     
@@ -28,8 +27,7 @@ class ChatViewModel: ViewModel {
         messageRepository: MessageRepository,
         conversationRepository: ConversationRepository,
         sendMessageUseCase: SendMessageUseCase,
-        notificationMessageManager: MessageNotificationManager,
-        networkMonitor: NetworkMonitor,
+        notificationMessageManager: MessageNotificationPresenter,
         blockedUserRepository: BlockedUserRepository,
         generateIdUseCase: GenerateIdUseCase
     ) {
@@ -39,7 +37,6 @@ class ChatViewModel: ViewModel {
         self.conversationRepository = conversationRepository
         self.sendMessageUseCase = sendMessageUseCase
         self.notificationMessageManager = notificationMessageManager
-        self.networkMonitor = networkMonitor
         self.blockedUserRepository = blockedUserRepository
         self.generateIdUseCase = generateIdUseCase
         
@@ -149,7 +146,7 @@ class ChatViewModel: ViewModel {
             onError: { [weak self] in
                 self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
             },
-            onFinally: { [weak self] in
+            onFinshed: { [weak self] in
                 self?.uiState.loading = false
             }
         )

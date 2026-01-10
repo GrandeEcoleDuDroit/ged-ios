@@ -4,32 +4,32 @@ struct CompactAnnouncementItem: View {
     let announcement: Announcement
     let onOptionsClick: () -> Void
 
-    private var elapsedTimeText: String {
-        getElapsedTimeText(date: announcement.date)
-    }
-    
     var body: some View {
-        switch (announcement.state) {
-            case .published, .draft:
-                DefaultItem(
-                    announcement: announcement,
-                    elapsedTimeText: elapsedTimeText,
-                    onOptionsClick: onOptionsClick
-                )
-                
-            case .publishing:
-                PublishingItem(
-                    announcement: announcement,
-                    elapsedTimeText: elapsedTimeText,
-                    onOptionsClick: onOptionsClick
-                )
-                
-            case .error:
-                ErrorItem(
-                    announcement: announcement,
-                    elapsedTimeText: elapsedTimeText,
-                    onOptionsClick: onOptionsClick
-                )
+        TimelineView(.periodic(from: .now, by: 60)) { _ in
+            let elapsedTimeText = getElapsedTimeText(date: announcement.date)
+
+            switch (announcement.state) {
+                case .published, .draft:
+                    DefaultItem(
+                        announcement: announcement,
+                        elapsedTimeText: elapsedTimeText,
+                        onOptionsClick: onOptionsClick
+                    )
+                    
+                case .publishing:
+                    PublishingItem(
+                        announcement: announcement,
+                        elapsedTimeText: elapsedTimeText,
+                        onOptionsClick: onOptionsClick
+                    )
+                    
+                case .error:
+                    ErrorItem(
+                        announcement: announcement,
+                        elapsedTimeText: elapsedTimeText,
+                        onOptionsClick: onOptionsClick
+                    )
+            }
         }
     }
 }

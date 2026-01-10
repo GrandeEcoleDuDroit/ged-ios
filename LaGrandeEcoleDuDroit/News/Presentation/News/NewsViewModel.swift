@@ -7,7 +7,6 @@ class NewsViewModel: ViewModel {
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
     private let recreateAnnouncementUseCase: RecreateAnnouncementUseCase
     private let refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
-    private let networkMonitor: NetworkMonitor
     
     @Published private(set) var uiState: NewsUiState = NewsUiState()
     @Published private(set) var event: SingleUiEvent? = nil
@@ -19,14 +18,12 @@ class NewsViewModel: ViewModel {
         deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
         recreateAnnouncementUseCase: RecreateAnnouncementUseCase,
         refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase,
-        networkMonitor: NetworkMonitor
     ) {
         self.userRepository = userRepository
         self.announcementRepository = announcementRepository
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
         self.recreateAnnouncementUseCase = recreateAnnouncementUseCase
         self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
-        self.networkMonitor = networkMonitor
         
         listenUser()
         listenAnnouncements()
@@ -65,10 +62,10 @@ class NewsViewModel: ViewModel {
             onLoading: { [weak self] in
                 self?.uiState.loading = true
             },
-            onError: { [weak self] in
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+            onError: { [weak self] error in
+                self?.event = ErrorEvent(message: error.localizedDescription)
             },
-            onFinally: { [weak self] in
+            onFinshed: { [weak self] in
                 self?.uiState.loading = false
             }
         )
@@ -86,7 +83,7 @@ class NewsViewModel: ViewModel {
     private func listenAnnouncements() {
         announcementRepository.announcements
             .map { [weak self] announcements in
-                announcements.compactMap { self?.transform($0) }
+                announcements.compactMap { self?.truncateAnnouncement($0) }
             }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] announcements in
@@ -95,12 +92,14 @@ class NewsViewModel: ViewModel {
             .store(in: &cancellables)
     }
     
-    private func transform(_ announcement: Announcement) -> Announcement {
-        let trimmedTitle = announcement.title?.trim()
-        let newTitle = trimmedTitle.flatMap { !$0.isEmpty ? String($0.prefix(100)) : nil }
-        let newContent = String(announcement.content.prefix(100))
+    private func truncateAnnouncement(_ announcement: Announcement) -> Announcement {
+        let truncatedTitle = if let title = announcement.title { String(title.prefix(100)) } else { "" }
+        let truncatedContent = String(announcement.content.prefix(100))
         
-        return announcement.copy { $0.title = newTitle; $0.content = newContent }
+        return announcement.copy {
+            $0.title = truncatedTitle
+            $0.content = truncatedContent
+        }
     }
     
     struct NewsUiState {

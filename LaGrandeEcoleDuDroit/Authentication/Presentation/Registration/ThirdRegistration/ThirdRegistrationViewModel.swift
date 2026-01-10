@@ -3,17 +3,12 @@ import Combine
 
 class ThirdRegistrationViewModel: ViewModel {
     private let registerUseCase: RegisterUseCase
-    private let networkMonitor: NetworkMonitor
     
     @Published var uiState = ThirdRegistrationUiState()
     private let minPasswordLength: Int = 8
     
-    init(
-        registerUseCase: RegisterUseCase,
-        networkMonitor: NetworkMonitor
-    ) {
+    init(registerUseCase: RegisterUseCase) {
         self.registerUseCase = registerUseCase
-        self.networkMonitor = networkMonitor
     }
     
     func register(firstName: String, lastName: String, schoolLevel: SchoolLevel) {
@@ -22,7 +17,7 @@ class ThirdRegistrationViewModel: ViewModel {
         
         guard (validateInputs(email: email, password: password)) else { return }
         guard uiState.legalNoticeChecked else {
-            uiState.errorMessage = stringResource(.legalNoticeError)
+            uiState.errorMessage = stringResource(.legalNoticeNotAcceptedError)
             return
         }
         
@@ -40,10 +35,9 @@ class ThirdRegistrationViewModel: ViewModel {
                 self?.uiState.loading = true
             },
             onError: { [weak self] in
-                guard let self else { return }
-                self.uiState.errorMessage = self.mapErrorMessage($0)
+                self?.handleError($0)
             },
-            onFinally: { [weak self] in
+            onFinshed: { [weak self] in
                 self?.uiState.loading = false
             }
         )
@@ -75,18 +69,18 @@ class ThirdRegistrationViewModel: ViewModel {
         }
     }
     
-    private func mapErrorMessage(_ error: Error) -> String {
-        mapNetworkErrorMessage(error) {
-            if let networkError = error as? NetworkError {
-                switch networkError {
-                    case .forbidden: stringResource(.userNotWhiteListedError)
-                    case .dupplicateData: stringResource(.emailAlreadyAssociatedError)
-                    default: stringResource(.unknownError)
-                }
-            } else {
-                 stringResource(.unknownError)
-             }
+    private func handleError(_ error: Error) {
+        let message = if let networkError = error as? NetworkError {
+            switch networkError {
+                case .forbidden: stringResource(.userNotWhiteListedError)
+                case .dupplicateData: stringResource(.emailAlreadyAssociatedError)
+                default: networkError.localizedDescription
+            }
+        } else {
+            error.localizedDescription
         }
+        
+        uiState.errorMessage = message
     }
     
     struct ThirdRegistrationUiState {

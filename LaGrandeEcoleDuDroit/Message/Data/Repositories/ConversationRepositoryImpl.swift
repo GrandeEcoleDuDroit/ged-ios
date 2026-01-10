@@ -26,7 +26,7 @@ class ConversationRepositoryImpl: ConversationRepository {
         do {
             return try await conversationLocalDataSource.getConversations()
         } catch {
-            e(tag, "Failed to get local conversations: \(error.localizedDescription)")
+            e(tag, "Error geting local conversations", error)
             return []
         }
     }
@@ -35,7 +35,7 @@ class ConversationRepositoryImpl: ConversationRepository {
         do {
             return try await conversationLocalDataSource.getConversation(interlocutorId: interlocutorId)
         } catch {
-            e(tag, "Failed to get local conversation with interlocutor: \(interlocutorId):: \(error.localizedDescription)")
+            e(tag, "Error getting local conversation with interlocutor \(interlocutorId)", error)
             return nil
         }
     }
@@ -43,7 +43,7 @@ class ConversationRepositoryImpl: ConversationRepository {
     func getRemoteConversationsPublisher(user: User) -> AnyPublisher<RemoteConversation, Never> {
         conversationRemoteDataSource.listenConversations(userId: user.id)
             .catch { error in
-                e(tag, "Failed to fetch remote conversations: \(error.localizedDescription)")
+                e(tag , "Error listening remote conversations of \(user.id)", error)
                 return Empty<RemoteConversation, Never>()
             }
             .eraseToAnyPublisher()
@@ -53,7 +53,7 @@ class ConversationRepositoryImpl: ConversationRepository {
         do {
             try await conversationLocalDataSource.insertConversation(conversation: conversation)
         } catch {
-            e(tag, "Failed to create local conversation", error)
+            e(tag, "Error creating local conversation \(conversation.id)", error)
             throw error
         }
     }
@@ -66,35 +66,45 @@ class ConversationRepositoryImpl: ConversationRepository {
         do {
             try await conversationLocalDataSource.updateConversation(conversation: conversation)
         } catch {
-            e(tag, "Failed to update local conversation", error)
+            e(tag, "Error updating local conversation \(conversation.id)", error)
             throw error
         }
     }
     
     func updateConversationEffectiveFrom(conversationId: String, currentUserId: String, effectiveFrom: Date) async throws {
-        try await conversationRemoteDataSource.updateConversationEffectiveFrom(
-            conversationId: conversationId,
-            userId: currentUserId,
-            date: effectiveFrom
-        )
-        try await conversationLocalDataSource.updateConversationEffectiveFrom(
-            conversationId: conversationId,
-            effectiveFrom: effectiveFrom
-        )
+        do {
+            try await conversationRemoteDataSource.updateConversationEffectiveFrom(
+                conversationId: conversationId,
+                userId: currentUserId,
+                date: effectiveFrom
+            )
+            try await conversationLocalDataSource.updateConversationEffectiveFrom(
+                conversationId: conversationId,
+                effectiveFrom: effectiveFrom
+            )
+        } catch {
+            e(tag, "Error updating effectiveFrom field for conversation \(conversationId)", error)
+            throw error
+        }
     }
     
     func upsertLocalConversation(conversation: Conversation) async throws {
         do {
             try await conversationLocalDataSource.upsertConversation(conversation: conversation)
         } catch {
-            e(tag, "Failed to upsert local conversation", error)
+            e(tag, "Error upserting local conversation \(conversation.id)", error)
             throw error
         }
     }
     
     func deleteConversation(conversationId: String, userId: String, date: Date) async throws {
-        try await conversationRemoteDataSource.updateConversationEffectiveFrom(conversationId: conversationId, userId: userId, date: date)
-        try await deleteLocalConversation(conversationId: conversationId)
+        do {
+            try await conversationRemoteDataSource.updateConversationEffectiveFrom(conversationId: conversationId, userId: userId, date: date)
+            try await deleteLocalConversation(conversationId: conversationId)
+        } catch {
+            e(tag, "Error deleting conversation \(conversationId)", error)
+            throw error
+        }
     }
     
     func deleteLocalConversations() async throws {
@@ -102,7 +112,7 @@ class ConversationRepositoryImpl: ConversationRepository {
             let deletedConversations = try await conversationLocalDataSource.deleteConversations()
             conversationChangesSubject.send(CoreDataChange(deleted: deletedConversations))
         } catch {
-            e(tag, "Failed to delete local conversations", error)
+            e(tag, "Error deleting local conversations", error)
             throw error
         }
     }
@@ -113,7 +123,7 @@ class ConversationRepositoryImpl: ConversationRepository {
                 conversationChangesSubject.send(CoreDataChange(deleted: [deletedConversation]))
             }
         } catch {
-            e(tag, "Failed to delete local conversation", error)
+            e(tag, "Error deleting local conversation \(conversationId)", error)
             throw error
         }
     }

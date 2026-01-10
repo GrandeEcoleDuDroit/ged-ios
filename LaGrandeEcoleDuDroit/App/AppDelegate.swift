@@ -4,8 +4,7 @@ import Firebase
 import FirebaseMessaging
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    private let notificationMediator = AppInjector.shared.resolve(NotificationMediator.self)
-    private lazy var fcmManager = AppInjector.shared.resolve(FcmManager.self)
+    private lazy var notificationMediator = AppInjector.shared.resolve(NotificationMediator.self)
     private let tag = String(describing: AppDelegate.self)
     
     func application(
@@ -44,7 +43,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        e(tag, "Error to register remote notifications", error)
+        e(tag, "Error registering remote notifications", error)
     }
     
     func userNotificationCenter(
@@ -65,6 +64,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
     
     private func registerForPushNotifications(application: UIApplication) {
+        let fcmManager = AppInjector.shared.resolve(FcmManager.self)
         Messaging.messaging().delegate = fcmManager
 
         UNUserNotificationCenter.current().delegate = self

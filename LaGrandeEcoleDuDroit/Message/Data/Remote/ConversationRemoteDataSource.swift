@@ -15,23 +15,21 @@ class ConversationRemoteDataSource {
     }
     
     func createConversation(conversation: Conversation, userId: String) async throws {
-        try await mapFirebaseError(
-            block: {
-                let data = conversation.toRemote(userId: userId).toMap()
-                try await conversationApi.createConversation(conversationId: conversation.id, data: data)
-            },
-            tag: tag,
-            message: "Failed to create conversation"
-        )
+        do {
+            let data = conversation.toRemote(userId: userId).toMap()
+            try await conversationApi.createConversation(conversationId: conversation.id, data: data)
+        } catch {
+            throw mapFirebaseError(error)
+        }
     }
     
     func updateConversationEffectiveFrom(conversationId: String, userId: String, date: Date) async throws {
-        try await mapFirebaseError(
-            block: {
-                let data = ["\(ConversationField.Remote.effectiveFrom).\(userId)": Timestamp(date: date)]
-                try await conversationApi.updateConversation(conversationId: conversationId, data: data)
-            }
-        )
+        do {
+            let data = ["\(ConversationField.Remote.effectiveFrom).\(userId)": Timestamp(date: date)]
+            try await conversationApi.updateConversation(conversationId: conversationId, data: data)
+        } catch {
+            throw mapFirebaseError(error)
+        }
     }
     
     func stopListeningConversations() {

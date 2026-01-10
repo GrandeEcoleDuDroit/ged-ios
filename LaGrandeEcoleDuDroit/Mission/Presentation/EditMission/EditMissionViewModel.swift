@@ -7,7 +7,6 @@ class EditMissionViewModel: ViewModel {
     private let updateMissionUseCase: UpdateMissionUseCase
     private let getUsersUseCase: GetUsersUseCase
     private let generateIdUseCase: GenerateIdUseCase
-    private let networkMonitor: NetworkMonitor
 
     @Published var uiState = EditMissionUiState()
     @Published private(set) var event: SingleUiEvent?
@@ -20,15 +19,13 @@ class EditMissionViewModel: ViewModel {
         userRepository: UserRepository,
         updateMissionUseCase: UpdateMissionUseCase,
         getUsersUseCase: GetUsersUseCase,
-        generateIdUseCase: GenerateIdUseCase,
-        networkMonitor: NetworkMonitor
+        generateIdUseCase: GenerateIdUseCase
     ) {
         self.mission = mission
         self.userRepository = userRepository
         self.updateMissionUseCase = updateMissionUseCase
         self.getUsersUseCase = getUsersUseCase
         self.generateIdUseCase = generateIdUseCase
-        self.networkMonitor = networkMonitor
 
         initUiState()
         initUsers()
@@ -164,11 +161,18 @@ class EditMissionViewModel: ViewModel {
         
         schoolLevels = schoolLevels.sorted { $0.number < $1.number }
         uiState.selectedSchoolLevels = schoolLevels
+        uiState.schoolLevelSupportingText = showSchoolLevelSupportingText(schoolLevels: schoolLevels) ? stringResource(.editMissionSchoolLevelSupportingText) : nil
         missionUpdateState.send(
             missionUpdateState.value.copy {
                 $0.schoolLevelsUpdated = validateSchoolLevelsUpdate(schoolLevels)
             }
         )
+    }
+    
+    private func showSchoolLevelSupportingText(schoolLevels: [SchoolLevel]) -> Bool {
+        !schoolLevels.isEmpty &&
+        schoolLevels.count < SchoolLevel.all.count &&
+        schoolLevels != mission.schoolLevels
     }
     
     func onMaxParticipantsChange(_ maxParticipants: String) -> Void {
@@ -349,9 +353,9 @@ class EditMissionViewModel: ViewModel {
                 self?.uiState.loading = true
             },
             onError: { [weak self] in
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+                self?.event = ErrorEvent(message: $0.localizedDescription)
             },
-            onFinally: { [weak self] in
+            onFinshed: { [weak self] in
                 self?.uiState.loading = false
             }
         )
@@ -406,7 +410,7 @@ class EditMissionViewModel: ViewModel {
         fileprivate(set) var loading: Bool = false
         fileprivate(set) var missionState: Mission.MissionState = .draft
         fileprivate(set) var updateEnabled: Bool = false
-        let schoolLevelSupportingText: String = stringResource(.editMissionSchoolLevelSupportingText)
+        fileprivate(set) var schoolLevelSupportingText: String? = nil
         
         fileprivate(set) var maxParticipantsError: String? = nil
     }

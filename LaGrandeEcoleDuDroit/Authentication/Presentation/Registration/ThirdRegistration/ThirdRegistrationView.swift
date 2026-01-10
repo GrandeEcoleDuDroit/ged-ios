@@ -107,7 +107,8 @@ private struct FormContent: View {
                 stringResource(.password),
                 text: $password,
                 disabled: loading,
-                errorMessage: passwordError
+                errorMessage: passwordError,
+                supportingText: stringResource(.passwordRegistrationFieldSupportingText)
             )
             .textContentType(.password)
             

@@ -53,7 +53,7 @@ struct RecentAnnouncementSection: View {
 
 #Preview {
     RecentAnnouncementSection(
-        announcements: announcementsFixture,
+        announcements: [],
         onAnnouncementClick: { _ in },
         onAnnouncementOptionsClick: { _ in },
         onSeeAllAnnouncementClick: {},

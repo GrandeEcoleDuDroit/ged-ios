@@ -5,7 +5,6 @@ class MissionDetailsViewModel: ViewModel {
     private let missionId: String
     private let missionRepository: MissionRepository
     private let userRepository: UserRepository
-    private let networkMonitor: NetworkMonitor
     private let deleteMissionUseCase: DeleteMissionUseCase
     
     @Published private(set) var uiState = MissionDetailsUiState()
@@ -16,13 +15,11 @@ class MissionDetailsViewModel: ViewModel {
         missionId: String,
         missionRepository: MissionRepository,
         userRepository: UserRepository,
-        networkMonitor: NetworkMonitor,
         deleteMissionUseCase: DeleteMissionUseCase
     ) {
         self.missionId = missionId
         self.missionRepository = missionRepository
         self.userRepository = userRepository
-        self.networkMonitor = networkMonitor
         self.deleteMissionUseCase = deleteMissionUseCase
         
         listenUserAndMission()
@@ -30,19 +27,11 @@ class MissionDetailsViewModel: ViewModel {
     
     func registerToMission() {
         guard let currentUser = uiState.currentUser,
-              let mission = uiState.mission
+                let mission = uiState.mission
         else { return }
         
-        let addMissionparticipant = AddMissionParticipant(
-            missionId: missionId,
-            schoolLevels: mission.schoolLevels,
-            maxParticipants: mission.maxParticipants,
-            participantsNumber: mission.participants.count,
-            user: currentUser
-        )
-        
         performRequest { [weak self] in
-            try await self?.missionRepository.addParticipant(addMissionParticipant: addMissionparticipant)
+            try await self?.missionRepository.addParticipant(missionId: mission.id, user: currentUser)
         }
     }
     
@@ -50,10 +39,10 @@ class MissionDetailsViewModel: ViewModel {
         guard let currentUser = uiState.currentUser else {
             return
         }
+        let missionId = missionId
         
         performRequest { [weak self] in
-            guard let self = self else { return }
-            try await self.missionRepository.removeParticipant(missionId: self.missionId, userId: currentUser.id)
+            try await self?.missionRepository.removeParticipant(missionId: missionId, userId: currentUser.id)
         }
     }
     
@@ -69,9 +58,10 @@ class MissionDetailsViewModel: ViewModel {
     }
     
     func removeParticipant(userId: String) {
-        guard let missionId = uiState.mission?.id,
-              let userId = uiState.currentUser?.id
-        else { return }
+        guard let userId = uiState.currentUser?.id else {
+            return
+        }
+        let missionId = missionId
         
         performRequest { [weak self] in
             try await self?.missionRepository.removeParticipant(missionId: missionId, userId: userId)
@@ -91,9 +81,9 @@ class MissionDetailsViewModel: ViewModel {
                 self?.uiState.loading = true
             },
             onError: { [weak self] in
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+                self?.event = ErrorEvent(message: $0.localizedDescription)
             },
-            onFinally: { [weak self] in
+            onFinshed: { [weak self] in
                 self?.uiState.loading = false
             }
         )

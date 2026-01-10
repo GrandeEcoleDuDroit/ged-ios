@@ -1,7 +1,7 @@
 struct UserField {
     private init() {}
     
-    struct Server {
+    struct Oracle {
         private init() {}
         
         static let userId = "USER_ID"

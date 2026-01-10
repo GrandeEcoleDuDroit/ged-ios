@@ -1,4 +1,4 @@
-struct ServerUser: Codable {
+struct OracleUser: Codable {
     let userId: String
     let userFirstName: String
     let userLastName: String

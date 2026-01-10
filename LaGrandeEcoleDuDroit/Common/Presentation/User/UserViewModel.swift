@@ -61,7 +61,7 @@ class UserViewModel: ViewModel {
             onError: { [weak self] in
                 self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
             },
-            onFinally: { [weak self] in
+            onFinshed: { [weak self] in
                 self?.uiState.loading = false
             }
         )

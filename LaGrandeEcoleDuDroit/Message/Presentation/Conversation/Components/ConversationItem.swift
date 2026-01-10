@@ -12,11 +12,11 @@ struct ConversationItem: View {
     }
     
     private var text: String {
-        lastMessage.state == .sending ? stringResource(.sending) : lastMessage.content
-    }
-    
-    private var isNotSender: Bool {
-        lastMessage.senderId == interlocutor.id
+        switch lastMessage.state {
+            case .sending: stringResource(.sending)
+            case .error: stringResource(.messageFailedToSendError)
+            default: lastMessage.content
+        }
     }
     
     var body: some View {
@@ -24,7 +24,7 @@ struct ConversationItem: View {
             interlocutor: interlocutor,
             conversationState: conversationUi.state,
             lastMessage: lastMessage,
-            isUnread: isNotSender && !lastMessage.seen,
+            isUnread: lastMessage.senderId == interlocutor.id && !lastMessage.seen,
             text: text
         )
     }
@@ -37,40 +37,40 @@ private struct SwitchConversationItem: View {
     let isUnread: Bool
     let text: String
     
-    private var elapsedTimeText: String {
-        getElapsedTimeText(date: lastMessage.date)
-    }
-    
     var body: some View {
-        switch conversationState {
-            case .draft, .creating, .deleting:
-                LoadingConversationItem(
-                    interlocutor: interlocutor,
-                    text: text,
-                    elapsedTimeText: elapsedTimeText
-                )
-                
-            case .created:
-                if isUnread {
-                    UnreadConversationItem(
+        TimelineView(.periodic(from: .now, by: 60)) { _ in
+            let elapsedTimeText = getElapsedTimeText(date: lastMessage.date)
+            
+            switch conversationState {
+                case .draft, .creating, .deleting:
+                    LoadingConversationItem(
                         interlocutor: interlocutor,
                         text: text,
                         elapsedTimeText: elapsedTimeText
                     )
-                } else {
-                    DefaultConversationItem(
+                    
+                case .created:
+                    if isUnread {
+                        UnreadConversationItem(
+                            interlocutor: interlocutor,
+                            text: text,
+                            elapsedTimeText: elapsedTimeText
+                        )
+                    } else {
+                        DefaultConversationItem(
+                            interlocutor: interlocutor,
+                            text: text,
+                            elapsedTimeText: elapsedTimeText
+                        )
+                    }
+                    
+                case .error:
+                    ErrorConversationItem(
                         interlocutor: interlocutor,
                         text: text,
                         elapsedTimeText: elapsedTimeText
                     )
-                }
-                
-            case .error:
-                ErrorConversationItem(
-                    interlocutor: interlocutor,
-                    text: text,
-                    elapsedTimeText: elapsedTimeText
-                )
+            }
         }
     }
 }

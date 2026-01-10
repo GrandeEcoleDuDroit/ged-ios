@@ -6,7 +6,6 @@ class ReadAnnouncementViewModel: ViewModel {
     private let userRepository: UserRepository
     private let announcementRepository: AnnouncementRepository
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
-    private let networkMonitor: NetworkMonitor
     
     @Published private(set) var uiState: ReadAnnouncementUiState = ReadAnnouncementUiState()
     @Published private(set) var event: SingleUiEvent? = nil
@@ -17,13 +16,11 @@ class ReadAnnouncementViewModel: ViewModel {
         userRepository: UserRepository,
         announcementRepository: AnnouncementRepository,
         deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
-        networkMonitor: NetworkMonitor
     ) {
         self.announcementId = announcementId
         self.userRepository = userRepository
         self.announcementRepository = announcementRepository
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
-        self.networkMonitor = networkMonitor
         
         listenAnnouncement()
         listenUser()
@@ -50,9 +47,9 @@ class ReadAnnouncementViewModel: ViewModel {
                 self?.uiState.loading = true
             },
             onError: { [weak self] in
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+                self?.event = ErrorEvent(message: $0.localizedDescription)
             },
-            onFinally: { [weak self] in
+            onFinshed: { [weak self] in
                 self?.uiState.loading = false
             }
         )

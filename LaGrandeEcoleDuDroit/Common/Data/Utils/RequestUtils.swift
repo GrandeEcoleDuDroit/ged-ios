@@ -1,20 +1,16 @@
 import Foundation
 
-class RequestUtils {
+struct RequestUtils {
     private init() {}
+    
+    static func getUrl(base: String, endPoint: String = "") -> URL {
+        URL(string: base + endPoint, relativeTo: URL(string: GedConfiguration.serverUrl))!
+    }
     
     static func getDefaultSession() -> URLSession {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 20
         return URLSession(configuration: config)
-    }
-    
-    static func formatOracleUrl(base: String, endPoint: String = "") throws -> URL {
-        if let url = URL.oracleUrl(path: "/\(base)/\(endPoint)") {
-            url
-        } else {
-            throw NetworkError.invalidURL("Invalid URL")
-        }
     }
     
     static func simpleGetRequest(
@@ -62,15 +58,36 @@ class RequestUtils {
         return request
     }
     
-    static func sendRequest(session: URLSession, request: URLRequest) async throws -> (URLResponse, ServerResponse) {
-        let (dataReceived, response) = try await session.data(for: request)
+    static func sendRequest(session: URLSession, request: URLRequest) async throws {
+        do {
+            let (dataReceived, urlResponse) = try await session.data(for: request)
+            
+            if let httpCode = (urlResponse as? HTTPURLResponse)?.statusCode, httpCode >= 400 {
+                if let serverResponse = try? JSONDecoder().decode(ServerResponse.self, from: dataReceived) {
+                    throw ServerError(httpCode: httpCode, message: serverResponse.message, errorCode: serverResponse.code)
+                } else {
+                    let message =  String(bytes: dataReceived, encoding: .utf8)
+                    throw ServerError(httpCode: httpCode, message: message.orEmpty())
+                }
+            }
+        } catch {
+            throw mapServerError(error)
+        }
+    }
+    
+    static func sendDataRequest<T: Decodable>(session: URLSession, request: URLRequest) async throws  -> T? {
+        let (dataReceived, urlResponse) = try await session.data(for: request)
         
-        if let serverResponse = try? JSONDecoder().decode(ServerResponse.self, from: dataReceived) {
-            return (response, serverResponse)
+        if let httpCode = (urlResponse as? HTTPURLResponse)?.statusCode, httpCode >= 400 {
+            if let serverResponse = try? JSONDecoder().decode(ServerResponse.self, from: dataReceived) {
+                throw ServerError(httpCode: httpCode, message: serverResponse.message, errorCode: serverResponse.code)
+            } else {
+                let message =  String(bytes: dataReceived, encoding: .utf8)
+                throw ServerError(httpCode: httpCode, message: message.orEmpty())
+            }
         } else {
-            let message =  String(bytes: dataReceived, encoding: .utf8)
-            let serverResponse = ServerResponse(message: message.orEmpty())
-            return (response, serverResponse)
+            let receivedData = try? JSONDecoder().decode(T.self, from: dataReceived)
+            return receivedData
         }
     }
     

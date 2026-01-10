@@ -19,7 +19,7 @@ extension Date {
     
     func differenceMinutes(from date: Date) -> Int {
         let diff = Calendar.current.dateComponents([.minute], from: self, to: date).minute
-            ?? Int(date.timeIntervalSince(self) / 60)
+        ?? Int(self.timeIntervalSince(date) / 60)
 
         return abs(diff)
     }

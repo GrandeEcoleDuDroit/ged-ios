@@ -37,7 +37,7 @@ class CreateConversationViewModel: ViewModel {
     
     private func fetchUsers() {
         guard let user = userRepository.currentUser else {
-            event = ErrorEvent(message: stringResource(.userNotFound))
+            event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
             return
         }
         

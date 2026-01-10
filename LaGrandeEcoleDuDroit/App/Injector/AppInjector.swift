@@ -96,8 +96,8 @@ class AppInjector: Injector {
         
         // Others
         container.register(NotificationMediator.self) { resolver in
-            NotificationMediatorImpl(
-                messageNotificationManager: MessageInjector.shared.resolve(MessageNotificationManager.self)
+            NotificationMediator(
+                messageNotificationPresenter: MessageInjector.shared.resolve(MessageNotificationPresenter.self)
             )
         }.inObjectScope(.container)
         

@@ -1,7 +1,6 @@
 import UserNotifications
 
-class MockMessageNotificationManager: MessageNotificationManager {
-    
+class MockMessageNotificationManager: MessageNotificationPresenter {
     override init(
         navigationRequestUseCase: NavigationRequestUseCase = MockNavigationRequestUseCase(),
         routeRepository: any RouteRepository = MockRouteRepository()

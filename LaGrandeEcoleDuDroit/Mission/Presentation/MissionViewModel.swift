@@ -7,7 +7,6 @@ class MissionViewModel: ViewModel {
     private let refreshMissionsUseCase: RefreshMissionsUseCase
     private let deleteMissionUseCase: DeleteMissionUseCase
     private let recreateMissionUseCase: RecreateMissionUseCase
-    private let networkMonitor: NetworkMonitor
     
     @Published private(set) var uiState = MissionUiState()
     @Published private(set) var event: SingleUiEvent? = nil
@@ -18,15 +17,13 @@ class MissionViewModel: ViewModel {
         userRepository: UserRepository,
         refreshMissionsUseCase: RefreshMissionsUseCase,
         deleteMissionUseCase: DeleteMissionUseCase,
-        recreateMissionUseCase: RecreateMissionUseCase,
-        networkMonitor: NetworkMonitor
+        recreateMissionUseCase: RecreateMissionUseCase
     ) {
         self.missionRepository = missionRepository
         self.userRepository = userRepository
         self.refreshMissionsUseCase = refreshMissionsUseCase
         self.deleteMissionUseCase = deleteMissionUseCase
         self.recreateMissionUseCase = recreateMissionUseCase
-        self.networkMonitor = networkMonitor
         
         listenMissions()
         listenUser()
@@ -61,9 +58,9 @@ class MissionViewModel: ViewModel {
                 self?.uiState.loading = true
             },
             onError: { [weak self] in
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+                self?.event = ErrorEvent(message: $0.localizedDescription)
             },
-            onFinally: { [weak self] in
+            onFinshed: { [weak self] in
                 self?.uiState.loading = false
             }
         )

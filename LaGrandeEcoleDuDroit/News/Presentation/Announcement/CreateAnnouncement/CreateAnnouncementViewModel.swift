@@ -23,10 +23,11 @@ class CreateAnnouncementViewModel: ViewModel {
     
     func createAnnouncement() {
         guard let currentUser else {
-            return event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
+            event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
+            return
         }
         
-        let title: String? = !uiState.title.isBlank() ? uiState.title : nil
+        let title: String? = uiState.title.isNotBlank() ? uiState.title : nil
         
         let announcement = Announcement(
             id: generateIdUseCase.execute(),

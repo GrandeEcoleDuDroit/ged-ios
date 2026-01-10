@@ -11,5 +11,5 @@ protocol MessageApi {
     
     func stopListeningMessages()
     
-    func reportMessage(report: MessageReport) async throws -> (URLResponse, ServerResponse)
+    func reportMessage(report: MessageReport) async throws
 }

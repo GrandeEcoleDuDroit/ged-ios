@@ -8,11 +8,11 @@ class SendMessageNotificationUseCaseTest {
     @Test
     func sendMessageNotification_should_send_notification() async {
         // Given
-        let verifiyNotificationSent = VerifiyNotificationSent()
+        let verifyNotificationSent = TestNotificationApi()
         let userPresent = UserPresent()
         
         let useCase = SendMessageNotificationUseCase(
-            notificationApi: verifiyNotificationSent,
+            notificationApi: verifyNotificationSent,
             userRepository: userPresent
         )
         
@@ -20,17 +20,17 @@ class SendMessageNotificationUseCaseTest {
         await useCase.execute(notification: notificationMessageFixture)
         
         // Then
-        #expect(verifiyNotificationSent.isSent)
+        #expect(verifyNotificationSent.isSent)
     }
     
     @Test
     func sendMessageNotification_should_do_nothing_when_current_user_not_found() async {
         // Given
-        let verifiyNotificationSent = VerifiyNotificationSent()
+        let verifyNotificationSent = TestNotificationApi()
         let userNotPresent = UserNotPresent()
         
         let useCase = SendMessageNotificationUseCase(
-            notificationApi: verifiyNotificationSent,
+            notificationApi: verifyNotificationSent,
             userRepository: userNotPresent
         )
         
@@ -38,11 +38,11 @@ class SendMessageNotificationUseCaseTest {
         await useCase.execute(notification: notificationMessageFixture)
         
         // Then
-        #expect(!verifiyNotificationSent.isSent)
+        #expect(!verifyNotificationSent.isSent)
     }
 }
 
-private class VerifiyNotificationSent: MockNotificationApi {
+private class TestNotificationApi: MockNotificationApi {
     var isSent = false
     
     override func sendNotification<T>(

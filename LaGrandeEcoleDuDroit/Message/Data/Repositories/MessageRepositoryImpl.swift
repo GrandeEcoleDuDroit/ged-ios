@@ -87,30 +87,30 @@ class MessageRepositoryImpl: MessageRepository {
     }
         
     func updateSeenMessages(conversationId: String, currentUserId: String) async throws {
-        let unreadMessages = (try? await messageLocalDataSource.getUnreadMessagesByUser(
-            conversationId: conversationId,
-            userId: currentUserId
-        )) ?? []
-        
-        try await messageLocalDataSource.updateSeenMessages(conversationId: conversationId, userId: currentUserId)
-        try await mapFirebaseError(
-            block: {
-                for message in unreadMessages {
-                    try? await messageRemoteDataSource.updateSeenMessage(message: message.copy { $0.seen = true })
-                }
-            },
-            tag: tag,
-            message: "Failed to update seen messages"
-        )
+        do {
+            let unreadMessages = try? await messageLocalDataSource.getUnreadMessagesByUser(
+                conversationId: conversationId,
+                userId: currentUserId
+            )
+            
+            try await messageLocalDataSource.updateSeenMessages(conversationId: conversationId, userId: currentUserId)
+            for message in unreadMessages ?? [] {
+                try? await messageRemoteDataSource.updateSeenMessage(message: message.copy { $0.seen = true })
+            }
+        } catch {
+            e(tag, "Failed to update seen messages")
+            throw mapFirebaseError(error)
+        }
     }
     
     func updateSeenMessage(message: Message) async throws {
-        try await messageLocalDataSource.updateMessage(message: message.copy { $0.seen = true })
-        try await mapFirebaseError(
-            block: { try? await messageRemoteDataSource.updateSeenMessage(message: message.copy { $0.seen = true })},
-            tag: tag,
-            message: "Failed to update seen messages"
-        )
+        do {
+            try await messageLocalDataSource.updateMessage(message: message.copy { $0.seen = true })
+            try? await messageRemoteDataSource.updateSeenMessage(message: message.copy { $0.seen = true })
+        } catch {
+            e(tag, "Failed to update seen message")
+            throw mapFirebaseError(error)
+        }
     }
     
     func upsertLocalMessage(message: Message) async throws {

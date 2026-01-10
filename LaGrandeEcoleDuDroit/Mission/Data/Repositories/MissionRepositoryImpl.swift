@@ -6,6 +6,7 @@ class MissionRepositoryImpl: MissionRepository {
     private let missionRemoteDataSource: MissionRemoteDataSource
     private var cancellables: Set<AnyCancellable> = []
     private var missionsSubject = CurrentValueSubject<[Mission], Never>([])
+    private let tag = String(describing: MissionRepositoryImpl.self)
     
     var missions: AnyPublisher<[Mission], Never> {
         missionsSubject.eraseToAnyPublisher()
@@ -33,57 +34,124 @@ class MissionRepositoryImpl: MissionRepository {
         .eraseToAnyPublisher()
     }
     
-    func getLocalMissions() async throws -> [Mission] {
-        try await missionLocalDataSource.getMissions()
+    func getLocalMissions() async -> [Mission] {
+        do {
+            return try await missionLocalDataSource.getMissions()
+        } catch {
+            e(tag, "Error getting local missions", error)
+            return []
+        }
     }
     
     func getRemoteMissions() async throws -> [Mission] {
-        try await missionRemoteDataSource.getMissions()
+        do {
+            return try await missionRemoteDataSource.getMissions()
+        } catch {
+            e(tag, "Error getting remote missions", error)
+            return []
+        }
     }
     
     func createMission(mission: Mission, imageData: Data?) async throws {
-        try await missionLocalDataSource.upsertMission(mission: mission)
-        try await missionRemoteDataSource.createMission(mission: mission, imageData: imageData)
+        do {
+            try await missionLocalDataSource.upsertMission(mission: mission)
+            try await missionRemoteDataSource.createMission(mission: mission, imageData: imageData)
+        } catch {
+            e(tag, "Error creating mission \(mission.id)", error)
+            throw error
+        }
     }
     
     func updateMission(mission: Mission, imageData: Data?) async throws {
-        try await missionRemoteDataSource.updateMission(mission: mission, imageData: imageData)
-        try await missionLocalDataSource.upsertMission(mission: mission)
+        do {
+            try await missionRemoteDataSource.updateMission(mission: mission, imageData: imageData)
+            try await missionLocalDataSource.upsertMission(mission: mission)
+        } catch {
+            e(tag, "Error updating mission \(mission.id)", error)
+            throw error
+        }
     }
     
     func updateLocalMission(mission: Mission) async throws {
-        try await missionLocalDataSource.updateMission(mission: mission)
+        do {
+            try await missionLocalDataSource.updateMission(mission: mission)
+        } catch {
+            e(tag, "Error updating local mission \(mission.id)", error)
+            throw error
+        }
     }
     
     func upsertLocalMission(mission: Mission) async throws {
-        try await missionLocalDataSource.upsertMission(mission: mission)
+        do {
+            try await missionLocalDataSource.upsertMission(mission: mission)
+        } catch {
+            e(tag, "Error upserting local mission \(mission.id)", error)
+            throw error
+        }
     }
     
     func deleteMission(mission: Mission, imageUrl: String?) async throws {
-        try await missionRemoteDataSource.deleteMission(mission: mission)
-        try await missionLocalDataSource.deleteMission(missionId: mission.id)
+        do {
+            try await missionRemoteDataSource.deleteMission(mission: mission)
+            try await missionLocalDataSource.deleteMission(missionId: mission.id)
+        } catch {
+            e(tag, "Error deleting mission \(mission.id)", error)
+            throw error
+        }
     }
     
     func deleteLocalMissions() async throws {
-        try await missionLocalDataSource.deleteMissions()
+        do {
+            try await missionLocalDataSource.deleteMissions()
+        } catch {
+            e(tag, "Error deleting local missions", error)
+            throw error
+        }
     }
     
     func deleteLocalMission(missionId: String) async throws {
-        try await missionLocalDataSource.deleteMission(missionId: missionId)
+        do {
+            try await missionLocalDataSource.deleteMission(missionId: missionId)
+        } catch {
+            e(tag, "Error deleting local mission \(missionId)", error)
+            throw error
+        }
     }
     
-    func addParticipant(addMissionParticipant: AddMissionParticipant) async throws {
-        try await missionRemoteDataSource.addParticipant(addMissionParticipant: addMissionParticipant)
-        try await missionLocalDataSource.addParticipant(missionId: addMissionParticipant.missionId, user: addMissionParticipant.user)
+    func addParticipant(missionId: String, user: User) async throws {
+        do {
+            try await missionRemoteDataSource.addParticipant(missionId: missionId, user: user)
+            try await missionLocalDataSource.addParticipant(missionId: missionId, user: user)
+        } catch let error as ServerError {
+            e(tag, "Error adding participant to mission \(missionId)", error)
+            throw switch error.errorCode {
+                case MissionError.schoolLevelNotAllowed.code: MissionError.schoolLevelNotAllowed
+                case MissionError.maxParticipantsNumberReached.code: MissionError.maxParticipantsNumberReached
+                default: error
+            }
+        } catch {
+            e(tag, "Error adding participant to mission \(missionId)", error)
+            throw error
+        }
     }
     
     func removeParticipant(missionId: String, userId: String) async throws {
-        try await missionRemoteDataSource.removeParticipant(missionId: missionId, userId: userId)
-        try await missionLocalDataSource.removeParticipant(missionId: missionId, userId: userId)
+        do {
+            try await missionRemoteDataSource.removeParticipant(missionId: missionId, userId: userId)
+            try await missionLocalDataSource.removeParticipant(missionId: missionId, userId: userId)
+        } catch {
+            e(tag, "Error removing participant from mission \(missionId)", error)
+            throw error
+        }
     }
     
     func reportMission(report: MissionReport) async throws {
-        try await missionRemoteDataSource.reportMission(report: report)
+        do {
+            try await missionRemoteDataSource.reportMission(report: report)
+        } catch {
+            e(tag, "Error reporting mission \(report.missionId)", error)
+            throw error
+        }
     }
     
     private func listenDataChanges() {

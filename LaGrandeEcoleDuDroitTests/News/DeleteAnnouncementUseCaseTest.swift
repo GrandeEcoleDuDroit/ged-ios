@@ -7,10 +7,10 @@ class DeleteAnnouncementUseCaseTest {
     func deleteAnnouncementUseCase_should_delete_announcement_when_state_is_published() async {
         // Given
         let announcement = announcementFixture
-        let announcementDeleted = AnnouncementDeleted()
+        let testAnnouncementRepository = TestAnnouncementRepository()
         let announcementTaskReferences = AnnouncementTaskQueue()
         let useCase = DeleteAnnouncementUseCase(
-            announcementRepository: announcementDeleted,
+            announcementRepository: testAnnouncementRepository,
             announcementTaskReferences: announcementTaskReferences
         )
         
@@ -19,7 +19,7 @@ class DeleteAnnouncementUseCaseTest {
         await announcementTaskReferences.tasks[announcement.id]?.value
         
         // Then
-        #expect(announcementDeleted.deleteAnnouncementCalled)
+        #expect(testAnnouncementRepository.deleteAnnouncementCalled)
     }
     
     @Test
@@ -42,7 +42,7 @@ class DeleteAnnouncementUseCaseTest {
     }
 }
 
-private class AnnouncementDeleted: MockAnnouncementRepository {
+private class TestAnnouncementRepository: MockAnnouncementRepository {
     private(set) var deleteAnnouncementCalled = false
     
     override func deleteAnnouncement(announcementId: String, authorId: String) async throws {

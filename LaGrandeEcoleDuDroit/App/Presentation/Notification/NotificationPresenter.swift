@@ -1,6 +1,6 @@
 import UserNotifications
 
-protocol NotificationManager {
+protocol NotificationPresenter {
     func presentNotification(
         userInfo: [AnyHashable : Any],
         completionHandler: @escaping (UNNotificationPresentationOptions) -> Void

@@ -37,8 +37,7 @@ class MessageMainThreadInjector: MainThreadInjector {
                 messageRepository: MessageInjector.shared.resolve(MessageRepository.self),
                 conversationRepository: MessageInjector.shared.resolve(ConversationRepository.self),
                 sendMessageUseCase: MessageInjector.shared.resolve(SendMessageUseCase.self),
-                notificationMessageManager: MessageInjector.shared.resolve(MessageNotificationManager.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
+                notificationMessageManager: MessageInjector.shared.resolve(MessageNotificationPresenter.self),
                 blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self),
                 generateIdUseCase: CommonInjector.shared.resolve(GenerateIdUseCase.self)
             )

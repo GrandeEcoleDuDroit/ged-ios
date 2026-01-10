@@ -1,6 +1,6 @@
 extension User {
-    func toServerUser() -> ServerUser {
-        ServerUser(
+    func toOracleUser() -> OracleUser {
+        OracleUser(
             userId: id,
             userFirstName: firstName.lowercased(),
             userLastName: lastName.lowercased(),
@@ -74,7 +74,7 @@ extension FirestoreUser {
     }
 }
 
-extension ServerUser {
+extension OracleUser {
     func toUser() -> User {
         User(
             id: userId,

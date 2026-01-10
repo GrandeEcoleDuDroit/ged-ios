@@ -207,6 +207,7 @@ struct MessageBlockedUserIndicator: View {
             }
             .frame(maxWidth: .infinity, alignment: .center)
         }
+        .padding(.vertical, Dimens.smallMediumPadding)
     }
 }
 

@@ -3,26 +3,22 @@ import Combine
 
 class DeleteAccountViewModel: ViewModel {
     private let userRepository: UserRepository
-    private let networkMonitor: NetworkMonitor
     private let deleteUserAccountUseCase: DeleteAccountUseCase
     
     @Published var uiState = DeleteAccountUiState()
-    @Published private(set) var event: SingleUiEvent? = nil
     
     init(
         userRepository: UserRepository,
-        networkMonitor: NetworkMonitor,
         deleteUserAccountUseCase: DeleteAccountUseCase
     ) {
         self.userRepository = userRepository
-        self.networkMonitor = networkMonitor
         self.deleteUserAccountUseCase = deleteUserAccountUseCase
     }
     
     func deleteUserAccount() {
         let password = uiState.password
         guard let currentUser = userRepository.currentUser else {
-            event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
+            uiState.errorMessage = stringResource(.currentUserNotFoundError)
             return
         }
         guard validateInput(password: password) else { return }
@@ -51,28 +47,19 @@ class DeleteAccountViewModel: ViewModel {
             onLoading: { [weak self] in
                 self?.uiState.loading = true
             },
-            onError: { [weak self] in
-                guard let self else { return }
-                self.event = ErrorEvent(message: self.mapErrorMessage($0))
+            onError: { [weak self] error in
+                var message = error.localizedDescription
+                
+                if let authError = error as? AuthenticationError, case .invalidCredentials = authError {
+                    message = stringResource(.incorrectPasswordError)
+                }
+                
+                self?.uiState.errorMessage = message
             },
-            onFinally: { [weak self] in
+            onFinshed: { [weak self] in
                 self?.uiState.loading = false
             }
         )
-    }
-    
-    private func mapErrorMessage(_ e: Error) -> String {
-        mapNetworkErrorMessage(e) {
-            if let authError = e as? AuthenticationError {
-                switch authError {
-                    case .invalidCredentials: stringResource(.incorrectPasswordError)
-                    case .userDisabled: stringResource(.disabledUserError)
-                    default: stringResource(.unknownError)
-                }
-            } else {
-                stringResource(.unknownError)
-            }
-        }
     }
     
     struct DeleteAccountUiState {
