@@ -23,7 +23,7 @@ class StartupAnnouncementTask {
     
     private func sendUnsentAnnouncements() async {
         do {
-            let announcements = try await announcementRepository.getLocalAnnouncements()
+            let announcements = await announcementRepository.getLocalAnnouncements()
             for announcement in announcements {
                 if case .publishing = announcement.state {
                     await recreateAnnouncementUseCase.execute(announcement: announcement)

@@ -34,7 +34,7 @@ class ListenBlockedUserEventsUseCase {
                     }
                     
                     Task {
-                        try? await self?.announcementRepository.deleteLocalAnnouncements(userId: userId)
+                        try? await self?.announcementRepository.deleteLocalUserAnnouncements(userId: userId)
                     }
                     
                 case let .unblock(userId, date):

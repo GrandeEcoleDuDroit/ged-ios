@@ -1,13 +1,13 @@
 import UserNotifications
 
-open class MessageNotificationManager: NotificationManager {
+class MessageNotificationPresenter: NotificationPresenter {
     private let navigationRequestUseCase: NavigationRequestUseCase
     private let routeRepository: RouteRepository
-    private let tag = String(describing: MessageNotificationManager.self)
+    private let tag = String(describing: MessageNotificationPresenter.self)
     
     init(
         navigationRequestUseCase: NavigationRequestUseCase,
-        routeRepository: RouteRepository
+        routeRepository: RouteRepository,
     ) {
         self.navigationRequestUseCase = navigationRequestUseCase
         self.routeRepository = routeRepository
@@ -22,7 +22,7 @@ open class MessageNotificationManager: NotificationManager {
             return
         }
         
-        if !isCurrentMessageView(conversationId: messageNotification.conversation.id) {
+        if !isCurrentChatView(conversationId: messageNotification.conversation.id) {
             completionHandler([.banner, .sound, .badge])
         } else {
             completionHandler([])
@@ -60,8 +60,8 @@ open class MessageNotificationManager: NotificationManager {
         
         UNUserNotificationCenter.current().setBadgeCount(0)
     }
-        
-    private func isCurrentMessageView(conversationId: String) -> Bool {
+    
+    private func isCurrentChatView(conversationId: String) -> Bool {
         guard let messageRoute = routeRepository.currentRoute as? MessageRoute else {
             return false
         }

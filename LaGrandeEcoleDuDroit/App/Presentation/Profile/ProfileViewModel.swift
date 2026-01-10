@@ -19,15 +19,24 @@ class ProfileViewModel: ViewModel {
     }
     
     func logout() {
-        uiState.loading = true
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.logoutUseCase.execute()
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        performRequest { [weak self] in
+            try await self?.logoutUseCase.execute()
         }
+    }
+    
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: $0.localizedDescription)
+            },
+            onFinshed: { [weak self] in
+                self?.uiState.loading = false
+            }
+        )
     }
     
     private func initUser() {

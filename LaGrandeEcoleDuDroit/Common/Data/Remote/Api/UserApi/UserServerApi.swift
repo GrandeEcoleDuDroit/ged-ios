@@ -2,45 +2,41 @@ import Foundation
 
 class UserServerApi {
     private let tokenProvider: TokenProvider
-    private let base = "users"
+    private let base = "/users"
     
     init(tokenProvider: TokenProvider) {
         self.tokenProvider = tokenProvider
     }
     
-    func getUsers() async throws -> (URLResponse, [ServerUser]) {
-        let url = try RequestUtils.formatOracleUrl(base: base)
+    func getUsers() async throws -> [OracleUser] {
+        let url = RequestUtils.getUrl(base: base)
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.simpleGetRequest(url: url, authToken: authToken)
         
-        let (data, urlResponse) = try await session.data(for: request)
-        let users = try JSONDecoder().decode([ServerUser].self, from: data)
-        return (urlResponse, users)
+        return try await RequestUtils.sendDataRequest(session: session, request: request) ?? []
     }
     
-    func getUser(userId: String) async throws -> (URLResponse, ServerUser?) {
-        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: userId)
+    func getUser(userId: String) async throws -> OracleUser? {
+        let url = RequestUtils.getUrl(base: base, endPoint: "/\(userId)")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.simpleGetRequest(url: url, authToken: authToken)
         
-        let (data, urlResponse) = try await session.data(for: request)
-        let user = try? JSONDecoder().decode(ServerUser.self, from: data)
-        return (urlResponse, user)
+        return try await RequestUtils.sendDataRequest(session: session, request: request)
     }
     
-    func createUser(serverUser: ServerUser) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "create")
+    func createUser(serverUser: OracleUser) async throws {
+        let url = RequestUtils.getUrl(base: base, endPoint: "/create")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.simplePostRequest(url: url, dataToSend: serverUser, authToken: authToken)
         
-        return try await RequestUtils.sendRequest(session: session, request: request)
+        try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func updateProfilePicture(serverUser: ServerUser, imageData: Data, fileName: String) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "profile-picture/update")
+    func updateProfilePicture(serverUser: OracleUser, imageData: Data, fileName: String) async throws {
+        let url = RequestUtils.getUrl(base: base, endPoint: "/profile-picture/update")
         let session = RequestUtils.getDefaultSession()
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
@@ -54,12 +50,12 @@ class UserServerApi {
         body.append("\r\n".data(using: .utf8)!)
         
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"\(UserField.Server.userId)\"\r\n\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"\(UserField.Oracle.userId)\"\r\n\r\n".data(using: .utf8)!)
         body.append("\(serverUser.userId)\r\n".data(using: .utf8)!)
         
         if let oldProfilePictureFileName = serverUser.userProfilePictureFileName {
             body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"\(UserField.Server.userProfilePictureFileName)\"\r\n\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"\(UserField.Oracle.userProfilePictureFileName)\"\r\n\r\n".data(using: .utf8)!)
             body.append("\(oldProfilePictureFileName)\r\n".data(using: .utf8)!)
         }
 
@@ -74,24 +70,24 @@ class UserServerApi {
             request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
         
-        return try await RequestUtils.sendRequest(session: session, request: request)
+        try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func deleteUser(serverUser: ServerUser) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "delete")
+    func deleteUser(serverUser: OracleUser) async throws {
+        let url = RequestUtils.getUrl(base: base, endPoint: "/delete")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.simplePostRequest(url: url, dataToSend: serverUser, authToken: authToken)
         
-        return try await RequestUtils.sendRequest(session: session, request: request)
+        try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func deleteProfilePicture(userId: String, profilePictureFileName: String) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "profile-picture/delete")
+    func deleteProfilePicture(userId: String, profilePictureFileName: String) async throws {
+        let url = RequestUtils.getUrl(base: base, endPoint: "/profile-picture/delete")
         let session = RequestUtils.getDefaultSession()
         let dataToSend = [
-            UserField.Server.userId: userId,
-            UserField.Server.userProfilePictureFileName: profilePictureFileName
+            UserField.Oracle.userId: userId,
+            UserField.Oracle.userProfilePictureFileName: profilePictureFileName
         ]
         let authToken = await tokenProvider.getAuthToken()
         
@@ -101,11 +97,11 @@ class UserServerApi {
             authToken: authToken
         )
         
-        return try await RequestUtils.sendRequest(session: session, request: request)
+        try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func reportUser(report: RemoteUserReport) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "report")
+    func reportUser(report: RemoteUserReport) async throws {
+        let url = RequestUtils.getUrl(base: base, endPoint: "/report")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.simplePostRequest(
@@ -114,6 +110,6 @@ class UserServerApi {
             authToken: authToken
         )
         
-        return try await RequestUtils.sendRequest(session: session, request: request)
+        try await RequestUtils.sendRequest(session: session, request: request)
     }
 }

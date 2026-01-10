@@ -23,8 +23,7 @@ class MissionMainThreadInjector: MainThreadInjector {
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
                 refreshMissionsUseCase: MissionInjector.shared.resolve(RefreshMissionsUseCase.self),
                 deleteMissionUseCase: MissionInjector.shared.resolve(DeleteMissionUseCase.self),
-                recreateMissionUseCase: MissionInjector.shared.resolve(RecreateMissionUseCase.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
+                recreateMissionUseCase: MissionInjector.shared.resolve(RecreateMissionUseCase.self)
             )
         }
         
@@ -44,8 +43,7 @@ class MissionMainThreadInjector: MainThreadInjector {
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
                 updateMissionUseCase: MissionInjector.shared.resolve(UpdateMissionUseCase.self),
                 getUsersUseCase: CommonInjector.shared.resolve(GetUsersUseCase.self),
-                generateIdUseCase: CommonInjector.shared.resolve(GenerateIdUseCase.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
+                generateIdUseCase: CommonInjector.shared.resolve(GenerateIdUseCase.self)
             )
         }
         
@@ -55,7 +53,6 @@ class MissionMainThreadInjector: MainThreadInjector {
                 missionId: missionId,
                 missionRepository: MissionInjector.shared.resolve(MissionRepository.self),
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 deleteMissionUseCase: MissionInjector.shared.resolve(DeleteMissionUseCase.self)
             )
         }

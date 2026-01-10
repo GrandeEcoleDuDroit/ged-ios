@@ -28,7 +28,7 @@ struct PrimaryButton: View {
         Button(action: action) {
             if enabled {
                 Text(label)
-                    .fontWeight(.medium)
+                    .fontWeight(.semibold)
                     .font(.callout)
                     .frame(maxWidth: maxWidth)
                     .padding(10)

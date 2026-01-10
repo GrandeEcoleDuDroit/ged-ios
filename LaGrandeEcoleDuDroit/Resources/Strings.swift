@@ -12,7 +12,6 @@ enum Strings: String {
     case newProfilePicture = "new_profile_picture"
     case profilePictureUpdated = "profile_picture_updated"
     case member = "member"
-    case userNotFound = "user_not_found"
     case deleteProfilePictureAlertMessage = "delete_profile_picture_alert_message"
     case deleteAccountText = "delete_account_text"
     case deleteAccount = "delete_account"
@@ -57,18 +56,18 @@ enum Strings: String {
     case blockUserAlertMessage = "block_user_alert_message"
     case unblockUserAlertMessage = "unblock_user_alert_message"
     case noUser = "no_user"
-    case noUserFound = "no_user_found"
+    case noUsersFound = "no_users_found"
     case deletedUserFirstName = "deleted_user_first_name"
     case deletedUserLastName = "deleted_user_last_name"
     
     // Common errors
     case mandatoryFieldError = "mandatory_field_error"
     case emptyInputsError = "empty_inputs_error"
-    case timeOutError = "time_out_error"
+    case timedOutError = "timed_out_error"
     case noInternetConectionError = "no_internet_connection_error"
     case internalServerError = "internal_server_error"
     case unknownError = "unknown_error"
-    case unknownNetworkError = "unknown_network_error"
+    case anyNetworkError = "any_network_error"
     case currentUserNotFoundError = "current_user_not_found_error"
     case cannotConnectToHostError = "cannot_connect_to_host_error"
     case tooManyRequestsError = "too_many_requests_error"
@@ -78,6 +77,9 @@ enum Strings: String {
     case networkConnectionLostError = "network_connection_lost_error"
     case cannotFindHostError = "cannot_find_host_error"
     case numberFieldError = "number_field_error"
+    case invalidImageFormatError = "invalid_image_format_error"
+    case unauthorizedError = "unauthorized_error"
+    case badRequestError = "bad_request_error"
 
     // Authentication
     case authenticationPageTitle = "authentication_page_title"
@@ -101,6 +103,7 @@ enum Strings: String {
     case forgotPasswordSuccess = "forgot_password_success"
     case agreeTermsPrivacyBeginningText = "agree_terms_privacy_beginning_text"
     case termsAndPrivacy = "terms_and_privacy"
+    case passwordRegistrationFieldSupportingText = "password_registration_field_supporting_text"
     
     // Authentication errors
     case incorrectEmailFormatError = "incorrect_email_format_error"
@@ -108,8 +111,9 @@ enum Strings: String {
     case incorrectCredentialsError = "incorrect_credentials_error"
     case userNotExistError = "user_not_exist_error"
     case emailAlreadyAssociatedError = "email_already_associated_error"
-    case legalNoticeError = "legal_notice_error"
+    case legalNoticeNotAcceptedError = "legal_notice_not_aceepted_error"
     case userNotWhiteListedError = "user_not_white_listed_error"
+    case authUserNotFoundError = "auth_user_not_found_error"
     
     // News
     case news = "news"
@@ -138,6 +142,9 @@ enum Strings: String {
     case deleteMessageAlertContent = "delete_message_alert_content"
     case chatBlockedUserIndicatorText = "chat_blocked_user_indicator_text"
     case resend = "resend"
+    
+    // Message error
+    case messageFailedToSendError = "message_failed_to_send_error"
     
     // Mission
     case mission = "mission"
@@ -181,5 +188,8 @@ enum Strings: String {
     case editMissionSchoolLevelSupportingText = "edit_mission_school_level_supporting_text"
     case selectManagers = "select_managers"
     
+    // Mission error
     case maxParticipantsLowerThanCurrentError = "max_participants_lower_than_current_error"
+    case maxParticipantNumberReachedError = "max_participant_number_reached_error"
+    case schoolLevelNotAllowedError = "school_level_not_allowed_error"
 }

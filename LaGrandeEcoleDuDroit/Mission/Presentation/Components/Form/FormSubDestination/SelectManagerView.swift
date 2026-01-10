@@ -26,7 +26,7 @@ struct SelectManagerView: View {
     var body: some View {
         List {
             if users.isEmpty {
-                Text(stringResource(.noUserFound))
+                Text(stringResource(.noUsersFound))
                     .frame(maxWidth: .infinity)
                     .foregroundStyle(.informationText)
                     .listRowSeparator(.hidden)

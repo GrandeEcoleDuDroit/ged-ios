@@ -3,7 +3,6 @@ import Combine
 
 class AccountInformationViewModel: ViewModel {
     private let updateProfilePictureUseCase: UpdateProfilePictureUseCase
-    private let networkMonitor: NetworkMonitor
     private let userRepository: UserRepository
 
     @Published private(set) var uiState: AccountInformationUiState = AccountInformationUiState()
@@ -12,11 +11,9 @@ class AccountInformationViewModel: ViewModel {
 
     init(
         updateProfilePictureUseCase: UpdateProfilePictureUseCase,
-        networkMonitor: NetworkMonitor,
         userRepository: UserRepository
     ) {
         self.updateProfilePictureUseCase = updateProfilePictureUseCase
-        self.networkMonitor = networkMonitor
         self.userRepository = userRepository
         
         initCurrentUser()
@@ -24,7 +21,7 @@ class AccountInformationViewModel: ViewModel {
     
     func updateProfilePicture(imageData: Data?) {
         guard let imageData else {
-            event = ErrorEvent(message: "Image data is required.")
+            event = ErrorEvent(message: "Image not provided.")
             return
         }
         guard let user = uiState.user else {
@@ -59,9 +56,9 @@ class AccountInformationViewModel: ViewModel {
                 self?.uiState.loading = true
             },
             onError: { [weak self] in
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+                self?.event = ErrorEvent(message: $0.localizedDescription)
             },
-            onFinally: { [weak self] in
+            onFinshed: { [weak self] in
                 self?.uiState.loading = false
                 self?.resetScreenState()
             }

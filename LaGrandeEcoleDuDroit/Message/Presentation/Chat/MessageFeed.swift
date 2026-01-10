@@ -164,7 +164,6 @@ private struct MessageCondition {
     private let previousMessage: Message?
     
     let isSender: Bool
-    let isNewestMessage: Bool
     let isOldestMessage: Bool
     let previousSenderId: String
     let sameSender: Bool
@@ -187,11 +186,10 @@ private struct MessageCondition {
         self.previousMessage = previousMessage
         
         isSender = message.senderId != interlocutor.id
-        isNewestMessage = index == 0
         isOldestMessage = index == messagesCount - 1
         previousSenderId = previousMessage?.senderId ?? ""
         sameSender = message.senderId == previousSenderId
-        showSeenMessage = isNewestMessage && isSender && message.seen
+        showSeenMessage = index == 0 && isSender && message.seen
         
         sameTime = if let previousMessage {
             message.date.differenceMinutes(from: previousMessage.date) <= 1
@@ -209,7 +207,7 @@ private struct MessageCondition {
             false
         }
         
-        displayProfilePicture = !sameTime || isNewestMessage || !sameSender
+        displayProfilePicture = !sameTime || !sameSender
     }
 }
 

@@ -121,8 +121,6 @@ private struct ChatView: View {
                 onDeleteChatClick: { showDeleteChatAlert = true },
                 onUnblockUserClick: { showUnblockUserAlert = true }
             )
-            .padding(.top, 2)
-            .padding(.horizontal)
         }
         .loading(loading)
         .toolbar {
@@ -301,6 +299,7 @@ private struct MessageBottomSection: View {
                 onTextChange: onMessageTextChange,
                 onSendClick: onSendMessagesClick
             )
+            .padding(.horizontal)
         }
     }
 }

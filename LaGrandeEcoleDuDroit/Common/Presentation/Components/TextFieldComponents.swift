@@ -118,6 +118,7 @@ struct OutlinedPasswordTextField<FocusField: Hashable>: View {
     @Binding private var text: String
     private let disabled: Bool
     private let errorMessage: String?
+    private let supportingText: String?
     
     @FocusState private var focusState: FocusField?
     private var field: FocusField?
@@ -127,12 +128,14 @@ struct OutlinedPasswordTextField<FocusField: Hashable>: View {
         _ placeHolder: String,
         text: Binding<String>,
         disabled: Bool = false,
-        errorMessage: String? = nil
+        errorMessage: String? = nil,
+        supportingText: String? = nil
     ) where FocusField == Never {
         self.placeHolder = placeHolder
         self._text = text
         self.disabled = disabled
         self.errorMessage = errorMessage
+        self.supportingText = supportingText
     }
 
     private var borderColor: Color {
@@ -212,6 +215,14 @@ struct OutlinedPasswordTextField<FocusField: Hashable>: View {
             .cornerRadius(5)
             .disabled(disabled)
             
+            if let supportingText {
+                Text(supportingText)
+                    .font(.caption)
+                    .foregroundStyle(.informationText)
+                    .padding(.leading, Dimens.mediumPadding)
+                    .multilineTextAlignment(.leading)
+            }
+            
             if errorMessage != nil {
                 Text(errorMessage!)
                     .font(.caption)
@@ -238,6 +249,7 @@ extension OutlinedPasswordTextField {
         self.errorMessage = errorMessage
         self._focusState = focusState
         self.field = field
+        self.supportingText = nil
     }
 }
 

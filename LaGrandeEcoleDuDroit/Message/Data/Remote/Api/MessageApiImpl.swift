@@ -66,25 +66,25 @@ class MessageApiImpl: MessageApi {
         messageListeners.forEach { $0.remove() }
     }
     
-    func reportMessage(report: MessageReport) async throws -> (URLResponse, ServerResponse) {
+    func reportMessage(report: MessageReport) async throws {
         try await messageServerApi.reportMessage(report: report.toRemote())
     }
 }
 
 class MessageServerApi {
     private let tokenProvider: TokenProvider
-    private let base = "messages"
+    private let base = "/messages"
     
     init(tokenProvider: TokenProvider) {
         self.tokenProvider = tokenProvider
     }
     
-    func reportMessage(report: RemoteMessageReport) async throws -> (URLResponse, ServerResponse) {
-        let url = try RequestUtils.formatOracleUrl(base: base, endPoint: "report")
+    func reportMessage(report: RemoteMessageReport) async throws {
+        let url = RequestUtils.getUrl(base: base, endPoint: "/report")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.simplePostRequest(url: url, dataToSend: report, authToken: authToken)
         
-        return try await RequestUtils.sendRequest(session: session, request: request)
+        try await RequestUtils.sendRequest(session: session, request: request)
     }
 }

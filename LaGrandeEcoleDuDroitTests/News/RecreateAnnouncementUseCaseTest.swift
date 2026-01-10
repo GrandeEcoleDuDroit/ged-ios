@@ -58,6 +58,6 @@ private class AnnouncementSetError: MockAnnouncementRepository {
     }
     
     override func createAnnouncement(announcement: Announcement) async throws {
-        throw NetworkError.noInternetConnection
+        throw NetworkError.notConnectedToInternet
     }
 }

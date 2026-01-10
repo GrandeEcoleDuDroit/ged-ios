@@ -14,7 +14,7 @@ class MockAnnouncementRepository: AnnouncementRepository {
         Empty().eraseToAnyPublisher()
     }
     
-    func getLocalAnnouncements() async throws -> [Announcement] { [] }
+    func getLocalAnnouncements() async -> [Announcement] { [] }
     
     func getRemoteAnnouncements() async throws -> [Announcement] { [] }
 
@@ -32,7 +32,7 @@ class MockAnnouncementRepository: AnnouncementRepository {
     
     func deleteLocalAnnouncements() async throws {}
     
-    func deleteLocalAnnouncements(userId: String) async throws {}
+    func deleteLocalUserAnnouncements(userId: String) async throws {}
     
     func deleteLocalAnnouncement(announcementId: String) {}
             

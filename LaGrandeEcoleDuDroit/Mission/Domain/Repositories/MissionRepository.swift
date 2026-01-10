@@ -26,7 +26,7 @@ protocol MissionRepository {
     
     func deleteLocalMission(missionId: String) async throws
     
-    func addParticipant(addMissionParticipant: AddMissionParticipant) async throws
+    func addParticipant(missionId: String, user: User) async throws
     
     func removeParticipant(missionId: String, userId: String) async throws
     

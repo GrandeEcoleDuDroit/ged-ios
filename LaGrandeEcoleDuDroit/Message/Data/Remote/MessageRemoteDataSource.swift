@@ -17,18 +17,17 @@ class MessageRemoteDataSource {
     }
     
     func createMessage(message: Message) async throws {
-        try await mapFirebaseError(
-            block: {
-                let data = message.toRemote().toMap()
-                try await messageApi.createMessage(
-                    conversationId: message.conversationId,
-                    messageId: message.id,
-                    data: data
-                )
-            },
-            tag: tag,
-            message: "Failed to create message"
-        )
+        do {
+            let data = message.toRemote().toMap()
+            try await messageApi.createMessage(
+                conversationId: message.conversationId,
+                messageId: message.id,
+                data: data
+            )
+        } catch {
+            e(tag, "Failed to create message")
+            throw mapFirebaseError(error)
+        }
     }
     
     func updateSeenMessage(message: Message) async throws {
@@ -40,10 +39,6 @@ class MessageRemoteDataSource {
     }
     
     func reportMessage(report: MessageReport) async throws {
-        try await mapServerError(
-            block: { try await messageApi.reportMessage(report: report) },
-            tag: tag,
-            message: "Failed to report message"
-        )
+        try await messageApi.reportMessage(report: report)
     }
 }

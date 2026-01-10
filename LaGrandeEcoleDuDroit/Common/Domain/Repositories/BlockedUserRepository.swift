@@ -9,6 +9,8 @@ protocol BlockedUserRepository {
     
     func getRemoteBlockedUserIds(currentUserId: String) async throws -> Set<String>
     
+    func getLocalBlockedUserIds() -> Set<String>
+    
     func addBlockedUser(currentUserId: String, blockedUserId: String) async throws
     
     func addLocalBlockedUser(blockedUserId: String) async

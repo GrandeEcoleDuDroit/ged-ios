@@ -18,26 +18,32 @@ class FcmTokenRepositoryImpl: FcmTokenRepository {
     }
     
     func sendFcmToken(userId: String, token: String) async throws {
-        try await mapServerError(
-            block: { try await fcmApi.addToken(userId: userId, value: token) },
-            tag: tag,
-            message: "Error sending fcm token"
-        )
+        do {
+            try await fcmApi.addToken(userId: userId, value: token)
+        } catch {
+            e(tag, "Error sending fcm token of user \(userId)", error)
+            throw error
+        }
     }
     
     func storeFcmToken(fcmToken: FcmToken) throws {
-        try fcmLocalDataSource.storeFcmToken(fcmToken)
+        do {
+            try fcmLocalDataSource.storeFcmToken(fcmToken)
+        } catch {
+            e(tag, "Error storing fcm token", error)
+            throw error
+        }
     }
     
     func deleteToken(userId: String) async throws {
-        if let token = fcmLocalDataSource.getFcmToken()?.token {
-            try await mapServerError(
-                block: { try await fcmApi.deleteToken(userId: userId, value: token) },
-                tag: tag,
-                message: "Error deleting fcm token"
-            )
-            
-            fcmLocalDataSource.deleteFcmToken()
+        do {
+            if let token = fcmLocalDataSource.getFcmToken()?.token {
+                try await fcmApi.deleteToken(userId: userId, value: token)
+                fcmLocalDataSource.deleteFcmToken()
+            }
+        } catch {
+            e(tag, "Error deleting fcm token of user \(userId)", error)
+            throw error
         }
     }
 }

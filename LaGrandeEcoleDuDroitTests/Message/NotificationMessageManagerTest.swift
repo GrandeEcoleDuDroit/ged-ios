@@ -14,7 +14,7 @@ class NotificationMessageManagerTest {
         let userInfo: [AnyHashable : Any] = [:]
         var result: UNNotificationPresentationOptions = []
         
-        let useCase = MessageNotificationManager(
+        let useCase = MessageNotificationPresenter(
             navigationRequestUseCase: emptyNavigationRequestUseCase,
             routeRepository: nilCurrentRoute
         )
@@ -41,7 +41,7 @@ class NotificationMessageManagerTest {
         )
         var result: UNNotificationPresentationOptions = []
         
-        let useCase = MessageNotificationManager(
+        let useCase = MessageNotificationPresenter(
             navigationRequestUseCase: MockNavigationRequestUseCase(),
             routeRepository: chatCurrentRoute
         )
@@ -71,7 +71,7 @@ class NotificationMessageManagerTest {
             MessageMainRoute.conversation,
             [MessageRoute.chat(conversation: conversationFixture)]
         )
-        let useCase = MessageNotificationManager(
+        let useCase = MessageNotificationPresenter(
             navigationRequestUseCase: navigate,
             routeRepository: nilCurrentRoute
         )
