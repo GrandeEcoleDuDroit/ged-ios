@@ -39,8 +39,7 @@ class MessageApiImpl: MessageApi {
         return subject.eraseToAnyPublisher()
     }
     
-    func createMessage(message: Message) async throws {
-        let remoteMessage = message.toRemote()
+    func createMessage(remoteMessage: RemoteMessage) async throws {
         try await conversationCollection
             .document(remoteMessage.conversationId)
             .collection(messageTableName)

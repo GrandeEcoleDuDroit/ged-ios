@@ -5,7 +5,7 @@ import Foundation
 protocol MessageApi {
     func listenMessages(userId: String, conversation: Conversation, offsetTime: Timestamp?) -> AnyPublisher<RemoteMessage, Error>
         
-    func createMessage(message: Message) async throws
+    func createMessage(remoteMessage: RemoteMessage) async throws
     
     func setMessageSeen(conversationId: String, messageId: String) async throws
     
