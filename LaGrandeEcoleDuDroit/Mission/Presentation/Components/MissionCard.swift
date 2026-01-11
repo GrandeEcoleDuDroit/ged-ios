@@ -35,7 +35,7 @@ private struct DefaultMissionCard: View {
     let onOptionsClick: () -> Void
     
     var body: some View {
-        VStack(spacing: Dimens.smallMediumPadding + 2) {
+        VStack(spacing: DimensResource.smallMediumPadding + 2) {
             ZStack {
                 MissionImage(missionState: mission.state)
                     .frame(height: 180)
@@ -44,7 +44,7 @@ private struct DefaultMissionCard: View {
                 OptionsButton(action: onOptionsClick)
                     .font(.title3)
                     .padding()
-                    .padding(Dimens.extraSmallPadding)
+                    .padding(DimensResource.extraSmallPadding)
                     .frame(
                         maxWidth: .infinity,
                         maxHeight: .infinity,
@@ -55,7 +55,7 @@ private struct DefaultMissionCard: View {
             .frame(maxWidth: .infinity)
             .frame(height: 180)
             
-            VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+            VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
                 CardTitle(title: mission.title)
                 
                 CardSubtitle(mission: mission)
@@ -82,7 +82,7 @@ private struct CompletedMissionCard: View {
     let onOptionsClick: () -> Void
     
     var body: some View {
-        VStack(spacing: Dimens.smallMediumPadding + 2) {
+        VStack(spacing: DimensResource.smallMediumPadding + 2) {
             MissionImage(missionState: mission.state)
                 .frame(height: 180)
                 .clipped()
@@ -94,7 +94,7 @@ private struct CompletedMissionCard: View {
                         .background(.overlayContent.opacity(0.6))
                 }
                 
-            VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+            VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
                 CardTitle(title: mission.title)
                 
                 CardSubtitle(mission: mission)
@@ -133,7 +133,7 @@ private struct ErrorMissionCard: View {
     let mission: Mission
     
     var body: some View {
-        VStack(spacing: Dimens.smallMediumPadding + 2) {
+        VStack(spacing: DimensResource.smallMediumPadding + 2) {
             ZStack {
                 MissionImage(missionState: mission.state)
                     .frame(height: 180)
@@ -145,7 +145,7 @@ private struct ErrorMissionCard: View {
             .frame(maxWidth: .infinity)
             .frame(height: 180)
             
-            VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+            VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
                 CardTitle(title: mission.title)
                 
                 CardSubtitle(mission: mission)
@@ -185,11 +185,11 @@ private struct CardSubtitle: View {
     let mission: Mission
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.smallPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.smallPadding) {
             TextIcon(
                 icon: Image(systemName: "calendar"),
                 text: MissionUtilsPresentation.formatDate(startDate: mission.startDate, endDate: mission.endDate),
-                spacing: Dimens.smallPadding
+                spacing: DimensResource.smallPadding
             )
                         
             TextIcon(
@@ -198,7 +198,7 @@ private struct CardSubtitle: View {
                     participantsCount: mission.participants.count,
                     maxParticipants: mission.maxParticipants
                 ),
-                spacing: Dimens.smallMediumPadding
+                spacing: DimensResource.smallMediumPadding
             )
         }
         .foregroundStyle(Color.informationText)
@@ -228,14 +228,14 @@ private struct CardFooter: View {
 
 private struct ErrorBanner: View {
     var body: some View {
-        HStack(spacing: Dimens.smallPadding) {
+        HStack(spacing: DimensResource.smallPadding) {
             Image(systemName: "exclamationmark.circle")
             Text(stringResource(.sendingError))
         }
         .font(.subheadline)
         .foregroundStyle(.error)
-        .padding(.vertical, Dimens.smallMediumPadding)
-        .padding(.horizontal, Dimens.mediumPadding)
+        .padding(.vertical, DimensResource.smallMediumPadding)
+        .padding(.horizontal, DimensResource.mediumPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.appBackground.opacity(0.8))
     }

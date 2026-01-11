@@ -26,21 +26,12 @@ class ListenBlockedUserEventsUseCase {
     func start() {
         blockedUserRepository.blockedUserEvents.sink { [weak self] event in
             switch event {
-                case let .block(userId, _):
+                case let .block(blockedUser):
                     Task {
-                        if let conversation = await self?.conversationRepository.getLocalConversation(interlocutorId: userId) {
-                            self?.listenRemoteMessagesUseCase.stop(conversationId: conversation.id)
-                        }
+                        try? await self?.announcementRepository.deleteLocalUserAnnouncements(userId: blockedUser.userId)
                     }
-                    
-                    Task {
-                        try? await self?.announcementRepository.deleteLocalUserAnnouncements(userId: userId)
-                    }
-                    
-                case let .unblock(userId, date):
-                    Task {
-                        await self?.updateConversationEffectiveFromUseCase.execute(userId: userId, effectiveFrom: date)
-                    }
+                
+                default: break
             }
         }.store(in: &cancellables)
     }

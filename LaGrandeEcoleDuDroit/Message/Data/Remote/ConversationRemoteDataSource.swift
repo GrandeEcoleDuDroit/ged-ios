@@ -16,8 +16,7 @@ class ConversationRemoteDataSource {
     
     func createConversation(conversation: Conversation, userId: String) async throws {
         do {
-            let data = conversation.toRemote(userId: userId).toMap()
-            try await conversationApi.createConversation(conversationId: conversation.id, data: data)
+            try await conversationApi.createConversation(remoteConversation: conversation.toRemote(userId: userId))
         } catch {
             throw mapFirebaseError(error)
         }

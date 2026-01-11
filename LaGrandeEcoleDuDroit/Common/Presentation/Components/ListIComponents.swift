@@ -14,7 +14,7 @@ struct NavigationListItem<Content: View>: View {
 
     var body: some View {
         Button(action: onClick) {
-            HStack(spacing: Dimens.mediumPadding) {
+            HStack(spacing: DimensResource.mediumPadding) {
                 content()
                     .frame(maxWidth: .infinity, alignment: .leading)
                     
@@ -49,14 +49,14 @@ struct NavigationListItemRow: View {
     let text: String
 
     var body: some View {
-        HStack(spacing: Dimens.mediumPadding) {
+        HStack(spacing: DimensResource.mediumPadding) {
             if let image {
                 image
                     .resizable()
                     .scaledToFit()
                     .frame(
-                        width: Dimens.iconSize,
-                        height: Dimens.iconSize
+                        width: DimensResource.iconSize,
+                        height: DimensResource.iconSize
                     )
             }
 
@@ -90,12 +90,12 @@ struct PlainListItem<
     }
     
     var body: some View {
-        HStack(spacing: Dimens.smallPadding) {
+        HStack(spacing: DimensResource.smallPadding) {
             leadingContent
-                .padding(.trailing, Dimens.smallPadding)
+                .padding(.trailing, DimensResource.smallPadding)
             
-            HStack(spacing: Dimens.mediumPadding) {
-                VStack(alignment: .leading, spacing: Dimens.extraSmallPadding) {
+            HStack(spacing: DimensResource.mediumPadding) {
+                VStack(alignment: .leading, spacing: DimensResource.extraSmallPadding) {
                     headlineContent
                     supportingContent
                 }
@@ -105,7 +105,7 @@ struct PlainListItem<
             }
         }
         .padding(.horizontal)
-        .padding(.vertical, Dimens.smallPadding)
+        .padding(.vertical, DimensResource.smallPadding)
     }
 }
 

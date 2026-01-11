@@ -14,7 +14,11 @@ class UserServerApi {
         let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.simpleGetRequest(url: url, authToken: authToken)
         
-        return try await RequestUtils.sendDataRequest(session: session, request: request)!
+        if let users: [OracleUser] = try await RequestUtils.sendDataRequest(session: session, request: request) {
+            return users
+        } else {
+            throw NetworkError.emptyResponse
+        }
     }
     
     func getUser(userId: String) async throws -> OracleUser? {

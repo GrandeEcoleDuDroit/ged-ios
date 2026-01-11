@@ -27,8 +27,8 @@ struct MissionImageTopBar: View {
                     .clipShape(.circle)
             }
         }
-        .padding(.horizontal, Dimens.smallPadding)
-        .padding(.vertical, Dimens.smallPadding)
+        .padding(.horizontal, DimensResource.smallPadding)
+        .padding(.vertical, DimensResource.smallPadding)
         .frame(maxWidth: .infinity)
     }
 }

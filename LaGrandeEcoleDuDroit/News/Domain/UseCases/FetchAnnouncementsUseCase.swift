@@ -13,14 +13,14 @@ class FetchAnnouncementsUseCase {
     func execute() async throws {
         let announcements = announcementRepository.currentAnnouncements
         let remoteAnnouncements = try await announcementRepository.getRemoteAnnouncements()
-        let blockedUserIds = blockedUserRepository.currentBlockedUserIds
+        let blockedUsers = blockedUserRepository.currentBlockedUsers
         
         let announcementToDelete = announcements.filter {
             ($0.state == .published && !remoteAnnouncements.contains($0)) ||
-                blockedUserIds.contains($0.author.id)
+            blockedUsers.has($0.author.id)
         }
         let announcementToUpsert = remoteAnnouncements.filter {
-            !announcements.contains($0) && !blockedUserIds.contains($0.author.id)
+            !announcements.contains($0) && !blockedUsers.has($0.author.id)
         }
         
         for announcement in announcementToDelete {

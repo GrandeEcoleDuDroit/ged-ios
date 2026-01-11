@@ -101,6 +101,25 @@ extension UserReport {
     }
 }
 
+extension BlockedUser {
+    func toRemote(currentUserId: String) -> RemoteBlockedUser {
+        RemoteBlockedUser(
+            userId: currentUserId,
+            blockedUserId: userId,
+            blockedDate: date.toEpochMilli()
+        )
+    }
+}
+
+extension RemoteBlockedUser {
+    func toBlockedUser() -> BlockedUser {
+        BlockedUser(
+            userId: blockedUserId,
+            date: blockedDate.toDate()
+        )
+    }
+}
+
 private extension UserReport.ReportedUser {
     func toRemote() -> RemoteUserReport.RemoteReportedUser {
         RemoteUserReport.RemoteReportedUser(

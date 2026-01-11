@@ -45,7 +45,7 @@ struct MissionFormImageSection: View {
                 .padding(10)
                 .background(.imageIconButtonContainer)
                 .clipShape(.circle)
-                .padding(Dimens.smallMediumPadding)
+                .padding(DimensResource.smallMediumPadding)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                 .frame(height: MissionUtilsPresentation.missionImageHeight)
             }
@@ -64,7 +64,7 @@ struct MissionFormImageSection: View {
 
 private struct EmptyImage: View {
     var body: some View {
-        VStack(spacing: Dimens.extraSmallPadding) {
+        VStack(spacing: DimensResource.extraSmallPadding) {
             Image(systemName: "photo.badge.plus")
                 .font(.system(size: 60))
             

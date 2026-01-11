@@ -383,11 +383,18 @@ class EditMissionViewModel: ViewModel {
     
     
     private func initUsers() {
+        let mission = mission
+        let managersMap = mission.managers.reduce(into: [String: User]()) { result, manager in
+            result[manager.id] = manager
+        }
+        
         Task { @MainActor [weak self] in
-            guard let mission = self?.mission,
-                  let users = await self?.getUsersUseCase.execute().missionManagerSorting(mission: mission)
+            guard var users = await self?.getUsersUseCase.execute()
+                .filter({ !managersMap.has($0.id) })
             else { return }
             
+            users.append(contentsOf: mission.managers)
+            users = users.missionManagerSorting(mission: mission)
             self?.uiState.users = users
             self?.defaultUsers = users
         }

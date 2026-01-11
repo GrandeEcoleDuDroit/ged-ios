@@ -75,7 +75,7 @@ extension LocalMessage {
 }
 
 extension RemoteMessage {
-    func toMessage() -> Message {
+    func toMessage(userId: String) -> Message {
         Message(
             id: messageId,
             senderId: senderId,
@@ -84,7 +84,8 @@ extension RemoteMessage {
             content: content,
             date: timestamp.dateValue(),
             seen: seen,
-            state: .sent
+            state: .sent,
+            visible: !(notVisibleFor?[userId] ?? false)
         )
     }
     

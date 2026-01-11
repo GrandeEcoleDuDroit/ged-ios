@@ -9,6 +9,7 @@ struct Message: Hashable, Codable, Copying {
     var date: Date
     var seen: Bool
     var state: MessageState
+    var visible: Bool = true
 }
 
 enum MessageState: String, Equatable, Codable {

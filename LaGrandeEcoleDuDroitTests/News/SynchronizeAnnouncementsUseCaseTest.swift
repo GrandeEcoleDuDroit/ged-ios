@@ -143,11 +143,11 @@ private class AnnouncementsUpserted: MockAnnouncementRepository {
 private class BlockedUsers: MockBlockedUserRepository {
     private let declaredBlockedUserIds: Set<String>
     
-    override var blockedUserIds: AnyPublisher<Set<String>, Never> {
+    override var blockedUsers: AnyPublisher<Set<String>, Never> {
         Just(declaredBlockedUserIds).eraseToAnyPublisher()
     }
     
-    override var currentBlockedUserIds: Set<String> {
+    override var currentBlockedUsers: Set<String> {
         declaredBlockedUserIds
     }
     

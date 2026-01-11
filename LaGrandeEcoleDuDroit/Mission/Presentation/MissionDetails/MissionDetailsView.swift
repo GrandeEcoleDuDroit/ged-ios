@@ -94,7 +94,7 @@ private struct MissionDetailsView: View {
     var body: some View {
         ZStack {
             ScrollView(showsIndicators: false) {
-                VStack(spacing: Dimens.mediumPadding) {
+                VStack(spacing: DimensResource.mediumPadding) {
                     MissionImage(
                         missionState: mission.state,
                         defaultImageScale: 1.4
@@ -103,7 +103,7 @@ private struct MissionDetailsView: View {
                     .frame(height: MissionUtilsPresentation.missionImageHeight)
                     .clipped()
                     
-                    VStack(spacing: Dimens.mediumPadding) {
+                    VStack(spacing: DimensResource.mediumPadding) {
                         MissionDetailsTitleAndDescriptionSection(mission: mission)
                             .padding(.horizontal)
                         
@@ -186,9 +186,9 @@ private struct MissionDetailsView: View {
                     onRegisterMissionClick: onRegisterMissionClick,
                     onUnregisterMissionClick: { showUnregisterMissionAlert = true }
                 )
-                .padding(.bottom, Dimens.smallMediumPadding)
-                .padding(.top, Dimens.mediumPadding)
-                .padding(.horizontal, Dimens.mediumPadding)
+                .padding(.bottom, DimensResource.smallMediumPadding)
+                .padding(.top, DimensResource.mediumPadding)
+                .padding(.horizontal, DimensResource.mediumPadding)
                 .background(.appBackground)
             }
         }
@@ -211,7 +211,7 @@ private struct MissionDetailsView: View {
                     )
                     
                 case let .participant(user):
-                    SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
+                    SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
                         SheetItem(
                             icon: Image(systemName: "person"),
                             text: stringResource(.seeProfile),
@@ -236,7 +236,7 @@ private struct MissionDetailsView: View {
                 case .missionReport:
                     ReportSheet(
                         items: MissionReport.Reason.allCases,
-                        fraction: Dimens.reportSheetFraction(itemCount: MissionReport.Reason.allCases.count),
+                        fraction: DimensResource.reportSheetFraction(itemCount: MissionReport.Reason.allCases.count),
                         onReportClick: { reason in
                             activeSheet = nil
                             
@@ -287,7 +287,7 @@ private struct MissionDetailsView: View {
             }
         }
         .alert(
-            stringResource(.removeParticipantAlertMessage, alertParticipant?.fullName ?? ""),
+            stringResource(.removeParticipantAlertMessage, alertParticipant?.displayedName ?? "Unknown"),
             isPresented: $showRemoveParticipantAlert,
             presenting: alertParticipant
         ) { participant in

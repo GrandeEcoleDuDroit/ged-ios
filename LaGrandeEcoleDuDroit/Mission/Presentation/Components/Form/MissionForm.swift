@@ -33,7 +33,7 @@ struct MissionForm: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: Dimens.mediumPadding) {
+            VStack(spacing: DimensResource.mediumPadding) {
                 MissionFormImageSection(
                     imageData: $imageData,
                     missionState: missionState,

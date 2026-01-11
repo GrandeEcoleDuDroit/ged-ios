@@ -8,6 +8,7 @@ struct RemoteMessage: Codable {
     let content: String
     let timestamp: Timestamp
     let seen: Bool
+    var notVisibleFor: [String: Bool]?
     
     enum CodingKeys: String, CodingKey {
         case messageId = "messageId"
@@ -17,5 +18,6 @@ struct RemoteMessage: Codable {
         case content = "content"
         case timestamp = "timestamp"
         case seen = "seen"
+        case notVisibleFor = "notVisibleFor"
     }
 }

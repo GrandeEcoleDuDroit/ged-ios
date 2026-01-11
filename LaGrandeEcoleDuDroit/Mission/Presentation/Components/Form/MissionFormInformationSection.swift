@@ -17,7 +17,7 @@ struct MissionFormInformationSection: View {
     let onDurationChange: (String) -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
             SectionTitle(title: stringResource(.information))
             
             OutlinedDatePicker(
@@ -80,11 +80,11 @@ private struct OutlinedDatePicker: View {
     
     var body: some View {
         HStack {
-            HStack(alignment: .center, spacing: Dimens.leadingIconSpacing) {
+            HStack(alignment: .center, spacing: DimensResource.leadingIconSpacing) {
                 Image(systemName: "calendar")
                     .resizable()
                     .scaledToFill()
-                    .frame(width: Dimens.inputIconSize, height: Dimens.inputIconSize)
+                    .frame(width: DimensResource.inputIconSize, height: DimensResource.inputIconSize)
                     .foregroundStyle(.onSurfaceVariant)
                 
                 Text(label)

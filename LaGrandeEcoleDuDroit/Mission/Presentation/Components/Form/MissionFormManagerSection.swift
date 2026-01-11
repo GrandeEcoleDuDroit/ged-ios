@@ -11,7 +11,7 @@ struct MissionFormManagerSection: View {
                 .padding(.horizontal)
             
             Spacer()
-                .frame(height: Dimens.smallPadding)
+                .frame(height: DimensResource.smallPadding)
             
             Button(action: onAddManagerClick) {
                 AddManagerItem()

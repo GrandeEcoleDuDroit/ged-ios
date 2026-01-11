@@ -33,10 +33,11 @@ struct UserField {
 struct BlockedUserField {
     private init() {}
     
-    struct Server {
+    struct Remote {
         private init() {}
         
         static let userId = "USER_ID"
         static let blockedUserId = "BLOCKED_USER_ID"
+        static let blockedDate = "BLOCKED_DATE"
     }
 }

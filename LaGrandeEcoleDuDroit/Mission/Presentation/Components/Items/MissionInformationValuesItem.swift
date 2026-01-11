@@ -6,7 +6,7 @@ struct MissionInformationValuesItem: View {
     var body: some View {
         let missionInformationValues = missionInformationValues(mission: mission)
         
-        VStack(alignment: .leading, spacing: Dimens.mediumLargePadding) {
+        VStack(alignment: .leading, spacing: DimensResource.mediumLargePadding) {
             ForEach(missionInformationValues, id: \.self) { value in
                 TextIcon(
                     icon: Image(systemName: value.imageSystemName),

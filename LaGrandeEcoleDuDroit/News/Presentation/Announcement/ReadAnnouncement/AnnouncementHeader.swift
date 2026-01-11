@@ -8,7 +8,7 @@ struct AnnouncementHeader: View {
         TimelineView(.periodic(from: .now, by: 60)) { _ in
             let elapsedTimeText = getElapsedTimeText(date: announcement.date)
 
-            HStack(spacing: Dimens.smallMediumPadding) {
+            HStack(spacing: DimensResource.smallMediumPadding) {
                 ProfilePicture(
                     url: announcement.author.profilePictureUrl,
                     scale: 0.4

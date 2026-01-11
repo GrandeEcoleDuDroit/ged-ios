@@ -56,11 +56,11 @@ struct MultiSelectionPicker: View {
                     }
                 },
                 label: {
-                    HStack(alignment: .center, spacing: Dimens.leadingIconSpacing) {
+                    HStack(alignment: .center, spacing: DimensResource.leadingIconSpacing) {
                         leadingIcon?
                             .resizable()
                             .scaledToFit()
-                            .frame(width: Dimens.inputIconSize, height: Dimens.inputIconSize)
+                            .frame(width: DimensResource.inputIconSize, height: DimensResource.inputIconSize)
                             .foregroundStyle(.onSurfaceVariant)
                         
                         if seletctedItems.isEmpty {
@@ -82,7 +82,7 @@ struct MultiSelectionPicker: View {
                 Text(supportingText)
                     .font(.caption)
                     .foregroundStyle(.informationText)
-                    .padding(.leading, Dimens.mediumPadding)
+                    .padding(.leading, DimensResource.mediumPadding)
                     .multilineTextAlignment(.leading)
             }
         }

@@ -13,6 +13,7 @@ enum NetworkError: Error, Equatable {
     case timedOut
     case badRequest
     case any
+    case emptyResponse
 }
 
 extension NetworkError: LocalizedError {
@@ -28,7 +29,8 @@ extension NetworkError: LocalizedError {
             case .timedOut: stringResource(.timedOutError)
             case .badRequest: stringResource(.badRequestError)
             case .any: stringResource(.anyNetworkError)
-            default: ""
+            case .emptyResponse: stringResource(.nilDataError)
+            default: stringResource(.unknownError)
         }
     }
 }

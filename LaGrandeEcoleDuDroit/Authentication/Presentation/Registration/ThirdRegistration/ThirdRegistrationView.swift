@@ -40,7 +40,7 @@ private struct ThirdRegistrationView: View {
     var body: some View {
         VStack {
             ScrollView {
-                VStack(spacing: Dimens.mediumPadding) {
+                VStack(spacing: DimensResource.mediumPadding) {
                     FormContent(
                         email: $email,
                         password: $password,
@@ -90,7 +90,7 @@ private struct FormContent: View {
     private let legalNoticeUrl = "https://grandeecoledudroit.github.io/ged-website/legal-notice.html"
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
             Text(stringResource(.enterEmailPassword))
                 .font(.title3)
             

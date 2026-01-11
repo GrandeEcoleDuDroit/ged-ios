@@ -11,7 +11,7 @@ struct MissionFormTaskSection: View {
             SectionTitle(title: stringResource(.tasks))
                 .padding(.horizontal)
             
-            Spacer().frame(height: Dimens.smallPadding)
+            Spacer().frame(height: DimensResource.smallPadding)
             
             Button(action: onAddTaskClick) {
                 AddMissionTaskItem()
@@ -41,7 +41,7 @@ private struct AddMissionTaskItem: View {
                 Image(systemName: "plus")
             }
         )
-        .padding(.vertical, Dimens.extraSmallPadding)
+        .padding(.vertical, DimensResource.extraSmallPadding)
         .foregroundStyle(.onSurfaceVariant)
         .contentShape(.rect)
     }
@@ -60,7 +60,7 @@ struct MissionTaskItem: View {
                 RemoveButton(action: onRemoveTaskClick)
             }
         )
-        .padding(.vertical, Dimens.extraSmallPadding)
+        .padding(.vertical, DimensResource.extraSmallPadding)
         .contentShape(.rect)
     }
 }

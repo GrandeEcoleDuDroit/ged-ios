@@ -1,23 +1,24 @@
 import Combine
+import Foundation
 
 protocol BlockedUserRepository {
     var blockedUserEvents: AnyPublisher<BlockUserEvent, Never> { get }
     
-    var blockedUserIds: AnyPublisher<Set<String>, Never> { get }
+    var blockedUsers: AnyPublisher<[String: BlockedUser], Never> { get }
     
-    var currentBlockedUserIds: Set<String> { get }
+    var currentBlockedUsers: [String: BlockedUser] { get }
     
-    func getRemoteBlockedUserIds(currentUserId: String) async throws -> Set<String>
+    func getRemoteBlockedUsers(currentUserId: String) async throws -> [String: BlockedUser]
     
-    func getLocalBlockedUserIds() -> Set<String>
+    func getLocalBlockedUsers() -> [String: BlockedUser]
     
-    func addBlockedUser(currentUserId: String, blockedUserId: String) async throws
-    
-    func addLocalBlockedUser(blockedUserId: String) async
+    func addBlockedUser(currentUserId: String, blockedUser: BlockedUser) async throws
+
+    func addLocalBlockedUser(blockedUser: BlockedUser) throws
     
     func removeBlockedUser(currentUserId: String, blockedUserId: String) async throws
     
-    func removeLocalBlockedUser(blockedUserId: String) async
+    func removeLocalBlockedUser(blockedUserId: String) throws
     
-    func deleteLocalBlockedUsers() async
+    func deleteLocalBlockedUsers()
 }

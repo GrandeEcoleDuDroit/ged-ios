@@ -7,7 +7,7 @@ struct MissionFormTitleDescriptionSection: View {
     let onDescriptionChange: (String) -> Void
     
     var body: some View {
-        VStack(spacing: Dimens.mediumPadding) {
+        VStack(spacing: DimensResource.mediumPadding) {
             TransparentTextField(
                 stringResource(.title),
                 text: $title,

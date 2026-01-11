@@ -86,6 +86,7 @@
 "invalid_image_format_error" = "The image has an invalid format.";
 "unauthorized_error" = "You must be authenticated to perform this action.";
 "bad_request_error" = "The request could not be successful.";
+"nil_data_error" = "Null data";
 
 // Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";

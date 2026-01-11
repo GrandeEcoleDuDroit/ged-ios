@@ -51,7 +51,7 @@ private class BlockedUsers: MockBlockedUserRepository {
         userBlockedIds.insert(blockedUserId)
     }
     
-    override func getRemoteBlockedUserIds(currentUserId: String) async throws -> Set<String> {
+    override func getRemoteBlockedUsers(currentUserId: String) async throws -> Set<String> {
         usersIds
     }
 }
@@ -60,11 +60,11 @@ private class UnblockedUsers: MockBlockedUserRepository {
     let usersIds: Set<String>
     var unblockedUserIds: Set<String> = []
     
-    override var blockedUserIds: AnyPublisher<Set<String>, Never> {
+    override var blockedUsers: AnyPublisher<Set<String>, Never> {
         Just(usersIds).eraseToAnyPublisher()
     }
     
-    override var currentBlockedUserIds: Set<String> {
+    override var currentBlockedUsers: Set<String> {
         usersIds
     }
     

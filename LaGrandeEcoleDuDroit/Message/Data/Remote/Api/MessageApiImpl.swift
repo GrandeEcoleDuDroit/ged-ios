@@ -13,11 +13,11 @@ class MessageApiImpl: MessageApi {
         self.messageServerApi = messageServerApi
     }
     
-    func listenMessages(conversation: Conversation, offsetTime: Timestamp?) -> AnyPublisher<RemoteMessage, Error> {
+    func listenMessages(userId: String, conversation: Conversation, offsetTime: Timestamp?) -> AnyPublisher<RemoteMessage, Error> {
         let subject = PassthroughSubject<RemoteMessage, Error>()
         
         let listener = conversationCollection
-            .document(conversation.id.description)
+            .document(conversation.id)
             .collection(messageTableName)
             .withOffsetTime(offsetTime)
             .addSnapshotListener(includeMetadataChanges: true) { snapshot, error in
@@ -39,27 +39,29 @@ class MessageApiImpl: MessageApi {
         return subject.eraseToAnyPublisher()
     }
     
-    func createMessage(conversationId: String, messageId: String, data: [String: Any]) async throws {
-        let snapshot = try await conversationCollection.document(conversationId)
-            .collection(messageTableName)
-            .document(messageId)
-            .getDocument(source: .server)
-        
-        if !snapshot.exists {
-            try await conversationCollection
-                .document(conversationId)
-                .collection(messageTableName)
-                .document(messageId)
-                .setData(data, merge: true)
-        }
-    }
-    
-    func updateSeenMessage(remoteMessage: RemoteMessage) async throws {
+    func createMessage(message: Message) async throws {
+        let remoteMessage = message.toRemote()
         try await conversationCollection
             .document(remoteMessage.conversationId)
             .collection(messageTableName)
             .document(remoteMessage.messageId)
-            .updateData([MessageField.Remote.seen: remoteMessage.seen])
+            .setData(remoteMessage.toMap(), merge: true)
+    }
+    
+    func setMessageSeen(conversationId: String, messageId: String) async throws {
+        try await conversationCollection
+            .document(conversationId)
+            .collection(messageTableName)
+            .document(messageId)
+            .updateData([MessageField.Remote.seen: true])
+    }
+    
+    func updateMessageVisibility(remoteMessage: RemoteMessage, userId: String, visible: Bool) async throws {
+        try await conversationCollection
+            .document(remoteMessage.conversationId)
+            .collection(messageTableName)
+            .document(remoteMessage.messageId)
+            .updateData(["\(MessageField.Remote.notVisibleFor).\(userId)": !visible])
     }
     
     func stopListeningMessages() {

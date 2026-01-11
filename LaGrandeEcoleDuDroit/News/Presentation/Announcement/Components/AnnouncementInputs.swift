@@ -8,7 +8,7 @@ struct AnnouncementInputs: View {
     var focusState: FocusState<AnnouncementFocusField?>
     
     var body: some View {
-        VStack(spacing: Dimens.smallMediumPadding) {
+        VStack(spacing: DimensResource.smallMediumPadding) {
             AnnouncementTitleInput(
                 title: $title,
                 onTitleChange: onTitleChange,
@@ -72,5 +72,5 @@ private struct AnnouncementContentInput: View {
         onContentChange: {_ in },
         focusState: _focusState
     )
-    .padding(Dimens.mediumPadding)
+    .padding(DimensResource.mediumPadding)
 }

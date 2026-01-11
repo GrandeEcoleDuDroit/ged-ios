@@ -5,10 +5,17 @@ import CoreData
 extension Conversation {
     func toLocal() -> LocalConversation {
         let localConversation = LocalConversation()
+        
+        var conversationBlockedBy: String?
+        if let data = try? JSONEncoder().encode(blockedBy) {
+            conversationBlockedBy = String(data: data, encoding: .utf8)
+        }
+        
         localConversation.conversationId = id
         localConversation.conversationCreatedAt = createdAt
         localConversation.conversationState = state.rawValue
         localConversation.conversationEffectiveFrom = effectiveFrom
+        localConversation.conversationBlockedBy = conversationBlockedBy
         localConversation.conversationInterlocutorId = interlocutor.id
         localConversation.conversationInterlocutorFirstName = interlocutor.firstName
         localConversation.conversationInterlocutorLastName = interlocutor.lastName
@@ -26,15 +33,22 @@ extension Conversation {
             conversationId: id,
             participants: [userId, interlocutor.id],
             createdAt: Timestamp(date: createdAt),
-            effectiveFrom: effectiveFrom.map { [userId: Timestamp(date: $0)] }
+            effectiveFrom: effectiveFrom.map { [userId: Timestamp(date: $0)] },
+            blockedBy: blockedBy?.filter { $0.key == userId }
         )
     }
     
     func buildLocal(localConversation: LocalConversation) {
+        var conversationBlockedBy: String?
+        if let data = try? JSONEncoder().encode(blockedBy) {
+            conversationBlockedBy = String(data: data, encoding: .utf8)
+        }
+        
         localConversation.conversationId = id
         localConversation.conversationCreatedAt = createdAt
         localConversation.conversationState = state.rawValue
         localConversation.conversationEffectiveFrom = effectiveFrom
+        localConversation.conversationBlockedBy = conversationBlockedBy
         localConversation.conversationInterlocutorId = interlocutor.id
         localConversation.conversationInterlocutorFirstName = interlocutor.firstName
         localConversation.conversationInterlocutorLastName = interlocutor.lastName
@@ -60,6 +74,11 @@ extension LocalConversation {
               let interlocutorSchoolLevel = conversationInterlocutorSchoolLevel
         else { return nil }
         
+        var blockedBy: [String: Bool]?
+        if let data = conversationBlockedBy?.data(using: .utf8) {
+            blockedBy = try? JSONDecoder().decode([String: Bool].self, from: data)
+        }
+        
         let interlocutor = User(
             id: interlocutorId,
             firstName: interlocutorFirstName,
@@ -77,15 +96,22 @@ extension LocalConversation {
             interlocutor: interlocutor,
             createdAt: createdAt,
             state: state,
-            effectiveFrom: conversationEffectiveFrom
+            effectiveFrom: conversationEffectiveFrom,
+            blockedBy: blockedBy
         )
     }
     
     func modify(conversation: Conversation) {
+        var blockedBy: String?
+        if let data = try? JSONEncoder().encode(conversation.blockedBy) {
+            blockedBy = String(data: data, encoding: .utf8)
+        }
+        
         conversationId = conversation.id
         conversationCreatedAt = conversation.createdAt
         conversationState = conversation.state.rawValue
         conversationEffectiveFrom = conversation.effectiveFrom
+        conversationBlockedBy = blockedBy
         conversationInterlocutorId = conversation.interlocutor.id
         conversationInterlocutorFirstName = conversation.interlocutor.firstName
         conversationInterlocutorLastName = conversation.interlocutor.lastName
@@ -98,19 +124,25 @@ extension LocalConversation {
     }
     
     func equals(_ conversation: Conversation) -> Bool {
-        conversationId == conversation.id &&
-        conversationCreatedAt == conversation.createdAt &&
-        conversationState == conversation.state.rawValue &&
-        conversationEffectiveFrom == conversation.effectiveFrom &&
-        conversationInterlocutorId == conversation.interlocutor.id &&
-        conversationInterlocutorFirstName == conversation.interlocutor.firstName &&
-        conversationInterlocutorLastName == conversation.interlocutor.lastName &&
-        conversationInterlocutorEmail == conversation.interlocutor.email &&
-        conversationInterlocutorSchoolLevel == conversation.interlocutor.schoolLevel.rawValue &&
-        conversationInterlocutorAdmin == conversation.interlocutor.admin &&
-        conversationInterlocutorProfilePictureFileName == UserUtils.ProfilePicture.getFileName(url: conversation.interlocutor.profilePictureUrl) &&
-        conversationInterlocutorState == conversation.interlocutor.state.rawValue &&
-        conversationInterlocutorTester == conversation.interlocutor.tester
+        var blockedBy: String?
+        if let data = try? JSONEncoder().encode(conversation.blockedBy) {
+            blockedBy = String(data: data, encoding: .utf8)
+        }
+        
+        return conversationId == conversation.id &&
+            conversationCreatedAt == conversation.createdAt &&
+            conversationState == conversation.state.rawValue &&
+            conversationEffectiveFrom == conversation.effectiveFrom &&
+            conversationBlockedBy == blockedBy &&
+            conversationInterlocutorId == conversation.interlocutor.id &&
+            conversationInterlocutorFirstName == conversation.interlocutor.firstName &&
+            conversationInterlocutorLastName == conversation.interlocutor.lastName &&
+            conversationInterlocutorEmail == conversation.interlocutor.email &&
+            conversationInterlocutorSchoolLevel == conversation.interlocutor.schoolLevel.rawValue &&
+            conversationInterlocutorAdmin == conversation.interlocutor.admin &&
+            conversationInterlocutorProfilePictureFileName == UserUtils.ProfilePicture.getFileName(url: conversation.interlocutor.profilePictureUrl) &&
+            conversationInterlocutorState == conversation.interlocutor.state.rawValue &&
+            conversationInterlocutorTester == conversation.interlocutor.tester
     }
 }
 
@@ -121,17 +153,21 @@ extension RemoteConversation {
             interlocutor: interlocutor,
             createdAt: createdAt.dateValue(),
             state: .created,
-            effectiveFrom: effectiveFrom?[userId]?.dateValue()
+            effectiveFrom: effectiveFrom?[userId]?.dateValue(),
+            blockedBy: blockedBy
         )
     }
     
     func toMap() -> [String: Any] {
-        var data = [
+        var data: [String: Any] = [
             ConversationField.Remote.conversationId: conversationId,
             ConversationField.Remote.participants: participants,
             ConversationField.Remote.createdAt: createdAt
-        ] as [String: Any]
+        ]
+        
         effectiveFrom.map { data[ConversationField.Remote.effectiveFrom] = $0 }
+        blockedBy.map { data[ConversationField.Remote.blockedBy] = $0 }
+        
         return data
     }
 }

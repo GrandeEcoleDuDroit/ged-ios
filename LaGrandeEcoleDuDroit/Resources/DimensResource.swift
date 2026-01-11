@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct Dimens {
+struct DimensResource {
     static let extraSmallPadding: CGFloat = 4
     static let smallPadding: CGFloat = 8
     static let smallMediumPadding: CGFloat = 12

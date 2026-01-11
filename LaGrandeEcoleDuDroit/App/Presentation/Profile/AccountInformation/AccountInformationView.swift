@@ -58,7 +58,7 @@ private struct AccountInformationView: View {
     @State private var activeSheet: AccountInformationViewSheet?
     
     var body: some View {
-        VStack(spacing: Dimens.mediumPadding) {
+        VStack(spacing: DimensResource.mediumPadding) {
             AccountInformationPicture(
                 url: user.profilePictureUrl,
                 image: profilePictureImage,
@@ -100,7 +100,7 @@ private struct AccountInformationView: View {
         .sheet(item: $activeSheet) {
             switch $0 {
                 case .accountInformation:
-                    SheetContainer(fraction: Dimens.sheetFraction(itemCount: user.profilePictureUrl == nil ? 1 : 2)) {
+                    SheetContainer(fraction: DimensResource.sheetFraction(itemCount: user.profilePictureUrl == nil ? 1 : 2)) {
                         SheetItem(
                             icon: Image(systemName: "photo"),
                             text: stringResource(.newProfilePicture),

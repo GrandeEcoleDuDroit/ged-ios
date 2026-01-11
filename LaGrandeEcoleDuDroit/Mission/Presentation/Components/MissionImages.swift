@@ -110,7 +110,7 @@ struct DefaultMissionImage: View {
         Image(systemName: "target")
             .resize(scale: scale)
             .foregroundStyle(.defaultImageForeground)
-            .padding(Dimens.mediumPadding)
+            .padding(DimensResource.mediumPadding)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(.surfaceVariant)
     }
