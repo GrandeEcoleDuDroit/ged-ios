@@ -32,8 +32,9 @@ class ClearDataUseCase {
         userRepository.deleteLocalUser()
         try? await messageRepository.deleteLocalMessages()
         try? await conversationRepository.deleteLocalConversations()
-        conversationMessageRepository.deleteConversationMessage()
+        conversationMessageRepository.deleteConversationMessages()
         try? await announcementRepository.deleteLocalAnnouncements()
         try? await missionRepository.deleteLocalMissions()
+        blockedUserRepository.deleteLocalBlockedUsers()
     }
 }

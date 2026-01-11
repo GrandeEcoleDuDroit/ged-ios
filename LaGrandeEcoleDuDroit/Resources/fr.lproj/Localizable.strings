@@ -80,6 +80,7 @@
 "invalid_image_format_error" = "L'image a un format invalide.";
 "unauthorized_error" = "Vous devez être authentifié pour effectuer cette action.";
 "bad_request_error" = "La requête n'a pu aboutir.";
+"nil_data_error" = "Données nulle";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";

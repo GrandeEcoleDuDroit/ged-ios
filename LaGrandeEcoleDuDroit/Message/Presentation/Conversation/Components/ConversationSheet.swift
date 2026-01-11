@@ -22,7 +22,7 @@ private struct DefaultAnnouncementSheet: View {
     let onDeleteClick: () -> Void
     
     var body: some View {
-        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
+        SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 1)) {
             SheetItem(
                 icon: Image(systemName: "trash"),
                 text: stringResource(.delete),
@@ -38,7 +38,7 @@ private struct ErrorConversationSheet: View {
     let onDeleteClick: () -> Void
     
     var body: some View {
-        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
+        SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
             SheetItem(
                 icon: Image(systemName: "arrow.clockwise"),
                 text: stringResource(.retry),

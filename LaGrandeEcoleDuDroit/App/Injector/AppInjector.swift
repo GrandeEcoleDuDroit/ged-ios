@@ -66,7 +66,6 @@ class AppInjector: Injector {
         
         container.register(FetchDataUseCase.self) { resolver in
             FetchDataUseCase(
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 fetchBlockedUsersUseCase: CommonInjector.shared.resolve(FetchBlockedUsersUseCase.self),
                 fetchAnnouncementsUseCase: NewsInjector.shared.resolve(FetchAnnouncementsUseCase.self),
                 fetchMissionsUseCase: MissionInjector.shared.resolve(FetchMissionsUseCase.self)
@@ -76,14 +75,14 @@ class AppInjector: Injector {
         container.register(CheckUserValidityUseCase.self) { resolver in
             CheckUserValidityUseCase(
                 authenticationRepository: AuthenticationInjector.shared.resolve(AuthenticationRepository.self),
-                userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
+                userRepository: CommonInjector.shared.resolve(UserRepository.self)
             )
         }
         
         // View models
         container.register(MainViewModel.self) { resolver in
             MainViewModel(
+                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
                 listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!,

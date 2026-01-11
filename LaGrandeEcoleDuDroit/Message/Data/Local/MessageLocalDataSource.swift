@@ -51,8 +51,8 @@ class MessageLocalDataSource {
         try await messageActor.getLastMessage(conversationId: conversationId)
     }
     
-    func getUnreadMessagesByUser(conversationId: String, userId: String) async throws -> [Message] {
-        try await messageActor.getUnreadMessagesByUser(conversationId: conversationId, userId: userId)
+    func getUserUnseenMessages(conversationId: String, userId: String) async throws -> [Message] {
+        try await messageActor.getUserUnseenMessages(conversationId: conversationId, userId: userId)
     }
     
     func getUnsentMessages() async throws -> [Message] {
@@ -71,8 +71,12 @@ class MessageLocalDataSource {
         try await messageActor.updateMessage(message: message)
     }
     
-    func updateSeenMessages(conversationId: String, userId: String) async throws {
-        try await messageActor.updateSeenMessages(conversationId: conversationId, userId: userId)
+    func setMessagesSeen(conversationId: String, currentUserId: String) async throws {
+        try await messageActor.setMessagesSeen(conversationId: conversationId, userId: currentUserId)
+    }
+    
+    func setMessageSeen(messageId: String) async throws {
+        try await messageActor.setMessageSeen(messageId: messageId)
     }
     
     func deleteMessage(message: Message) async throws -> Message? {

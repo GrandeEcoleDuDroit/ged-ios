@@ -4,7 +4,7 @@ struct MissionDetailsTitleAndDescriptionSection: View {
     let mission: Mission
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
             Text(mission.title)
                 .font(MissionUtilsPresentation.titleFont)
                 .fontWeight(.semibold)
@@ -23,7 +23,7 @@ struct MissionDetailsInformationSection: View {
     let mission: Mission
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
             SectionTitle(title: stringResource(.information))
             
             MissionInformationValuesItem(mission: mission)
@@ -38,7 +38,7 @@ struct MissionDetailsManagerSection: View {
     let onManagerClick: (User) -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.smallPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.smallPadding) {
             SectionTitle(title: stringResource(.managers))
                 .padding(.horizontal)
             
@@ -70,7 +70,7 @@ struct MissionDetailsParticipantSection: View {
     let onParticipantClick: (User) -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.smallPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.smallPadding) {
             SectionTitle(title: stringResource(.participants))
                 .padding(.horizontal)
             
@@ -106,12 +106,12 @@ struct MissionDetailsTaskSection: View {
     let missionTasks: [MissionTask]
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.smallMediumPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.smallMediumPadding) {
             SectionTitle(title: stringResource(.tasks))
             
-            VStack(spacing: Dimens.smallPadding) {
+            VStack(spacing: DimensResource.smallPadding) {
                 ForEach(missionTasks) { missionTask in
-                    HStack(alignment: .top, spacing: Dimens.smallPadding) {
+                    HStack(alignment: .top, spacing: DimensResource.smallPadding) {
                         Text("\u{2022}")
                             .font(.system(size: 24))
                             .padding(.top, -6)

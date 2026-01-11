@@ -10,7 +10,7 @@ extension View {
                     ProgressView(stringResource(.loading))
                         .padding()
                         .background(.ultraThinMaterial)
-                        .cornerRadius(Dimens.smallPadding)
+                        .cornerRadius(DimensResource.smallPadding)
                         .shadow(radius: 1)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                         .ignoresSafeArea()

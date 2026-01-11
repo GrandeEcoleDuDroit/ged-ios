@@ -34,7 +34,7 @@ private struct FirstRegistrationView: View {
     var body: some View {
         VStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+                VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
                     Text(stringResource(.enterNames))
                         .font(.title3)
                     

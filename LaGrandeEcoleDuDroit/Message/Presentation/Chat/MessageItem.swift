@@ -24,7 +24,7 @@ struct SentMessageItem: View {
                     Text(stringResource(.seen))
                         .foregroundStyle(.gray)
                         .font(.caption)
-                        .padding(.trailing, Dimens.smallMediumPadding)
+                        .padding(.trailing, DimensResource.smallMediumPadding)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
@@ -46,7 +46,7 @@ struct SentMessageItem: View {
                     EmptyView()
             }
         }
-        .padding(.leading, Dimens.veryExtraLargePadding)
+        .padding(.leading, DimensResource.veryExtraLargePadding)
         .frame(maxWidth: .infinity, alignment: .trailing)
     }
 }
@@ -80,7 +80,7 @@ struct ReceiveMessageItem: View {
                 onLongClick()
             }
         }
-        .padding(.trailing, Dimens.veryExtraLargePadding)
+        .padding(.trailing, DimensResource.veryExtraLargePadding)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -102,7 +102,7 @@ private struct MessageBubble: View {
                 .font(.caption)
         }
         .padding(.vertical, 10)
-        .padding(.horizontal, Dimens.mediumPadding)
+        .padding(.horizontal, DimensResource.mediumPadding)
         .background(backgroundColor)
         .clipShape(.rect(cornerRadius: 20))
     }
@@ -122,7 +122,7 @@ struct MessageInput: View {
                 axis: .vertical
             )
             .lineLimit(6)
-            .padding(.vertical, Dimens.smallPadding)
+            .padding(.vertical, DimensResource.smallPadding)
             .onChange(of: text, perform: onTextChange)
             
             if !text.isBlank() {
@@ -134,19 +134,19 @@ struct MessageInput: View {
                             .frame(width: 20, height: 20)
                     }
                 )
-                .padding(.horizontal, Dimens.mediumPadding)
+                .padding(.horizontal, DimensResource.mediumPadding)
                 .padding(.vertical, 8)
                 .background(.gedPrimary)
                 .foregroundStyle(.white)
                 .clipShape(.rect(cornerRadius: 20))
             }
         }
-        .padding(.leading, Dimens.mediumPadding)
-        .padding(.trailing, Dimens.smallPadding)
-        .padding(.vertical, Dimens.extraSmallPadding)
+        .padding(.leading, DimensResource.mediumPadding)
+        .padding(.trailing, DimensResource.smallPadding)
+        .padding(.vertical, DimensResource.extraSmallPadding)
         .background(.chatInputBackground)
         .clipShape(.rect(cornerRadius: 30))
-        .padding(.bottom, Dimens.smallPadding)
+        .padding(.bottom, DimensResource.smallPadding)
     }
     
     var messagePlaceholder: Text {
@@ -170,8 +170,8 @@ struct NewMessageIndicator: View {
                     .foregroundStyle(.black)
                     .font(.footnote)
                     .fontWeight(.medium)
-                    .padding(.horizontal, Dimens.largePadding)
-                    .padding(.vertical, Dimens.smallMediumPadding)
+                    .padding(.horizontal, DimensResource.largePadding)
+                    .padding(.vertical, DimensResource.smallMediumPadding)
                     .background(.white)
                     .clipShape(ShapeDefaults.small)
                     .shadow(radius: 10, x: 0, y: 0)
@@ -185,8 +185,8 @@ struct MessageBlockedUserIndicator: View {
     let onUnblockUserClick: () -> Void
     
     var body: some View {
-        VStack(spacing: Dimens.mediumPadding) {
-            VStack(spacing: Dimens.smallMediumPadding) {
+        VStack(spacing: DimensResource.mediumPadding) {
+            VStack(spacing: DimensResource.smallMediumPadding) {
                 Text(stringResource(.blockedUser))
                     .font(.headline)
                 
@@ -207,7 +207,7 @@ struct MessageBlockedUserIndicator: View {
             }
             .frame(maxWidth: .infinity, alignment: .center)
         }
-        .padding(.vertical, Dimens.smallMediumPadding)
+        .padding(.vertical, DimensResource.smallMediumPadding)
     }
 }
 

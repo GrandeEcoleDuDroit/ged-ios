@@ -1,4 +1,5 @@
 import Combine
+import Foundation
 
 class BlockedUserRemoteDataSource {
     private let blockedUserApi: BlockedUserApi
@@ -7,15 +8,15 @@ class BlockedUserRemoteDataSource {
         self.blockedUserApi = blockedUserApi
     }
     
-    func getBlockedUserIds(currentUserId: String) async throws -> Set<String> {
-        try await blockedUserApi.getBlockedUserIds(currentUserId: currentUserId).toSet()
+    func getBlockedUsers(currentUserId: String) async throws -> [BlockedUser] {
+        try await blockedUserApi.getBlockedUsers(currentUserId: currentUserId).map { $0.toBlockedUser() }
     }
     
-    func blockUser(currentUserId: String, blockedUserId: String) async throws {
-        try await blockedUserApi.blockUser(currentUserId: currentUserId, blockedUserId: blockedUserId)
+    func addBlockedUser(currentUserId: String, blockedUser: BlockedUser) async throws {
+        try await blockedUserApi.addBlockedUser(remoteBlockedUser: blockedUser.toRemote(currentUserId: currentUserId))
     }
     
     func removeBlockedUser(currentUserId: String, blockedUserId: String) async throws {
-        try await blockedUserApi.unblockUser(currentUserId: currentUserId, blockedUserId: blockedUserId)
+        try await blockedUserApi.removeBlockedUser(currentUserId: currentUserId, blockedUserId: blockedUserId)
     }
 }

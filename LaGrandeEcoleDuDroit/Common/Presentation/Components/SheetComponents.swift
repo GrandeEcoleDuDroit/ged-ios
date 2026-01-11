@@ -28,7 +28,7 @@ struct ReportSheet<T: CustomStringConvertible>: View {
     
     init(
         items: [T],
-        fraction: CGFloat = Dimens.reportSheetFraction(itemCount: 1),
+        fraction: CGFloat = DimensResource.reportSheetFraction(itemCount: 1),
         onReportClick: @escaping (T) -> Void
     ) {
         self.items = items
@@ -37,7 +37,7 @@ struct ReportSheet<T: CustomStringConvertible>: View {
     }
     
     var body: some View {
-        VStack(spacing: Dimens.largePadding) {
+        VStack(spacing: DimensResource.largePadding) {
             Text(stringResource(.report))
                 .font(.headline)
                 .frame(maxWidth: .infinity, alignment: .center)

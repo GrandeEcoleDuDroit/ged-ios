@@ -12,14 +12,15 @@ class ChatViewModel: ViewModel {
     
     @Published var uiState = ChatUiState()
     @Published private(set) var event: SingleUiEvent? = nil
-    private let newMessagesEventSubject = PassthroughSubject<Bool, Never>()
-    var newMessagesEventPublisher: AnyPublisher<Bool, Never> {
+    private let newMessagesEventSubject = PassthroughSubject<Message, Never>()
+    var newMessagesEventPublisher: AnyPublisher<Message, Never> {
         newMessagesEventSubject.eraseToAnyPublisher()
     }
     private var messagesDict: [String:Message] = [:]
     private var conversation: Conversation
     private let currentUser: User?
     private var cancellables: Set<AnyCancellable> = []
+    private var seeMessagesCancellable: AnyCancellable?
     
     init(
         conversation: Conversation,
@@ -45,7 +46,6 @@ class ChatViewModel: ViewModel {
         listenMessages()
         listenConversationChanges()
         listenBlockedUserIds()
-        seeMessages()
         notificationMessageManager.clearNotifications(conversationId: conversation.id)
     }
     
@@ -137,6 +137,19 @@ class ChatViewModel: ViewModel {
         }
     }
     
+    func startSeeingMessages() {
+        seeMessages()
+        seeMessagesCancellable = newMessagesEventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message in
+                self?.seeMessage(message)
+            }
+    }
+    
+    func stopSeeingMessages() {
+        seeMessagesCancellable?.cancel()
+    }
+    
     private func performRequest(block: @escaping () async throws -> Void) {
         performUiBlockingRequest(
             block: block,
@@ -161,10 +174,9 @@ class ChatViewModel: ViewModel {
                 change.inserted.forEach { message in
                     if message.conversationId == self?.conversation.id {
                         self?.messagesDict[message.id] = message
-                        self?.seeMessage(message)
                         hasChanged = true
                         if message.senderId == self?.conversation.interlocutor.id {
-                            self?.newMessagesEventSubject.send(true)
+                            self?.newMessagesEventSubject.send(message)
                         }
                     }
                 }
@@ -172,7 +184,6 @@ class ChatViewModel: ViewModel {
                 change.updated.forEach { message in
                     if message.conversationId == self?.conversation.id {
                         self?.messagesDict[message.id] = message
-                        self?.seeMessage(message)
                         hasChanged = true
                     }
                 }
@@ -215,17 +226,17 @@ class ChatViewModel: ViewModel {
         guard let currentUser else { return }
         
         Task {
-            try? await messageRepository.updateSeenMessages(
+            try? await messageRepository.setMessagesSeen(
                 conversationId: conversation.id,
                 currentUserId: currentUser.id
             )
         }
     }
     
-    private func seeMessage(_ message: Message) {
+    func seeMessage(_ message: Message) {
         if !message.seen && message.senderId == conversation.interlocutor.id {
             Task {
-                try? await messageRepository.updateSeenMessage(message: message)
+                try? await messageRepository.setMessageSeen(message: message)
             }
         }
     }
@@ -249,10 +260,10 @@ class ChatViewModel: ViewModel {
     
     private func listenBlockedUserIds() {
         let interlocutorId = conversation.interlocutor.id
-        blockedUserRepository.blockedUserIds
+        blockedUserRepository.blockedUsers
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] blockedUserIds in
-                self?.uiState.blockedUser = blockedUserIds.contains(interlocutorId)
+            .sink { [weak self] blockedUsers in
+                self?.uiState.isBlocked = blockedUsers.has(interlocutorId)
             }.store(in: &cancellables)
     }
     
@@ -260,7 +271,7 @@ class ChatViewModel: ViewModel {
         fileprivate(set) var messages: [Message] = []
         var messageText: String = ""
         fileprivate(set) var loading: Bool = false
-        fileprivate(set) var blockedUser: Bool = false
+        fileprivate(set) var isBlocked: Bool = false
         fileprivate(set) var canLoadMoreMessages: Bool = true
     }
     

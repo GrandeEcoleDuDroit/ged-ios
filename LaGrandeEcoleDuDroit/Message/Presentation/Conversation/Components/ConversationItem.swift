@@ -183,7 +183,7 @@ private struct ErrorConversationItem: View {
                 }
             },
             leadingContent: {
-                HStack(spacing: Dimens.mediumPadding) {
+                HStack(spacing: DimensResource.mediumPadding) {
                     Image(systemName: "exclamationmark.circle")
                         .foregroundStyle(.red)
                     

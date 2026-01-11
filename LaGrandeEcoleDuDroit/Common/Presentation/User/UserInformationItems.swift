@@ -16,7 +16,7 @@ struct UserInformationItems: View {
     }
     
     var body: some View {
-        VStack(spacing: Dimens.mediumPadding) {
+        VStack(spacing: DimensResource.mediumPadding) {
             ForEach(values, id: \.label) { item in
                 InformationItem(
                     title: item.label,

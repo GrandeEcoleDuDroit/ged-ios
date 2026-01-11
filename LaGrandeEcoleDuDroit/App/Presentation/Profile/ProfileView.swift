@@ -49,7 +49,7 @@ private struct ProfileView: View {
             if let user {
                 Section {
                     NavigationListItem(onClick: onAccountInfosClick) {
-                        HStack(spacing: Dimens.mediumPadding) {
+                        HStack(spacing: DimensResource.mediumPadding) {
                             ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
                             
                             VStack(alignment: .leading) {

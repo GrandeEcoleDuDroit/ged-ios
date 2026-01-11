@@ -2,8 +2,8 @@ import SwiftUI
 
 extension Image {
     func resize(
-        width: CGFloat = Dimens.defaultImageSize,
-        height: CGFloat = Dimens.defaultImageSize,
+        width: CGFloat = DimensResource.defaultImageSize,
+        height: CGFloat = DimensResource.defaultImageSize,
         scale: CGFloat = 1.0
     ) -> some View {
         self

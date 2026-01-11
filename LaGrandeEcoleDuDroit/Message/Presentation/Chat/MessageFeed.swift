@@ -6,7 +6,7 @@ struct MessageFeed: View {
     let conversation: Conversation
     let canLoadMoreMessages: Bool
     let loadMoreMessages: (Int) -> Void
-    let newMessagesEventPublisher: AnyPublisher<Bool, Never>
+    let newMessagesEventPublisher: AnyPublisher<Message, Never>
     let onErrorMessageClick: (Message) -> Void
     let onReceivedMessageLongClick: (Message) -> Void
     let onInterlocutorProfilePictureClick: () -> Void
@@ -102,7 +102,7 @@ private struct MessageListContent: View {
         if condition.isOldestMessage || !condition.sameDay {
             Text(message.date.formatted(date: .long, time: .omitted))
                 .foregroundStyle(.gray)
-                .padding(.vertical, Dimens.largePadding)
+                .padding(.vertical, DimensResource.largePadding)
                 .font(.footnote)
                 .frame(maxWidth: .infinity, alignment: .center)
         }
@@ -116,11 +116,11 @@ private struct MessageListContent: View {
         return if small {
             2
         } else if smallMedium {
-            Dimens.smallMediumPadding
+            DimensResource.smallMediumPadding
         } else if zero {
             0
         } else {
-            Dimens.mediumPadding
+            DimensResource.mediumPadding
         }
     }
 }

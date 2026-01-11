@@ -9,6 +9,7 @@ struct ChatDestination: View {
     @StateObject private var viewModel: ChatViewModel
     @State private var showErrorAlert = false
     @State private var errorMessage: String = ""
+    @Environment(\.scenePhase) private var scenePhase
     
     init(
         conversation: Conversation,
@@ -29,7 +30,7 @@ struct ChatDestination: View {
             messages: viewModel.uiState.messages,
             messageText: $viewModel.uiState.messageText,
             loading: viewModel.uiState.loading,
-            blockedUser: viewModel.uiState.blockedUser,
+            isBlocked: viewModel.uiState.isBlocked,
             canLoadMoreMessages: viewModel.uiState.canLoadMoreMessages,
             newMessagesEventPublisher: viewModel.newMessagesEventPublisher,
             onSendMessagesClick: viewModel.sendMessage,
@@ -54,6 +55,16 @@ struct ChatDestination: View {
                 }
             }
         }
+        .onAppear {
+            viewModel.startSeeingMessages()
+        }
+        .onChange(of: scenePhase) { phase in
+            switch phase {
+                case .active: viewModel.startSeeingMessages()
+                case .background: viewModel.stopSeeingMessages()
+                default: break
+            }
+        }
         .alert(
             errorMessage,
             isPresented: $showErrorAlert,
@@ -72,9 +83,9 @@ private struct ChatView: View {
     let messages: [Message]
     @Binding var messageText: String
     let loading: Bool
-    let blockedUser: Bool
+    let isBlocked: Bool
     let canLoadMoreMessages: Bool
-    let newMessagesEventPublisher: AnyPublisher<Bool, Never>
+    let newMessagesEventPublisher: AnyPublisher<Message, Never>
     
     let onSendMessagesClick: () -> Void
     let onMessageTextChange: (String) -> Void
@@ -114,7 +125,7 @@ private struct ChatView: View {
         )
         .safeAreaInset(edge: .bottom) {
             MessageBottomSection(
-                blockedUser: blockedUser,
+                isBlocked: isBlocked,
                 messageText: $messageText,
                 onMessageTextChange: onMessageTextChange,
                 onSendMessagesClick: onSendMessagesClick,
@@ -167,7 +178,7 @@ private struct ChatView: View {
                 case let .messageReport(message):
                     ReportSheet(
                         items: MessageReport.Reason.allCases,
-                        fraction: Dimens.reportSheetFraction(itemCount: MessageReport.Reason.allCases.count),
+                        fraction: DimensResource.reportSheetFraction(itemCount: MessageReport.Reason.allCases.count),
                         onReportClick: { reason in
                             activeSheet = nil
                             onReportMessageClick(
@@ -247,7 +258,7 @@ private struct SentMessageSheet: View {
     let onDeleteMessage: () -> Void
     
     var body: some View {
-        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
+        SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
             SheetItem(
                 icon: Image(systemName: "paperplane"),
                 text: stringResource(.resend),
@@ -268,7 +279,7 @@ private struct ReceivedMessageSheet: View {
     let onReportClick: () -> Void
     
     var body: some View {
-        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
+        SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 1)) {
             SheetItem(
                 icon: Image(systemName: "exclamationmark.bubble"),
                 text: stringResource(.report),
@@ -280,7 +291,7 @@ private struct ReceivedMessageSheet: View {
 }
 
 private struct MessageBottomSection: View {
-    let blockedUser: Bool
+    let isBlocked: Bool
     @Binding var messageText: String
     let onMessageTextChange: (String) -> Void
     let onSendMessagesClick: () -> Void
@@ -288,7 +299,7 @@ private struct MessageBottomSection: View {
     let onUnblockUserClick: () -> Void
     
     var body: some View {
-        if blockedUser {
+        if isBlocked {
             MessageBlockedUserIndicator(
                 onDeleteChatClick: onDeleteChatClick,
                 onUnblockUserClick: onUnblockUserClick
@@ -325,7 +336,7 @@ private enum ChatViewSheet: Identifiable {
             messages: messagesFixture,
             messageText: .constant(""),
             loading: false,
-            blockedUser: false,
+            isBlocked: false,
             canLoadMoreMessages: true,
             newMessagesEventPublisher: Empty().eraseToAnyPublisher(),
             onSendMessagesClick: {},

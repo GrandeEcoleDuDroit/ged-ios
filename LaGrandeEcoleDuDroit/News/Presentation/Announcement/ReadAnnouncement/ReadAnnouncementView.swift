@@ -70,7 +70,7 @@ private struct ReadAnnouncementView: View {
     
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: Dimens.mediumPadding) {
+            VStack(spacing: DimensResource.mediumPadding) {
                 AnnouncementHeader(
                     announcement: announcement,
                     onAuthorClick: { onAuthorClick(announcement.author) }
@@ -114,7 +114,7 @@ private struct ReadAnnouncementView: View {
                 case .announcementReport:
                     ReportSheet(
                         items: AnnouncementReport.Reason.allCases,
-                        fraction: Dimens.reportSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
+                        fraction: DimensResource.reportSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
                         onReportClick: { reason in
                             activeSheet = nil
                             onReportAnnouncementClick(

@@ -118,8 +118,8 @@ struct ProfilePicture: View {
         if let url {
             CacheAsyncImage(url: url)
                 .cacheImageFrame(
-                    width: Dimens.defaultImageSize * scale,
-                    height: Dimens.defaultImageSize * scale
+                    width: DimensResource.defaultImageSize * scale,
+                    height: DimensResource.defaultImageSize * scale
                 )
                 .clipShape(.circle)
         } else {
@@ -137,8 +137,8 @@ struct ProfilePictureImage: View {
             .resizable()
             .scaledToFill()
             .frame(
-                width: Dimens.defaultImageSize * scale,
-                height: Dimens.defaultImageSize * scale
+                width: DimensResource.defaultImageSize * scale,
+                height: DimensResource.defaultImageSize * scale
             )
             .clipShape(.circle)
     }
@@ -152,8 +152,8 @@ private struct DefaultProfilePicture: View {
             .resizable()
             .scaledToFill()
             .frame(
-                width: Dimens.defaultImageSize * scale,
-                height: Dimens.defaultImageSize * scale
+                width: DimensResource.defaultImageSize * scale,
+                height: DimensResource.defaultImageSize * scale
             )
             .clipShape(.circle)
     }
@@ -178,7 +178,7 @@ private struct ErrorImage: View {
 
 #Preview {
     ScrollView {
-        VStack(spacing: Dimens.mediumPadding) {
+        VStack(spacing: DimensResource.mediumPadding) {
             CacheAsyncImage(url: "https://cdn.britannica.com/16/234216-050-C66F8665/beagle-hound-dog.jpg")
                 .cacheImageFrame(width: 200, height: 120)
             Text("Simple async image").font(.caption)

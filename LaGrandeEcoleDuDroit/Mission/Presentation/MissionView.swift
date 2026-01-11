@@ -82,7 +82,7 @@ private struct MissionView: View {
                             onOptionsClick: { activeSheet = .mission(mission) }
                         )
                         .padding(.horizontal)
-                        .padding(.vertical, Dimens.smallMediumPadding)
+                        .padding(.vertical, DimensResource.smallMediumPadding)
                     }
                 )
             } else {
@@ -130,7 +130,7 @@ private struct MissionView: View {
                 case let .missionReport(mission):
                     ReportSheet(
                         items: MissionReport.Reason.allCases,
-                        fraction: Dimens.reportSheetFraction(itemCount: MissionReport.Reason.allCases.count),
+                        fraction: DimensResource.reportSheetFraction(itemCount: MissionReport.Reason.allCases.count),
                         onReportClick: { reason in
                         activeSheet = nil
                         onReportMissionClick(

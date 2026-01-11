@@ -1,32 +1,6 @@
-import FirebaseFirestore
+import Foundation
 
 class BlockedUserApiImpl: BlockedUserApi {
-    private let blockedUserServerApi: BlockedUserServerApi
-    
-    init(blockedUserServerApi: BlockedUserServerApi) {
-        self.blockedUserServerApi = blockedUserServerApi
-    }
-    
-    func getBlockedUserIds(currentUserId: String) async throws -> [String] {
-        try await blockedUserServerApi.getBlockedUserIds(currentUserId: currentUserId)
-    }
-    
-    func blockUser(currentUserId: String, blockedUserId: String) async throws {
-        try await blockedUserServerApi.addBlockedUser(
-            currentUserId: currentUserId,
-            blockedUserId: blockedUserId
-        )
-    }
-    
-    func unblockUser(currentUserId: String, blockedUserId: String) async throws {
-        try await blockedUserServerApi.removeBlockedUser(
-            currentUserId: currentUserId,
-            blockedUserId: blockedUserId
-        )
-    }
-}
-
-class BlockedUserServerApi {
     private let tokenProvider: TokenProvider
     private let base = "/blocked-users"
     
@@ -34,30 +8,37 @@ class BlockedUserServerApi {
         self.tokenProvider = tokenProvider
     }
     
-    func getBlockedUserIds(currentUserId: String) async throws -> [String] {
-        let url = RequestUtils.getUrl(base: base)
+    func getBlockedUsers(currentUserId: String) async throws -> [RemoteBlockedUser] {
+        let url = RequestUtils.getUrl(base: base, endPoint: "/\(currentUserId)")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.simpleGetRequest(url: url, authToken: authToken)
         
-        return try await RequestUtils.sendDataRequest(session: session, request: request)!
+        if let blockedUsers: [RemoteBlockedUser] = try await RequestUtils.sendDataRequest(session: session, request: request) {
+            return blockedUsers
+        } else {
+            throw NetworkError.emptyResponse
+        }
     }
     
-    func addBlockedUser(currentUserId: String, blockedUserId: String) async throws {
+    func addBlockedUser(remoteBlockedUser: RemoteBlockedUser) async throws {
         let url = RequestUtils.getUrl(base: base, endPoint: "/create")
         let session = RequestUtils.getDefaultSession()
-        let dataToSend = [BlockedUserField.Server.blockedUserId: blockedUserId]
         let authToken = await tokenProvider.getAuthToken()
-        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: dataToSend, authToken: authToken)
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: remoteBlockedUser, authToken: authToken)
         
         try await RequestUtils.sendRequest(session: session, request: request)
     }
     
     func removeBlockedUser(currentUserId: String, blockedUserId: String) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/\(blockedUserId)")
+        let url = RequestUtils.getUrl(base: base, endPoint: "/delete")
         let session = RequestUtils.getDefaultSession()
+        let data = [
+            BlockedUserField.Remote.userId: currentUserId,
+            BlockedUserField.Remote.blockedUserId: blockedUserId
+        ]
         let authToken = await tokenProvider.getAuthToken()
-        let request = RequestUtils.simpleDeleteRequest(url: url, authToken: authToken)
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: data, authToken: authToken)
         
         try await RequestUtils.sendRequest(session: session, request: request)
     }

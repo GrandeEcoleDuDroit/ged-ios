@@ -42,12 +42,8 @@ class CommonInjector: Injector {
             NotificationApiImpl(fcmApi: resolver.resolve(FcmApi.self)!)
         }.inObjectScope(.container)
         
-        container.register(BlockedUserServerApi.self) { _ in
-            BlockedUserServerApi(tokenProvider: AppInjector.shared.resolve(TokenProvider.self))
-        }.inObjectScope(.container)
-        
-        container.register(BlockedUserApi.self) { resolver in
-            BlockedUserApiImpl(blockedUserServerApi: resolver.resolve(BlockedUserServerApi.self)!)
+        container.register(BlockedUserApi.self) { _ in
+            BlockedUserApiImpl(tokenProvider: AppInjector.shared.resolve(TokenProvider.self))
         }.inObjectScope(.container)
         
         // Data sources

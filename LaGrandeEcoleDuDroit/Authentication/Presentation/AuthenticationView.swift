@@ -48,7 +48,7 @@ private struct AuthenticationView: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: Dimens.largePadding) {
+            VStack(spacing: DimensResource.largePadding) {
                 HeaderSection()
                 
                 CredentialsInputs(
@@ -59,7 +59,7 @@ private struct AuthenticationView: View {
                     passwordError: passwordError,
                     errorMessage: errorMessage,
                 )
-                .padding(.top, Dimens.mediumPadding)
+                .padding(.top, DimensResource.mediumPadding)
                 
                 Buttons(
                     loading: loading,
@@ -80,7 +80,7 @@ private struct HeaderSection: View {
     private let imageHeight = UIScreen.main.bounds.height * 0.2
     
     var body: some View {
-        VStack(spacing: Dimens.smallPadding) {
+        VStack(spacing: DimensResource.smallPadding) {
             Image(.gedLogo)
                 .resizable()
                 .scaledToFit()
@@ -109,7 +109,7 @@ private struct CredentialsInputs: View {
     let errorMessage: String?
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
             OutlinedTextField(
                 stringResource(.email),
                 text: $email,
@@ -143,7 +143,7 @@ private struct Buttons: View {
     let onRegisterClick: () -> Void
     
     var body: some View {
-        VStack(spacing: Dimens.mediumPadding) {
+        VStack(spacing: DimensResource.mediumPadding) {
             LoadingButton(
                 label: stringResource(.login),
                 loading: loading,

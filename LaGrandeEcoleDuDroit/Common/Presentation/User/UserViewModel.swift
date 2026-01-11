@@ -20,7 +20,7 @@ class UserViewModel: ViewModel {
         self.blockedUserRepository = blockedUserRepository
         
         listenCurrentUser()
-        listenBlockedUserIds(userId: userId)
+        listenBlockedUsers(userId: userId)
     }
     
     func reportUser(report: UserReport) {
@@ -35,7 +35,10 @@ class UserViewModel: ViewModel {
         }
         
         performRequest { [weak self] in
-            try await self?.blockedUserRepository.addBlockedUser(currentUserId: currentUserId, blockedUserId: userId)
+            try await self?.blockedUserRepository.addBlockedUser(
+                currentUserId: currentUserId,
+                blockedUser: BlockedUser(userId: userId, date: Date())
+            )
         }
     }
     
@@ -76,11 +79,11 @@ class UserViewModel: ViewModel {
             .store(in: &cancellables)
     }
     
-    private func listenBlockedUserIds(userId: String) {
-        blockedUserRepository.blockedUserIds
+    private func listenBlockedUsers(userId: String) {
+        blockedUserRepository.blockedUsers
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] blockedUserIds in
-                self?.uiState.blockedUser = blockedUserIds.contains(userId)
+            .sink { [weak self] blockedUsers in
+                self?.uiState.isBlocked = blockedUsers.has(userId)
             }
             .store(in: &cancellables)
     }
@@ -88,6 +91,6 @@ class UserViewModel: ViewModel {
     struct UserUiState {
         var currentUser: User? = nil
         var loading: Bool = false
-        var blockedUser: Bool = false
+        var isBlocked: Bool = false
     }
 }

@@ -9,7 +9,7 @@ struct RecentAnnouncementSection: View {
         
     var body: some View {
         VStack(alignment: .leading) {
-            HStack(spacing: Dimens.smallPadding) {
+            HStack(spacing: DimensResource.smallPadding) {
                 SectionTitle(title: stringResource(.recentAnnouncements))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 

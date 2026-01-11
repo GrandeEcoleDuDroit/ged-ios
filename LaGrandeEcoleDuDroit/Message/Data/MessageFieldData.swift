@@ -7,6 +7,7 @@ struct MessageField {
         static let content = "content"
         static let timestamp = "timestamp"
         static let seen = "seen"
+        static let notVisibleFor = "notVisibleFor"
     }
     
     struct Local {

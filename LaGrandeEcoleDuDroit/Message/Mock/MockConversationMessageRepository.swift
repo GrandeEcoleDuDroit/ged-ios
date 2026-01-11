@@ -5,5 +5,5 @@ class MockConversationMessageRepository: ConversationMessageRepository {
         Empty().eraseToAnyPublisher()
     }
     
-    func deleteConversationMessage() {}
+    func deleteConversationMessages() {}
 }

@@ -3,14 +3,14 @@ import SwiftUI
 struct TextIcon: View {
     let icon: Image
     let text: String
-    var spacing: CGFloat? = Dimens.mediumPadding
+    var spacing: CGFloat? = DimensResource.mediumPadding
     
     var body: some View {
         HStack(alignment: .center, spacing: spacing) {
             icon
                 .resizable()
                 .scaledToFit()
-                .frame(width: Dimens.iconSize, height: Dimens.iconSize)
+                .frame(width: DimensResource.iconSize, height: DimensResource.iconSize)
             
             Text(text)
         }

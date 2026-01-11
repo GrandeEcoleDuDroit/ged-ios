@@ -1,10 +1,10 @@
 import Foundation
 
-func stringResource(_ value: Strings) -> String {
+func stringResource(_ value: StringResource) -> String {
     NSLocalizedString(value.rawValue, comment: "")
 }
 
-func stringResource(_ value: Strings, _ args: CVarArg...) -> String {
+func stringResource(_ value: StringResource, _ args: CVarArg...) -> String {
     String(
         format: NSLocalizedString(value.rawValue, comment: ""),
         arguments: args

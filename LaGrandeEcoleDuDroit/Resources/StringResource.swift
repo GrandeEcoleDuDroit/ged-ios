@@ -1,4 +1,4 @@
-enum Strings: String {
+enum StringResource: String {
     // App
     case privacy = "privacy"
     case blockedUsers = "blocked_users"
@@ -80,6 +80,7 @@ enum Strings: String {
     case invalidImageFormatError = "invalid_image_format_error"
     case unauthorizedError = "unauthorized_error"
     case badRequestError = "bad_request_error"
+    case nilDataError = "nil_data_error"
 
     // Authentication
     case authenticationPageTitle = "authentication_page_title"
