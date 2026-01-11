@@ -17,7 +17,7 @@ class MessageRemoteDataSource {
     }
     
     func createMessage(message: Message) async throws {
-        try await messageApi.createMessage(message: message)
+        try await messageApi.createMessage(remoteMessage: message.toRemote())
     }
     
     func setMessagesSeen(message: Message) async throws {
