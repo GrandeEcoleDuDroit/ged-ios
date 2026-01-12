@@ -2,9 +2,9 @@ import SwiftUI
 import PhotosUI
 
 struct MissionFormImageSection: View {
-    @Binding var imageData: Data?
+    let imageData: Data?
     let missionState: Mission.MissionState
-    let onImageChange: () -> Void
+    let onImageChange: (Data) -> Void
     let onImageRemove: () -> Void
     
     @State private var selectedItem: PhotosPickerItem?
@@ -34,12 +34,7 @@ struct MissionFormImageSection: View {
             }
             
             if imageData != nil || missionState.imageReference != nil {
-                Button(
-                    action: {
-                        imageData = nil
-                        onImageRemove()
-                    }
-                ) {
+                Button(action: onImageRemove) {
                     Image(systemName: "xmark")
                 }
                 .padding(10)
@@ -55,8 +50,7 @@ struct MissionFormImageSection: View {
         .contentShape(Rectangle())
         .task(id: selectedItem) {
             if let data = try? await selectedItem?.loadTransferable(type: Data.self) {
-                imageData = data
-                onImageChange()
+                onImageChange(data)
             }
         }
     }
@@ -80,9 +74,9 @@ private struct EmptyImage: View {
 
 #Preview {
     MissionFormImageSection(
-        imageData: .constant(nil),
+        imageData: nil,
         missionState: .draft,
-        onImageChange: {},
+        onImageChange: { _ in },
         onImageRemove: {}
     )
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)

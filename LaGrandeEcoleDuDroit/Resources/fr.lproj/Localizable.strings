@@ -81,6 +81,8 @@
 "unauthorized_error" = "Vous devez être authentifié pour effectuer cette action.";
 "bad_request_error" = "La requête n'a pu aboutir.";
 "nil_data_error" = "Données nulle";
+"image_too_large_error_title" = "Image trop volumineuse";
+"image_too_large_error_message" = "La taille totale de l'image doit être inférieur à %@.";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";

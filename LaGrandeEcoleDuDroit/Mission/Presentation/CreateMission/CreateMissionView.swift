@@ -6,6 +6,9 @@ struct CreateMissionDestination: View {
     
     @StateObject private var viewModel = MissionMainThreadInjector.shared.resolve(CreateMissionViewModel.self)
     @State private var path: [CreateMissionSubDestination] = []
+    @State private var showImageErrorAlert: Bool = false
+    @State private var errorTitle: String = ""
+    @State private var errorMessage: String = ""
     
     var body: some View {
         NavigationStack(path: $path) {
@@ -39,6 +42,18 @@ struct CreateMissionDestination: View {
                 onRemoveTaskClick: viewModel.onRemoveMissionTask,
                 onCreateMissionClick: viewModel.createMission,
                 onBackClick: onBackClick
+            )
+            .alert(
+                errorTitle,
+                isPresented: $showImageErrorAlert,
+                actions: {
+                    Button(stringResource(.ok)) {
+                        showImageErrorAlert = false
+                    }
+                },
+                message: {
+                    Text(errorMessage)
+                }
             )
             .navigationDestination(for: CreateMissionSubDestination.self) { destination in
                 switch destination {
@@ -120,10 +135,11 @@ private struct CreateMissionView: View {
     let onBackClick: () -> Void
     
     @State private var imageData: Data?
+    @State private var showImageErrorAlert: Bool = false
 
     var body: some View {
         MissionForm(
-            imageData: $imageData,
+            imageData: imageData,
             title: $title,
             description: $description,
             startDate: startDate,
@@ -136,8 +152,14 @@ private struct CreateMissionView: View {
             missionTasks: missionTasks,
             missionState: missionState,
             maxParticipantsError: maxParticipantsError,
-            onImageChange: {},
-            onImageRemove: {},
+            onImageChange: {
+                if $0.count < CommonUtilsPresentation.maxImageFileSize {
+                    imageData = $0
+                } else {
+                    showImageErrorAlert = true
+                }
+            },
+            onImageRemove: { imageData = nil },
             onTitleChange: onTitleChange,
             onDescriptionChange: onDescriptionChange,
             onStartDateChange: onStartDateChange,
@@ -162,7 +184,15 @@ private struct CreateMissionView: View {
             }
             
             ToolbarItem(placement: .confirmationAction) {
-                Button(action: { onCreateMissionClick(imageData) }) {
+                Button(
+                    action: {
+                        if let imageData, let compressImageData = UIImage(data: imageData)?.jpegData(compressionQuality: 0.6) {
+                            onCreateMissionClick(compressImageData)
+                        } else {
+                            onCreateMissionClick(nil)
+                        }
+                    }
+                ) {
                     if createEnabled {
                         Text(stringResource(.publish))
                             .foregroundStyle(.gedPrimary)
@@ -173,6 +203,7 @@ private struct CreateMissionView: View {
                 .disabled(!createEnabled)
             }
         }
+        .alertImageTooLargeError(isPresented: $showImageErrorAlert)
     }
 }
 

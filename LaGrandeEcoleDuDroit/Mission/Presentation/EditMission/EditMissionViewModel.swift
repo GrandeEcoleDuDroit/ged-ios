@@ -282,10 +282,8 @@ class EditMissionViewModel: ViewModel {
     }
     
     private func validateInputs(maxParticipants: String) -> Bool {
-        uiState.maxParticipantsError = validateMaxParticipants(maxParticipants: maxParticipants)
-        return uiState.maxParticipantsError == nil
+        validateMaxParticipants(maxParticipants)
     }
-    
     private func validateRemovedImage() -> Bool {
         if case let .published(imageUrl) = mission.state {
             imageUrl != nil
@@ -331,19 +329,18 @@ class EditMissionViewModel: ViewModel {
         missionTasks != mission.tasks
     }
     
-    private func validateMaxParticipants(maxParticipants: String) -> String? {
+    private func validateMaxParticipants(_ maxParticipants: String) -> Bool {
         let maxParticipantsNumber = maxParticipants.toInt32OrDefault(-1)
         
-        return switch maxParticipantsNumber {
+        uiState.maxParticipantsError = switch maxParticipantsNumber {
             case _ where maxParticipants.isEmpty: stringResource(.mandatoryFieldError)
-                
             case _ where maxParticipantsNumber <= 0: stringResource(.numberFieldError)
-            
             case _ where maxParticipantsNumber < mission.participants.count:
                 stringResource(.maxParticipantsLowerThanCurrentError, mission.participants.count)
-                
             default: nil
         }
+        
+        return uiState.maxParticipantsError == nil
     }
     
     private func performRequest(block: @escaping () async throws -> Void) {
