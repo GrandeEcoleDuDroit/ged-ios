@@ -59,6 +59,7 @@ enum StringResource: String {
     case noUsersFound = "no_users_found"
     case deletedUserFirstName = "deleted_user_first_name"
     case deletedUserLastName = "deleted_user_last_name"
+    case mb = "mb"
     
     // Common errors
     case mandatoryFieldError = "mandatory_field_error"

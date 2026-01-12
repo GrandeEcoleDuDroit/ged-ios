@@ -65,6 +65,7 @@
 "no_users_found" = "No users found";
 "deleted_user_first_name" = "Deleted";
 "deleted_user_last_name" = "User";
+"mb" = "MB";
 
 // Common error
 "mandatory_field_error" = "Mandatory field";
@@ -163,7 +164,7 @@
 "edit_mission" = "Edit mission";
 "participant_number" = "%d of %d participants";
 "short_participant_number" = "%d / %d";
-"no_mission" = "Aucune mission";
+"no_mission" = "No mission";
 "add_image" = "Add image";
 "mission_title_field" = "Title";
 "mission_description_field" = "Description";

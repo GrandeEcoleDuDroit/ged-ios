@@ -58,6 +58,7 @@
 "no_users_found" = "Aucun utilisateur trouvé";
 "deleted_user_first_name" = "Utilisateur";
 "deleted_user_last_name" = "Supprimé";
+"mb" = "Mo";
 
 // Common error
 "mandatory_field_error" = "Champs obligatoire.";
