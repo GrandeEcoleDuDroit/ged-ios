@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MissionForm: View {
-    @Binding var imageData: Data?
+    let imageData: Data?
     @Binding var title: String
     @Binding var description: String
     let startDate: Date
@@ -16,7 +16,7 @@ struct MissionForm: View {
     var schoolLevelSupportingText: String? = nil
     let maxParticipantsError: String?
     
-    let onImageChange: () -> Void
+    let onImageChange: (Data) -> Void
     let onImageRemove: () -> Void
     let onTitleChange: (String) -> Void
     let onDescriptionChange: (String) -> Void
@@ -35,7 +35,7 @@ struct MissionForm: View {
         ScrollView {
             VStack(spacing: DimensResource.mediumPadding) {
                 MissionFormImageSection(
-                    imageData: $imageData,
+                    imageData: imageData,
                     missionState: missionState,
                     onImageChange: onImageChange,
                     onImageRemove: onImageRemove
@@ -96,7 +96,7 @@ struct MissionForm: View {
 
 #Preview {
     MissionForm(
-        imageData: .constant(nil),
+        imageData: nil,
         title: .constant(""),
         description: .constant(""),
         startDate: Date(),
@@ -110,7 +110,7 @@ struct MissionForm: View {
         missionState: .draft,
         schoolLevelSupportingText: nil,
         maxParticipantsError: nil,
-        onImageChange: {},
+        onImageChange: { _ in },
         onImageRemove: {},
         onTitleChange: { _ in },
         onDescriptionChange: { _ in },

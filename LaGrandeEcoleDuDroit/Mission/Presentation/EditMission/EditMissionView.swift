@@ -6,6 +6,8 @@ struct EditMissionDestination: View {
     
     @StateObject private var viewModel: EditMissionViewModel
     @State private var showErrorAlert: Bool = false
+    @State private var showImageErrorAlert: Bool = false
+    @State private var errorTitle: String = ""
     @State private var errorMessage: String = ""
     @State private var path: [EditMissionSubDestination] = []
 
@@ -151,10 +153,12 @@ private struct EditMissionView: View {
     let onBackClick: () -> Void
     
     @State private var imageData: Data?
+    @State private var showImageErrorAlert: Bool = false
+    @State private var imageErrorAlertContent: (String, String) = ("", "")
     
     var body: some View {
         MissionForm(
-            imageData: $imageData,
+            imageData: imageData,
             title: $title,
             description: $description,
             startDate: startDate,
@@ -168,7 +172,13 @@ private struct EditMissionView: View {
             missionState: missionState,
             schoolLevelSupportingText: schoolLevelSupportingText,
             maxParticipantsError: maxParticipantsError,
-            onImageChange: onImageChange,
+            onImageChange: {
+                if $0.count < CommonUtilsPresentation.maxImageFileSize {
+                    onImageChange()
+                } else {
+                    showImageErrorAlert = true
+                }
+            },
             onImageRemove: onImageRemove,
             onTitleChange: onTitleChange,
             onDescriptionChange: onDescriptionChange,
@@ -184,6 +194,7 @@ private struct EditMissionView: View {
             onRemoveTaskClick: onRemoveTaskClick
         )
         .loading(loading)
+        .alertImageTooLargeError(isPresented: $showImageErrorAlert)
         .navigationTitle(stringResource(.editMission))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

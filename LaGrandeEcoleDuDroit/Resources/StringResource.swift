@@ -81,6 +81,8 @@ enum StringResource: String {
     case unauthorizedError = "unauthorized_error"
     case badRequestError = "bad_request_error"
     case nilDataError = "nil_data_error"
+    case imageTooLargeErrorTitle = "image_too_large_error_title"
+    case imageTooLargeErrorMessage = "image_too_large_error_message"
 
     // Authentication
     case authenticationPageTitle = "authentication_page_title"

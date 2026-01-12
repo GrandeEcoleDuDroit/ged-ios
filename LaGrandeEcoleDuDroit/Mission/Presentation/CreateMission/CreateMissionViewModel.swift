@@ -50,9 +50,7 @@ class CreateMissionViewModel: ViewModel {
             uiState.missionTasks
         )
         
-        guard validateInputs(maxParticipants: maxParticipants) else {
-            return
-        }
+        guard validateInputs(maxParticipants: maxParticipants) else { return }
         
         let mission = Mission(
             id: generateIdUseCase.execute(),

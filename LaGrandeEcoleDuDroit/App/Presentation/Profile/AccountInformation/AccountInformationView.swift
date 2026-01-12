@@ -5,7 +5,7 @@ struct AccountInformationDestination: View {
     @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(AccountInformationViewModel.self)
     @State private var errorMessage: String = ""
     @State private var showErrorAlert: Bool = false
-    @State private var profilePictureImage: UIImage?
+    @State private var profilePictureImageData: Data?
     
     var body: some View {
         if let user = viewModel.uiState.user {
@@ -13,7 +13,7 @@ struct AccountInformationDestination: View {
                 user: user,
                 loading: viewModel.uiState.loading,
                 screenState: viewModel.uiState.screenState,
-                profilePictureImage: $profilePictureImage,
+                profilePictureImageData: $profilePictureImageData,
                 onScreenStateChange: viewModel.onScreenStateChange,
                 onSaveProfilePictureClick: viewModel.updateProfilePicture,
                 onDeleteProfilePictureClick: viewModel.deleteProfilePicture
@@ -23,7 +23,7 @@ struct AccountInformationDestination: View {
                     errorMessage = errorEvent.message
                     showErrorAlert = true
                 } else if event is SuccessEvent {
-                    profilePictureImage = nil
+                    profilePictureImageData = nil
                 }
             }
             .alert(
@@ -46,7 +46,7 @@ private struct AccountInformationView: View {
     let user: User
     let loading: Bool
     let screenState: AccountInformationViewModel.ScreenState
-    @Binding var profilePictureImage: UIImage?
+    @Binding var profilePictureImageData: Data?
     let onScreenStateChange: (AccountInformationViewModel.ScreenState) -> Void
     let onSaveProfilePictureClick: (Data?) -> Void
     let onDeleteProfilePictureClick: () -> Void
@@ -55,15 +55,16 @@ private struct AccountInformationView: View {
     @State private var showPhotosPicker: Bool = false
     @State private var navigationTitle = stringResource(.accountInfos)
     @State private var showDeleteAlert: Bool = false
+    @State private var showImageErrorAlert: Bool = false
     @State private var activeSheet: AccountInformationViewSheet?
     
     var body: some View {
         VStack(spacing: DimensResource.mediumPadding) {
             AccountInformationPicture(
                 url: user.profilePictureUrl,
-                image: profilePictureImage,
+                imageData: profilePictureImageData,
                 onClick: {
-                    if profilePictureImage == nil {
+                    if profilePictureImageData == nil {
                         activeSheet = .accountInformation
                     } else {
                         showPhotosPicker = true
@@ -77,15 +78,17 @@ private struct AccountInformationView: View {
         .loading(loading)
         .task(id: selectedItem) {
             if let data = try? await selectedItem?.loadTransferable(type: Data.self) {
-                if let image = UIImage(data: data) {
+                if data.count < CommonUtilsPresentation.maxImageFileSize {
                     onScreenStateChange(.edit)
-                    profilePictureImage = image
+                    profilePictureImageData = data
+                } else {
+                    showImageErrorAlert = true
                 }
             }
         }
         .onChange(of: screenState) { newState in
             if newState == .read {
-                profilePictureImage = nil
+                profilePictureImageData = nil
                 selectedItem = nil
                 navigationTitle = stringResource(.accountInfos)
             } else {
@@ -138,12 +141,13 @@ private struct AccountInformationView: View {
                 }
             }
         )
+        .alertImageTooLargeError(isPresented: $showImageErrorAlert)
         .toolbar {
             if screenState == .edit {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(stringResource(.cancel)) {
                         onScreenStateChange(.read)
-                        profilePictureImage = nil
+                        profilePictureImageData = nil
                         selectedItem = nil
                     }
                 }
@@ -151,8 +155,9 @@ private struct AccountInformationView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(
                         action: {
-                            if let profilePictureImage {
-                                onSaveProfilePictureClick(profilePictureImage.jpegData(compressionQuality: 0.8))
+                            if let profilePictureImageData,
+                                let compressedData = UIImage(data: profilePictureImageData)?.jpegData(compressionQuality: 0.5) {
+                                onSaveProfilePictureClick(compressedData)
                             }
                         },
                         label: {
@@ -171,15 +176,15 @@ private struct AccountInformationView: View {
 
 private struct AccountInformationPicture: View {
     let url: String?
-    let image: UIImage?
+    let imageData: Data?
     let onClick: () -> Void
     let scale: CGFloat
     
     var body: some View {
-        if let image {
+        if let imageData {
             Button(action: onClick) {
                 ProfilePictureImage(
-                    image: Image(uiImage: image),
+                    imageData: imageData,
                     scale: 1.8
                 )
                 .clipShape(.circle)
@@ -227,7 +232,7 @@ private enum AccountInformationViewSheet: Identifiable {
             user: userFixture,
             loading: false,
             screenState: .read,
-            profilePictureImage: .constant(nil),
+            profilePictureImageData: .constant(nil),
             onScreenStateChange: { _ in },
             onSaveProfilePictureClick: { _ in },
             onDeleteProfilePictureClick: {}

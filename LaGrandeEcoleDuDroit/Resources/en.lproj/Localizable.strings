@@ -87,6 +87,8 @@
 "unauthorized_error" = "You must be authenticated to perform this action.";
 "bad_request_error" = "The request could not be successful.";
 "nil_data_error" = "Null data";
+"image_too_large_error_title" = "Image too large";
+"image_too_large_error_message" = "Total image size must be inferior than %@.";
 
 // Authentication
 "authentication_page_title" = "Login or sign up on Gedoise application";

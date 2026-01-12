@@ -129,18 +129,22 @@ struct ProfilePicture: View {
 }
 
 struct ProfilePictureImage: View {
-    let image: Image
+    let imageData: Data
     var scale: CGFloat = 1.0
     
     var body: some View {
-        image
-            .resizable()
-            .scaledToFill()
-            .frame(
-                width: DimensResource.defaultImageSize * scale,
-                height: DimensResource.defaultImageSize * scale
-            )
-            .clipShape(.circle)
+        if let image = UIImage(data: imageData) {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+                .frame(
+                    width: DimensResource.defaultImageSize * scale,
+                    height: DimensResource.defaultImageSize * scale
+                )
+                .clipShape(.circle)
+        } else {
+            DefaultProfilePicture(scale: scale)
+        }
     }
 }
 
