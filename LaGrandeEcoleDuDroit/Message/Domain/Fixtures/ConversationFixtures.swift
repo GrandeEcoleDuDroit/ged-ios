@@ -5,7 +5,7 @@ let conversationFixture = Conversation(
     interlocutor: userFixture2,
     createdAt: Date(),
     state: .created,
-    deleteTime: nil
+    effectiveFrom: nil
 )
 
 let conversationsFixture = [

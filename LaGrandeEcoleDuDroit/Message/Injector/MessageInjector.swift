@@ -44,8 +44,7 @@ class MessageInjector: Injector {
         container.register(ConversationRepository.self) { resolver in
             ConversationRepositoryImpl(
                 conversationLocalDataSource: resolver.resolve(ConversationLocalDataSource.self)!,
-                conversationRemoteDataSource: resolver.resolve(ConversationRemoteDataSource.self)!,
-                userRepository: CommonInjector.shared.resolve(UserRepository.self)
+                conversationRemoteDataSource: resolver.resolve(ConversationRemoteDataSource.self)!
             )
         }.inObjectScope(.container)
         
@@ -124,11 +123,15 @@ class MessageInjector: Injector {
             )
         }.inObjectScope(.container)
         
-        container.register(UpdateConversationDeleteTimeUseCase.self) { resolver in
-            UpdateConversationDeleteTimeUseCase(
+        container.register(UpdateConversationEffectiveFromUseCase.self) { resolver in
+            UpdateConversationEffectiveFromUseCase(
                 conversationRepository: resolver.resolve(ConversationRepository.self)!,
                 userRepository: CommonInjector.shared.resolve(UserRepository.self)
             )
+        }
+        
+        container.register(RecreateConversationUseCase.self) { resolver in
+            RecreateConversationUseCase(conversationRepository: resolver.resolve(ConversationRepository.self)!)
         }
         
         // Others
@@ -141,8 +144,8 @@ class MessageInjector: Injector {
             )
         }
         
-        container.register(MessageNotificationManager.self) { resolver in
-            MessageNotificationManager(
+        container.register(MessageNotificationPresenter.self) { resolver in
+            MessageNotificationPresenter(
                 navigationRequestUseCase: CommonInjector.shared.resolve(NavigationRequestUseCase.self),
                 routeRepository: CommonInjector.shared.resolve(RouteRepository.self)
             )

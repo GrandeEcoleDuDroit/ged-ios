@@ -1,9 +1,9 @@
 protocol FcmTokenRepository {
-    func getUnsetToken() async -> FcmToken?
+    func getFcmToken() -> FcmToken?
     
-    func sendFcmToken(token: FcmToken) async throws
+    func sendFcmToken(userId: String, token: String) async throws
+        
+    func storeFcmToken(fcmToken: FcmToken) throws
     
-    func storeUnsetToken(token: FcmToken) async throws
-    
-    func removeUnsetToken() async throws
+    func deleteToken(userId: String) async throws
 }

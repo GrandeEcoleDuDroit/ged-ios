@@ -5,28 +5,23 @@ struct Conversation: Hashable, Codable, Copying {
     var interlocutor: User
     var createdAt: Date
     var state: ConversationState
-    var deleteTime: Date?
+    var effectiveFrom: Date?
+    var blockedBy: [String: Bool]?
     
-    func shouldBeCreated() -> Bool {
-        state == .draft ||
-        state == .error ||
-        state == .deleting
+    enum ConversationState: String, Equatable, Hashable, Codable {
+        case draft = "draft"
+        case creating = "creating"
+        case created = "created"
+        case deleting = "deleting"
+        case error = "error"
     }
-}
-
-enum ConversationState: String, Equatable, Hashable, Codable {
-    case draft = "draft"
-    case creating = "creating"
-    case created = "created"
-    case deleting = "deleting"
-    case error = "error"
 }
 
 extension Conversation {
     static func == (lhs: Conversation, rhs: Conversation) -> Bool {
-        let sameDeleteTime = switch lhs.deleteTime {
-            case _ where rhs.deleteTime == nil: lhs.deleteTime == nil
-            case _ where rhs.deleteTime != nil: lhs.deleteTime?.isAlmostEqual(to: rhs.deleteTime!) ?? false
+        let sameDeleteTime = switch lhs.effectiveFrom {
+            case _ where rhs.effectiveFrom == nil: lhs.effectiveFrom == nil
+            case _ where rhs.effectiveFrom != nil: lhs.effectiveFrom?.isAlmostEqual(to: rhs.effectiveFrom!) ?? false
             default: true
         }
 

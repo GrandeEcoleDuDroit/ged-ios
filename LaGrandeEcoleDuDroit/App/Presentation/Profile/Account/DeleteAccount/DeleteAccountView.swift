@@ -2,8 +2,6 @@ import SwiftUI
 
 struct DeleteAccountDestination: View {
     @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(DeleteAccountViewModel.self)
-    @State private var errorMessage: String = ""
-    @State private var showErrorAlert: Bool = false
     
     var body: some View {
         DeleteAccountView(
@@ -11,21 +9,6 @@ struct DeleteAccountDestination: View {
             loading: viewModel.uiState.loading,
             errorMessage: viewModel.uiState.errorMessage,
             onDeleteAccountClick: viewModel.deleteUserAccount
-        )
-        .onReceive(viewModel.$event) { event in
-            if let errorEvent = event as? ErrorEvent {
-                errorMessage = errorEvent.message
-                showErrorAlert = true
-            }
-        }
-        .alert(
-            errorMessage,
-            isPresented: $showErrorAlert,
-            actions: {
-                Button(stringResource(.ok)) {
-                    showErrorAlert = false
-                }
-            }
         )
     }
 }

@@ -4,9 +4,7 @@ import Firebase
 import FirebaseMessaging
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    private let notificationMediator = AppInjector.shared.resolve(NotificationMediator.self)
-    private lazy var fcmManager = AppInjector.shared.resolve(FcmManager.self)
-    private lazy var fcmTokenUseCase: FcmTokenUseCase = AppInjector.shared.resolve(FcmTokenUseCase.self)
+    private lazy var notificationMediator = AppInjector.shared.resolve(NotificationMediator.self)
     private let tag = String(describing: AppDelegate.self)
     
     func application(
@@ -17,8 +15,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         configureFirestoreDb()
         registerForPushNotifications(application: application)
         runStartupTasks()
-        listenEvents()
-        UIApplication.shared.applicationIconBadgeNumber = 0
         return true
     }
     
@@ -39,10 +35,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         startupAnnouncementTask.run()
         startupMissionTask.run()
     }
-    
-    private func listenEvents() {
-        fcmTokenUseCase.listen()
-    }
 }
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
@@ -51,7 +43,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        e(tag, "Error to register remote notifications", error)
+        e(tag, "Error registering remote notifications", error)
     }
     
     func userNotificationCenter(
@@ -72,13 +64,11 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
     
     private func registerForPushNotifications(application: UIApplication) {
-        UNUserNotificationCenter.current().delegate = self
+        let fcmManager = AppInjector.shared.resolve(FcmManager.self)
         Messaging.messaging().delegate = fcmManager
-        
-        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
 
-        UNUserNotificationCenter.current().requestAuthorization(options: authOptions) {
-            (granted, error) in
+        UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { (granted, error) in
             guard granted else { return }
             DispatchQueue.main.async {
                 application.registerForRemoteNotifications()

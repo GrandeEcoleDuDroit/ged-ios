@@ -25,6 +25,113 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
         listenDataChanges()
     }
     
+    func getAnnouncementPublisher(announcementId: String) -> AnyPublisher<Announcement?, Never> {
+        announcementsSubject.map { announcements in
+            announcements.first { $0.id == announcementId }
+        }.eraseToAnyPublisher()
+    }
+    
+    func getLocalAnnouncements() async throws -> [Announcement] {
+        do {
+            return try await announcementLocalDataSource.getAnnouncements()
+        } catch {
+            e(tag, "Error getting local announcements", error)
+            throw error
+        }
+    }
+    
+    func getRemoteAnnouncements() async throws -> [Announcement] {
+        do {
+            return try await announcementRemoteDataSource.getAnnouncements()
+        } catch {
+            e(tag, "Error getting remote announcements", error)
+            throw error
+        }
+    }
+    
+    func createAnnouncement(announcement: Announcement) async throws {
+        do {
+            try await announcementLocalDataSource.upsertAnnouncement(announcement: announcement)
+            try await announcementRemoteDataSource.createAnnouncement(announcement: announcement)
+        } catch {
+            e(tag, "Error creating announcements", error)
+            throw error
+        }
+    }
+    
+    func upsertLocalAnnouncement(announcement: Announcement) async throws {
+        do {
+            try await announcementLocalDataSource.upsertAnnouncement(announcement: announcement)
+        } catch {
+            e(tag, "Error upserting local announcement \(announcement.id)", error)
+            throw error
+        }
+    }
+    
+    func updateAnnouncement(announcement: Announcement) async throws {
+        do {
+            try await announcementRemoteDataSource.updateAnnouncement(announcement: announcement)
+            try await announcementLocalDataSource.updateAnnouncement(announcement: announcement)
+        } catch {
+            e(tag, "Error updating announcement \(announcement.id)", error)
+            throw error
+        }
+    }
+    
+    func updateLocalAnnouncement(announcement: Announcement) async throws {
+        do {
+            try await announcementLocalDataSource.updateAnnouncement(announcement: announcement)
+        } catch {
+            e(tag, "Error updating local announcement \(announcement.id)", error)
+            throw error
+        }
+    }
+    
+    func deleteAnnouncement(announcementId: String, authorId: String) async throws {
+        do {
+            try await announcementRemoteDataSource.deleteAnnouncement(announcementId: announcementId, authorId: authorId)
+            try await announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
+        } catch {
+            e(tag, "Error deleting announcement \(announcementId)", error)
+        }
+    }
+    
+    func deleteLocalAnnouncements() async throws {
+        do {
+            try await announcementLocalDataSource.deleteAnnouncements()
+        } catch {
+            e(tag, "Error deleting local announcements", error)
+            throw error
+        }
+    }
+    
+    func deleteLocalAnnouncement(announcementId: String) async throws {
+        do {
+            try await announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
+        } catch {
+            e(tag, "Error deleting local announcement \(announcementId)", error)
+            throw error
+        }
+    }
+
+    func deleteLocalUserAnnouncements(userId: String) async throws {
+        do {
+            try await announcementLocalDataSource.deleteAnnouncements(userId: userId)
+        } catch {
+            e(tag, "Error deleting local announcements of user \(userId)", error)
+            throw error
+        }
+    }
+        
+    func reportAnnouncement(report: AnnouncementReport) async throws {
+        do {
+            try await announcementRemoteDataSource.reportAnnouncement(report: report)
+        } catch {
+            e(tag, "Error reporting announcement \(report.announcementId)", error)
+            throw error
+        }
+    }
+    
     private func listenDataChanges() {
         announcementLocalDataSource.listenDataChange()
             .sink { [weak self] _ in
@@ -38,58 +145,5 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
                 announcementsSubject.send(announcements)
             }
         }
-    }
-    
-    func getAnnouncementPublisher(announcementId: String) -> AnyPublisher<Announcement?, Never> {
-        announcementsSubject.map { announcements in
-            announcements.first { $0.id == announcementId }
-        }.eraseToAnyPublisher()
-    }
-    
-    func getLocalAnnouncements() async throws -> [Announcement] {
-        try await announcementLocalDataSource.getAnnouncements()
-    }
-    
-    func getRemoteAnnouncements() async throws -> [Announcement] {
-        try await announcementRemoteDataSource.getAnnouncements()
-    }
-    
-    func createAnnouncement(announcement: Announcement) async throws {
-        try await announcementLocalDataSource.upsertAnnouncement(announcement: announcement)
-        try await announcementRemoteDataSource.createAnnouncement(announcement: announcement)
-    }
-    
-    func upsertLocalAnnouncement(announcement: Announcement) async throws {
-        try await announcementLocalDataSource.upsertAnnouncement(announcement: announcement)
-    }
-    
-    func updateAnnouncement(announcement: Announcement) async throws {
-        try await announcementRemoteDataSource.updateAnnouncement(announcement: announcement)
-        try await announcementLocalDataSource.updateAnnouncement(announcement: announcement)
-    }
-    
-    func updateLocalAnnouncement(announcement: Announcement) async throws {
-        try await announcementLocalDataSource.updateAnnouncement(announcement: announcement)
-    }
-    
-    func deleteAnnouncement(announcementId: String, authorId: String) async throws {
-        try await announcementRemoteDataSource.deleteAnnouncement(announcementId: announcementId, authorId: authorId)
-        try await announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
-    }
-    
-    func deleteLocalAnnouncement(announcementId: String) async throws {
-        try await announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
-    }
-
-    func deleteLocalAnnouncements() async throws {
-        try await announcementLocalDataSource.deleteAnnouncements()
-    }
-    
-    func deleteLocalAnnouncements(userId: String) async throws {
-        try await announcementLocalDataSource.deleteAnnouncements(userId: userId)
-    }
-        
-    func reportAnnouncement(report: AnnouncementReport) async throws {
-        try await announcementRemoteDataSource.reportAnnouncement(report: report)
     }
 }

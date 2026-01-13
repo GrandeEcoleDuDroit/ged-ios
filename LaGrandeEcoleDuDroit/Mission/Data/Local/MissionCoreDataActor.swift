@@ -86,6 +86,18 @@ actor MissionCoreDataActor {
         }
     }
     
+    func deleteAll() async throws {
+        try await context.perform {
+            let request = LocalMission.fetchRequest()
+            
+            try self.context.fetch(request).forEach {
+                self.context.delete($0)
+            }
+            
+            try self.context.save()
+        }
+    }
+    
     func delete(missionId: String) async throws {
         try await context.perform {
             let request = LocalMission.fetchRequest()

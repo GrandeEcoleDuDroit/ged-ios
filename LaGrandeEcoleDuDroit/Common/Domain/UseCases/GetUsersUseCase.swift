@@ -6,8 +6,9 @@ class GetUsersUseCase {
     }
     
     func execute() async -> [User] {
-        await userRepository.getUsers().filter {
+        let users = try? await userRepository.getUsers().filter {
             $0.state != .deleted
         }
+        return users ?? []
     }
 }

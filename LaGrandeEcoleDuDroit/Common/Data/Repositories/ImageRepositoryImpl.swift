@@ -9,14 +9,29 @@ class ImageRepositoryImpl: ImageRepository {
     }
     
     func getLocalImage(imagePath: String) async throws -> Data? {
-        try await imageLocalDataSource.getImage(imagePath: imagePath)
+        do {
+            return try await imageLocalDataSource.getImage(imagePath: imagePath)
+        } catch {
+            e(tag, "Error getting local image", error)
+            throw error
+        }
     }
     
     func createLocalImage(imageData: Data, imagePath: String) async throws {
-        try await imageLocalDataSource.createImage(imageData: imageData, imagePath: imagePath)
+        do {
+            try await imageLocalDataSource.createImage(imageData: imageData, imagePath: imagePath)
+        } catch {
+            e(tag, "Error creating local image", error)
+            throw error
+        }
     }
     
     func deleteLocalImage(imagePath: String) async throws {
-        try await imageLocalDataSource.deleteImage(imagePath: imagePath)
+        do {
+            try await imageLocalDataSource.deleteImage(imagePath: imagePath)
+        } catch {
+            e(tag, "Error deleting local image", error)
+            throw error
+        }
     }
 }

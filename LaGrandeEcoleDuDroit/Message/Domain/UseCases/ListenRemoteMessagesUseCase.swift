@@ -9,7 +9,7 @@ class ListenRemoteMessagesUseCase {
     private let messageRepository: MessageRepository
     private let blockedUserRepository: BlockedUserRepository
 
-    private let messageCancellable: MessageCancellable = MessageCancellable()
+    private let messageCancellableActor = MessageCancellableActor()
     
     init(
         userRepository: UserRepository,
@@ -25,70 +25,79 @@ class ListenRemoteMessagesUseCase {
     
     func start(conversation: Conversation) {
         Task {
-            await messageCancellable.cancelAndRemove(forKey: conversation.id)
-            updateMessageCancellables(for: conversation)
+            await messageCancellableActor.cancelAndRemove(conversationId: conversation.id)
+            updateMessageCancellable(conversation: conversation)
         }
     }
     
-    func stop(userId: String) {
+    func stop(conversationId: String) {
         Task {
-            await messageCancellable.cancelAndRemove(forKey: userId)
+            await messageCancellableActor.cancelAndRemove(conversationId: conversationId)
         }
     }
     
     func stopAll() {
         messageRepository.stopListeningMessages()
         Task {
-            await messageCancellable.cancelAll()
+            await messageCancellableActor.cancelAll()
         }
     }
     
-    private func updateMessageCancellables(for conversation: Conversation) {
+    private func updateMessageCancellable(conversation: Conversation) {
+        guard let currentUser = userRepository.currentUser else { return }
         Task {
             do {
-                let blockedUserIds = blockedUserRepository.currentBlockedUserIds
-                
-                if !blockedUserIds.contains(conversation.interlocutor.id) {
-                    let cancellable = try await listenRemoteMessagesCancellable(conversation)
-                    await messageCancellable.set(cancellable, forKey: conversation.id)
-                }
+                let cancellable = try await listenRemoteMessagesCancellable(userId: currentUser.id, conversation: conversation)
+                await messageCancellableActor.set(cancellable, conversationId: conversation.id)
             } catch {
-                e(tag, "Failed to listen remote messages for conversation with \(conversation.interlocutor.fullName)", error)
+                e(tag, "Error updating message cancellable for conversation \(conversation.id)", error)
             }
         }
     }
     
-    private func listenRemoteMessagesCancellable(_ conversation: Conversation) async throws -> AnyCancellable {
+    private func listenRemoteMessagesCancellable(userId: String, conversation: Conversation) async throws -> AnyCancellable {
         let lastMessage = try await messageRepository.getLastMessage(conversationId: conversation.id)
         let offsetTime = getOffsetTime(conversation: conversation, lastMessage: lastMessage)
         
-        return messageRepository.fetchRemoteMessages(conversation: conversation, offsetTime: offsetTime)
+        return messageRepository.fetchRemoteMessages(userId: userId, conversation: conversation, offsetTime: offsetTime)
             .catch { error in
-                e(tag, "Failed to fetch remote message with \(conversation.interlocutor.fullName)", error)
+                e(tag, "Error fetching remote message for conversation \(conversation.id)", error)
                 return Empty<Message, Never>()
             }
+            .filter { $0.visible }
             .sink { [weak self] message in
+                let blockedUsers = self?.blockedUserRepository.currentBlockedUsers
+                let hideMessage = blockedUsers?[message.senderId].map { message.date > $0.date } ?? false
+                
                 Task {
-                    try? await self?.messageRepository.upsertLocalMessage(message: message)
+                    do {
+                        if hideMessage {
+                            try await self?.messageRepository.updateMessageVisibility(message: message, currentUserId: userId, visible: false)
+                        } else {
+                            try? await self?.messageRepository.upsertLocalMessage(message: message)
+                        }
+                    } catch {
+                        e(tag, "Error updating message visibility", error)
+                    }
                 }
             }
     }
         
     private func getOffsetTime(conversation: Conversation, lastMessage: Message?) -> Date? {
-        [conversation.deleteTime, lastMessage?.date].compactMap { $0 }.max()
+        [conversation.effectiveFrom, lastMessage?.date].compactMap { $0 }.max()
     }
 }
 
-private actor MessageCancellable {
+private actor MessageCancellableActor {
     private var cancellables: [String: AnyCancellable] = [:]
 
-    func set(_ cancellable: AnyCancellable, forKey key: String) {
-        cancellables[key] = cancellable
+    func set(_ cancellable: AnyCancellable, conversationId: String) {
+        cancellables[conversationId] = cancellable
     }
     
-    func cancelAndRemove(forKey key: String) {
-        cancellables[key]?.cancel()
-        cancellables.removeValue(forKey: key)
+    func cancelAndRemove(conversationId: String) {
+        cancellables[conversationId]?.cancel()
+        cancellables.removeValue(forKey: conversationId)
     }
     
     func cancelAll() {

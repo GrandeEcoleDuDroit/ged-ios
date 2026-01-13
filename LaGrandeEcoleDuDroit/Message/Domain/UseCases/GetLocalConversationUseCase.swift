@@ -13,7 +13,7 @@ class GetLocalConversationUseCase {
     }
     
     func execute(interlocutor: User) async throws -> Conversation {
-        if let conversation = try await conversationRepository.getLocalConversation(interlocutorId: interlocutor.id) {
+        if let conversation = await conversationRepository.getLocalConversation(interlocutorId: interlocutor.id) {
             return conversation
         }
         
@@ -37,7 +37,7 @@ class GetLocalConversationUseCase {
             interlocutor: interlocutor,
             createdAt: Date(),
             state: .draft,
-            deleteTime: nil
+            effectiveFrom: nil
         )
     }
 }

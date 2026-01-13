@@ -5,7 +5,7 @@ extension ConversationUi {
             interlocutor: interlocutor,
             createdAt: createdAt,
             state: state,
-            deleteTime: nil
+            effectiveFrom: nil
         )
     }
 }

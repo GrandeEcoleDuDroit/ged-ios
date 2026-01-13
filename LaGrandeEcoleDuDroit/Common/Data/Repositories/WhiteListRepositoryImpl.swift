@@ -7,10 +7,11 @@ class WhiteListRepositoryImpl: WhiteListRepository {
     }
     
     func isUserWhitelisted(email: String) async throws -> Bool {
-        try await mapServerError(
-            block: { try await whiteListApi.isUserWhiteListed(email: email) },
-            tag: tag,
-            message: "Failed to check if user is whitelisted"
-        )
+        do {
+            return try await whiteListApi.isUserWhiteListed(email: email)
+        } catch {
+            e(tag, "Error getting white list status for user \(email)", error)
+            throw error
+        }
     }
 }

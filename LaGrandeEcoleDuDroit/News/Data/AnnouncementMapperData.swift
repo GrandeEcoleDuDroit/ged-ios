@@ -23,7 +23,7 @@ extension LocalAnnouncement {
               let announcementId = announcementId,
               let announcementContent = announcementContent,
               let announcementDate = announcementDate,
-              let announcementState = AnnouncementState(rawValue: announcementState ?? "")
+              let announcementState = Announcement.AnnouncementState(rawValue: announcementState ?? "")
         else { return nil }
         
         let user = User(

@@ -9,7 +9,6 @@ struct MissionNavigation: View {
                 onMissionClick: { viewModel.path.append(.missionDetails(missionId: $0)) }
             )
             .toolbar(viewModel.path.isEmpty ? .visible : .hidden, for: .tabBar)
-            .background(.appBackground)
             .navigationDestination(for: MissionRoute.self) { route in
                 switch route {
                     case let .missionDetails(missionId):

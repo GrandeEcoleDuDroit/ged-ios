@@ -3,36 +3,35 @@ import Combine
 class ListenBlockedUserEventsUseCase {
     private let blockedUserRepository: BlockedUserRepository
     private let announcementRepository: AnnouncementRepository
+    private let conversationRepository: ConversationRepository
     private let listenRemoteMessagesUseCase: ListenRemoteMessagesUseCase
-    private let updateConversationDeleteTimeUseCase: UpdateConversationDeleteTimeUseCase
+    private let updateConversationEffectiveFromUseCase: UpdateConversationEffectiveFromUseCase
     
     private var cancellables: Set<AnyCancellable> = []
     
     init(
         blockedUserRepository: BlockedUserRepository,
         announcementRepository: AnnouncementRepository,
+        conversationRepository: ConversationRepository,
         listenRemoteMessagesUseCase: ListenRemoteMessagesUseCase,
-        updateConversationDeleteTimeUseCase: UpdateConversationDeleteTimeUseCase
+        updateConversationEffectiveFromUseCase: UpdateConversationEffectiveFromUseCase
     ) {
         self.blockedUserRepository = blockedUserRepository
         self.announcementRepository = announcementRepository
+        self.conversationRepository = conversationRepository
         self.listenRemoteMessagesUseCase = listenRemoteMessagesUseCase
-        self.updateConversationDeleteTimeUseCase = updateConversationDeleteTimeUseCase
+        self.updateConversationEffectiveFromUseCase = updateConversationEffectiveFromUseCase
     }
     
     func start() {
         blockedUserRepository.blockedUserEvents.sink { [weak self] event in
             switch event {
-                case let .block(userId, _):
-                    self?.listenRemoteMessagesUseCase.stop(userId: userId)
+                case let .block(blockedUser):
                     Task {
-                        try? await self?.announcementRepository.deleteLocalAnnouncements(userId: userId)
+                        try? await self?.announcementRepository.deleteLocalUserAnnouncements(userId: blockedUser.userId)
                     }
-                    
-                case let .unblock(userId, date):
-                    Task {
-                        try? await self?.updateConversationDeleteTimeUseCase.execute(userId: userId, deleteTime: date)
-                    }
+                
+                default: break
             }
         }.store(in: &cancellables)
     }

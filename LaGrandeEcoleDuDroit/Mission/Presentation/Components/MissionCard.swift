@@ -7,10 +7,17 @@ struct MissionCard: View {
     var body: some View {
         switch mission.state {
             case .published:
-                DefaultMissionCard(
-                    mission: mission,
-                    onOptionsClick: onOptionsClick
-                )
+                if mission.completed {
+                    CompletedMissionCard(
+                        mission: mission,
+                        onOptionsClick: onOptionsClick
+                    )
+                } else {
+                    DefaultMissionCard(
+                        mission: mission,
+                        onOptionsClick: onOptionsClick
+                    )
+                }
                 
             case .error: ErrorMissionCard(mission: mission)
                 
@@ -28,15 +35,16 @@ private struct DefaultMissionCard: View {
     let onOptionsClick: () -> Void
     
     var body: some View {
-        VStack(spacing: Dimens.smallMediumPadding + 2) {
+        VStack(spacing: DimensResource.smallMediumPadding + 2) {
             ZStack {
                 MissionImage(missionState: mission.state)
                     .frame(height: 180)
                     .clipped()
                 
                 OptionsButton(action: onOptionsClick)
+                    .font(.title3)
                     .padding()
-                    .padding(Dimens.extraSmallPadding)
+                    .padding(DimensResource.extraSmallPadding)
                     .frame(
                         maxWidth: .infinity,
                         maxHeight: .infinity,
@@ -47,12 +55,51 @@ private struct DefaultMissionCard: View {
             .frame(maxWidth: .infinity)
             .frame(height: 180)
             
-            VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+            VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
                 CardTitle(title: mission.title)
                 
                 CardSubtitle(mission: mission)
                 
-                CardContent(description: mission.description)
+                CardBody(description: mission.description)
+
+                if mission.schoolLevelRestricted {
+                    CardFooter(schoolLevels: mission.schoolLevels)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.bottom)
+        }
+        .overlay(
+            ShapeDefaults.medium
+                .stroke(.outlineVariant, lineWidth: 2)
+        )
+        .clipShape(ShapeDefaults.medium)
+    }
+}
+
+private struct CompletedMissionCard: View {
+    let mission: Mission
+    let onOptionsClick: () -> Void
+    
+    var body: some View {
+        VStack(spacing: DimensResource.smallMediumPadding + 2) {
+            MissionImage(missionState: mission.state)
+                .frame(height: 180)
+                .clipped()
+                .overlay {
+                    Text(stringResource(.completed))
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                        .background(.overlayContent.opacity(0.6))
+                }
+                
+            VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
+                CardTitle(title: mission.title)
+                
+                CardSubtitle(mission: mission)
+                
+                CardBody(description: mission.description)
                 
                 if mission.schoolLevelRestricted {
                     CardFooter(schoolLevels: mission.schoolLevels)
@@ -86,7 +133,7 @@ private struct ErrorMissionCard: View {
     let mission: Mission
     
     var body: some View {
-        VStack(spacing: Dimens.smallMediumPadding + 2) {
+        VStack(spacing: DimensResource.smallMediumPadding + 2) {
             ZStack {
                 MissionImage(missionState: mission.state)
                     .frame(height: 180)
@@ -98,12 +145,12 @@ private struct ErrorMissionCard: View {
             .frame(maxWidth: .infinity)
             .frame(height: 180)
             
-            VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+            VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
                 CardTitle(title: mission.title)
                 
                 CardSubtitle(mission: mission)
                 
-                CardContent(description: mission.description)
+                CardBody(description: mission.description)
                 
                 if mission.schoolLevelRestricted {
                     CardFooter(schoolLevels: mission.schoolLevels)
@@ -125,7 +172,9 @@ private struct CardTitle: View {
     
     var body: some View {
         Text(title)
-            .font(.titleLarge)
+            .font(.title3)
+            .fontWeight(.semibold)
+            .lineSpacing(2)
             .fixedSize(horizontal: false, vertical: true)
             .lineLimit(2)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -136,30 +185,28 @@ private struct CardSubtitle: View {
     let mission: Mission
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.smallPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.smallPadding) {
             TextIcon(
                 icon: Image(systemName: "calendar"),
                 text: MissionUtilsPresentation.formatDate(startDate: mission.startDate, endDate: mission.endDate),
-                spacing: Dimens.smallPadding
+                spacing: DimensResource.smallPadding
             )
-            .foregroundStyle(Color.gray)
-            .font(.bodyMedium)
                         
             TextIcon(
                 icon: Image(systemName: "person.2"),
-                text: MissionUtilsPresentation.formatParticipantNumber(
+                text: MissionUtilsPresentation.formatShortParticipantNumber(
                     participantsCount: mission.participants.count,
                     maxParticipants: mission.maxParticipants
                 ),
-                spacing: Dimens.smallPadding
+                spacing: DimensResource.smallMediumPadding
             )
-            .foregroundStyle(Color.gray)
-            .font(.bodyMedium)
         }
+        .foregroundStyle(Color.informationText)
+        .font(.subheadline)
     }
 }
 
-private struct CardContent: View {
+private struct CardBody: View {
     let description: String
     
     var body: some View {
@@ -175,21 +222,20 @@ private struct CardFooter: View {
     
     var body: some View {
         Text(MissionUtilsPresentation.formatSchoolLevels(schoolLevels: schoolLevels))
-            .font(.caption)
-            .fontWeight(.semibold)
+            .font(.footnote)
     }
 }
 
 private struct ErrorBanner: View {
     var body: some View {
-        TextIcon(
-            icon: Image(systemName: "exclamationmark.circle"),
-            text: stringResource(.sendingError)
-        )
-        .font(.callout)
+        HStack(spacing: DimensResource.smallPadding) {
+            Image(systemName: "exclamationmark.circle")
+            Text(stringResource(.sendingError))
+        }
+        .font(.subheadline)
         .foregroundStyle(.error)
-        .padding(.vertical, Dimens.smallMediumPadding)
-        .padding(.horizontal, Dimens.mediumPadding)
+        .padding(.vertical, DimensResource.smallMediumPadding)
+        .padding(.horizontal, DimensResource.mediumPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.appBackground.opacity(0.8))
     }
@@ -197,8 +243,13 @@ private struct ErrorBanner: View {
 
 #Preview {
     ScrollView {
-        VStack(spacing: Dimens.mediumPadding) {
+        VStack(spacing: 20) {
             DefaultMissionCard(
+                mission: missionFixture,
+                onOptionsClick: {}
+            )
+            
+            CompletedMissionCard(
                 mission: missionFixture,
                 onOptionsClick: {}
             )

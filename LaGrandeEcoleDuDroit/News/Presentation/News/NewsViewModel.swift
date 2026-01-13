@@ -5,9 +5,8 @@ class NewsViewModel: ViewModel {
     private let userRepository: UserRepository
     private let announcementRepository: AnnouncementRepository
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
-    private let resendAnnouncementUseCase: ResendAnnouncementUseCase
+    private let recreateAnnouncementUseCase: RecreateAnnouncementUseCase
     private let refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
-    private let networkMonitor: NetworkMonitor
     
     @Published private(set) var uiState: NewsUiState = NewsUiState()
     @Published private(set) var event: SingleUiEvent? = nil
@@ -17,16 +16,14 @@ class NewsViewModel: ViewModel {
         userRepository: UserRepository,
         announcementRepository: AnnouncementRepository,
         deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
-        resendAnnouncementUseCase: ResendAnnouncementUseCase,
+        recreateAnnouncementUseCase: RecreateAnnouncementUseCase,
         refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase,
-        networkMonitor: NetworkMonitor
     ) {
         self.userRepository = userRepository
         self.announcementRepository = announcementRepository
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
-        self.resendAnnouncementUseCase = resendAnnouncementUseCase
+        self.recreateAnnouncementUseCase = recreateAnnouncementUseCase
         self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
-        self.networkMonitor = networkMonitor
         
         listenUser()
         listenAnnouncements()
@@ -37,50 +34,41 @@ class NewsViewModel: ViewModel {
     }
 
     
-    func resendAnnouncement(announcement: Announcement) {
+    func recreateAnnouncement(announcement: Announcement) {
         Task {
-            await resendAnnouncementUseCase.execute(announcement: announcement)
+            await recreateAnnouncementUseCase.execute(announcement: announcement)
         }
     }
     
     func deleteAnnouncement(announcement: Announcement) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
-        }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.deleteAnnouncementUseCase.execute(announcement: announcement)
-                self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        performRequest { [weak self] in
+            try await self?.deleteAnnouncementUseCase.execute(announcement: announcement)
         }
     }
     
     func reportAnnouncement(report: AnnouncementReport) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
-        }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.announcementRepository.reportAnnouncement(report: report)
-                self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        performRequest { [weak self] in
+            try await self?.announcementRepository.reportAnnouncement(report: report)
         }
     }
     
     func getAnnouncement(announcementId: String) -> Announcement? {
         announcementRepository.currentAnnouncements.first { $0.id == announcementId }
+    }
+    
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] error in
+                self?.event = ErrorEvent(message: error.localizedDescription)
+            },
+            onFinshed: { [weak self] in
+                self?.uiState.loading = false
+            }
+        )
     }
     
     private func listenUser() {
@@ -95,7 +83,7 @@ class NewsViewModel: ViewModel {
     private func listenAnnouncements() {
         announcementRepository.announcements
             .map { [weak self] announcements in
-                announcements.compactMap { self?.transform($0) }
+                announcements.compactMap { self?.truncateAnnouncement($0) }
             }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] announcements in
@@ -104,12 +92,14 @@ class NewsViewModel: ViewModel {
             .store(in: &cancellables)
     }
     
-    private func transform(_ announcement: Announcement) -> Announcement {
-        let trimmedTitle = announcement.title?.trim()
-        let newTitle = trimmedTitle.flatMap { !$0.isEmpty ? String($0.prefix(100)) : nil }
-        let newContent = String(announcement.content.prefix(100))
+    private func truncateAnnouncement(_ announcement: Announcement) -> Announcement {
+        let truncatedTitle = if let title = announcement.title { String(title.prefix(100)) } else { "" }
+        let truncatedContent = String(announcement.content.prefix(100))
         
-        return announcement.copy { $0.title = newTitle; $0.content = newContent }
+        return announcement.copy {
+            $0.title = truncatedTitle
+            $0.content = truncatedContent
+        }
     }
     
     struct NewsUiState {

@@ -6,8 +6,6 @@ struct ThirdRegistrationDestination: View {
     let schoolLevel: SchoolLevel
     
     @StateObject private var viewModel = AuthenticationMainThreadInjector.shared.resolve(ThirdRegistrationViewModel.self)
-    @State private var showErrorAlert = false
-    @State private var errorMessage: String = ""
     
     var body: some View {
         ThirdRegistrationView(
@@ -18,27 +16,13 @@ struct ThirdRegistrationDestination: View {
             emailError: viewModel.uiState.emailError,
             passwordError: viewModel.uiState.passwordError,
             errorMessage: viewModel.uiState.errorMessage,
+            onEmailChange: viewModel.onEmailChange,
             onRegisterClick: {
                 viewModel.register(
                     firstName: firstName,
                     lastName: lastName,
                     schoolLevel: schoolLevel
                 )
-            }
-        )
-        .onReceive(viewModel.$event) { event in
-            if let errorEvent = event as? ErrorEvent {
-                errorMessage = errorEvent.message
-                showErrorAlert = true
-            }
-        }
-        .alert(
-            errorMessage,
-            isPresented: $showErrorAlert,
-            actions: {
-                Button(stringResource(.ok), role: .cancel) {
-                    showErrorAlert = false
-                }
             }
         )
     }
@@ -52,12 +36,13 @@ private struct ThirdRegistrationView: View {
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
+    let onEmailChange: (String) -> Void
     let onRegisterClick: () -> Void
     
     var body: some View {
         VStack {
             ScrollView {
-                VStack(spacing: Dimens.mediumPadding) {
+                VStack(spacing: DimensResource.mediumPadding) {
                     FormContent(
                         email: $email,
                         password: $password,
@@ -66,6 +51,7 @@ private struct ThirdRegistrationView: View {
                         emailError: emailError,
                         passwordError: passwordError,
                         errorMessage: errorMessage,
+                        onEmailChange: onEmailChange
                     )
                 }
                 .padding(.horizontal)
@@ -103,11 +89,12 @@ private struct FormContent: View {
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
+    let onEmailChange: (String) -> Void
     
     private let legalNoticeUrl = "https://grandeecoledudroit.github.io/ged-website/legal-notice.html"
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
             Text(stringResource(.enterEmailPassword))
                 .font(.title3)
             
@@ -119,12 +106,14 @@ private struct FormContent: View {
             )
             .textContentType(.emailAddress)
             .textInputAutocapitalization(.never)
+            .onChange(of: email, perform: onEmailChange)
             
             OutlinedPasswordTextField(
                 stringResource(.password),
                 text: $password,
                 disabled: loading,
-                errorMessage: passwordError
+                errorMessage: passwordError,
+                supportingText: stringResource(.passwordRegistrationFieldSupportingText)
             )
             .textContentType(.password)
             
@@ -162,6 +151,7 @@ private struct FormContent: View {
             emailError: nil,
             passwordError: nil,
             errorMessage: nil,
+            onEmailChange: { _ in },
             onRegisterClick: {}
         )
         .background(.appBackground)

@@ -3,40 +3,33 @@ import Combine
 
 class AuthenticationViewModel: ViewModel {
     private let loginUseCase: LoginUseCase
-    private let networkMonitor: NetworkMonitor
-    private var cancellables: Set<AnyCancellable> = []
 
     @Published var uiState = AuthenticationUiState()
     @Published private(set) var event: SingleUiEvent? = nil
     
-    init(
-        loginUseCase: LoginUseCase,
-        networkMonitor: NetworkMonitor
-    ) {
+    init(loginUseCase: LoginUseCase) {
         self.loginUseCase = loginUseCase
-        self.networkMonitor = networkMonitor
     }
     
     func login() {
         let (email, password) = (uiState.email, uiState.password)
         guard validateInputs(email: email, password: password) else { return }
         
-        guard networkMonitor.isConnected else {
-            event = ErrorEvent(message: stringResource(.noInternetConectionError))
-            return
-        }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
+        performUiBlockingRequest(
+            block: { [weak self] in
                 try await self?.loginUseCase.execute(email: email, password: password)
-            } catch {
-                self?.uiState.loading = false
-                self?.uiState.errorMessage = self?.mapErrorMessage(error)
+            },
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.uiState.errorMessage = $0.localizedDescription
                 self?.uiState.password = ""
+            },
+            onFinshed: { [weak self] in
+                self?.uiState.loading = false
             }
-        }
+        )
     }
     
     private func validateInputs(email: String, password: String) -> Bool {
@@ -49,7 +42,7 @@ class AuthenticationViewModel: ViewModel {
         switch email {
             case _ where email.isBlank(): stringResource(.mandatoryFieldError)
             case _ where !VerifyEmailFormatUseCase.execute(email): stringResource(.incorrectEmailFormatError)
-            default : nil
+            default: nil
         }
     }
     
@@ -58,21 +51,6 @@ class AuthenticationViewModel: ViewModel {
             stringResource(.mandatoryFieldError)
         } else {
             nil
-        }
-    }
-    
-    private func mapErrorMessage(_ e: Error) -> String {
-        mapNetworkErrorMessage(e) {
-            if let authError = e as? AuthenticationError {
-                switch authError {
-                    case .invalidCredentials: stringResource(.incorrectCredentialsError)
-                    case .userDisabled: stringResource(.disabledUserError)
-                    case .userNotFound: stringResource(.userNotFound)
-                    default: stringResource(.unknownError)
-                }
-            } else {
-                stringResource(.unknownError)
-            }
         }
     }
     

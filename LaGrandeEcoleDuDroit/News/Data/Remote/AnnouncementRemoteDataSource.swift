@@ -9,42 +9,22 @@ class AnnouncementRemoteDataSource {
     }
     
     func getAnnouncements() async throws -> [Announcement] {
-        try await mapServerError(
-            block: { try await announcementApi.getAnnouncements() },
-            tag: tag,
-            message: "Failed to get remote announcements"
-        ).map { $0.toAnnouncement() }
+        return try await announcementApi.getAnnouncements().map { $0.toAnnouncement() }
     }
     
     func createAnnouncement(announcement: Announcement) async throws {
-        try await mapServerError(
-            block: { try await announcementApi.createAnnouncement(remoteAnnouncement: announcement.toRemote()) },
-            tag: tag,
-            message: "Failed to create remote announcement"
-        )
+        try await announcementApi.createAnnouncement(remoteAnnouncement: announcement.toRemote())
     }
     
     func updateAnnouncement(announcement: Announcement) async throws {
-        try await mapServerError(
-            block: { try await announcementApi.updateAnnouncement(remoteAnnouncement: announcement.toRemote()) },
-            tag: tag,
-            message: "Failed to update remote announcement"
-        )
+        try await announcementApi.updateAnnouncement(remoteAnnouncement: announcement.toRemote())
     }
     
     func deleteAnnouncement(announcementId: String, authorId: String) async throws {
-        try await mapServerError(
-            block: { try await announcementApi.deleteAnnouncement(announcementId: announcementId, authorId: authorId) },
-            tag: tag,
-            message: "Failed to delete remote announcement"
-        )
+        try await announcementApi.deleteAnnouncement(announcementId: announcementId, authorId: authorId)
     }
     
     func reportAnnouncement(report: AnnouncementReport) async throws {
-        try await mapServerError(
-            block: { try await announcementApi.reportAnnouncement(report: report.toRemote()) },
-            tag: tag,
-            message: "Failed to report remote announcement"
-        )
+        try await announcementApi.reportAnnouncement(report: report.toRemote())
     }
 }

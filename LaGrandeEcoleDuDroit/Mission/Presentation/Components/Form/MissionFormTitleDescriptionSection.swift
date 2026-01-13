@@ -7,19 +7,20 @@ struct MissionFormTitleDescriptionSection: View {
     let onDescriptionChange: (String) -> Void
     
     var body: some View {
-        VStack(spacing: Dimens.mediumPadding) {
+        VStack(spacing: DimensResource.mediumPadding) {
             TransparentTextField(
                 stringResource(.title),
                 text: $title,
             )
             .font(MissionUtilsPresentation.titleFont)
+            .fontWeight(.semibold)
             .onChange(of: title, perform: onTitleChange)
             
             TransparentTextField(
                 stringResource(.missionDescriptionField),
                 text: $description,
             )
-            .font(MissionUtilsPresentation.descriptionFont)
+            .font(MissionUtilsPresentation.contentFont)
             .lineLimit(4...)
             .onChange(of: description, perform: onDescriptionChange)
         }

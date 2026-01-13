@@ -20,7 +20,7 @@ struct UserDestination: View {
                 user: user,
                 currentUser: currentUser,
                 loading: viewModel.uiState.loading,
-                blockedUser: viewModel.uiState.blockedUser,
+                blockedUser: viewModel.uiState.isBlocked,
                 onReportUserClick: viewModel.reportUser,
                 onBlockUserClick: viewModel.blockUser,
                 onUnblockUserClick: viewModel.unblockUser
@@ -61,7 +61,7 @@ private struct UserView: View {
     @State private var showUnblockAlert: Bool = false
     
     var body: some View {
-        VStack(spacing: Dimens.mediumPadding) {
+        VStack(spacing: DimensResource.mediumPadding) {
             ProfilePicture(
                 url: user.profilePictureUrl,
                 scale: 1.6
@@ -96,7 +96,7 @@ private struct UserView: View {
                 case .userReport:
                     ReportSheet(
                         items: UserReport.Reason.allCases,
-                        fraction: Dimens.reportSheetFraction(itemCount: UserReport.Reason.allCases.count),
+                        fraction: DimensResource.reportSheetFraction(itemCount: UserReport.Reason.allCases.count),
                         onReportClick: { reason in
                             activeSheet = nil
                             onReportUserClick(
@@ -167,24 +167,24 @@ private struct UserSheet: View {
     let onUnblockUserClick: () -> Void
     
     var body: some View {
-        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
+        SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
             if blockedUser {
-                ClickableTextItem(
+                SheetItem(
                     icon: Image(systemName: "nosign"),
-                    text: Text(stringResource(.unblock)),
+                    text: stringResource(.unblock),
                     onClick: onUnblockUserClick
                 )
             } else {
-                ClickableTextItem(
+                SheetItem(
                     icon: Image(systemName: "nosign"),
-                    text: Text(stringResource(.block)),
+                    text: stringResource(.block),
                     onClick: onBlockUserClick
                 )
             }
             
-            ClickableTextItem(
+            SheetItem(
                 icon: Image(systemName: "exclamationmark.bubble"),
-                text: Text(stringResource(.report)),
+                text: stringResource(.report),
                 onClick: onReportUserClick
             )
             .foregroundColor(.error)

@@ -15,10 +15,16 @@
         <attribute name="announcementId" attributeType="String" defaultValueString=""/>
         <attribute name="announcementState" attributeType="String" customClassName="Announcement"/>
         <attribute name="announcementTitle" optional="YES" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="announcementId"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
     </entity>
     <entity name="LocalConversation" representedClassName="LocalConversation" syncable="YES" codeGenerationType="class">
+        <attribute name="conversationBlockedBy" optional="YES" attributeType="String"/>
         <attribute name="conversationCreatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="conversationDeleteTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="conversationEffectiveFrom" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="conversationId" attributeType="String"/>
         <attribute name="conversationInterlocutorAdmin" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="conversationInterlocutorEmail" optional="YES" attributeType="String"/>
@@ -30,6 +36,11 @@
         <attribute name="conversationInterlocutorState" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="conversationInterlocutorTester" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="conversationState" optional="YES" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="conversationId"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
     </entity>
     <entity name="LocalMessage" representedClassName="LocalMessage" syncable="YES" codeGenerationType="class">
         <attribute name="messageContent" attributeType="String"/>
@@ -40,6 +51,11 @@
         <attribute name="messageSeen" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="messageSenderId" attributeType="String"/>
         <attribute name="messageState" optional="YES" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="messageId"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
     </entity>
     <entity name="LocalMission" representedClassName="LocalMission" syncable="YES" codeGenerationType="class">
         <attribute name="missionDate" attributeType="Date" usesScalarValueType="NO"/>
@@ -56,5 +72,10 @@
         <attribute name="missionState" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="missionTasks" optional="YES" attributeType="String"/>
         <attribute name="missionTitle" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="missionId"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
     </entity>
 </model>

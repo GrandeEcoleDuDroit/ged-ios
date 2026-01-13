@@ -6,7 +6,7 @@ protocol UserRepository {
     
     var currentUser: User? { get }
     
-    func getUsers() async -> [User]
+    func getUsers() async throws -> [User]
     
     func getUserPublisher(userId: String) -> AnyPublisher<User?, Error>
     

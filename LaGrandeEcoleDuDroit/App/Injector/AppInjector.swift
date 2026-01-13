@@ -22,8 +22,9 @@ class AppInjector: Injector {
             ListenBlockedUserEventsUseCase(
                 blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self),
                 announcementRepository: NewsInjector.shared.resolve(AnnouncementRepository.self),
+                conversationRepository: MessageInjector.shared.resolve(ConversationRepository.self),
                 listenRemoteMessagesUseCase: MessageInjector.shared.resolve(ListenRemoteMessagesUseCase.self),
-                updateConversationDeleteTimeUseCase: MessageInjector.shared.resolve(UpdateConversationDeleteTimeUseCase.self)
+                updateConversationEffectiveFromUseCase: MessageInjector.shared.resolve(UpdateConversationEffectiveFromUseCase.self)
             )
         }.inObjectScope(.container)
         
@@ -42,18 +43,19 @@ class AppInjector: Injector {
                 conversationRepository: MessageInjector.shared.resolve(ConversationRepository.self),
                 messageRepository: MessageInjector.shared.resolve(MessageRepository.self),
                 conversationMessageRepository: MessageInjector.shared.resolve(ConversationMessageRepository.self),
-                announcementRepository: NewsInjector.shared.resolve(AnnouncementRepository.self)
+                announcementRepository: NewsInjector.shared.resolve(AnnouncementRepository.self),
+                missionRepository: MissionInjector.shared.resolve(MissionRepository.self),
+                blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self),
+                fcmTokenRepository: CommonInjector.shared.resolve(FcmTokenRepository.self)
             )
         }
         
         container.register(FcmTokenUseCase.self) { resolver in
             FcmTokenUseCase(
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                fcmTokenRepository: CommonInjector.shared.resolve(FcmTokenRepository.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
-                listenAuthenticationStateUseCase: AuthenticationInjector.shared.resolve(ListenAuthenticationStateUseCase.self)
+                fcmTokenRepository: CommonInjector.shared.resolve(FcmTokenRepository.self)
             )
-        }.inObjectScope(.container)
+        }.inObjectScope(.weak)
         
         container.register(DeleteAccountUseCase.self) { resolver in
             DeleteAccountUseCase(
@@ -64,7 +66,6 @@ class AppInjector: Injector {
         
         container.register(FetchDataUseCase.self) { resolver in
             FetchDataUseCase(
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 fetchBlockedUsersUseCase: CommonInjector.shared.resolve(FetchBlockedUsersUseCase.self),
                 fetchAnnouncementsUseCase: NewsInjector.shared.resolve(FetchAnnouncementsUseCase.self),
                 fetchMissionsUseCase: MissionInjector.shared.resolve(FetchMissionsUseCase.self)
@@ -74,27 +75,28 @@ class AppInjector: Injector {
         container.register(CheckUserValidityUseCase.self) { resolver in
             CheckUserValidityUseCase(
                 authenticationRepository: AuthenticationInjector.shared.resolve(AuthenticationRepository.self),
-                userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
+                userRepository: CommonInjector.shared.resolve(UserRepository.self)
             )
         }
         
         // View models
         container.register(MainViewModel.self) { resolver in
             MainViewModel(
+                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
                 listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!,
                 listenAuthenticationStateUseCase: AuthenticationInjector.shared.resolve(ListenAuthenticationStateUseCase.self),
                 fetchDataUseCase: resolver.resolve(FetchDataUseCase.self)!,
-                checkUserValidityUseCase: resolver.resolve(CheckUserValidityUseCase.self)!
+                checkUserValidityUseCase: resolver.resolve(CheckUserValidityUseCase.self)!,
+                fcmTokenUseCase: resolver.resolve(FcmTokenUseCase.self)!
             )
         }
         
         // Others
         container.register(NotificationMediator.self) { resolver in
-            NotificationMediatorImpl(
-                messageNotificationManager: MessageInjector.shared.resolve(MessageNotificationManager.self)
+            NotificationMediator(
+                messageNotificationPresenter: MessageInjector.shared.resolve(MessageNotificationPresenter.self)
             )
         }.inObjectScope(.container)
         

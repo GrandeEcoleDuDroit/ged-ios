@@ -68,13 +68,12 @@ struct MissionDetailsDestination: View {
     }
 }
 
-
 private struct MissionDetailsView: View {
     let user: User
     let mission: Mission
     let loading: Bool
     let isManager: Bool
-    let buttonState: MissionDetailsViewModel.MissionButtonState
+    let buttonState: MissionDetailsViewModel.MissionButtonState?
     let onBackClick: () -> Void
     let onRegisterMissionClick: () -> Void
     let onUnregisterMissionClick: () -> Void
@@ -84,7 +83,7 @@ private struct MissionDetailsView: View {
     let onDeleteMissionClick: () -> Void
     let onReportMissionClick: (MissionReport) -> Void
     
-    @State private var imageTopBar: Bool = true
+    @State private var defaultTopBar: Bool = false
     @State private var scrollPosition: CGPoint = .zero
     @State private var showDeleteMissionAlert: Bool = false
     @State private var showUnregisterMissionAlert: Bool = false
@@ -95,15 +94,16 @@ private struct MissionDetailsView: View {
     var body: some View {
         ZStack {
             ScrollView(showsIndicators: false) {
-                VStack(spacing: Dimens.mediumPadding) {
+                VStack(spacing: DimensResource.mediumPadding) {
                     MissionImage(
                         missionState: mission.state,
                         defaultImageScale: 1.4
                     )
+                    .ignoresSafeArea(.all)
                     .frame(height: MissionUtilsPresentation.missionImageHeight)
                     .clipped()
                     
-                    VStack(spacing: Dimens.mediumPadding) {
+                    VStack(spacing: DimensResource.mediumPadding) {
                         MissionDetailsTitleAndDescriptionSection(mission: mission)
                             .padding(.horizontal)
                         
@@ -126,11 +126,11 @@ private struct MissionDetailsView: View {
                         
                         MissionDetailsParticipantSection(
                             participants: mission.participants,
-                            onParticipantClick: onParticipantClick,
-                            onLongParticipantClick: { participant in
-                                if isManager {
-                                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                    activeSheet = .participant(participant)
+                            onParticipantClick: {
+                                if user.id != $0.id && (isManager || user.admin) {
+                                    activeSheet = .participant($0)
+                                } else {
+                                    onParticipantClick($0)
                                 }
                             }
                         )
@@ -159,47 +159,37 @@ private struct MissionDetailsView: View {
             }
             .coordinateSpace(name: "scroll")
             .onChange(of: scrollPosition) { newValue in
-                imageTopBar = scrollPosition.y >= -200
+                defaultTopBar = scrollPosition.y <= -200
             }
             
-            MissionDetailsTopBar(
-                title: mission.title,
-                imageTopBar: imageTopBar,
-                onBackClick: onBackClick,
-                onOptionsClick: { activeSheet = .mission }
-            )
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            if !defaultTopBar {
+                MissionImageTopBar(
+                    onBackClick: onBackClick,
+                    onOptionsClick: { activeSheet = .mission }
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            }
         }
-        .navigationBarBackButtonHidden(true)
+        .navigationBarBackButtonHidden(!defaultTopBar)
+        .navigationTitle(defaultTopBar ? mission.title : "")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                OptionsButton(action: { activeSheet = .mission })
+            }
+        }
+        .toolbar(defaultTopBar ? .visible : .hidden, for: .navigationBar)
         .safeAreaInset(edge: .bottom) {
-            Group {
-                switch buttonState {
-                    case let .register(enabled):
-                        RegisterButton(
-                            enabled: enabled,
-                            loading: loading,
-                            onClick: onRegisterMissionClick
-                        )
-                        .padding(.vertical, Dimens.smallMediumPadding)
-                        .padding(.horizontal, Dimens.mediumPadding)
-                        .background(.appBackground)
-                        
-                    case .registered:
-                        RegisteredButton(
-                            loading: loading,
-                            onClick: { showUnregisterMissionAlert = true }
-                        )
-                        .padding(.vertical, Dimens.smallMediumPadding)
-                        .padding(.horizontal, Dimens.mediumPadding)
-                        .background(.appBackground)
-                        
-                    case .complete: CompleteButton()
-                            .padding(.vertical, Dimens.smallMediumPadding)
-                            .padding(.horizontal, Dimens.mediumPadding)
-                            .background(.appBackground)
-                        
-                    case .hidden: EmptyView()
-                }
+            if let buttonState {
+                BottomSection(
+                    buttonState: buttonState,
+                    loading: loading,
+                    onRegisterMissionClick: onRegisterMissionClick,
+                    onUnregisterMissionClick: { showUnregisterMissionAlert = true }
+                )
+                .padding(.bottom, DimensResource.smallMediumPadding)
+                .padding(.top, DimensResource.mediumPadding)
+                .padding(.horizontal, DimensResource.mediumPadding)
+                .background(.appBackground)
             }
         }
         .sheet(item: $activeSheet) {
@@ -221,10 +211,19 @@ private struct MissionDetailsView: View {
                     )
                     
                 case let .participant(user):
-                    SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
-                        ClickableTextItem(
+                    SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
+                        SheetItem(
+                            icon: Image(systemName: "person"),
+                            text: stringResource(.seeProfile),
+                            onClick: {
+                                activeSheet = nil
+                                onParticipantClick(user)
+                            }
+                        )
+                        
+                        SheetItem(
                             icon: Image(systemName: "person.badge.minus"),
-                            text: Text(stringResource(.remove)),
+                            text: stringResource(.remove),
                             onClick: {
                                 activeSheet = nil
                                 alertParticipant = user
@@ -237,7 +236,7 @@ private struct MissionDetailsView: View {
                 case .missionReport:
                     ReportSheet(
                         items: MissionReport.Reason.allCases,
-                        fraction: Dimens.reportSheetFraction(itemCount: MissionReport.Reason.allCases.count),
+                        fraction: DimensResource.reportSheetFraction(itemCount: MissionReport.Reason.allCases.count),
                         onReportClick: { reason in
                             activeSheet = nil
                             
@@ -288,7 +287,7 @@ private struct MissionDetailsView: View {
             }
         }
         .alert(
-            stringResource(.removeParticipantAlertMessage, alertParticipant?.fullName ?? ""),
+            stringResource(.removeParticipantAlertMessage, alertParticipant?.displayedName ?? "Unknown"),
             isPresented: $showRemoveParticipantAlert,
             presenting: alertParticipant
         ) { participant in
@@ -305,43 +304,63 @@ private struct MissionDetailsView: View {
     }
 }
 
-private struct RegisterButton: View {
-    let enabled: Bool
+private struct BottomSection: View {
+    let buttonState: MissionDetailsViewModel.MissionButtonState
     let loading: Bool
-    let onClick: () -> Void
+    let onRegisterMissionClick: () -> Void
+    let onUnregisterMissionClick: () -> Void
     
     var body: some View {
-        LoadingButton(
-            label: stringResource(.registerMissionButtonText),
-            loading: loading,
-            action: onClick,
-            enabled: enabled
-        )
-    }
-}
-
-private struct RegisteredButton: View {
-    let loading: Bool
-    let onClick: () -> Void
-    
-    var body: some View {
-        LoadingButton(
-            label: stringResource(.registeredMissionButtonText),
-            loading: loading,
-            action: onClick,
-            containerColor: .activatedButtonContainer,
-            contentColor: .activatedButtonContent
-        )
-    }
-}
-
-private struct CompleteButton: View {
-    var body: some View {
-        PrimaryButton(
-            label: stringResource(.completeMissionButtonText),
-            action: {},
-            enabled: false
-        )
+        switch buttonState {
+            case .register:
+                LoadingButton(
+                    label: stringResource(.registerMissionButtonText),
+                    loading: loading,
+                    action: onRegisterMissionClick
+                )
+                
+            case .registered:
+                LoadingButton(
+                    label: stringResource(.registeredMissionButtonText),
+                    loading: loading,
+                    action: onUnregisterMissionClick,
+                    containerColor: .activatedButtonContainer,
+                    contentColor: .activatedButtonContent
+                )
+                
+            case .completed:
+                PrimaryButton(
+                    label: stringResource(.completedMissionButtonText),
+                    action: {},
+                    enabled: false
+                )
+                
+            case let .registrationClosed(reason: reason):
+                VStack {
+                    Text(reason)
+                        .foregroundStyle(.informationText)
+                        .font(.footnote)
+                    
+                    PrimaryButton(
+                        label: stringResource(.registrationClosedMissionButtonText),
+                        action: {},
+                        enabled: false
+                    )
+                }
+                
+            case let .unavailable(reason: reason):
+                VStack {
+                    Text(.init(reason))
+                        .foregroundStyle(.informationText)
+                        .font(.footnote)
+                    
+                    PrimaryButton(
+                        label: stringResource(.unavailableMissionButtonText),
+                        action: {},
+                        enabled: false
+                    )
+                }
+        }
     }
 }
 
@@ -374,7 +393,7 @@ private enum MissionDetailsViewSheet: Identifiable {
             mission: missionFixture,
             loading: false,
             isManager: true,
-            buttonState: .register(),
+            buttonState: .registered,
             onBackClick: {},
             onRegisterMissionClick: {},
             onUnregisterMissionClick: {},

@@ -5,7 +5,6 @@ class MissionDetailsViewModel: ViewModel {
     private let missionId: String
     private let missionRepository: MissionRepository
     private let userRepository: UserRepository
-    private let networkMonitor: NetworkMonitor
     private let deleteMissionUseCase: DeleteMissionUseCase
     
     @Published private(set) var uiState = MissionDetailsUiState()
@@ -16,13 +15,11 @@ class MissionDetailsViewModel: ViewModel {
         missionId: String,
         missionRepository: MissionRepository,
         userRepository: UserRepository,
-        networkMonitor: NetworkMonitor,
         deleteMissionUseCase: DeleteMissionUseCase
     ) {
         self.missionId = missionId
         self.missionRepository = missionRepository
         self.userRepository = userRepository
-        self.networkMonitor = networkMonitor
         self.deleteMissionUseCase = deleteMissionUseCase
         
         listenUserAndMission()
@@ -30,19 +27,11 @@ class MissionDetailsViewModel: ViewModel {
     
     func registerToMission() {
         guard let currentUser = uiState.currentUser,
-              let mission = uiState.mission
+                let mission = uiState.mission
         else { return }
         
-        let addMissionparticipant = AddMissionParticipant(
-            missionId: missionId,
-            schoolLevels: mission.schoolLevels,
-            maxParticipants: mission.maxParticipants,
-            participantsNumber: mission.participants.count,
-            user: currentUser
-        )
-        
-        executeRequest { [weak self] in
-            try await self?.missionRepository.addParticipant(addMissionParticipant: addMissionparticipant)
+        performRequest { [weak self] in
+            try await self?.missionRepository.addParticipant(missionId: mission.id, user: currentUser)
         }
     }
     
@@ -50,10 +39,10 @@ class MissionDetailsViewModel: ViewModel {
         guard let currentUser = uiState.currentUser else {
             return
         }
+        let missionId = missionId
         
-        executeRequest { [weak self] in
-            guard let self = self else { return }
-            try await self.missionRepository.removeParticipant(missionId: self.missionId, userId: currentUser.id)
+        performRequest { [weak self] in
+            try await self?.missionRepository.removeParticipant(missionId: missionId, userId: currentUser.id)
         }
     }
     
@@ -62,51 +51,44 @@ class MissionDetailsViewModel: ViewModel {
             return
         }
         
-        executeRequest { [weak self] in
+        performRequest { [weak self] in
             try await self?.deleteMissionUseCase.execute(mission: mission)
             self?.event = MissionDetailsUiEvent.missionDeleted
         }
     }
     
     func removeParticipant(userId: String) {
-        guard let missionId = uiState.mission?.id,
-              let userId = uiState.currentUser?.id
-        else { return }
+        guard let userId = uiState.currentUser?.id else {
+            return
+        }
+        let missionId = missionId
         
-        executeRequest { [weak self] in
+        performRequest { [weak self] in
             try await self?.missionRepository.removeParticipant(missionId: missionId, userId: userId)
         }
     }
     
     func reportMission(report: MissionReport) {
-        executeRequest { [weak self] in
+        performRequest { [weak self] in
             try await self?.missionRepository.reportMission(report: report)
         }
     }
     
-    private func executeRequest(block: @escaping () async throws -> Void) {
-        var loadingTask: Task<Void, Error>?
-        
-        Task { @MainActor in
-            do {
-                if !networkMonitor.isConnected {
-                    throw NetworkError.noInternetConnection
-                }
-                
-                loadingTask = Task { @MainActor in
-                    try await Task.sleep(for: .milliseconds(300))
-                    uiState.loading = true
-                }
-                
-                try await block()
-            } catch {
-                event = ErrorEvent(message: mapNetworkErrorMessage(error))
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: $0.localizedDescription)
+            },
+            onFinshed: { [weak self] in
+                self?.uiState.loading = false
             }
-            
-            loadingTask?.cancel()
-            uiState.loading = false
-        }
+        )
     }
+
     
     private func listenUserAndMission() {
         Publishers.CombineLatest(
@@ -125,19 +107,28 @@ class MissionDetailsViewModel: ViewModel {
         }.store(in: &cancellables)
     }
     
-    private func updateButtonState(user: User, mission: Mission, isManager: Bool) -> MissionButtonState {
+    private func updateButtonState(user: User, mission: Mission, isManager: Bool) -> MissionButtonState? {
         if isManager {
-            return MissionButtonState.hidden
+            return nil
         }
-        else if mission.complete {
-            return MissionButtonState.complete
+        else if mission.completed {
+            return MissionButtonState.completed
         }
         else if mission.participants.contains(where: { $0.id == user.id }) {
             return MissionButtonState.registered
         }
+        else if !mission.schoolLevels.contains(user.schoolLevel) {
+            let formattedSchoolLevels = mission.schoolLevels
+                .sorted { $0.number < $1.number }
+                .map { $0.rawValue }
+                .joined(separator: ", ")
+            return MissionButtonState.unavailable(reason: stringResource(.nonMatchingSchoolLevelInformationText, formattedSchoolLevels))
+        }
+        else if mission.full {
+            return MissionButtonState.registrationClosed(reason: stringResource(.fullMissionInformationText))
+        }
         else {
-            let enabled = !mission.full && mission.schoolLevelPermitted(schoolLevel: user.schoolLevel)
-            return MissionButtonState.register(enabled: enabled)
+            return MissionButtonState.register
         }
     }
     
@@ -146,7 +137,7 @@ class MissionDetailsViewModel: ViewModel {
         fileprivate(set) var mission: Mission? = nil
         fileprivate(set) var isManager: Bool = false
         fileprivate(set) var loading: Bool = false
-        fileprivate(set) var buttonState: MissionButtonState = .hidden
+        fileprivate(set) var buttonState: MissionButtonState? = nil
     }
     
     enum MissionDetailsUiEvent: SingleUiEvent {
@@ -154,9 +145,10 @@ class MissionDetailsViewModel: ViewModel {
     }
     
     enum MissionButtonState: Equatable {
-        case register(enabled: Bool = true)
+        case register
         case registered
-        case complete
-        case hidden
+        case completed
+        case registrationClosed(reason: String)
+        case unavailable(reason: String)
     }
 }

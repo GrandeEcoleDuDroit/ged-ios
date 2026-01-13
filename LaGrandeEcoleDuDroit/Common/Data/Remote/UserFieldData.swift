@@ -1,7 +1,7 @@
 struct UserField {
     private init() {}
     
-    struct Server {
+    struct Oracle {
         private init() {}
         
         static let userId = "USER_ID"
@@ -27,5 +27,17 @@ struct UserField {
         static let profilePictureFileName = "profilePictureFileName"
         static let state = "state"
         static let tester = "tester"
+    }
+}
+
+struct BlockedUserField {
+    private init() {}
+    
+    struct Remote {
+        private init() {}
+        
+        static let userId = "USER_ID"
+        static let blockedUserId = "BLOCKED_USER_ID"
+        static let blockedDate = "BLOCKED_DATE"
     }
 }

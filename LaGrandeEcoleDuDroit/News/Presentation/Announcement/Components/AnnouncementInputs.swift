@@ -8,7 +8,7 @@ struct AnnouncementInputs: View {
     var focusState: FocusState<AnnouncementFocusField?>
     
     var body: some View {
-        VStack(spacing: Dimens.mediumPadding) {
+        VStack(spacing: DimensResource.smallMediumPadding) {
             AnnouncementTitleInput(
                 title: $title,
                 onTitleChange: onTitleChange,
@@ -37,9 +37,10 @@ private struct AnnouncementTitleInput: View {
             focusState: focusState,
             field: .title
         )
-        .font(.titleMedium)
+        .font(AnnouncementUtilsPresentation.titleFont)
         .fontWeight(.semibold)
         .onChange(of: title, perform: onTitleChange)
+        .padding(.leading, 5)
     }
 }
 
@@ -55,8 +56,8 @@ private struct AnnouncementContentInput: View {
             focusState: focusState,
             field: .content
         )
+        .font(AnnouncementUtilsPresentation.contentFont)
         .scrollDismissesKeyboard(.interactively)
-        .font(.bodyMedium)
         .onChange(of: content, perform: onContentChange)
     }
 }
@@ -71,5 +72,5 @@ private struct AnnouncementContentInput: View {
         onContentChange: {_ in },
         focusState: _focusState
     )
-    .padding(Dimens.mediumPadding)
+    .padding(DimensResource.mediumPadding)
 }

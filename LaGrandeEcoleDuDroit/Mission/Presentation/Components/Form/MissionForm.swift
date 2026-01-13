@@ -1,22 +1,22 @@
 import SwiftUI
 
 struct MissionForm: View {
-    @Binding var imageData: Data?
+    let imageData: Data?
     @Binding var title: String
     @Binding var description: String
     let startDate: Date
     let endDate: Date
+    let selectedSchoolLevels: [SchoolLevel]
     let allSchoolLevels: [SchoolLevel]
-    let schoolLevels: [SchoolLevel]
     @Binding var maxParticipants: String
     @Binding var duration: String
     let managers: [User]
     let missionTasks: [MissionTask]
     let missionState: Mission.MissionState
     var schoolLevelSupportingText: String? = nil
-    var maxParticipantsError: String? = nil
+    let maxParticipantsError: String?
     
-    let onImageChange: () -> Void
+    let onImageChange: (Data) -> Void
     let onImageRemove: () -> Void
     let onTitleChange: (String) -> Void
     let onDescriptionChange: (String) -> Void
@@ -33,9 +33,9 @@ struct MissionForm: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: Dimens.mediumPadding) {
+            VStack(spacing: DimensResource.mediumPadding) {
                 MissionFormImageSection(
-                    imageData: $imageData,
+                    imageData: imageData,
                     missionState: missionState,
                     onImageChange: onImageChange,
                     onImageRemove: onImageRemove
@@ -55,7 +55,7 @@ struct MissionForm: View {
                 MissionFormInformationSection(
                     startDate: startDate,
                     endDate: endDate,
-                    schoolLevels: schoolLevels,
+                    selectedSchoolLevels: selectedSchoolLevels,
                     allSchoolLevels: allSchoolLevels,
                     maxParticipants: $maxParticipants,
                     duration: $duration,
@@ -96,13 +96,13 @@ struct MissionForm: View {
 
 #Preview {
     MissionForm(
-        imageData: .constant(nil),
+        imageData: nil,
         title: .constant(""),
         description: .constant(""),
         startDate: Date(),
         endDate: Date(),
-        allSchoolLevels: SchoolLevel.allCases,
-        schoolLevels: [],
+        selectedSchoolLevels: [],
+        allSchoolLevels: SchoolLevel.all,
         maxParticipants: .constant(""),
         duration: .constant(""),
         managers: [userFixture],
@@ -110,7 +110,7 @@ struct MissionForm: View {
         missionState: .draft,
         schoolLevelSupportingText: nil,
         maxParticipantsError: nil,
-        onImageChange: {},
+        onImageChange: { _ in },
         onImageRemove: {},
         onTitleChange: { _ in },
         onDescriptionChange: { _ in },

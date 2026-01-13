@@ -64,8 +64,8 @@ class MissionInjector: Injector {
             )
         }
         
-        container.register(ResendMissionUseCase.self) { resolver in
-            ResendMissionUseCase(
+        container.register(RecreateMissionUseCase.self) { resolver in
+            RecreateMissionUseCase(
                 missionRepository: resolver.resolve(MissionRepository.self)!,
                 imageRepository: CommonInjector.shared.resolve(ImageRepository.self),
                 missionTaskReferences: resolver.resolve(MissionTaskQueue.self)!
@@ -77,7 +77,7 @@ class MissionInjector: Injector {
             StartupMissionTask(
                 networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 missionRepository: resolver.resolve(MissionRepository.self)!,
-                resendMissionUseCase: resolver.resolve(ResendMissionUseCase.self)!
+                recreateMissionUseCase: resolver.resolve(RecreateMissionUseCase.self)!
             )
         }
         

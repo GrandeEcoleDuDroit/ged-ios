@@ -28,7 +28,7 @@ class AppMainThreadInjector: MainThreadInjector {
         container.register(ProfileViewModel.self) { resolver in
             ProfileViewModel(
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                authenticationRepository: AuthenticationInjector.shared.resolve(AuthenticationRepository.self)
+                logoutUseCase: AuthenticationInjector.shared.resolve(LogoutUseCase.self)
             )
         }
         
@@ -41,7 +41,6 @@ class AppMainThreadInjector: MainThreadInjector {
         container.register(AccountInformationViewModel.self) { resolver in
             AccountInformationViewModel(
                 updateProfilePictureUseCase: CommonInjector.shared.resolve(UpdateProfilePictureUseCase.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 userRepository: CommonInjector.shared.resolve(UserRepository.self)
             )
         }
@@ -49,7 +48,6 @@ class AppMainThreadInjector: MainThreadInjector {
         container.register(DeleteAccountViewModel.self) { resolver in
             DeleteAccountViewModel(
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 deleteUserAccountUseCase: AppInjector.shared.resolve(DeleteAccountUseCase.self)
             )
         }
@@ -58,7 +56,6 @@ class AppMainThreadInjector: MainThreadInjector {
             BlockedUsersViewModel(
                 blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self),
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 getBlockedUsersUseCase: CommonInjector.shared.resolve(GetBlockedUsersUseCase.self)
             )
         }

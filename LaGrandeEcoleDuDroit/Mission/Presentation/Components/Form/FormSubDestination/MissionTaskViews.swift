@@ -79,7 +79,7 @@ private struct MissionTaskView: View {
             maxHeight: .infinity,
             alignment: .topLeading
         )
-        .padding(.horizontal, Dimens.smallMediumPadding)
+        .padding(.horizontal, DimensResource.smallMediumPadding)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button(action: onConfirmButtonClick) {

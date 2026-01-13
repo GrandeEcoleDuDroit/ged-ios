@@ -16,8 +16,7 @@ class CommonMainThreadInjector: MainThreadInjector {
             return UserViewModel(
                 userId: userId,
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
+                blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self)
             )
         }
     }

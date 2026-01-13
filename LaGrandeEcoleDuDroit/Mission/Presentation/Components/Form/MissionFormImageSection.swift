@@ -2,9 +2,9 @@ import SwiftUI
 import PhotosUI
 
 struct MissionFormImageSection: View {
-    @Binding var imageData: Data?
+    let imageData: Data?
     let missionState: Mission.MissionState
-    let onImageChange: () -> Void
+    let onImageChange: (Data) -> Void
     let onImageRemove: () -> Void
     
     @State private var selectedItem: PhotosPickerItem?
@@ -34,18 +34,13 @@ struct MissionFormImageSection: View {
             }
             
             if imageData != nil || missionState.imageReference != nil {
-                Button(
-                    action: {
-                        imageData = nil
-                        onImageRemove()
-                    }
-                ) {
+                Button(action: onImageRemove) {
                     Image(systemName: "xmark")
                 }
                 .padding(10)
                 .background(.imageIconButtonContainer)
                 .clipShape(.circle)
-                .padding(Dimens.smallMediumPadding)
+                .padding(DimensResource.smallMediumPadding)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                 .frame(height: MissionUtilsPresentation.missionImageHeight)
             }
@@ -55,8 +50,7 @@ struct MissionFormImageSection: View {
         .contentShape(Rectangle())
         .task(id: selectedItem) {
             if let data = try? await selectedItem?.loadTransferable(type: Data.self) {
-                imageData = data
-                onImageChange()
+                onImageChange(data)
             }
         }
     }
@@ -64,12 +58,13 @@ struct MissionFormImageSection: View {
 
 private struct EmptyImage: View {
     var body: some View {
-        VStack(spacing: Dimens.extraSmallPadding) {
+        VStack(spacing: DimensResource.extraSmallPadding) {
             Image(systemName: "photo.badge.plus")
                 .font(.system(size: 60))
             
             Text(stringResource(.addImage))
-                .font(.bodyLarge)
+                .font(.headline)
+                .fontWeight(.regular)
         }
         .foregroundStyle(.onSurfaceVariant)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -79,9 +74,9 @@ private struct EmptyImage: View {
 
 #Preview {
     MissionFormImageSection(
-        imageData: .constant(nil),
+        imageData: nil,
         missionState: .draft,
-        onImageChange: {},
+        onImageChange: { _ in },
         onImageRemove: {}
     )
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)

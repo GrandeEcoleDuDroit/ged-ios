@@ -1,57 +1,45 @@
-import FirebaseFirestore
+import Foundation
 
 class BlockedUserApiImpl: BlockedUserApi {
-    private let tag = String(describing: BlockedUserApiImpl.self)
-    private let blockedUserFirestoreApi: BlockedUserFirestoreApi
+    private let tokenProvider: TokenProvider
+    private let base = "/blocked-users"
     
-    init(blockedUserFirestoreApi: BlockedUserFirestoreApi) {
-        self.blockedUserFirestoreApi = blockedUserFirestoreApi
+    init(tokenProvider: TokenProvider) {
+        self.tokenProvider = tokenProvider
     }
     
-    func getBlockedUserIds(currentUserId: String) async throws -> Set<String> {
-        try await mapFirebaseError(
-            block: {  try await blockedUserFirestoreApi.getBlockedUserIds(currentUserId: currentUserId) },
-            tag: tag,
-            message: "Failed to get blocked user ids from Firestore"
-        )
-    }
-    
-    func blockUser(currentUserId: String, userId: String) async throws {
-        try await mapFirebaseError(
-            block: {  try await blockedUserFirestoreApi.blockUser(currentUserId: currentUserId, userId: userId) },
-            tag: tag,
-            message: "Failed to block user with Firestore"
-        )
-    }
-    
-    func unblockUser(currentUserId: String, userId: String) async throws {
-        try await mapFirebaseError(
-            block: {  try await blockedUserFirestoreApi.unblockUser(currentUserId: currentUserId, userId: userId) },
-            tag: tag,
-            message: "Failed to unblock user with Firestore"
-        )
-    }
-}
-
-class BlockedUserFirestoreApi {
-    private let blockedUsersCollection: CollectionReference = Firestore.firestore().collection("blockedUsers")
-    private let dataKey = "userIds"
-    
-    func getBlockedUserIds(currentUserId: String) async throws -> Set<String> {
-        let userIds = try await blockedUsersCollection.document(currentUserId)
-            .getDocument()
-            .data()?[dataKey] as? [String] ?? []
+    func getBlockedUsers(currentUserId: String) async throws -> [RemoteBlockedUser] {
+        let url = RequestUtils.getUrl(base: base, endPoint: "/\(currentUserId)")
+        let session = RequestUtils.getDefaultSession()
+        let authToken = await tokenProvider.getAuthToken()
+        let request = RequestUtils.simpleGetRequest(url: url, authToken: authToken)
         
-        return Set(userIds)
+        if let blockedUsers: [RemoteBlockedUser] = try await RequestUtils.sendDataRequest(session: session, request: request) {
+            return blockedUsers
+        } else {
+            throw NetworkError.emptyResponse
+        }
     }
     
-    func blockUser(currentUserId: String, userId: String) async throws {
-        let data = [dataKey: FieldValue.arrayUnion([userId])]
-        try await blockedUsersCollection.document(currentUserId).setData(data, merge: true)
+    func addBlockedUser(remoteBlockedUser: RemoteBlockedUser) async throws {
+        let url = RequestUtils.getUrl(base: base, endPoint: "/create")
+        let session = RequestUtils.getDefaultSession()
+        let authToken = await tokenProvider.getAuthToken()
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: remoteBlockedUser, authToken: authToken)
+        
+        try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func unblockUser(currentUserId: String, userId: String) async throws {
-        let data = [dataKey: FieldValue.arrayRemove([userId])]
-        try await blockedUsersCollection.document(currentUserId).setData(data, merge: true)
+    func removeBlockedUser(currentUserId: String, blockedUserId: String) async throws {
+        let url = RequestUtils.getUrl(base: base, endPoint: "/delete")
+        let session = RequestUtils.getDefaultSession()
+        let data = [
+            BlockedUserField.Remote.userId: currentUserId,
+            BlockedUserField.Remote.blockedUserId: blockedUserId
+        ]
+        let authToken = await tokenProvider.getAuthToken()
+        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: data, authToken: authToken)
+        
+        try await RequestUtils.sendRequest(session: session, request: request)
     }
 }

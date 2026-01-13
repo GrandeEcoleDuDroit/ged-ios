@@ -3,7 +3,6 @@ import Combine
 
 class AccountInformationViewModel: ViewModel {
     private let updateProfilePictureUseCase: UpdateProfilePictureUseCase
-    private let networkMonitor: NetworkMonitor
     private let userRepository: UserRepository
 
     @Published private(set) var uiState: AccountInformationUiState = AccountInformationUiState()
@@ -12,11 +11,9 @@ class AccountInformationViewModel: ViewModel {
 
     init(
         updateProfilePictureUseCase: UpdateProfilePictureUseCase,
-        networkMonitor: NetworkMonitor,
         userRepository: UserRepository
     ) {
         self.updateProfilePictureUseCase = updateProfilePictureUseCase
-        self.networkMonitor = networkMonitor
         self.userRepository = userRepository
         
         initCurrentUser()
@@ -24,26 +21,7 @@ class AccountInformationViewModel: ViewModel {
     
     func updateProfilePicture(imageData: Data?) {
         guard let imageData else {
-            return event = ErrorEvent(message: "Image data is required.")
-        }
-        guard let user = uiState.user else { return }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.updateProfilePictureUseCase.execute(user: user, imageData: imageData)
-                self?.resetScreenState()
-            } catch {
-                self?.resetScreenState()
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
-        }
-    }
-    
-    func deleteProfilePicture() {
-        guard networkMonitor.isConnected else {
-            event = ErrorEvent(message: stringResource(.noInternetConectionError))
+            event = ErrorEvent(message: "Image not provided.")
             return
         }
         guard let user = uiState.user else {
@@ -51,21 +29,40 @@ class AccountInformationViewModel: ViewModel {
             return
         }
         
-        uiState.loading = true
+        performRequest { [weak self] in
+            try await self?.updateProfilePictureUseCase.execute(user: user, imageData: imageData)
+        }
+    }
+    
+    func deleteProfilePicture() {
+        guard let user = uiState.user else {
+            event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
+            return
+        }
         
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.userRepository.deleteProfilePicture(user: user)
-                self?.resetScreenState()
-            } catch {
-                self?.resetScreenState()
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        performRequest { [weak self] in
+            try await self?.userRepository.deleteProfilePicture(user: user)
         }
     }
     
     func onScreenStateChange(_ state: ScreenState) {
         uiState.screenState = state
+    }
+    
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: $0.localizedDescription)
+            },
+            onFinshed: { [weak self] in
+                self?.uiState.loading = false
+                self?.resetScreenState()
+            }
+        )
     }
     
     private func initCurrentUser() {

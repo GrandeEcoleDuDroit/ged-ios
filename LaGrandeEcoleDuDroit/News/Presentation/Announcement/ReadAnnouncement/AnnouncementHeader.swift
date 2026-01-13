@@ -4,28 +4,27 @@ struct AnnouncementHeader: View {
     let announcement: Announcement
     let onAuthorClick: () -> Void
     
-    private var elapsedTimeText: String {
-        getElapsedTimeText(date: announcement.date)
-    }
-
     var body: some View {
-        HStack(alignment: .center, spacing: Dimens.smallPadding) {
-            HStack {
+        TimelineView(.periodic(from: .now, by: 60)) { _ in
+            let elapsedTimeText = getElapsedTimeText(date: announcement.date)
+
+            HStack(spacing: DimensResource.smallMediumPadding) {
                 ProfilePicture(
                     url: announcement.author.profilePictureUrl,
                     scale: 0.4
                 )
                 
                 Text(announcement.author.displayedName)
-                    .font(.titleSmall)
+                    .font(AnnouncementUtilsPresentation.authorNameFont)
+                    .fontWeight(.semibold)
                 
                 Text(elapsedTimeText)
+                    .font(.subheadline)
                     .foregroundStyle(.supportingText)
-                    .font(.bodySmall)
             }
             .onTapGesture(perform: onAuthorClick)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

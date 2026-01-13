@@ -37,14 +37,14 @@ class CreateConversationViewModel: ViewModel {
     
     private func fetchUsers() {
         guard let user = userRepository.currentUser else {
-            event = ErrorEvent(message: stringResource(.userNotFound))
+            event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
             return
         }
         
-        let blockedUserIds = blockedUserRepository.currentBlockedUserIds
+        let blockedUsers = blockedUserRepository.currentBlockedUsers
         Task { @MainActor [weak self] in
             let users = await self?.getUsersUseCase.execute()
-                .filter { $0.id != user.id && !blockedUserIds.contains($0.id) }
+                .filter { $0.id != user.id && !blockedUsers.has($0.id) }
                 .sorted { $0.fullName < $1.fullName }
             ?? []
             

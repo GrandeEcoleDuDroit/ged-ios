@@ -9,6 +9,7 @@ struct ChatDestination: View {
     @StateObject private var viewModel: ChatViewModel
     @State private var showErrorAlert = false
     @State private var errorMessage: String = ""
+    @Environment(\.scenePhase) private var scenePhase
     
     init(
         conversation: Conversation,
@@ -27,10 +28,11 @@ struct ChatDestination: View {
         ChatView(
             conversation: conversation,
             messages: viewModel.uiState.messages,
-            messageText: viewModel.uiState.messageText,
+            messageText: $viewModel.uiState.messageText,
             loading: viewModel.uiState.loading,
-            blockedUser: viewModel.uiState.blockedUser,
+            isBlocked: viewModel.uiState.isBlocked,
             canLoadMoreMessages: viewModel.uiState.canLoadMoreMessages,
+            newMessagesEventPublisher: viewModel.newMessagesEventPublisher,
             onSendMessagesClick: viewModel.sendMessage,
             onMessageTextChange: viewModel.onMessageTextChange,
             loadMoreMessages: viewModel.loadMoreMessages,
@@ -47,10 +49,20 @@ struct ChatDestination: View {
             if let errorEvent = event as? ErrorEvent {
                 errorMessage = errorEvent.message
                 showErrorAlert = true
-            } else if let messageEvent = event as? ChatViewModel.MessageEvent {
-                switch messageEvent {
-                    case .chatDeleted: onBackClick()
+            } else if let chatEvent = event as? ChatViewModel.ChatEvent {
+                if case .chatDeleted = chatEvent {
+                    onBackClick()
                 }
+            }
+        }
+        .onAppear {
+            viewModel.startSeeingMessages()
+        }
+        .onChange(of: scenePhase) { phase in
+            switch phase {
+                case .active: viewModel.startSeeingMessages()
+                case .background: viewModel.stopSeeingMessages()
+                default: break
             }
         }
         .alert(
@@ -69,10 +81,12 @@ struct ChatDestination: View {
 private struct ChatView: View {
     let conversation: Conversation
     let messages: [Message]
-    let messageText: String
+    @Binding var messageText: String
     let loading: Bool
-    let blockedUser: Bool
+    let isBlocked: Bool
     let canLoadMoreMessages: Bool
+    let newMessagesEventPublisher: AnyPublisher<Message, Never>
+    
     let onSendMessagesClick: () -> Void
     let onMessageTextChange: (String) -> Void
     let loadMoreMessages: (Int) -> Void
@@ -92,49 +106,51 @@ private struct ChatView: View {
     @State private var showUnblockUserAlert: Bool = false
     
     var body: some View {
-        VStack(spacing: Dimens.smallMediumPadding) {
-            MessageFeed(
-                messages: messages,
-                conversation: conversation,
-                canLoadMoreMessages: canLoadMoreMessages,
-                loadMoreMessages: loadMoreMessages,
-                onErrorMessageClick: {
-                    if $0.state == .error {
-                        activeSheet = .sentMessage($0)
-                    }
-                },
-                onReceivedMessageLongClick: {
-                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    activeSheet = .receivedMessage($0)
-                },
-                onInterlocutorProfilePictureClick: { onInterlocutorProfilePictureClick(conversation.interlocutor) }
-            )
-            
+        MessageFeed(
+            messages: messages,
+            conversation: conversation,
+            canLoadMoreMessages: canLoadMoreMessages,
+            loadMoreMessages: loadMoreMessages,
+            newMessagesEventPublisher: newMessagesEventPublisher,
+            onErrorMessageClick: {
+                if $0.state == .error {
+                    activeSheet = .sentMessage($0)
+                }
+            },
+            onReceivedMessageLongClick: {
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                activeSheet = .receivedMessage($0)
+            },
+            onInterlocutorProfilePictureClick: { onInterlocutorProfilePictureClick(conversation.interlocutor) }
+        )
+        .safeAreaInset(edge: .bottom) {
             MessageBottomSection(
-                blockedUser: blockedUser,
-                messageText: messageText,
+                isBlocked: isBlocked,
+                messageText: $messageText,
                 onMessageTextChange: onMessageTextChange,
                 onSendMessagesClick: onSendMessagesClick,
                 onDeleteChatClick: { showDeleteChatAlert = true },
                 onUnblockUserClick: { showUnblockUserAlert = true }
             )
         }
-        .padding(.horizontal)
         .loading(loading)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                HStack(spacing: Dimens.smallMediumPadding) {
-                    ProfilePicture(
-                        url: conversation.interlocutor.profilePictureUrl,
-                        scale: 0.3
-                    )
-                    
-                    Text(conversation.interlocutor.displayedName)
-                        .fontWeight(.medium)
-                }
+                ProfilePicture(
+                    url: conversation.interlocutor.profilePictureUrl,
+                    scale: 0.3
+                )
                 .onTapGesture {
                     onInterlocutorClick(conversation.interlocutor)
                 }
+            }
+            
+            ToolbarItem(placement: .topBarLeading) {
+                Text(conversation.interlocutor.displayedName)
+                    .fontWeight(.medium)
+                    .onTapGesture {
+                        onInterlocutorClick(conversation.interlocutor)
+                    }
             }
         }
         .sheet(item: $activeSheet) {
@@ -162,7 +178,7 @@ private struct ChatView: View {
                 case let .messageReport(message):
                     ReportSheet(
                         items: MessageReport.Reason.allCases,
-                        fraction: Dimens.reportSheetFraction(itemCount: MessageReport.Reason.allCases.count),
+                        fraction: DimensResource.reportSheetFraction(itemCount: MessageReport.Reason.allCases.count),
                         onReportClick: { reason in
                             activeSheet = nil
                             onReportMessageClick(
@@ -242,16 +258,16 @@ private struct SentMessageSheet: View {
     let onDeleteMessage: () -> Void
     
     var body: some View {
-        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
-            ClickableTextItem(
+        SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
+            SheetItem(
                 icon: Image(systemName: "paperplane"),
-                text: Text(stringResource(.resend)),
+                text: stringResource(.resend),
                 onClick: onResendMessage
             )
                             
-            ClickableTextItem(
+            SheetItem(
                 icon: Image(systemName: "trash"),
-                text: Text(stringResource(.delete)),
+                text: stringResource(.delete),
                 onClick: onDeleteMessage
             )
             .foregroundColor(.red)
@@ -263,10 +279,10 @@ private struct ReceivedMessageSheet: View {
     let onReportClick: () -> Void
     
     var body: some View {
-        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
-            ClickableTextItem(
+        SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 1)) {
+            SheetItem(
                 icon: Image(systemName: "exclamationmark.bubble"),
-                text: Text(stringResource(.report)),
+                text: stringResource(.report),
                 onClick: onReportClick
             )
             .foregroundColor(.red)
@@ -275,25 +291,26 @@ private struct ReceivedMessageSheet: View {
 }
 
 private struct MessageBottomSection: View {
-    let blockedUser: Bool
-    let messageText: String
+    let isBlocked: Bool
+    @Binding var messageText: String
     let onMessageTextChange: (String) -> Void
     let onSendMessagesClick: () -> Void
     let onDeleteChatClick: () -> Void
     let onUnblockUserClick: () -> Void
     
     var body: some View {
-        if blockedUser {
+        if isBlocked {
             MessageBlockedUserIndicator(
                 onDeleteChatClick: onDeleteChatClick,
                 onUnblockUserClick: onUnblockUserClick
             )
         } else {
             MessageInput(
-                text: messageText,
+                text: $messageText,
                 onTextChange: onMessageTextChange,
                 onSendClick: onSendMessagesClick
             )
+            .padding(.horizontal)
         }
     }
 }
@@ -317,10 +334,11 @@ private enum ChatViewSheet: Identifiable {
         ChatView(
             conversation: conversationFixture,
             messages: messagesFixture,
-            messageText: "",
+            messageText: .constant(""),
             loading: false,
-            blockedUser: false,
+            isBlocked: false,
             canLoadMoreMessages: true,
+            newMessagesEventPublisher: Empty().eraseToAnyPublisher(),
             onSendMessagesClick: {},
             onMessageTextChange: { _ in },
             loadMoreMessages: { _ in },

@@ -6,6 +6,8 @@ struct ProfileDestination: View {
     let onPrivacyClick: () -> Void
     
     @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(ProfileViewModel.self)
+    @State private var errorMessage: String = ""
+    @State private var showErrorAlert: Bool = false
     
     var body: some View {
         ProfileView(
@@ -14,6 +16,21 @@ struct ProfileDestination: View {
             onAccountClick: onAccountClick,
             onPrivacyClick: onPrivacyClick,
             onLogoutClick: viewModel.logout
+        )
+        .onReceive(viewModel.$event) { event in
+            if let errorEvent = event as? ErrorEvent {
+                errorMessage = errorEvent.message
+                showErrorAlert = true
+            }
+        }
+        .alert(
+            errorMessage,
+            isPresented: $showErrorAlert,
+            actions: {
+                Button(stringResource(.ok)) {
+                    showErrorAlert = false
+                }
+            }
         )
     }
 }
@@ -31,8 +48,8 @@ private struct ProfileView: View {
         List {
             if let user {
                 Section {
-                    Button(action: onAccountInfosClick) {
-                        HStack(spacing: Dimens.mediumPadding) {
+                    NavigationListItem(onClick: onAccountInfosClick) {
+                        HStack(spacing: DimensResource.mediumPadding) {
                             ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
                             
                             VStack(alignment: .leading) {
@@ -54,35 +71,31 @@ private struct ProfileView: View {
                                     .foregroundStyle(.secondary)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            Image(systemName: "chevron.right")
-                                .foregroundStyle(.gray)
                         }
                     }
                 }
                 
                 Section {
-                    Button(action: onAccountClick) {
-                        ListItem(
-                            image: Image(systemName: "key"),
-                            text: Text(stringResource(.account))
-                        )
-                    }
-                    
-                    Button(action: onPrivacyClick) {
-                        ListItem(
-                            image: Image(systemName: "lock"),
-                            text: Text(stringResource(.privacy))
-                        )
-                    }
+                    NavigationListItem(
+                        image: Image(systemName: "key"),
+                        text: stringResource(.account),
+                        onClick: onAccountClick
+                    )
+
+                    NavigationListItem(
+                        image: Image(systemName: "lock"),
+                        text: stringResource(.privacy),
+                        onClick: onPrivacyClick
+                    )
                 }
                 
                 Section {
-                    ClickableTextItem(
-                        icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
-                        text: Text(stringResource(.logout)),
-                        onClick: { showLogoutAlert = true }
-                    )
+                    Button(action: { showLogoutAlert = true }) {
+                        TextIcon(
+                            icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
+                            text: stringResource(.logout)
+                        )
+                    }
                     .foregroundStyle(.red)
                 }
             } else {

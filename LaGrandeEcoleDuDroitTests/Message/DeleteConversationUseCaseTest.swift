@@ -6,14 +6,12 @@ import Combine
 
 class DeleteConversationUseCaseTest {
     @Test
-    func deleteConversationUseCase_should_update_remote_conversation_delete_time() async {
+    func deleteConversationUseCase_should_delete_conversation() async {
         // Given
         let conversation = conversationFixture
-        let conversationRepository = ConversationDeleteTimeUpdated(
-            givenConversation: conversation.copy { $0.deleteTime = Date().addingTimeInterval(-1000) }
-        )
+        let testConversationRepository = TestConversationRepository()
         let useCase = DeleteConversationUseCase(
-            conversationRepository: conversationRepository,
+            conversationRepository: testConversationRepository,
             messageRepository: MockMessageRepository(),
             conversationMessageRepository: MockConversationMessageRepository()
         )
@@ -22,19 +20,40 @@ class DeleteConversationUseCaseTest {
         try? await useCase.execute(conversation: conversation, userId: userFixture.id)
         
         // Then
-        #expect(conversationRepository.deleteTimeUpdated)
+        #expect(testConversationRepository.isConversationDeleted)
+    }
+    
+    @Test
+    func deleteConversationUseCase_should_delete_local_messages() async {
+        // Given
+        let conversation = conversationFixture
+        let testMessageRepository = TestMessageRepository()
+        let useCase = DeleteConversationUseCase(
+            conversationRepository: MockConversationRepository(),
+            messageRepository: testMessageRepository,
+            conversationMessageRepository: MockConversationMessageRepository()
+        )
+        
+        // When
+        try? await useCase.execute(conversation: conversation, userId: userFixture.id)
+        
+        // Then
+        #expect(testMessageRepository.isMessagesDeleted)
     }
 }
 
-private class ConversationDeleteTimeUpdated: MockConversationRepository {
-    var deleteTimeUpdated: Bool = false
-    let givenConversation: Conversation
+private class TestConversationRepository: MockConversationRepository {
+    var isConversationDeleted = false
     
-    init(givenConversation: Conversation) {
-        self.givenConversation = givenConversation
+    override func deleteConversation(conversationId: String, userId: String, date: Date) async throws {
+        isConversationDeleted = true
     }
+}
+
+private class TestMessageRepository: MockMessageRepository {
+    var isMessagesDeleted = false
     
-    override func deleteConversation(conversation: Conversation, userId: String, deleteTime: Date) async throws {
-        deleteTimeUpdated = conversation.deleteTime != nil && conversation.deleteTime! > givenConversation.deleteTime!
+    override func deleteLocalMessages(conversationId: String) async throws {
+        isMessagesDeleted = true
     }
 }
