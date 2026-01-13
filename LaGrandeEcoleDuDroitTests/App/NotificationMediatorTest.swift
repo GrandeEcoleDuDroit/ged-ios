@@ -10,7 +10,7 @@ class NotificationMediatorTest {
     func presentNotification_should_redirect_to_the_right_notif_manager() {
         // Give
         let messageNotifManager = TestMessageNotificationManager()
-        let useCase = NotificationMediator(messageNotificationManager: messageNotifManager)
+        let useCase = NotificationMediator(messageNotificationPresenter: messageNotifManager)
         let userInfo = getUserInfo()
         
         // When
@@ -24,7 +24,7 @@ class NotificationMediatorTest {
     func receiveNotification_should_redirect_to_the_right_notif_manager() {
         // Give
         let messageNotifManager = TestMessageNotificationManager()
-        let useCase = NotificationMediator(messageNotificationManager: messageNotifManager)
+        let useCase = NotificationMediator(messageNotificationPresenter: messageNotifManager)
         let userInfo = getUserInfo()
         
         // When

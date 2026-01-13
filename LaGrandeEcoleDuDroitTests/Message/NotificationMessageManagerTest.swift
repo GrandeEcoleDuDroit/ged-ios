@@ -11,9 +11,13 @@ class NotificationMessageManagerTest {
         // Given
         let emptyNavigationRequestUseCase = EmptyNavigationRequestUseCase()
         let nilCurrentRoute = NilCurrentRoute()
-        let userInfo: [AnyHashable : Any] = [:]
+        let notif = RemoteMessageNotification(
+            conversation: conversationFixture,
+            message: .init(content: "content", date: Int64(Date().timeIntervalSince1970))
+        )
+        let jsonData = try! JSONEncoder().encode(notif)
+        let userInfo: [AnyHashable : Any] = ["value": String(data: jsonData, encoding: .utf8)!]
         var result: UNNotificationPresentationOptions = []
-        
         let useCase = MessageNotificationPresenter(
             navigationRequestUseCase: emptyNavigationRequestUseCase,
             routeRepository: nilCurrentRoute

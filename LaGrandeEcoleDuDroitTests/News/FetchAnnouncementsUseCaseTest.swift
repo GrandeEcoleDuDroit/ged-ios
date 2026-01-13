@@ -1,9 +1,10 @@
 import Testing
 import Combine
+import Foundation
 
 @testable import GrandeEcoleDuDroit
 
-class SynchronizeAnnouncementsUseCaseTest {
+class FetchAnnouncementsUseCaseTest {
     @Test
     func fetchAnnouncementsUseCase_should_upsert_new_remote_announcements() async {
         // Given
@@ -34,8 +35,8 @@ class SynchronizeAnnouncementsUseCaseTest {
         )
         let useCase = FetchAnnouncementsUseCase(
             announcementRepository: announcementsUpserted,
-            blockedUserRepository: BlockedUsers(
-                declaredBlockedUserIds: remoteAnnouncements.map { $0.author.id }.toSet()
+            blockedUserRepository: TestBlockedUserRepository(
+                localBlockedUsers: remoteAnnouncements.map { BlockedUser(userId: $0.id, date: Date())}
             )
         )
         
@@ -70,14 +71,15 @@ class SynchronizeAnnouncementsUseCaseTest {
     func fetchAnnouncementsUseCase_should_delete_announcements_from_blocked_users() async {
         // Given
         let currentAnnouncements = announcementsFixture
-        let blockedUserIds = currentAnnouncements.map { $0.author.id }.toSet()
         let announcementsDeleted = AnnouncementsDeleted(
             declaredCurrentAnnouncements: currentAnnouncements,
             declaredRemoteAnnouncements: currentAnnouncements
         )
         let useCase = FetchAnnouncementsUseCase(
             announcementRepository: announcementsDeleted,
-            blockedUserRepository: BlockedUsers(declaredBlockedUserIds: blockedUserIds)
+            blockedUserRepository: TestBlockedUserRepository(
+                localBlockedUsers: currentAnnouncements.map { BlockedUser(userId: $0.id, date: Date()) }
+            )
         )
         
         // When
@@ -140,18 +142,24 @@ private class AnnouncementsUpserted: MockAnnouncementRepository {
     }
 }
 
-private class BlockedUsers: MockBlockedUserRepository {
-    private let declaredBlockedUserIds: Set<String>
+private class TestBlockedUserRepository: MockBlockedUserRepository {
+    private let localBlockedUsers: [BlockedUser]
     
-    override var blockedUsers: AnyPublisher<Set<String>, Never> {
-        Just(declaredBlockedUserIds).eraseToAnyPublisher()
+    override var blockedUsers: AnyPublisher<[String: BlockedUser], Never> {
+        Just(
+            localBlockedUsers.reduce(into: [:]) { result, user in
+                result[user.userId] = user
+            }
+        ).eraseToAnyPublisher()
     }
     
-    override var currentBlockedUsers: Set<String> {
-        declaredBlockedUserIds
+    override var currentBlockedUsers: [String: BlockedUser] {
+        localBlockedUsers.reduce(into: [:]) { result, user in
+            result[user.userId] = user
+        }
     }
     
-    init(declaredBlockedUserIds: Set<String>) {
-        self.declaredBlockedUserIds = declaredBlockedUserIds
+    init(localBlockedUsers: [BlockedUser]) {
+        self.localBlockedUsers = localBlockedUsers
     }
 }
