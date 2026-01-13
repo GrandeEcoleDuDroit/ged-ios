@@ -11,8 +11,8 @@ struct FirstRegistrationDestination: View {
             lastName: $viewModel.uiState.lastName,
             firstNameError: viewModel.uiState.firstNameError,
             lastNameError: viewModel.uiState.lastNameError,
-            onFirstNameChange: viewModel.onFirstNameChanged,
-            onLastNameChange: viewModel.onLastNameChanged,
+            onFirstNameChange: viewModel.onFirstNameChange,
+            onLastNameChange: viewModel.onLastNameChange,
             onNextClick: { firstName, lastName in
                 if (viewModel.validateInputs()) {
                     onNextClick(firstName, lastName)

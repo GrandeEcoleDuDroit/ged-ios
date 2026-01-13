@@ -6,9 +6,14 @@ class ThirdRegistrationViewModel: ViewModel {
     
     @Published var uiState = ThirdRegistrationUiState()
     private let minPasswordLength: Int = 8
+    private let maxEmailLength: Int = 100
     
     init(registerUseCase: RegisterUseCase) {
         self.registerUseCase = registerUseCase
+    }
+    
+    func onEmailChange(_ email: String) {
+        uiState.email = email.take(maxEmailLength)
     }
     
     func register(firstName: String, lastName: String, schoolLevel: SchoolLevel) {

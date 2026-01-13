@@ -3,27 +3,36 @@ import Combine
 
 class FirstRegistrationViewModel: ViewModel {
     @Published var uiState = FirstRegistrationUiState()
+    private let maxNameLength: Int = 50
     
-    func onFirstNameChanged(_ firstName: String) {
-        uiState.firstName = validName(firstName)
+    func onFirstNameChange(_ firstName: String) {
+        uiState.firstName = validNameChanges(firstName)
     }
     
-    func onLastNameChanged(_ lastName: String) {
-        uiState.lastName = validName(lastName)
+    func onLastNameChange(_ lastName: String) {
+        uiState.lastName = validNameChanges(lastName)
     }
     
     func validateInputs() -> Bool {
         let (firstName, lastName) = (uiState.firstName, uiState.lastName)
         uiState.firstName = UserUtils.Name.formatName(firstName.trim())
         uiState.lastName = UserUtils.Name.formatName(lastName.trim())
-        uiState.firstNameError = uiState.firstName.isBlank() ? stringResource(.mandatoryFieldError) : nil
-        uiState.lastNameError = uiState.lastName.isBlank() ? stringResource(.mandatoryFieldError) : nil
+        uiState.firstNameError = validateName(firstName)
+        uiState.lastNameError = validateName(lastName)
         
         return uiState.firstNameError == nil && uiState.lastNameError == nil
     }
     
-    private func validName(_ name: String) -> String {
-        name.filter { $0.isLetter || $0 == " " || $0 == "-" }
+    private func validNameChanges(_ name: String) -> String {
+        name.take(maxNameLength).filter { $0.isLetter || $0 == " " || $0 == "-" }
+    }
+    
+    private func validateName(_ name: String) -> String? {
+        if name.isBlank() {
+            stringResource(.mandatoryFieldError)
+        } else {
+            nil
+        }
     }
     
     struct FirstRegistrationUiState {
