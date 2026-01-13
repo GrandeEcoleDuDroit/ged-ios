@@ -28,7 +28,7 @@ private struct SecondRegistrationView: View {
     var body: some View {
         VStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+                VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
                     Text(stringResource(.selectSchoolLevel))
                         .font(.title3)
                     
@@ -46,7 +46,7 @@ private struct SecondRegistrationView: View {
                             }
                         }
                     }
-                    .padding(.horizontal, Dimens.mediumPadding)
+                    .padding(.horizontal, DimensResource.mediumPadding)
                     .padding(.vertical, 10)
                     .overlay(
                         RoundedRectangle(cornerRadius: 5)
@@ -80,7 +80,7 @@ private struct SecondRegistrationView: View {
             firstName: "",
             lastName: "",
             schoolLevel: .constant(SchoolLevel.ged1),
-            schoolLevels: SchoolLevel.allCases,
+            schoolLevels: SchoolLevel.all,
             onNextClick: {}
         )
         .background(.appBackground)

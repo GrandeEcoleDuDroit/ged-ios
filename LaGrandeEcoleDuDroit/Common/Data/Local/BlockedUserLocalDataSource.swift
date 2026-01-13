@@ -4,21 +4,29 @@ import Foundation
 class BlockedUserLocalDataSource {
     private let blockedUserKey = "blockedUserKey"
     
-    func getBlockedUserIds() -> Set<String> {
-        UserDefaults.standard.stringArray(forKey: blockedUserKey)?.toSet() ?? Set<String>()
+    func getBlockedUsers() -> [String: BlockedUser] {
+        var blockedUsers: [String: BlockedUser]?
+        if let data = UserDefaults.standard.data(forKey: blockedUserKey) {
+            blockedUsers = try? JSONDecoder().decode([String: BlockedUser].self, from: data)
+        }
+        return blockedUsers ?? [:]
     }
 
-    func blockUser(userId: String) -> Set<String> {
-        var blockedUserIds = getBlockedUserIds()
-        blockedUserIds.insert(userId)
-        UserDefaults.standard.set(Array(blockedUserIds), forKey: blockedUserKey)
-        return blockedUserIds
+    func addBlockedUser(blockedUser: BlockedUser) throws {
+        var blockedUsers = getBlockedUsers()
+        blockedUsers[blockedUser.userId] = blockedUser
+        let data = try JSONEncoder().encode(blockedUsers)
+        UserDefaults.standard.set(data, forKey: blockedUserKey)
     }
     
-    func unblockUser(userId: String) -> Set<String> {
-        var blockedUserIds = getBlockedUserIds()
-        blockedUserIds.remove(userId)
-        UserDefaults.standard.set(Array(blockedUserIds), forKey: blockedUserKey)
-        return blockedUserIds
+    func removeBlockedUser(userId: String) throws {
+        var blockedUsers = getBlockedUsers()
+        blockedUsers[userId] = nil
+        let data = try JSONEncoder().encode(blockedUsers)
+        UserDefaults.standard.set(data, forKey: blockedUserKey)
+    }
+    
+    func deleteAll() {
+        UserDefaults.standard.removeObject(forKey: blockedUserKey)
     }
 }

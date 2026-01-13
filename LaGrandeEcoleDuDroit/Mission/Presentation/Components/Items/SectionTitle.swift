@@ -5,8 +5,7 @@ struct SectionTitle: View {
     
     var body: some View {
         Text(title)
-            .font(.title3)
-            .fontWeight(.semibold)
+            .font(.headline)
     }
 }
 

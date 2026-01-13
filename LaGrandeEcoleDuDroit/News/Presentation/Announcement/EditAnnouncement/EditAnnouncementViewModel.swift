@@ -3,19 +3,16 @@ import Foundation
 class EditAnnouncementViewModel: ViewModel {
     private let announcement: Announcement
     private let announcementRepository: AnnouncementRepository
-    private let networkMonitor: NetworkMonitor
 
     @Published var uiState: EditAnnouncementUiState = EditAnnouncementUiState()
     @Published private(set) var event: SingleUiEvent? = nil
     
     init(
         announcement: Announcement,
-        announcementRepository: AnnouncementRepository,
-        networkMonitor: NetworkMonitor
+        announcementRepository: AnnouncementRepository
     ) {
         self.announcementRepository = announcementRepository
         self.announcement = announcement
-        self.networkMonitor = networkMonitor
         
         initUiState()
     }
@@ -36,31 +33,27 @@ class EditAnnouncementViewModel: ViewModel {
     }
     
     func updateAnnouncement() {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
+        let (title, content) = (uiState.title.trim(), uiState.content.trim())
+        let announcementToUpdate = announcement.copy {
+            $0.title = title
+            $0.content = content
         }
         
-        uiState.loading = true
-        let title = uiState.title.trim()
-        let content = uiState.content.trim()
-                                                         
-        Task { @MainActor [weak self] in
-            do {
-                guard let announcement = self?.announcement.copy({
-                    $0.title = title.trim()
-                    $0.content = content.trim()
-                }) else {
-                    return
-                }
-
-                try await self?.announcementRepository.updateAnnouncement(announcement: announcement)
+        performUiBlockingRequest(
+            block: { [weak self] in
+                try await self?.announcementRepository.updateAnnouncement(announcement: announcementToUpdate)
                 self?.event = SuccessEvent()
-                self?.uiState.loading = false
-            } catch {
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
+            },
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: $0.localizedDescription)
+            },
+            onFinshed: { [weak self] in
                 self?.uiState.loading = false
             }
-        }
+        )
     }
     
     private func validateInput() -> Bool {

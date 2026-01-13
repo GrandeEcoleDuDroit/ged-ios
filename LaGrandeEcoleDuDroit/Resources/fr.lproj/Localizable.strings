@@ -11,7 +11,6 @@
 "new_profile_picture" = "Nouvelle photo de profil";
 "profile_picture_updated" = "Photo de profil mise à jour";
 "member" = "Membre";
-"user_not_found" = "Aucun utilisateur trouvé";
 "delete_profile_picture_alert_message" = "Voulez-vous supprimer votre photo de profil ?";
 "delete_account_text" = "Supprimer votre compte entraînera la suppression définitive de toutes vos données. Cette action est irréversible.";
 "delete_account" = "Supprimer le compte";
@@ -34,7 +33,7 @@
 "home" = "Accueil";
 "now" = "Maintenant";
 "finish" = "Terminer";
-"resend" = "Renvoyer";
+"retry" = "Réessayer";
 "loading" = "Chargement";
 "send" = "Envoyer";
 "publish" = "Publier";
@@ -56,26 +55,35 @@
 "block_user_alert_message" = "Vous ne verrez plus aucun de ses contenus.";
 "unblock_user_alert_message" = "Voulez-vous débloquer cet utilisateur ?";
 "no_user" = "Aucun utilisateur";
+"no_users_found" = "Aucun utilisateur trouvé";
 "deleted_user_first_name" = "Utilisateur";
 "deleted_user_last_name" = "Supprimé";
+"mb" = "Mo";
 
 // Common error
 "mandatory_field_error" = "Champs obligatoire.";
 "no_internet_connection_error" = "Aucune connexion Internet.";
 "internal_server_error" = "Une erreur interne du serveur est survenue.";
-"unknown_network_error" = "Une erreur réseau est survenue.";
+"any_network_error" = "Une erreur réseau est survenue.";
 "unknown_error" = "Une erreur inconnue est survenue.";
-"time_out_error" = "Le serveur a mis trop de temps à répondre.";
+"timed_out_error" = "Le service a mis trop de temps à répondre. Veuillez réessayer.";
 "server_connection_error" = "Impossible de se connecter au serveur.";
 "empty_inputs_error" = "Veuillez remplir tous les champs.";
 "cannot_connect_to_host_error" = "Impossible de se connecter au serveur.";
 "too_many_requests_error" = "Vous avez effectué trop de requêtes. Veuillez réessayer dans quelques minutes.";
 "internet_connection_lost_error" = "La connexion Internet a été perdue.";
-"disabled_user_error" = "Votre compte a été désactivé. Veuillez contacter le support.";
+"disabled_user_error" = "Votre compte a été désactivé.";
 "current_user_not_found_error" = "Utilisateur actuel non trouvé. Veuillez vous réauthentifier.";
 "sending_error" = "Erreur d'envoi";
 "network_connection_lost_error" = "La connexion réseau a été perdue.";
-"cannot_find_host_error" = "Impossible de se connecter au server.";
+"cannot_find_host_error" = "Impossible de se connecter au serveur.";
+"number_field_error" = "Veuillez entrer un nombre valide.";
+"invalid_image_format_error" = "L'image a un format invalide.";
+"unauthorized_error" = "Vous devez être authentifié pour effectuer cette action.";
+"bad_request_error" = "La requête n'a pu aboutir.";
+"nil_data_error" = "Données nulle";
+"image_too_large_error_title" = "Image trop volumineuse";
+"image_too_large_error_message" = "La taille totale de l'image doit être inférieur à %@.";
 
 //Authentication
 "authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";
@@ -98,16 +106,17 @@
 "forgot_password_success" = "Si un compte associé à cette adresse e-mail existe, un lien de réinitialisation vous sera envoyé.";
 "agree_terms_privacy_beginning_text" = "J’ai lu et j’accepte les";
 "terms_and_privacy" = "Conditions d'utilisation et la Politique de Confidentialité";
-"legal_notice_error" = "Veuillez accepter les Conditions d’utilisation et la Politique de Confidentialité pour continuer.";
+"password_registration_field_supporting_text" = "Le mot de passe doit contenir au moins 8 caractères.";
 
 // Authtentication errors
 "incorrect_email_format_error" = "Veuillez entrer une adresse e-mail valide.";
 "password_length_error" = "Le mot de passe doit faire au moins 8 caractères.";
 "incorrect_credentials_error" = "Adresse e-mail ou mot de passe incorrect.";
 "user_not_exist_error" = "L'utilisateur n'existe pas.";
-"email_not_verified_error" = "Veuillez validez votre adresse e-mail avant de continuer.";
 "email_already_associated" = "Cette adresse e-mail est déjà utilisée.";
 "user_not_white_listed_error" = "L'inscription est actuellement limitée aux utilisateurs autorisés.";
+"legal_notice_not_aceepted_error" = "Veuillez accepter les Conditions d’utilisation et la Politique de Confidentialité pour continuer.";
+"auth_user_not_found_error" = "Aucun utilisateur trouvé.";
 
 // News
 "news" = "Actualités";
@@ -131,9 +140,13 @@
 "delete_conversation_alert_title" = "Supprimer conversation ?";
 "delete_conversation_alert_message" = "Cela supprimera l'historique des messages de votre côté uniquement.";
 "seen" = "Vu";
-"new_messages" = "Nouveau messages";
+"new_message" = "Nouveau message";
 "delete_message_alert_content" = "Voulez-vous supprimer ce message ?";
 "chat_blocked_user_indicator_text" = "Vous ne pouvez pas envoyer de messages à cet utilisateur à moins que vous ne le débloquiez.";
+"resend" = "Renvoyer";
+
+// Message error
+"message_failed_to_send_error" = "Message failed to send.";
 
 // Mission
 "mission" = "Mission";
@@ -144,12 +157,14 @@
 "new_mission" = "Nouvelle mission";
 "edit_mission" = "Editer mission";
 "participant_number" = "%d participant sur %d";
-"no_mission" = "No mission";
+"short_participant_number" = "%d / %d";
+"no_mission" = "Aucune mission";
 "add_image" = "Ajouter image";
 "mission_title_field" = "Titre";
 "mission_description_field" = "Description";
 "mission_start_date_field" = "Date de début";
 "mission_end_date_field" = "Date de fin";
+"mission_school_level_field" = "Niveau scolaire";
 "everyone" = "Tout le monde";
 "mission_max_participants_field" = "Participants max";
 "mission_duration_field" = "Durée (optionnel)";
@@ -159,14 +174,24 @@
 "enter_task" = "Entrer tâche";
 "full" = "Complet";
 "no_participant" = "Aucun participant";
+"see_profile" = "Voir profil";
+"completed" = "Terminée";
+
 "register_mission_button_text" = "S'inscrire";
 "registered_mission_button_text" = "Inscrit";
-"complete_mission_button_text" = "Complet";
+"completed_mission_button_text" = "Terminée";
+"registration_closed_mission_button_text" = "Inscription fermée";
+"unavailable_mission_button_text" = "Non disponible";
+"full_mission_information_text" = "Nombre maximal de participant atteint.";
+"non_matching_school_level_information_text" = "Reservé aux **%@**.";
+"completed_mission_information_text" = "Mission terminée.";
 "delete_mission_alert_message" = "Voulez-vous supprimer cette mission ?";
 "unregister_mission_alert_message" = "Se désinscrire de cette mission ?";
 "remove_participant_alert_message" = "Voulez-vous retirer %@ de cette mission ?";
 "edit_mission_school_level_supporting_text" = "Les participants avec un niveau scolaire non correspondant seront retirés.";
 "select_managers" = "Sélectionner gérants";
 
-"max_participants_lower_than_current_error_message" = "Le nombre maximum de participants ne peut pas être inférieur au nombre actuel (%d).";
-"max_participants_number_only_error_message" = "Veuillez saisir un nombre valide.";
+// Mission error
+"max_participants_lower_than_current_error" = "Le nombre maximum de participants ne peut pas être inférieur au nombre actuel (%d).";
+"max_participant_number_reached_error" = "Le nombre maximal de participant a été atteint.";
+"school_level_not_allowed_error" = "Votre niveau scolaire n’est pas autorisé à participer.";

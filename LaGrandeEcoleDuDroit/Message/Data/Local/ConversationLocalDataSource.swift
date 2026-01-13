@@ -63,6 +63,10 @@ class ConversationLocalDataSource {
         try await conversationActor.updateConversation(conversation: conversation)
     }
     
+    func updateConversationEffectiveFrom(conversationId: String, effectiveFrom: Date) async throws {
+        try await conversationActor.updateConversationEffectiveFrom(conversationId: conversationId, effectiveFrom: effectiveFrom)
+    }
+    
     func deleteConversation(conversationId: String) async throws -> Conversation? {
         try await conversationActor.deleteConversation(conversationId: conversationId)
     }

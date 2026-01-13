@@ -17,7 +17,7 @@ struct AllAnnouncementsDestination: View {
                 onRefresh: viewModel.refreshAnnouncements,
                 onAuthorClick: onAuthorClick,
                 onAnnouncementClick: onAnnouncementClick,
-                onResendAnnouncementClick: { viewModel.resendAnnouncement(announcement: $0) },
+                onResendAnnouncementClick: { viewModel.recreateAnnouncement(announcement: $0) },
                 onReportAnnouncementClick: { viewModel.reportAnnouncement(report: $0) },
                 onDeleteAnnouncementClick: { viewModel.deleteAnnouncement(announcement: $0) }
             )
@@ -57,51 +57,43 @@ private struct AllAnnouncementsView: View {
     @State private var activeSheet: AllAnnouncementViewSheet?
     @State private var showDeleteAnnouncementAlert: Bool = false
     @State private var alertAnnouncement: Announcement?
-    @State private var selectedAnnouncement: Announcement?
     
     var body: some View {
-        List {
+        Group {
             if let announcements {
-                if announcements.isEmpty {
-                    Text(stringResource(.noAnnouncement))
-                        .foregroundStyle(.informationText)
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                } else {
-                    ForEach(announcements) { announcement in
+                PlainTableView(
+                    modifier: PlainTableModifier(
+                        backgroundColor: .appBackground,
+                        separatorStyle: .singleLine,
+                        onRefresh: onRefresh
+                    ),
+                    values: announcements,
+                    onRowClick: { announcement in
+                        if announcement.state == .published {
+                            onAnnouncementClick(announcement.id)
+                        } else {
+                            activeSheet = .announcement(announcement)
+                        }
+                    },
+                    emptyContent: {
+                        Text(stringResource(.noAnnouncement))
+                            .foregroundStyle(.informationText)
+                    },
+                    content: { announcement in
                         ExtendedAnnouncementItem(
                             announcement: announcement,
-                            onOptionsClick: {
-                                activeSheet = .announcement(announcement)
-                            },
-                            onAuthorClick: { onAuthorClick(announcement.author) },
+                            onOptionsClick: { activeSheet = .announcement(announcement) },
+                            onAuthorClick: { onAuthorClick(announcement.author) }
                         )
-                        .contentShape(.rect)
-                        .listRowTap(
-                            value: announcement,
-                            selectedItem: $selectedAnnouncement
-                        ) {
-                            if announcement.state == .published {
-                                onAnnouncementClick(announcement.id)
-                            } else {
-                                activeSheet = .announcement(announcement)
-                            }
-                        }
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(selectedAnnouncement == announcement ? Color.click : Color.clear)
                     }
-                }
+                )
             } else {
                 ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
+                    .padding(.top)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .background(.appBackground)
             }
         }
-        .listStyle(.plain)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .refreshable { await onRefresh() }
         .loading(loading)
         .navigationTitle(stringResource(.allAnnouncements))
         .navigationBarTitleDisplayMode(.inline)
@@ -109,7 +101,7 @@ private struct AllAnnouncementsView: View {
             switch $0 {
                 case let .announcement(announcement):
                     AnnouncementSheet(
-                        announcement: announcement,
+                        announcementState: announcement.state,
                         editable: user.admin && announcement.author.id == user.id,
                         onEditClick: {
                             activeSheet = .editAnnouncement(announcement)
@@ -131,7 +123,7 @@ private struct AllAnnouncementsView: View {
                 case let .announcementReport(announcement):
                     ReportSheet(
                         items: AnnouncementReport.Reason.allCases,
-                        fraction: Dimens.reportSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
+                        fraction: DimensResource.reportSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
                         onReportClick: { reason in
                             activeSheet = nil
                             onReportAnnouncementClick(
@@ -203,7 +195,6 @@ private enum AllAnnouncementViewSheet: Identifiable {
             onReportAnnouncementClick: { _ in },
             onDeleteAnnouncementClick: {  _ in }
         )
-        .background(.appBackground)
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

@@ -32,14 +32,10 @@ class ConversationApiImpl: ConversationApi {
         return subject.eraseToAnyPublisher()
     }
     
-    func createConversation(conversationId: String, data: [String: Any]) async throws {
-        let snapshot = try await conversationCollection.document(conversationId).getDocument(source: .server)
-        
-        if !snapshot.exists {
-            try await conversationCollection
-                .document(conversationId)
-                .setData(data, merge: true)
-        }
+    func createConversation(remoteConversation: RemoteConversation) async throws {
+        try await conversationCollection
+            .document(remoteConversation.conversationId)
+            .setData(remoteConversation.toMap(), merge: true)
     }
     
     func updateConversation(conversationId: String, data: [String: Any]) async throws {

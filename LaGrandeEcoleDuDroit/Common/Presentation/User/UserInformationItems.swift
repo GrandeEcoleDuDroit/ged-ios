@@ -16,7 +16,7 @@ struct UserInformationItems: View {
     }
     
     var body: some View {
-        VStack(spacing: Dimens.mediumPadding) {
+        VStack(spacing: DimensResource.mediumPadding) {
             ForEach(values, id: \.label) { item in
                 InformationItem(
                     title: item.label,
@@ -54,13 +54,11 @@ private struct InformationItem: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(title)
-                .font(.callout)
-                .bold()
-                .foregroundColor(.gedPrimary)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundStyle(.gedPrimary)
             
             Text(value)
-                .font(.body)
-                .foregroundColor(.primary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

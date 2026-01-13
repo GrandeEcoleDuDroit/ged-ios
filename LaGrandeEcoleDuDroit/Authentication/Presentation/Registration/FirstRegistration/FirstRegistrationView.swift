@@ -11,8 +11,8 @@ struct FirstRegistrationDestination: View {
             lastName: $viewModel.uiState.lastName,
             firstNameError: viewModel.uiState.firstNameError,
             lastNameError: viewModel.uiState.lastNameError,
-            onFirstNameChange: viewModel.onFirstNameChanged,
-            onLastNameChange: viewModel.onLastNameChanged,
+            onFirstNameChange: viewModel.onFirstNameChange,
+            onLastNameChange: viewModel.onLastNameChange,
             onNextClick: { firstName, lastName in
                 if (viewModel.validateInputs()) {
                     onNextClick(firstName, lastName)
@@ -34,7 +34,7 @@ private struct FirstRegistrationView: View {
     var body: some View {
         VStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+                VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
                     Text(stringResource(.enterNames))
                         .font(.title3)
                     

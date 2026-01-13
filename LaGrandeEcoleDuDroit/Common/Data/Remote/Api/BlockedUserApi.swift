@@ -1,7 +1,9 @@
+import Foundation
+
 protocol BlockedUserApi {
-    func getBlockedUserIds(currentUserId: String) async throws -> Set<String>
+    func getBlockedUsers(currentUserId: String) async throws -> [RemoteBlockedUser]
     
-    func blockUser(currentUserId: String, userId: String) async throws
-    
-    func unblockUser(currentUserId: String, userId: String) async throws
+    func addBlockedUser(remoteBlockedUser: RemoteBlockedUser) async throws
+
+    func removeBlockedUser(currentUserId: String, blockedUserId: String) async throws
 }

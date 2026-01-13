@@ -39,8 +39,8 @@ struct InboundRemoteMission: Decodable {
     let missionStartDate: Int64
     let missionEndDate: Int64
     let missionDuration: String?
-    let missionManagers: [ServerUser]
-    let missionParticipants: [ServerUser]?
+    let missionManagers: [OracleUser]
+    let missionParticipants: [OracleUser]?
     let missionMaxParticipants: Int
     let missionTasks: [RemoteMissionTask]?
     let missionImageFileName: String?
@@ -72,8 +72,8 @@ struct InboundRemoteMission: Decodable {
         self.missionStartDate = try container.decode(Int64.self, forKey: .missionStartDate)
         self.missionEndDate = try container.decode(Int64.self, forKey: .missionEndDate)
         self.missionDuration = try container.decodeIfPresent(String.self, forKey: .missionDuration)
-        self.missionManagers = try container.decode([ServerUser].self, forKey: .missionManagers)
-        self.missionParticipants = try container.decodeIfPresent([ServerUser].self, forKey: .missionParticipants)
+        self.missionManagers = try container.decode([OracleUser].self, forKey: .missionManagers)
+        self.missionParticipants = try container.decodeIfPresent([OracleUser].self, forKey: .missionParticipants)
         self.missionMaxParticipants = try container.decode(Int.self, forKey: .missionMaxParticipants)
         self.missionTasks = try container.decodeIfPresent([RemoteMissionTask].self, forKey: .missionTasks)
         self.missionImageFileName = try container.decodeIfPresent(String.self, forKey: .missionImageFileName)

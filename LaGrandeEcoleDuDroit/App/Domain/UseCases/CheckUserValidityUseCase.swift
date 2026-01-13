@@ -3,23 +3,21 @@ import Combine
 class CheckUserValidityUseCase {
     private let authenticationRepository: AuthenticationRepository
     private let userRepository: UserRepository
-    private let networkMonitor: NetworkMonitor
+    private let tag = String(describing: CheckUserValidityUseCase.self)
     
     init(
         authenticationRepository: AuthenticationRepository,
-        userRepository: UserRepository,
-        networkMonitor: NetworkMonitor
+        userRepository: UserRepository
     ) {
         self.authenticationRepository = authenticationRepository
         self.userRepository = userRepository
-        self.networkMonitor = networkMonitor
     }
     
     func execute() async {
-        await networkMonitor.connected.values.first { $0 }
         do {
             let isAuthenticated = try await authenticationRepository.isAuthenticated()
-            if userRepository.currentUser == nil && isAuthenticated == true {
+            let currentUser = userRepository.getCurrentUser()
+            if currentUser == nil && isAuthenticated == true {
                 authenticationRepository.logout()
             }
         } catch {

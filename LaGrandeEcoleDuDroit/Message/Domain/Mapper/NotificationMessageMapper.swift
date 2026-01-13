@@ -16,12 +16,12 @@ extension MessageNotification {
             ),
             android: AndroidConfig(
                 notification: AndroidNotification(
-                    channelId: NotificationMessageUtils.channelId
+                    channelId: MessageNotificationUtils.channelId
                 )
             ),
             apns: ApnsConfig(
                 headers: ApnsHeaders(
-                    apnsCollapseId: NotificationMessageUtils.formatNotificationId(conversationId: conversation.id)
+                    apnsCollapseId: MessageNotificationUtils.formatNotificationId(conversationId: conversation.id)
                 ),
                 payload: ApnsPayload(
                     aps: Aps(
@@ -42,7 +42,7 @@ extension MessageNotification {
                 interlocutor: currentUser,
                 createdAt: conversation.createdAt,
                 state: conversation.state,
-                deleteTime: conversation.deleteTime
+                effectiveFrom: conversation.effectiveFrom
             ),
             message: message
         )
@@ -62,12 +62,12 @@ extension RemoteMessageNotification {
             ),
             android: AndroidConfig(
                 notification: AndroidNotification(
-                    channelId: NotificationMessageUtils.channelId
+                    channelId: MessageNotificationUtils.channelId
                 )
             ),
             apns: ApnsConfig(
                 headers: ApnsHeaders(
-                    apnsCollapseId: NotificationMessageUtils.formatNotificationId(conversationId: conversation.id)
+                    apnsCollapseId: MessageNotificationUtils.formatNotificationId(conversationId: conversation.id)
                 ),
                 payload: ApnsPayload(
                     aps: Aps(
@@ -81,7 +81,7 @@ extension RemoteMessageNotification {
         )
     }
     
-    func toNotificationMessage() -> MessageNotification {
+    func toMessageNotification() -> MessageNotification {
         MessageNotification(
             conversation: conversation,
             message: message

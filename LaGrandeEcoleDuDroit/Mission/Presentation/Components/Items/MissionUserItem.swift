@@ -21,7 +21,7 @@ struct MissionUserItem<TrailingContent: View>: View {
     var body: some View {
         PlainListItem(
             headlineContent: {
-                HStack(spacing: Dimens.smallPadding) {
+                HStack(spacing: DimensResource.smallPadding) {
                     Text(user.displayedName)
                         .lineLimit(1)
                     

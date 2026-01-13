@@ -6,17 +6,21 @@ class ChatViewModel: ViewModel {
     private let messageRepository: MessageRepository
     private let conversationRepository: ConversationRepository
     private let sendMessageUseCase: SendMessageUseCase
-    private let notificationMessageManager: MessageNotificationManager
-    private let networkMonitor: NetworkMonitor
+    private let notificationMessageManager: MessageNotificationPresenter
     private let blockedUserRepository: BlockedUserRepository
     private let generateIdUseCase: GenerateIdUseCase
     
-    @Published private(set) var uiState: ChatUiState = ChatUiState()
+    @Published var uiState = ChatUiState()
     @Published private(set) var event: SingleUiEvent? = nil
+    private let newMessagesEventSubject = PassthroughSubject<Message, Never>()
+    var newMessagesEventPublisher: AnyPublisher<Message, Never> {
+        newMessagesEventSubject.eraseToAnyPublisher()
+    }
     private var messagesDict: [String:Message] = [:]
     private var conversation: Conversation
     private let currentUser: User?
     private var cancellables: Set<AnyCancellable> = []
+    private var seeMessagesCancellable: AnyCancellable?
     
     init(
         conversation: Conversation,
@@ -24,8 +28,7 @@ class ChatViewModel: ViewModel {
         messageRepository: MessageRepository,
         conversationRepository: ConversationRepository,
         sendMessageUseCase: SendMessageUseCase,
-        notificationMessageManager: MessageNotificationManager,
-        networkMonitor: NetworkMonitor,
+        notificationMessageManager: MessageNotificationPresenter,
         blockedUserRepository: BlockedUserRepository,
         generateIdUseCase: GenerateIdUseCase
     ) {
@@ -35,16 +38,14 @@ class ChatViewModel: ViewModel {
         self.conversationRepository = conversationRepository
         self.sendMessageUseCase = sendMessageUseCase
         self.notificationMessageManager = notificationMessageManager
-        self.networkMonitor = networkMonitor
         self.blockedUserRepository = blockedUserRepository
         self.generateIdUseCase = generateIdUseCase
         
         currentUser = userRepository.currentUser
         getMessages(offset: 0)
-        listenMessageChanges()
+        listenMessages()
         listenConversationChanges()
         listenBlockedUserIds()
-        seeMessages()
         notificationMessageManager.clearNotifications(conversationId: conversation.id)
     }
     
@@ -94,86 +95,77 @@ class ChatViewModel: ViewModel {
             do {
                 try await self?.messageRepository.deleteLocalMessage(message: message)
             } catch {
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
+                self?.event = ErrorEvent(message: error.localizedDescription)
             }
         }
     }
     
     func reportMessage(_ report: MessageReport) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
-        }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.messageRepository.reportMessage(report: report)
-                self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        performRequest { [weak self] in
+            try await self?.messageRepository.reportMessage(report: report)
         }
     }
     
     func onMessageTextChange(_ text: String) {
         if text.count <= MessageConstant.characterMax {
-            uiState.messageText = text
+            uiState.messageText = text.take(MessageConstant.characterMax)
         }
     }
     
     func unblockUser(userId: String) {
-        guard let currentUserId = currentUser?.id else {
-            return
-        }
-        
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.blockedUserRepository.unblockUser(
-                    currentUserId: currentUserId,
-                    userId: userId
-                )
-                self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        guard let currentUserId = currentUser?.id else { return }
+        performRequest { [weak self] in
+            try await self?.blockedUserRepository.removeBlockedUser(
+                currentUserId: currentUserId,
+                blockedUserId: userId
+            )
         }
     }
     
     func deleteChat() {
-        guard let currentUserId = currentUser?.id else {
-            return
-        }
+        guard let currentUserId = currentUser?.id else { return }
+        let conversation = conversation
         
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                guard let conversation = self?.conversation else {
-                    self?.uiState.loading = false
-                    return
-                }
-                
-                try await self?.conversationRepository.deleteConversation(
-                    conversation: conversation,
-                    userId: currentUserId,
-                    deleteTime: Date()
-                )
-                try await self?.messageRepository.deleteLocalMessages(conversationId: conversation.id)
-                self?.uiState.loading = false
-                self?.event = MessageEvent.chatDeleted
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
+        performRequest { [weak self] in
+            try await self?.conversationRepository.deleteConversation(
+                conversationId: conversation.id,
+                userId: currentUserId,
+                date: Date()
+            )
+            try await self?.messageRepository.deleteLocalMessages(conversationId: conversation.id)
+            self?.event = ChatEvent.chatDeleted
         }
     }
     
-    private func listenMessageChanges() {
+    func startSeeingMessages() {
+        seeMessages()
+        seeMessagesCancellable = newMessagesEventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message in
+                self?.seeMessage(message)
+            }
+    }
+    
+    func stopSeeingMessages() {
+        seeMessagesCancellable?.cancel()
+    }
+    
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: mapNetworkErrorMessage($0))
+            },
+            onFinshed: { [weak self] in
+                self?.uiState.loading = false
+            }
+        )
+    }
+    
+    private func listenMessages() {
         messageRepository.messageChanges
             .receive(on: DispatchQueue.main)
             .sink { [weak self] change in
@@ -182,9 +174,9 @@ class ChatViewModel: ViewModel {
                 change.inserted.forEach { message in
                     if message.conversationId == self?.conversation.id {
                         self?.messagesDict[message.id] = message
-                        self?.seeMessage(message)
-                        if !hasChanged {
-                            hasChanged = true
+                        hasChanged = true
+                        if message.senderId == self?.conversation.interlocutor.id {
+                            self?.newMessagesEventSubject.send(message)
                         }
                     }
                 }
@@ -192,19 +184,14 @@ class ChatViewModel: ViewModel {
                 change.updated.forEach { message in
                     if message.conversationId == self?.conversation.id {
                         self?.messagesDict[message.id] = message
-                        self?.seeMessage(message)
-                        if !hasChanged {
-                            hasChanged = true
-                        }
+                        hasChanged = true
                     }
                 }
                 
                 change.deleted.forEach { message in
                     if message.conversationId == self?.conversation.id {
                         self?.messagesDict.removeValue(forKey: message.id)
-                        if !hasChanged {
-                            hasChanged = true
-                        }
+                        hasChanged = true
                     }
                 }
                 
@@ -225,12 +212,13 @@ class ChatViewModel: ViewModel {
                 return
             }
             
-            if !messages.isEmpty {
-                messages.forEach { self?.messagesDict[$0.id] = $0 }
-                self?.sortMessages()
-            } else {
+            if messages.isEmpty {
                 self?.uiState.canLoadMoreMessages = false
+                return
             }
+            
+            messages.forEach { self?.messagesDict[$0.id] = $0 }
+            self?.sortMessages()
         }
     }
     
@@ -238,17 +226,17 @@ class ChatViewModel: ViewModel {
         guard let currentUser else { return }
         
         Task {
-            try? await messageRepository.updateSeenMessages(
+            try? await messageRepository.setMessagesSeen(
                 conversationId: conversation.id,
                 currentUserId: currentUser.id
             )
         }
     }
     
-    private func seeMessage(_ message: Message) {
+    func seeMessage(_ message: Message) {
         if !message.seen && message.senderId == conversation.interlocutor.id {
             Task {
-                try? await messageRepository.updateSeenMessage(message: message)
+                try? await messageRepository.setMessageSeen(message: message)
             }
         }
     }
@@ -272,22 +260,22 @@ class ChatViewModel: ViewModel {
     
     private func listenBlockedUserIds() {
         let interlocutorId = conversation.interlocutor.id
-        blockedUserRepository.blockedUserIds
+        blockedUserRepository.blockedUsers
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] blockedUserIds in
-                self?.uiState.blockedUser = blockedUserIds.contains(interlocutorId)
+            .sink { [weak self] blockedUsers in
+                self?.uiState.isBlocked = blockedUsers.has(interlocutorId)
             }.store(in: &cancellables)
     }
     
     struct ChatUiState {
         fileprivate(set) var messages: [Message] = []
-        fileprivate(set) var messageText: String = ""
+        var messageText: String = ""
         fileprivate(set) var loading: Bool = false
-        fileprivate(set) var blockedUser: Bool = false
+        fileprivate(set) var isBlocked: Bool = false
         fileprivate(set) var canLoadMoreMessages: Bool = true
     }
     
-    enum MessageEvent: SingleUiEvent {
+    enum ChatEvent: SingleUiEvent {
         case chatDeleted
     }
 }

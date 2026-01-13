@@ -3,39 +3,31 @@ import Combine
 
 class ThirdRegistrationViewModel: ViewModel {
     private let registerUseCase: RegisterUseCase
-    private let networkMonitor: NetworkMonitor
     
     @Published var uiState = ThirdRegistrationUiState()
-    @Published private(set) var event: SingleUiEvent? = nil
     private let minPasswordLength: Int = 8
+    private let maxEmailLength: Int = 100
     
-    init(
-        registerUseCase: RegisterUseCase,
-        networkMonitor: NetworkMonitor
-    ) {
+    init(registerUseCase: RegisterUseCase) {
         self.registerUseCase = registerUseCase
-        self.networkMonitor = networkMonitor
+    }
+    
+    func onEmailChange(_ email: String) {
+        uiState.email = email.take(maxEmailLength)
     }
     
     func register(firstName: String, lastName: String, schoolLevel: SchoolLevel) {
         uiState.errorMessage = nil
-        let email = uiState.email.trim()
-        let password = uiState.password
+        let (email, password) = (uiState.email.trim(), uiState.password)
         
         guard (validateInputs(email: email, password: password)) else { return }
         guard uiState.legalNoticeChecked else {
-            uiState.errorMessage = stringResource(.legalNoticeError)
-            return
-        }
-        guard networkMonitor.isConnected else {
-            event = ErrorEvent(message: stringResource(.noInternetConectionError))
+            uiState.errorMessage = stringResource(.legalNoticeNotAcceptedError)
             return
         }
         
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
+        performUiBlockingRequest(
+            block: { [weak self] in
                 try await self?.registerUseCase.execute(
                     email: email,
                     password: password,
@@ -43,11 +35,17 @@ class ThirdRegistrationViewModel: ViewModel {
                     lastName: lastName,
                     schoolLevel: schoolLevel
                 )
-            } catch {
+            },
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.handleError($0)
+            },
+            onFinshed: { [weak self] in
                 self?.uiState.loading = false
-                self?.uiState.errorMessage = self?.mapErrorMessage(error)
             }
-        }
+        )
     }
     
     private func validateInputs(email: String, password: String) -> Bool {
@@ -76,18 +74,18 @@ class ThirdRegistrationViewModel: ViewModel {
         }
     }
     
-    private func mapErrorMessage(_ error: Error) -> String {
-        mapNetworkErrorMessage(error) {
-            if let networkError = error as? NetworkError {
-                switch networkError {
-                    case .forbidden: stringResource(.userNotWhiteListedError)
-                    case .dupplicateData: stringResource(.emailAlreadyAssociatedError)
-                    default: stringResource(.unknownError)
-                }
-            } else {
-                 stringResource(.unknownError)
-             }
+    private func handleError(_ error: Error) {
+        let message = if let networkError = error as? NetworkError {
+            switch networkError {
+                case .forbidden: stringResource(.userNotWhiteListedError)
+                case .dupplicateData: stringResource(.emailAlreadyAssociatedError)
+                default: networkError.localizedDescription
+            }
+        } else {
+            error.localizedDescription
         }
+        
+        uiState.errorMessage = message
     }
     
     struct ThirdRegistrationUiState {

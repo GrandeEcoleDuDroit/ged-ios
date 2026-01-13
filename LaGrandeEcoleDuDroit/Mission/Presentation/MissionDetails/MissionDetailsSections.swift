@@ -4,12 +4,16 @@ struct MissionDetailsTitleAndDescriptionSection: View {
     let mission: Mission
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
             Text(mission.title)
                 .font(MissionUtilsPresentation.titleFont)
+                .fontWeight(.semibold)
+                .lineSpacing(3)
+                .multilineTextAlignment(.leading)
             
             Text(mission.description)
-                .font(MissionUtilsPresentation.descriptionFont)
+                .font(MissionUtilsPresentation.contentFont)
+                .multilineTextAlignment(.leading)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -19,7 +23,7 @@ struct MissionDetailsInformationSection: View {
     let mission: Mission
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.mediumPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
             SectionTitle(title: stringResource(.information))
             
             MissionInformationValuesItem(mission: mission)
@@ -34,12 +38,12 @@ struct MissionDetailsManagerSection: View {
     let onManagerClick: (User) -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.smallPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.smallPadding) {
             SectionTitle(title: stringResource(.managers))
                 .padding(.horizontal)
             
             ScrollView {
-                LazyVStack(spacing: .zero) {
+                VStack(spacing: .zero) {
                     ForEach(managers) { manager in
                         Button(action: { onManagerClick(manager) }) {
                             MissionUserItem(
@@ -64,10 +68,9 @@ struct MissionDetailsManagerSection: View {
 struct MissionDetailsParticipantSection: View {
     let participants: [User]
     let onParticipantClick: (User) -> Void
-    let onLongParticipantClick: (User) -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.smallPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.smallPadding) {
             SectionTitle(title: stringResource(.participants))
                 .padding(.horizontal)
             
@@ -89,13 +92,6 @@ struct MissionDetailsParticipantSection: View {
                                 .contentShape(.rect)
                             }
                             .buttonStyle(ClickStyle())
-                            .simultaneousGesture(
-                                LongPressGesture()
-                                    .onEnded { _ in
-                                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                        onLongParticipantClick(participant)
-                                    }
-                            )
                         }
                     }
                 }
@@ -110,12 +106,12 @@ struct MissionDetailsTaskSection: View {
     let missionTasks: [MissionTask]
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Dimens.smallMediumPadding) {
+        VStack(alignment: .leading, spacing: DimensResource.smallMediumPadding) {
             SectionTitle(title: stringResource(.tasks))
             
-            VStack(spacing: Dimens.smallPadding) {
+            VStack(spacing: DimensResource.smallPadding) {
                 ForEach(missionTasks) { missionTask in
-                    HStack(alignment: .top, spacing: Dimens.smallPadding) {
+                    HStack(alignment: .top, spacing: DimensResource.smallPadding) {
                         Text("\u{2022}")
                             .font(.system(size: 24))
                             .padding(.top, -6)
@@ -123,6 +119,7 @@ struct MissionDetailsTaskSection: View {
                         Text(missionTask.value)
                             .font(MissionUtilsPresentation.contentFont)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
         }
@@ -132,6 +129,7 @@ struct MissionDetailsTaskSection: View {
 
 #Preview("Title and description section") {
     MissionDetailsTitleAndDescriptionSection(mission: missionFixture)
+        .padding(.horizontal)
 }
 
 #Preview("Information section") {
@@ -148,8 +146,7 @@ struct MissionDetailsTaskSection: View {
 #Preview("Participants section") {
     MissionDetailsParticipantSection(
         participants: missionFixture.participants,
-        onParticipantClick: { _ in },
-        onLongParticipantClick: { _ in }
+        onParticipantClick: { _ in }
     )
 }
 

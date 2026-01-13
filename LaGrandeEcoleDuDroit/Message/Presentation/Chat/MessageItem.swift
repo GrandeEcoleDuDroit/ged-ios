@@ -6,7 +6,7 @@ struct SentMessageItem: View {
     let onClick: () -> Void
         
     var body: some View {
-        HStack(alignment: .center) {
+        HStack(alignment: .bottom) {
             VStack(alignment: .trailing) {
                 Button(action: onClick) {
                     MessageBubble(
@@ -24,7 +24,7 @@ struct SentMessageItem: View {
                     Text(stringResource(.seen))
                         .foregroundStyle(.gray)
                         .font(.caption)
-                        .padding(.trailing, Dimens.smallMediumPadding)
+                        .padding(.trailing, DimensResource.smallMediumPadding)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
@@ -33,20 +33,20 @@ struct SentMessageItem: View {
                 case .sending:
                     Image(systemName: "paperplane")
                         .resizable()
+                        .frame(width: 16, height: 16)
                         .foregroundColor(.gray)
-                        .frame(width: 18, height: 18)
                     
                 case .error:
                     Image(systemName: "exclamationmark.circle")
                         .resizable()
-                        .frame(width: 18, height: 18)
+                        .frame(width: 16, height: 16)
                         .foregroundColor(.red)
                     
                 default:
                     EmptyView()
             }
         }
-        .padding(.leading, Dimens.veryExtraLargePadding)
+        .padding(.leading, DimensResource.veryExtraLargePadding)
         .frame(maxWidth: .infinity, alignment: .trailing)
     }
 }
@@ -80,7 +80,7 @@ struct ReceiveMessageItem: View {
                 onLongClick()
             }
         }
-        .padding(.trailing, Dimens.veryExtraLargePadding)
+        .padding(.trailing, DimensResource.veryExtraLargePadding)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -102,14 +102,14 @@ private struct MessageBubble: View {
                 .font(.caption)
         }
         .padding(.vertical, 10)
-        .padding(.horizontal, Dimens.mediumPadding)
+        .padding(.horizontal, DimensResource.mediumPadding)
         .background(backgroundColor)
-        .clipShape(.rect(cornerRadius: 24))
+        .clipShape(.rect(cornerRadius: 20))
     }
 }
 
 struct MessageInput: View {
-    let text: String
+    @Binding var text: String
     let onTextChange: (String) -> Void
     let onSendClick: () -> Void
     
@@ -117,15 +117,13 @@ struct MessageInput: View {
         HStack(alignment: .center) {
             TextField(
                 "",
-                text: Binding(
-                    get: { text },
-                    set: onTextChange
-                ),
+                text: $text,
                 prompt: messagePlaceholder,
                 axis: .vertical
             )
             .lineLimit(6)
-            .padding(.vertical, Dimens.smallPadding)
+            .padding(.vertical, DimensResource.smallPadding)
+            .onChange(of: text, perform: onTextChange)
             
             if !text.isBlank() {
                 Button(
@@ -136,19 +134,19 @@ struct MessageInput: View {
                             .frame(width: 20, height: 20)
                     }
                 )
-                .padding(.horizontal, Dimens.mediumPadding)
+                .padding(.horizontal, DimensResource.mediumPadding)
                 .padding(.vertical, 8)
                 .background(.gedPrimary)
                 .foregroundStyle(.white)
                 .clipShape(.rect(cornerRadius: 20))
             }
         }
-        .padding(.leading, Dimens.mediumPadding)
-        .padding(.trailing, Dimens.smallPadding)
-        .padding(.vertical, Dimens.extraSmallPadding)
+        .padding(.leading, DimensResource.mediumPadding)
+        .padding(.trailing, DimensResource.smallPadding)
+        .padding(.vertical, DimensResource.extraSmallPadding)
         .background(.chatInputBackground)
         .clipShape(.rect(cornerRadius: 30))
-        .padding(.bottom, Dimens.smallPadding)
+        .padding(.bottom, DimensResource.smallPadding)
     }
     
     var messagePlaceholder: Text {
@@ -166,19 +164,18 @@ struct NewMessageIndicator: View {
     let onClick: () -> Void
     
     var body: some View {
-        Button(action: onClick) {
-            ZStack {
-                Text(stringResource(.newMessages))
+        VStack {
+            Button(action: onClick) {
+                Text(stringResource(.newMessage))
                     .foregroundStyle(.black)
                     .font(.footnote)
                     .fontWeight(.medium)
-                    .padding(.horizontal, Dimens.largePadding)
-                    .padding(.vertical, Dimens.smallMediumPadding)
+                    .padding(.horizontal, DimensResource.largePadding)
+                    .padding(.vertical, DimensResource.smallMediumPadding)
+                    .background(.white)
+                    .clipShape(ShapeDefaults.small)
+                    .shadow(radius: 10, x: 0, y: 0)
             }
-            .buttonStyle(ClickStyle())
-            .background(.white)
-            .clipShape(.rect(cornerRadius: 8))
-            .shadow(radius: 10, x: 0, y: 0)
         }
     }
 }
@@ -188,75 +185,74 @@ struct MessageBlockedUserIndicator: View {
     let onUnblockUserClick: () -> Void
     
     var body: some View {
-        VStack(spacing: Dimens.mediumPadding) {
-            VStack(spacing: Dimens.smallPadding) {
+        VStack(spacing: DimensResource.mediumPadding) {
+            VStack(spacing: DimensResource.smallMediumPadding) {
                 Text(stringResource(.blockedUser))
-                    .font(.titleSmall)
+                    .font(.headline)
                 
                 Text(stringResource(.chatBlockedUserIndicatorText))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.informationText)
-                    .font(.bodySmall)
+                    .font(.subheadline)
             }
                 
             HStack {
-                Button(stringResource(.delete)) {
-                    onDeleteChatClick()
-                }
-                .foregroundStyle(.red)
-                .frame(maxWidth: .infinity, alignment: .center)
+                Button(stringResource(.delete), action: onDeleteChatClick)
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .center)
                 
-                Button(stringResource(.unblock)) {
-                    onUnblockUserClick()
-                }
-                .foregroundStyle(.gedPrimary)
-                .frame(maxWidth: .infinity, alignment: .center)
-            }.frame(maxWidth: .infinity, alignment: .center)
+                Button(stringResource(.unblock), action: onUnblockUserClick)
+                    .foregroundStyle(.gedPrimary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
         }
+        .padding(.vertical, DimensResource.smallMediumPadding)
     }
 }
 
 #Preview {
-    VStack(spacing: Dimens.mediumPadding) {
-        ReceiveMessageItem(
-            message: messageFixture,
-            profilePictureUrl: nil,
-            displayProfilePicture: true,
-            onLongClick: {},
-            onInterlocutorProfilePictureClick: {}
-        )
-        
-        SentMessageItem(
-            message: messageFixture.copy { $0.state = .error },
-            showSeen: false,
-            onClick: {}
-        )
-        
-        SentMessageItem(
-            message: messageFixture.copy { $0.state = .sending },
-            showSeen: false,
-            onClick: {}
-        )
-        
-        SentMessageItem(
-            message: messageFixture,
-            showSeen: true,
-            onClick: {}
-        )
-        
-        NewMessageIndicator(onClick: {})
-        
-        MessageInput(
-            text: "",
-            onTextChange: { _ in },
-            onSendClick: {}
-        )
-        
-        MessageBlockedUserIndicator(
-            onDeleteChatClick: {},
-            onUnblockUserClick: {}
-        )
+    ScrollView {
+        VStack(spacing: 40) {
+            ReceiveMessageItem(
+                message: messageFixture,
+                profilePictureUrl: nil,
+                displayProfilePicture: true,
+                onLongClick: {},
+                onInterlocutorProfilePictureClick: {}
+            )
+            
+            SentMessageItem(
+                message: messageFixture.copy { $0.state = .error },
+                showSeen: false,
+                onClick: {}
+            )
+            
+            SentMessageItem(
+                message: messageFixture.copy { $0.state = .sending },
+                showSeen: false,
+                onClick: {}
+            )
+            
+            SentMessageItem(
+                message: messageFixture,
+                showSeen: true,
+                onClick: {}
+            )
+            
+            NewMessageIndicator(onClick: {})
+            
+            MessageInput(
+                text: .constant(""),
+                onTextChange: { _ in },
+                onSendClick: {}
+            )
+            
+            MessageBlockedUserIndicator(
+                onDeleteChatClick: {},
+                onUnblockUserClick: {}
+            )
+        }
+        .padding(.horizontal)
     }
-    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-    .padding(.horizontal)
 }

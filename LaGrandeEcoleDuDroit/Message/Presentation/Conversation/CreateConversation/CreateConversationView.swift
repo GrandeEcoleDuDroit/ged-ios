@@ -25,22 +25,20 @@ private struct CreateConversationView: View {
     let onUserClick: (User) -> Void
     let onCancelClick: () -> Void
     
-    @State private var selectedUser: User?
     @State private var query: String = ""
 
     var body: some View {
         List {
             if let users {
                 if users.isEmpty {
-                    Text(stringResource(.userNotFound))
+                    Text(stringResource(.noUsersFound))
                         .foregroundStyle(.informationText)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .listRowSeparator(.hidden)
                 } else {
                     ForEach(users) { user in
                         Button(action: { onUserClick(user) }) {
-                            UserItem(user: user)
-                                .contentShape(Rectangle())
+                            UserItem(user: user).contentShape(.rect)
                         }
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets())
@@ -68,16 +66,14 @@ private struct CreateConversationView: View {
                 }
             }
         }
-        .onChange(of: query) {
-            onUserQueryChange($0)
-        }
+        .onChange(of: query, perform: onUserQueryChange)
     }
 }
 
 #Preview {
     NavigationStack {
         CreateConversationView(
-            users: [],
+            users: usersFixture,
             onUserQueryChange: {_ in },
             onUserClick: {_ in },
             onCancelClick: {}

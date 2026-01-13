@@ -1,5 +1,3 @@
-import Foundation
-
 class LoginUseCase {
     private let authenticationRepository: AuthenticationRepository
     private let userRepository: UserRepository
@@ -13,17 +11,15 @@ class LoginUseCase {
     }
     
     func execute(email: String, password: String) async throws {
-        try await withTimeout(10) { [weak self] in
-            guard let uid = try await self?.authenticationRepository.loginWithEmailAndPassword(email: email, password: password) else {
-                throw NetworkError.unknown
-            }
+        let uid = try await withTimeout(10) { [weak self] in
+            try await self?.authenticationRepository.loginWithEmailAndPassword(email: email, password: password)
+        }
             
-            if let user = try await self?.userRepository.getUser(userId: uid) {
-                self?.userRepository.storeUser(user)
-                self?.authenticationRepository.setAuthenticated(true)
-            } else {
-                throw AuthenticationError.userNotFound
-            }
+        if let uid, let user = try await userRepository.getUser(userId: uid) {
+            userRepository.storeUser(user)
+            authenticationRepository.setAuthenticated(true)
+        } else {
+            throw AuthenticationError.authUserNotFound
         }
     }
 }

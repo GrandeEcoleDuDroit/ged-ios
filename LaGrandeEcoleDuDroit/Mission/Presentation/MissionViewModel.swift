@@ -6,8 +6,7 @@ class MissionViewModel: ViewModel {
     private let userRepository: UserRepository
     private let refreshMissionsUseCase: RefreshMissionsUseCase
     private let deleteMissionUseCase: DeleteMissionUseCase
-    private let resendMissionUseCase: ResendMissionUseCase
-    private let networkMonitor: NetworkMonitor
+    private let recreateMissionUseCase: RecreateMissionUseCase
     
     @Published private(set) var uiState = MissionUiState()
     @Published private(set) var event: SingleUiEvent? = nil
@@ -18,15 +17,13 @@ class MissionViewModel: ViewModel {
         userRepository: UserRepository,
         refreshMissionsUseCase: RefreshMissionsUseCase,
         deleteMissionUseCase: DeleteMissionUseCase,
-        resendMissionUseCase: ResendMissionUseCase,
-        networkMonitor: NetworkMonitor
+        recreateMissionUseCase: RecreateMissionUseCase
     ) {
         self.missionRepository = missionRepository
         self.userRepository = userRepository
         self.refreshMissionsUseCase = refreshMissionsUseCase
         self.deleteMissionUseCase = deleteMissionUseCase
-        self.resendMissionUseCase = resendMissionUseCase
-        self.networkMonitor = networkMonitor
+        self.recreateMissionUseCase = recreateMissionUseCase
         
         listenMissions()
         listenUser()
@@ -37,65 +34,43 @@ class MissionViewModel: ViewModel {
     }
     
     func deleteMission(mission: Mission) {
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.deleteMissionUseCase.execute(mission: mission)
-                self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(
-                    message: mapNetworkErrorMessage(
-                        error,
-                        specificMap: { stringResource(.unknownError) }
-                    )
-                )
-            }
+        performRequest { [weak self] in
+            try await self?.deleteMissionUseCase.execute(mission: mission)
         }
     }
     
     func reportMission(report: MissionReport) {
-        executeRequest { [weak self] in
+        performRequest { [weak self] in
             try await self?.missionRepository.reportMission(report: report)
         }
     }
     
-    func resendMission(mission: Mission) {
+    func recreateMission(mission: Mission) {
         Task {
-            await resendMissionUseCase.execute(mission: mission)
+            await recreateMissionUseCase.execute(mission: mission)
         }
     }
     
-    private func executeRequest(block: @escaping () async throws -> Void) {
-        var loadingTask: Task<Void, Error>?
-        
-        Task { @MainActor in
-            do {
-                if !networkMonitor.isConnected {
-                    throw NetworkError.noInternetConnection
-                }
-                
-                loadingTask = Task { @MainActor in
-                    try await Task.sleep(for: .milliseconds(300))
-                    uiState.loading = true
-                }
-                
-                try await block()
-            } catch {
-                event = ErrorEvent(message: mapNetworkErrorMessage(error))
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: $0.localizedDescription)
+            },
+            onFinshed: { [weak self] in
+                self?.uiState.loading = false
             }
-            
-            loadingTask?.cancel()
-            uiState.loading = false
-        }
+        )
     }
     
     private func listenMissions() {
         missionRepository.missions
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.uiState.missions = $0
+                self?.uiState.missions = $0.missionSorting()
             }.store(in: &cancellables)
     }
     

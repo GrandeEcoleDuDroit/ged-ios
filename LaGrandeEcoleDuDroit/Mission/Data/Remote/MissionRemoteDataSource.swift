@@ -2,81 +2,36 @@ import Foundation
 
 class MissionRemoteDataSource {
     private let missionApi: MissionApi
-    private let tag = String(describing: MissionRemoteDataSource.self)
     
     init(missionApi: MissionApi) {
         self.missionApi = missionApi
     }
     
     func getMissions() async throws -> [Mission] {
-        try await mapServerError(
-            block: { try await missionApi.getMissions() },
-            tag: tag,
-            message: "Failed to get remote missions"
-        ).map { $0.toMission() }
+        try await missionApi.getMissions().map { $0.toMission() }
     }
     
     func createMission(mission: Mission, imageData: Data?) async throws {
-        try await mapServerError(
-            block: {
-                try await missionApi.createMission(
-                    remoteMission: mission.toRemote()!,
-                    imageData: imageData
-                )
-            },
-            tag: tag,
-            message: "Failed to create remote missions"
-        )
+        try await missionApi.createMission(remoteMission: mission.toRemote()!, imageData: imageData)
     }
     
     func updateMission(mission: Mission, imageData: Data?) async throws {
-        try await mapServerError(
-            block: {
-                try await missionApi.updateMission(
-                    remoteMission: mission.toRemote()!,
-                    imageData: imageData
-                )
-            },
-            tag: tag,
-            message: "Failed to update remote missions"
-        )
+        try await missionApi.updateMission(remoteMission: mission.toRemote()!, imageData: imageData)
     }
     
     func deleteMission(mission: Mission) async throws {
-        try await mapServerError(
-            block: { try await missionApi.deleteMission(remoteMission: mission.toRemote()!) },
-            tag: tag,
-            message: "Failed to delete remote mission"
-        )
+        try await missionApi.deleteMission(remoteMission: mission.toRemote()!)
     }
     
-    func addParticipant(addMissionParticipant: AddMissionParticipant) async throws {
-        try await mapServerError(
-            block: {
-                try await missionApi.addParticipant(remoteAddMissionParticipant: addMissionParticipant.toRemote())
-            },
-            tag: tag,
-            message: "Failed to add participant to mission"
-        )
+    func addParticipant(missionId: String, user: User) async throws {
+        try await missionApi.addParticipant(missionId: missionId, oracleUser: user.toOracleUser())
     }
     
     func removeParticipant(missionId: String, userId: String) async throws {
-        try await mapServerError(
-            block: {
-                try await missionApi.removeParticipant(missionId: missionId, userId: userId)
-            },
-            tag: tag,
-            message: "Failed to remove participant from mission"
-        )
+        try await missionApi.removeParticipant(missionId: missionId, userId: userId)
     }
     
     func reportMission(report: MissionReport) async throws {
-        try await mapServerError(
-            block: {
-                try await missionApi.reportMission(report: report.toRemote())
-            },
-            tag: tag,
-            message: "Failed to report mission"
-        )
+        try await missionApi.reportMission(report: report.toRemote())
     }
 }

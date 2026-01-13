@@ -8,6 +8,7 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     private let authenticationSubjet = PassthroughSubject<Bool, Never>()
     private var token: String?
     private var cancellables = Set<AnyCancellable>()
+    private let tag = String(describing: AuthenticationRepositoryImpl.self)
     
     init(
         authenticationLocalDataSource: AuthenticationLocalDataSource,
@@ -32,11 +33,21 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     }
     
     func loginWithEmailAndPassword(email: String, password: String) async throws -> String {
-        try await authenticationRemoteDataSource.loginWithEmailAndPassword(email: email, password: password)
+        do {
+            return try await authenticationRemoteDataSource.loginWithEmailAndPassword(email: email, password: password)
+        } catch {
+            e(tag, "Error login with email and password", error)
+            throw error
+        }
     }
     
     func registerWithEmailAndPassword(email: String, password: String) async throws -> String {
-        try await authenticationRemoteDataSource.registerWithEmailAndPassword(email: email, password: password)
+        do {
+            return try await authenticationRemoteDataSource.registerWithEmailAndPassword(email: email, password: password)
+        } catch {
+            e(tag, "Error registering with email and password", error)
+            throw error
+        }
     }
     
     func logout() {
@@ -50,7 +61,12 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     }
     
     func resetPassword(email: String) async throws {
-        try await authenticationRemoteDataSource.resetPassword(email: email)
+        do {
+            try await authenticationRemoteDataSource.resetPassword(email: email)
+        } catch {
+            e(tag, "Error resetting password for user \(email)", error)
+            throw error
+        }
     }
     
     func getToken() async throws -> String? {

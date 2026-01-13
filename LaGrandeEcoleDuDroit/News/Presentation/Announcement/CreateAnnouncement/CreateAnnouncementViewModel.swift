@@ -23,10 +23,11 @@ class CreateAnnouncementViewModel: ViewModel {
     
     func createAnnouncement() {
         guard let currentUser else {
-            return event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
+            event = ErrorEvent(message: stringResource(.currentUserNotFoundError))
+            return
         }
         
-        let title: String? = !uiState.title.isBlank() ? uiState.title : nil
+        let title: String? = uiState.title.isNotBlank() ? uiState.title : nil
         
         let announcement = Announcement(
             id: generateIdUseCase.execute(),
@@ -43,20 +44,20 @@ class CreateAnnouncementViewModel: ViewModel {
     }
     
     func onTitleChange(_ title: String) {
-        if title.count <= 300 {
+        if title.count <= AnnouncementUtilsPresentation.maxTitleLength {
             uiState.title = title
             uiState.createEnabled = validateInput()
         } else {
-            uiState.title = String(title.prefix(300))
+            uiState.title = String(title.prefix(AnnouncementUtilsPresentation.maxTitleLength))
         }
     }
     
     func onContentChange(_ content: String) {
-        if content.count <= 2000 {
+        if content.count <= AnnouncementUtilsPresentation.maxContentLength {
             uiState.content = content
             uiState.createEnabled = validateInput()
         } else {
-            uiState.content = String(content.prefix(2000))
+            uiState.content = String(content.prefix(AnnouncementUtilsPresentation.maxContentLength))
         }
     }
     

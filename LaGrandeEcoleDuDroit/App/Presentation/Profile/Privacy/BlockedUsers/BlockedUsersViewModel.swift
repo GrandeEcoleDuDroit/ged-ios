@@ -3,7 +3,7 @@ import Foundation
 class BlockedUsersViewModel: ViewModel {
     private let blockedUserRepository: BlockedUserRepository
     private let userRepository: UserRepository
-    private let networkMonitor: NetworkMonitor
+    private let getBlockedUsersUseCase: GetBlockedUsersUseCase
     
     @Published private(set) var uiState: BlockedUsersUiState = BlockedUsersUiState()
     @Published private(set) var event: SingleUiEvent? = nil
@@ -11,37 +11,44 @@ class BlockedUsersViewModel: ViewModel {
     init(
         blockedUserRepository: BlockedUserRepository,
         userRepository: UserRepository,
-        networkMonitor: NetworkMonitor,
         getBlockedUsersUseCase: GetBlockedUsersUseCase
     ) {
         self.blockedUserRepository = blockedUserRepository
         self.userRepository = userRepository
-        self.networkMonitor = networkMonitor
-        
-        Task { @MainActor in
-            uiState.blockedUsers = await getBlockedUsersUseCase.execute().sorted { $0.fullName < $1.fullName }
-        }
+        self.getBlockedUsersUseCase = getBlockedUsersUseCase
+        initUiState()
     }
     
     func unblockUser(userId: String) {
-        guard networkMonitor.isConnected else {
-            return event = ErrorEvent(message: stringResource(.noInternetConectionError))
-        }
         guard let currentUserId = userRepository.currentUser?.id else {
             return
         }
         
-        uiState.loading = true
-        
-        Task { @MainActor [weak self] in
-            do {
-                try await self?.blockedUserRepository.unblockUser(currentUserId: currentUserId, userId: userId)
-                self?.uiState.blockedUsers?.removeAll { $0.id == userId }
+        performRequest { [weak self] in
+            try await self?.blockedUserRepository.removeBlockedUser(currentUserId: currentUserId, blockedUserId: userId)
+            self?.uiState.blockedUsers?.removeAll { $0.id == userId }
+        }
+    }
+    
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: $0.localizedDescription)
+            },
+            onFinshed: { [weak self] in
                 self?.uiState.loading = false
-            } catch {
-                self?.uiState.loading = false
-                self?.event = ErrorEvent(message: mapNetworkErrorMessage(error))
             }
+        )
+    }
+    
+    private func initUiState() {
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            self.uiState.blockedUsers = await self.getBlockedUsersUseCase.execute().sorted { $0.fullName < $1.fullName }
         }
     }
     

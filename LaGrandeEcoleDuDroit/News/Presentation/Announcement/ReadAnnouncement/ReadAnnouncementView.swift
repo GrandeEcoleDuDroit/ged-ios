@@ -70,7 +70,7 @@ private struct ReadAnnouncementView: View {
     
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: Dimens.mediumPadding) {
+            VStack(spacing: DimensResource.mediumPadding) {
                 AnnouncementHeader(
                     announcement: announcement,
                     onAuthorClick: { onAuthorClick(announcement.author) }
@@ -78,13 +78,13 @@ private struct ReadAnnouncementView: View {
                 
                 if let title = announcement.title {
                     Text(title)
-                        .font(.titleMedium)
+                        .font(AnnouncementUtilsPresentation.titleFont)
                         .fontWeight(.semibold)
+                        .lineSpacing(3)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
                 Text(announcement.content)
-                    .font(.bodyMedium)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
@@ -97,7 +97,7 @@ private struct ReadAnnouncementView: View {
             switch $0 {
                 case .announcement:
                     AnnouncementSheet(
-                        announcement: announcement,
+                        announcementState: announcement.state,
                         editable: user.admin && announcement.author.id == user.id,
                         onEditClick: {
                             activeSheet = .editAnnouncement
@@ -114,7 +114,7 @@ private struct ReadAnnouncementView: View {
                 case .announcementReport:
                     ReportSheet(
                         items: AnnouncementReport.Reason.allCases,
-                        fraction: Dimens.reportSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
+                        fraction: DimensResource.reportSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
                         onReportClick: { reason in
                             activeSheet = nil
                             onReportAnnouncementClick(
@@ -182,8 +182,8 @@ private enum ReadAnnouncementViewSheet: Identifiable {
 #Preview {
     NavigationStack {
         ReadAnnouncementView(
-            announcement: announcementFixture,
-            user: announcementFixture.author,
+            announcement: longAnnouncementFixture,
+            user: longAnnouncementFixture.author,
             loading: false,
             onDeleteAnnouncementClick: {},
             onReportAnnouncementClick: { _ in },

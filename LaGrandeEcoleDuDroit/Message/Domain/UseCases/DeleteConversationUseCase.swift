@@ -16,11 +16,18 @@ class DeleteConversationUseCase {
     }
     
     func execute(conversation: Conversation, userId: String) async throws {
-        let deleteTime = Date()
-        let updatedConversation = conversation.copy { $0.deleteTime = deleteTime }
-        
-        try await conversationRepository.updateLocalConversation(conversation: updatedConversation.copy { $0.state = .deleting })
-        try await conversationRepository.deleteConversation(conversation: updatedConversation, userId: userId, deleteTime: deleteTime)
-        try await messageRepository.deleteLocalMessages(conversationId: updatedConversation.id)
+        switch conversation.state {
+            case .created:
+                let deleteTime = Date()
+                let updatedConversation = conversation.copy { $0.effectiveFrom = deleteTime }
+                
+                try await conversationRepository.updateLocalConversation(conversation: updatedConversation.copy { $0.state = .deleting })
+                try await conversationRepository.deleteConversation(conversationId: updatedConversation.id, userId: userId, date: deleteTime)
+                try await messageRepository.deleteLocalMessages(conversationId: updatedConversation.id)
+                
+            default:
+                try await conversationRepository.deleteLocalConversation(conversationId: conversation.id)
+                try await messageRepository.deleteLocalMessages(conversationId: conversation.id)
+        }
     }
 }

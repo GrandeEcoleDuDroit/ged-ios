@@ -2,7 +2,8 @@ struct ConversationField {
     struct Local {
         static let conversationId = "conversationId"
         static let conversationCreatedAt = "conversationCreatedAt"
-        static let conversationDeleteTime = "conversationDeleteTime"
+        static let conversationEffectiveFrom = "conversationEffectiveFrom"
+        static let conversationBlockedBy = "conversationBlockedBy"
         static let conversationState = "conversationState"
         static let conversationInterlocutorId = "conversationInterlocutorId"
         static let conversationInterlocutorFirstName = "conversationInterlocutorFirstName"
@@ -18,7 +19,8 @@ struct ConversationField {
     struct Remote {
         static let conversationId = "conversationId"
         static let createdAt = "createdAt"
-        static let deleteTime = "deleteTime"
+        static let effectiveFrom = "effectiveFrom"
         static let participants = "participants"
+        static let blockedBy = "blockedBy"
     }
 }

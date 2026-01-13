@@ -3,23 +3,40 @@ import Combine
 
 class ProfileViewModel: ViewModel {
     private let userRepository: UserRepository
-    private let authenticationRepository: AuthenticationRepository
+    private let logoutUseCase: LogoutUseCase
     
     @Published private(set) var uiState: ProfileUiState = ProfileUiState()
+    @Published var event: SingleUiEvent?
     private var cancellables: Set<AnyCancellable> = []
 
     init(
         userRepository: UserRepository,
-        authenticationRepository: AuthenticationRepository
+        logoutUseCase: LogoutUseCase
     ) {
         self.userRepository = userRepository
-        self.authenticationRepository = authenticationRepository
+        self.logoutUseCase = logoutUseCase
         initUser()
     }
     
     func logout() {
-        uiState.loading = true
-        authenticationRepository.logout()
+        performRequest { [weak self] in
+            try await self?.logoutUseCase.execute()
+        }
+    }
+    
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: $0.localizedDescription)
+            },
+            onFinshed: { [weak self] in
+                self?.uiState.loading = false
+            }
+        )
     }
     
     private func initUser() {

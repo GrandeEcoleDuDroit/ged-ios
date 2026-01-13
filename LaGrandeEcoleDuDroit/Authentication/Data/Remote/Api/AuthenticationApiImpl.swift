@@ -6,12 +6,12 @@ class AuthenticationApiImpl: AuthenticationApi {
     private let tag = String(describing: AuthenticationApiImpl.self)
 
     func isAuthenticated() async throws -> Bool {
-        try await mapFirebaseError(
-            block: { try await firebaseAuth.currentUser?.getIDTokenResult(forcingRefresh: true) != nil },
-            tag: tag,
-            message: "Failed to check if user is authenticated",
-            handleSpecificException: mapAuthError
-        )
+        do {
+            return try await firebaseAuth.currentUser?.getIDTokenResult(forcingRefresh: true) != nil
+        } catch {
+            e(tag, "Failed to check if user is authenticated")
+            throw mapError(error)
+        }
     }
     
     func listenToken() -> AnyPublisher<String?, Never> {
@@ -42,24 +42,21 @@ class AuthenticationApiImpl: AuthenticationApi {
     }
     
     func login(email: String, password: String) async throws -> String {
-        try await mapFirebaseError(
-            block: {
-                let result = try await firebaseAuth.signIn(withEmail: email, password: password)
-                return result.user.uid
-            },
-            tag: tag,
-            message: "Failed to login with email and password",
-            handleSpecificException: mapAuthError
-        )
+        do {
+            return try await firebaseAuth.signIn(withEmail: email, password: password).user.uid
+        } catch {
+            e(tag, "Failed to login with email and password")
+            throw mapError(error)
+        }
     }
     
     func register(email: String, password: String) async throws -> String {
-        try await mapFirebaseError(
-            block: { try await firebaseAuth.createUser(withEmail: email, password: password) },
-            tag: tag,
-            message: "Failed to register with email and password",
-            handleSpecificException: mapAuthError
-        ).user.uid
+        do {
+            return try await firebaseAuth.createUser(withEmail: email, password: password).user.uid
+        } catch {
+            e(tag, "Failed to register with email and password")
+            throw mapError(error)
+        }
     }
     
     func logout() {
@@ -67,27 +64,26 @@ class AuthenticationApiImpl: AuthenticationApi {
     }
     
     func resetPassword(email: String) async throws {
-        try await mapFirebaseError(
-            block: { try await firebaseAuth.sendPasswordReset(withEmail: email) },
-            tag: tag,
-            message: "Failed to reset password",
-            handleSpecificException: mapAuthError
-        )
+        do {
+            try await firebaseAuth.sendPasswordReset(withEmail: email)
+        } catch {
+            e(tag, "Failed to reset password")
+            throw mapError(error)
+        }
     }
     
-    private func mapAuthError(error: Error) -> Error {
-        let nsError = error as NSError
-        return if let authErrorCode = AuthErrorCode(rawValue: nsError.code) {
+    private func mapError(_ error: Error) -> Error {
+        if let authErrorCode = AuthErrorCode(rawValue: (error as NSError).code) {
             switch authErrorCode {
                 case .wrongPassword, .userNotFound, .invalidCredential: AuthenticationError.invalidCredentials
-                case .emailAlreadyInUse: NetworkError.dupplicateData
+                case .emailAlreadyInUse: AuthenticationError.emailAlreadyInUse
                 case .userDisabled: AuthenticationError.userDisabled
-                case .networkError: NetworkError.noInternetConnection
+                case .networkError: NetworkError.any
                 case .tooManyRequests: NetworkError.tooManyRequests
                 default: error
             }
         } else {
-            error
+            mapFirebaseError(error)
         }
     }
 }

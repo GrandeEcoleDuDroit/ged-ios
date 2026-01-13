@@ -64,6 +64,10 @@ class MissionLocalDataSource {
         try await missionActor.upsert(mission: mission)
     }
     
+    func deleteMissions() async throws {
+        try await missionActor.deleteAll()
+    }
+    
     func deleteMission(missionId: String) async throws {
         try await missionActor.delete(missionId: missionId)
     }

@@ -1,5 +1,5 @@
 import Foundation
 
 protocol WhiteListApi {
-    func isUserWhiteListed(email: String) async throws -> (URLResponse, Bool)
+    func isUserWhiteListed(email: String) async throws -> Bool
 }

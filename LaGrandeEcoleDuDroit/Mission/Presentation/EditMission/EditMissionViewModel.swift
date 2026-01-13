@@ -7,7 +7,6 @@ class EditMissionViewModel: ViewModel {
     private let updateMissionUseCase: UpdateMissionUseCase
     private let getUsersUseCase: GetUsersUseCase
     private let generateIdUseCase: GenerateIdUseCase
-    private let networkMonitor: NetworkMonitor
 
     @Published var uiState = EditMissionUiState()
     @Published private(set) var event: SingleUiEvent?
@@ -20,15 +19,13 @@ class EditMissionViewModel: ViewModel {
         userRepository: UserRepository,
         updateMissionUseCase: UpdateMissionUseCase,
         getUsersUseCase: GetUsersUseCase,
-        generateIdUseCase: GenerateIdUseCase,
-        networkMonitor: NetworkMonitor
+        generateIdUseCase: GenerateIdUseCase
     ) {
         self.mission = mission
         self.userRepository = userRepository
         self.updateMissionUseCase = updateMissionUseCase
         self.getUsersUseCase = getUsersUseCase
         self.generateIdUseCase = generateIdUseCase
-        self.networkMonitor = networkMonitor
 
         initUiState()
         initUsers()
@@ -52,7 +49,7 @@ class EditMissionViewModel: ViewModel {
             uiState.description.trim(),
             uiState.startDate,
             uiState.endDate,
-            uiState.schoolLevels,
+            uiState.selectedSchoolLevels,
             uiState.duration.takeIf { $0.isNotBlank() }?.trim(),
             uiState.managers,
             uiState.maxParticipants.trim(),
@@ -75,7 +72,7 @@ class EditMissionViewModel: ViewModel {
             $0.state = missionState
         }
         
-        executeRequest { [weak self] in
+        performRequest { [weak self] in
             try await self?.updateMissionUseCase.execute(mission: missionToUpdate, imageData: imageData)
             self?.event = SuccessEvent()
         }
@@ -155,38 +152,40 @@ class EditMissionViewModel: ViewModel {
     }
     
     func onSchoolLevelChange(_ schoolLevel: SchoolLevel) {
-        var schoolLevels = uiState.schoolLevels
+        var schoolLevels = uiState.selectedSchoolLevels
         if let index = schoolLevels.firstIndex(of: schoolLevel) {
             schoolLevels.remove(at: index)
         } else {
             schoolLevels.append(schoolLevel)
         }
-        schoolLevels = schoolLevels.sorted { $0.number < $1.number }
         
-        uiState.schoolLevels = schoolLevels
+        schoolLevels = schoolLevels.sorted { $0.number < $1.number }
+        uiState.selectedSchoolLevels = schoolLevels
+        uiState.schoolLevelSupportingText = showSchoolLevelSupportingText(schoolLevels: schoolLevels) ? stringResource(.editMissionSchoolLevelSupportingText) : nil
         missionUpdateState.send(
             missionUpdateState.value.copy {
                 $0.schoolLevelsUpdated = validateSchoolLevelsUpdate(schoolLevels)
             }
         )
-        
-        if schoolLevels != mission.schoolLevels &&
-            !schoolLevels.isEmpty &&
-            schoolLevels.count < SchoolLevel.allCases.count
-        {
-            uiState.schoolLevelSupportingText = stringResource(.editMissionSchoolLevelSupportingText)
-        } else {
-            uiState.schoolLevelSupportingText = nil
-        }
+    }
+    
+    private func showSchoolLevelSupportingText(schoolLevels: [SchoolLevel]) -> Bool {
+        !schoolLevels.isEmpty &&
+        schoolLevels.count < SchoolLevel.all.count &&
+        schoolLevels != mission.schoolLevels
     }
     
     func onMaxParticipantsChange(_ maxParticipants: String) -> Void {
+        let maxParticipantsNumber = maxParticipants.toInt32OrDefault(-1)
+        let validMaxParticipantsNumber = maxParticipantsNumber > 0 && maxParticipantsNumber.description.count <= MissionUtilsPresentation.maxParticipantsLength
+
         let value = switch maxParticipants {
             case _ where maxParticipants.isEmpty: ""
-            case _ where maxParticipants.toInt32OrDefault(-1) > 0: maxParticipants
-            default: uiState.maxParticipants
+            case _ where validMaxParticipantsNumber: maxParticipantsNumber.description
+            default: uiState.previousMaxParticipants
         }
         
+        uiState.previousMaxParticipants = value
         uiState.maxParticipants = value
         missionUpdateState.send(
             missionUpdateState.value.copy {
@@ -232,20 +231,6 @@ class EditMissionViewModel: ViewModel {
         filterUsersByName(query)
     }
     
-    private func filterUsersByName(_ query: String) {
-        let users = if query.isBlank() {
-            defaultUsers
-        } else {
-            defaultUsers.filter {
-                $0.fullName
-                    .lowercased()
-                    .contains(query.lowercased())
-            }
-        }
-        
-        uiState.users = users
-    }
-    
     func onAddMissionTask(_ value: String) {
         let missionTask = MissionTask(id: generateIdUseCase.execute(), value: value)
         var missionTasks = uiState.missionTasks
@@ -284,10 +269,8 @@ class EditMissionViewModel: ViewModel {
     }
     
     private func validateInputs(maxParticipants: String) -> Bool {
-        uiState.maxParticipantsError = validateMaxParticipants(maxParticipants: maxParticipants)
-        return uiState.maxParticipantsError == nil
+        validateMaxParticipants(maxParticipants)
     }
-    
     private func validateRemovedImage() -> Bool {
         if case let .published(imageUrl) = mission.state {
             imageUrl != nil
@@ -310,11 +293,11 @@ class EditMissionViewModel: ViewModel {
     
     private func validateEndDateUpdate(startDate: Date, endDate: Date) -> Bool {
         endDate != mission.endDate &&
-            (endDate.isAlmostEqual(to: startDate) || endDate.isAlmostAfter(to: startDate))
+            (endDate.isAlmostEqual(to: startDate) || endDate.isAfter(to: startDate))
     }
     
     private func validateSchoolLevelsUpdate(_ schoolLevels: [SchoolLevel]) -> Bool {
-        schoolLevels != mission.schoolLevels
+        schoolLevels != mission.schoolLevels && !schoolLevels.isEmpty
     }
     
     private func validateMaxParticipantsUpdate(_ maxParticipants: String) -> Bool {
@@ -333,17 +316,47 @@ class EditMissionViewModel: ViewModel {
         missionTasks != mission.tasks
     }
     
-    private func validateMaxParticipants(maxParticipants: String) -> String? {
-        let maxParticipantsNumber = maxParticipants.trim().toIntOrDefault(-1)
-        return switch maxParticipantsNumber {
-            case _ where maxParticipantsNumber == -1:
-                stringResource(.maxParticipantsInvalidNumberErrorMessage)
-            
+    private func validateMaxParticipants(_ maxParticipants: String) -> Bool {
+        let maxParticipantsNumber = maxParticipants.toInt32OrDefault(-1)
+        
+        uiState.maxParticipantsError = switch maxParticipantsNumber {
+            case _ where maxParticipants.isEmpty: stringResource(.mandatoryFieldError)
+            case _ where maxParticipantsNumber <= 0: stringResource(.numberFieldError)
             case _ where maxParticipantsNumber < mission.participants.count:
-                stringResource(.maxParticipantsLowerThanCurrentErrorMessage, mission.participants.count)
-                
+                stringResource(.maxParticipantsLowerThanCurrentError, mission.participants.count)
             default: nil
         }
+        
+        return uiState.maxParticipantsError == nil
+    }
+    
+    private func filterUsersByName(_ query: String) {
+        let users = if query.isBlank() {
+            defaultUsers
+        } else {
+            defaultUsers.filter {
+                $0.fullName
+                    .lowercased()
+                    .contains(query.lowercased())
+            }
+        }
+        
+        uiState.users = users
+    }
+    
+    private func performRequest(block: @escaping () async throws -> Void) {
+        performUiBlockingRequest(
+            block: block,
+            onLoading: { [weak self] in
+                self?.uiState.loading = true
+            },
+            onError: { [weak self] in
+                self?.event = ErrorEvent(message: $0.localizedDescription)
+            },
+            onFinshed: { [weak self] in
+                self?.uiState.loading = false
+            }
+        )
     }
     
     private func listenMissionUpdateState() {
@@ -357,47 +370,31 @@ class EditMissionViewModel: ViewModel {
         uiState.description = mission.description
         uiState.startDate = mission.startDate
         uiState.endDate = mission.endDate
-        uiState.schoolLevels = mission.schoolLevels
+        uiState.selectedSchoolLevels = mission.schoolLevels
         uiState.duration = mission.duration.orEmpty()
         uiState.managers = mission.managers
         uiState.maxParticipants = mission.maxParticipants.description
+        uiState.previousMaxParticipants = mission.maxParticipants.description
         uiState.missionTasks = mission.tasks
         uiState.missionState = mission.state
     }
     
     
     private func initUsers() {
+        let mission = mission
+        let managersMap = mission.managers.reduce(into: [String: User]()) { result, manager in
+            result[manager.id] = manager
+        }
+        
         Task { @MainActor [weak self] in
-            guard let mission = self?.mission,
-                  let users = await self?.getUsersUseCase.execute().missionManagerSorting(mission: mission)
+            guard var users = await self?.getUsersUseCase.execute()
+                .filter({ !managersMap.has($0.id) })
             else { return }
             
+            users.append(contentsOf: mission.managers)
+            users = users.missionManagerSorting(mission: mission)
             self?.uiState.users = users
             self?.defaultUsers = users
-        }
-    }
-    
-    private func executeRequest(block: @escaping () async throws -> Void) {
-        var loadingTask: Task<Void, Error>?
-        
-        Task { @MainActor in
-            do {
-                if !networkMonitor.isConnected {
-                    throw NetworkError.noInternetConnection
-                }
-                
-                loadingTask = Task { @MainActor in
-                    try await Task.sleep(for: .milliseconds(300))
-                    uiState.loading = true
-                }
-                
-                try await block()
-            } catch {
-                event = ErrorEvent(message: mapNetworkErrorMessage(error))
-            }
-            
-            loadingTask?.cancel()
-            uiState.loading = false
         }
     }
     
@@ -406,10 +403,11 @@ class EditMissionViewModel: ViewModel {
         var description: String = ""
         fileprivate(set) var startDate: Date = Date()
         fileprivate(set) var endDate: Date = Date()
-        let allSchoolLevels: [SchoolLevel] = SchoolLevel.allCases
-        fileprivate(set) var schoolLevels: [SchoolLevel] = []
+        fileprivate(set) var selectedSchoolLevels: [SchoolLevel] = []
+        let allSchoolLevels: [SchoolLevel] = SchoolLevel.all
         fileprivate(set) var managers: [User] = []
         var maxParticipants: String = ""
+        fileprivate(set) var previousMaxParticipants: String = ""
         var duration: String = ""
         fileprivate(set) var missionTasks: [MissionTask] = []
         fileprivate(set) var users: [User] = []

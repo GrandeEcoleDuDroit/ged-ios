@@ -11,11 +11,10 @@ struct MissionFormManagerSection: View {
                 .padding(.horizontal)
             
             Spacer()
-                .frame(height: Dimens.smallPadding)
+                .frame(height: DimensResource.smallPadding)
             
             Button(action: onAddManagerClick) {
                 AddManagerItem()
-                    .contentShape(.rect)
             }.buttonStyle(ClickStyle())
             
             VStack(spacing: .zero) {
@@ -51,6 +50,7 @@ private struct AddManagerItem: View {
             }
         )
         .foregroundStyle(.onSurfaceVariant)
+        .contentShape(.rect)
     }
 }
 

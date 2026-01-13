@@ -6,6 +6,9 @@ struct CreateMissionDestination: View {
     
     @StateObject private var viewModel = MissionMainThreadInjector.shared.resolve(CreateMissionViewModel.self)
     @State private var path: [CreateMissionSubDestination] = []
+    @State private var showImageErrorAlert: Bool = false
+    @State private var errorTitle: String = ""
+    @State private var errorMessage: String = ""
     
     var body: some View {
         NavigationStack(path: $path) {
@@ -14,8 +17,8 @@ struct CreateMissionDestination: View {
                 description: $viewModel.uiState.description,
                 startDate: viewModel.uiState.startDate,
                 endDate: viewModel.uiState.endDate,
+                selectedSchoolLevels: viewModel.uiState.selectedSchoolLevels,
                 allSchoolLevels: viewModel.uiState.allSchoolLevels,
-                schoolLevels: viewModel.uiState.schoolLevels,
                 maxParticipants: $viewModel.uiState.maxParticipants,
                 duration: $viewModel.uiState.duration,
                 users: viewModel.uiState.users,
@@ -24,6 +27,7 @@ struct CreateMissionDestination: View {
                 missionTasks: viewModel.uiState.missionTasks,
                 missionState: .draft,
                 createEnabled: viewModel.uiState.createEnabled,
+                maxParticipantsError: viewModel.uiState.maxParticipantsError,
                 onTitleChange: viewModel.onTitleChange,
                 onDescriptionChange: viewModel.onDescriptionChange,
                 onStartDateChange: viewModel.onStartDateChange,
@@ -36,11 +40,20 @@ struct CreateMissionDestination: View {
                 onAddTaskClick: { path.append(.addMissionTask) },
                 onEditTaskClick: { path.append(.editMissionTask($0)) },
                 onRemoveTaskClick: viewModel.onRemoveMissionTask,
-                onCreateMissionClick: {
-                    viewModel.createMission(imageData: $0)
-                    onBackClick()
-                },
+                onCreateMissionClick: viewModel.createMission,
                 onBackClick: onBackClick
+            )
+            .alert(
+                errorTitle,
+                isPresented: $showImageErrorAlert,
+                actions: {
+                    Button(stringResource(.ok)) {
+                        showImageErrorAlert = false
+                    }
+                },
+                message: {
+                    Text(errorMessage)
+                }
             )
             .navigationDestination(for: CreateMissionSubDestination.self) { destination in
                 switch destination {
@@ -73,6 +86,11 @@ struct CreateMissionDestination: View {
                         )
                 }
             }
+            .onReceive(viewModel.$event) { event in
+                if event is SuccessEvent {
+                    onBackClick()
+                }
+            }
         }
     }
 }
@@ -88,8 +106,8 @@ private struct CreateMissionView: View {
     @Binding var description: String
     let startDate: Date
     let endDate: Date
+    let selectedSchoolLevels: [SchoolLevel]
     let allSchoolLevels: [SchoolLevel]
-    let schoolLevels: [SchoolLevel]
     @Binding var maxParticipants: String
     @Binding var duration: String
     let users: [User]
@@ -98,6 +116,8 @@ private struct CreateMissionView: View {
     let missionTasks: [MissionTask]
     let missionState: Mission.MissionState
     let createEnabled: Bool
+    
+    let maxParticipantsError: String?
     
     let onTitleChange: (String) -> Void
     let onDescriptionChange: (String) -> Void
@@ -115,23 +135,31 @@ private struct CreateMissionView: View {
     let onBackClick: () -> Void
     
     @State private var imageData: Data?
+    @State private var showImageErrorAlert: Bool = false
 
     var body: some View {
         MissionForm(
-            imageData: $imageData,
+            imageData: imageData,
             title: $title,
             description: $description,
             startDate: startDate,
             endDate: endDate,
+            selectedSchoolLevels: selectedSchoolLevels,
             allSchoolLevels: allSchoolLevels,
-            schoolLevels: schoolLevels,
             maxParticipants: $maxParticipants,
             duration: $duration,
             managers: managers,
             missionTasks: missionTasks,
             missionState: missionState,
-            onImageChange: {},
-            onImageRemove: {},
+            maxParticipantsError: maxParticipantsError,
+            onImageChange: {
+                if $0.count < CommonUtilsPresentation.maxImageFileSize {
+                    imageData = $0
+                } else {
+                    showImageErrorAlert = true
+                }
+            },
+            onImageRemove: { imageData = nil },
             onTitleChange: onTitleChange,
             onDescriptionChange: onDescriptionChange,
             onStartDateChange: onStartDateChange,
@@ -156,7 +184,15 @@ private struct CreateMissionView: View {
             }
             
             ToolbarItem(placement: .confirmationAction) {
-                Button(action: { onCreateMissionClick(imageData) }) {
+                Button(
+                    action: {
+                        if let imageData, let compressImageData = UIImage(data: imageData)?.jpegData(compressionQuality: 0.6) {
+                            onCreateMissionClick(compressImageData)
+                        } else {
+                            onCreateMissionClick(nil)
+                        }
+                    }
+                ) {
                     if createEnabled {
                         Text(stringResource(.publish))
                             .foregroundStyle(.gedPrimary)
@@ -167,6 +203,7 @@ private struct CreateMissionView: View {
                 .disabled(!createEnabled)
             }
         }
+        .alertImageTooLargeError(isPresented: $showImageErrorAlert)
     }
 }
 
@@ -177,8 +214,8 @@ private struct CreateMissionView: View {
             description: .constant(""),
             startDate: Date(),
             endDate: Date(),
-            allSchoolLevels: SchoolLevel.allCases,
-            schoolLevels: [],
+            selectedSchoolLevels: [],
+            allSchoolLevels: SchoolLevel.all,
             maxParticipants: .constant(""),
             duration: .constant(""),
             users: usersFixture,
@@ -187,6 +224,7 @@ private struct CreateMissionView: View {
             missionTasks: [missionTaskFixture],
             missionState: .draft,
             createEnabled: false,
+            maxParticipantsError: nil,
             onTitleChange: { _ in },
             onDescriptionChange: { _ in },
             onStartDateChange: { _ in },

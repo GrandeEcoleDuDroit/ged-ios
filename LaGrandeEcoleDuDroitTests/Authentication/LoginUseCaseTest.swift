@@ -7,24 +7,24 @@ class LoginUseCaseTest {
     let password = "password123"
     
     @Test
-    func loginUseCase_should_throw_user_not_found_when_user_not_exist() async throws {
+    func loginUseCase_should_throw_auth_user_not_found_when_user_not_exist() async throws {
         // Given
         let useCase = LoginUseCase(
             authenticationRepository: MockAuthenticationRepository(),
-            userRepository: UserNotExist()
+            userRepository: TestUserRepository()
         )
         
         // When
-        let error = await #expect(throws: AuthenticationError.userNotFound.self) {
+        let error = await #expect(throws: AuthenticationError.authUserNotFound.self) {
             try await useCase.execute(email: self.email, password: self.password)
         }
         
         // Then
-        #expect(error == AuthenticationError.userNotFound)
+        #expect(error == AuthenticationError.authUserNotFound)
     }
 }
 
-private class UserNotExist: MockUserRepository {
+private class TestUserRepository: MockUserRepository {
     override func getUser(userId: String) async -> User? {
         nil
     }

@@ -45,7 +45,7 @@ private struct BlockedUsersView: View {
                         .foregroundStyle(.informationText)
                         .listRowSeparator(.hidden)
                         .listRowBackground(Color.clear)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                 } else {
                     ForEach(blockedUsers) { user in
                         UserItem(
@@ -55,9 +55,9 @@ private struct BlockedUsersView: View {
                                     alertUser = user
                                     showUnblockAlert = true
                                 }
-                                .buttonStyle(.borderless)
                                 .foregroundStyle(.gedPrimary)
                                 .fontWeight(.medium)
+                                .buttonStyle(.borderless)
                             }
                         )
                         .listRowInsets(EdgeInsets())
@@ -67,9 +67,9 @@ private struct BlockedUsersView: View {
                 }
             } else {
                 ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             }
         }
         .listStyle(.plain)

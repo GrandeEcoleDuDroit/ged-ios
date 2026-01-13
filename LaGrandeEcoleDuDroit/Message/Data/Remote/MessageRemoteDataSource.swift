@@ -9,30 +9,23 @@ class MessageRemoteDataSource {
         self.messageApi = messageApi
     }
     
-    func listenMessages(conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Error> {
+    func listenMessages(userId: String, conversation: Conversation, offsetTime: Date?) -> AnyPublisher<Message, Error> {
         let offsetTime: Timestamp? = offsetTime.map { Timestamp(date: $0) }
-        return messageApi.listenMessages(conversation: conversation, offsetTime: offsetTime)
-            .map { $0.toMessage() }
+        return messageApi.listenMessages(userId: userId, conversation: conversation, offsetTime: offsetTime)
+            .map { $0.toMessage(userId: userId) }
             .eraseToAnyPublisher()
     }
     
     func createMessage(message: Message) async throws {
-        try await mapFirebaseError(
-            block: {
-                let data = message.toRemote().toMap()
-                try await messageApi.createMessage(
-                    conversationId: message.conversationId,
-                    messageId: message.id,
-                    data: data
-                )
-            },
-            tag: tag,
-            message: "Failed to create message"
-        )
+        try await messageApi.createMessage(remoteMessage: message.toRemote())
     }
     
-    func updateSeenMessage(message: Message) async throws {
-        try await messageApi.updateSeenMessage(remoteMessage: message.toRemote())
+    func setMessagesSeen(message: Message) async throws {
+        try await messageApi.setMessageSeen(conversationId: message.conversationId, messageId: message.id)
+    }
+    
+    func updateMessageVisibility(message: Message, userId: String, visible: Bool) async throws {
+        try await messageApi.updateMessageVisibility(remoteMessage: message.toRemote(), userId: userId, visible: visible)
     }
     
     func stopListeningMessages() {
@@ -40,10 +33,6 @@ class MessageRemoteDataSource {
     }
     
     func reportMessage(report: MessageReport) async throws {
-        try await mapServerError(
-            block: { try await messageApi.reportMessage(report: report) },
-            tag: tag,
-            message: "Failed to report message"
-        )
+        try await messageApi.reportMessage(report: report)
     }
 }

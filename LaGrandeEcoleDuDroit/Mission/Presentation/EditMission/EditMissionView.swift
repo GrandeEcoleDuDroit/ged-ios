@@ -6,6 +6,8 @@ struct EditMissionDestination: View {
     
     @StateObject private var viewModel: EditMissionViewModel
     @State private var showErrorAlert: Bool = false
+    @State private var showImageErrorAlert: Bool = false
+    @State private var errorTitle: String = ""
     @State private var errorMessage: String = ""
     @State private var path: [EditMissionSubDestination] = []
 
@@ -26,8 +28,8 @@ struct EditMissionDestination: View {
                 description: $viewModel.uiState.description,
                 startDate: viewModel.uiState.startDate,
                 endDate: viewModel.uiState.endDate,
+                selectedSchoolLevels: viewModel.uiState.selectedSchoolLevels,
                 allSchoolLevels: viewModel.uiState.allSchoolLevels,
-                schoolLevels: viewModel.uiState.schoolLevels,
                 maxParticipants: $viewModel.uiState.maxParticipants,
                 duration: $viewModel.uiState.duration,
                 users: viewModel.uiState.users,
@@ -119,8 +121,8 @@ private struct EditMissionView: View {
     @Binding var description: String
     let startDate: Date
     let endDate: Date
+    let selectedSchoolLevels: [SchoolLevel]
     let allSchoolLevels: [SchoolLevel]
-    let schoolLevels: [SchoolLevel]
     @Binding var maxParticipants: String
     @Binding var duration: String
     let users: [User]
@@ -151,16 +153,18 @@ private struct EditMissionView: View {
     let onBackClick: () -> Void
     
     @State private var imageData: Data?
+    @State private var showImageErrorAlert: Bool = false
+    @State private var imageErrorAlertContent: (String, String) = ("", "")
     
     var body: some View {
         MissionForm(
-            imageData: $imageData,
+            imageData: imageData,
             title: $title,
             description: $description,
             startDate: startDate,
             endDate: endDate,
+            selectedSchoolLevels: selectedSchoolLevels,
             allSchoolLevels: allSchoolLevels,
-            schoolLevels: schoolLevels,
             maxParticipants: $maxParticipants,
             duration: $duration,
             managers: managers,
@@ -168,7 +172,13 @@ private struct EditMissionView: View {
             missionState: missionState,
             schoolLevelSupportingText: schoolLevelSupportingText,
             maxParticipantsError: maxParticipantsError,
-            onImageChange: onImageChange,
+            onImageChange: {
+                if $0.count < CommonUtilsPresentation.maxImageFileSize {
+                    onImageChange()
+                } else {
+                    showImageErrorAlert = true
+                }
+            },
             onImageRemove: onImageRemove,
             onTitleChange: onTitleChange,
             onDescriptionChange: onDescriptionChange,
@@ -184,6 +194,7 @@ private struct EditMissionView: View {
             onRemoveTaskClick: onRemoveTaskClick
         )
         .loading(loading)
+        .alertImageTooLargeError(isPresented: $showImageErrorAlert)
         .navigationTitle(stringResource(.editMission))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -218,8 +229,8 @@ private struct EditMissionView: View {
             description: .constant(mission.description),
             startDate: mission.startDate,
             endDate: mission.endDate,
-            allSchoolLevels: SchoolLevel.allCases,
-            schoolLevels: mission.schoolLevels,
+            selectedSchoolLevels: mission.schoolLevels,
+            allSchoolLevels: SchoolLevel.all,
             maxParticipants: .constant(mission.maxParticipants.description),
             duration: .constant(mission.duration.orEmpty()),
             users: usersFixture,

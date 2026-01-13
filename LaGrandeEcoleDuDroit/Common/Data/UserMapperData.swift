@@ -1,6 +1,6 @@
 extension User {
-    func toServerUser() -> ServerUser {
-        ServerUser(
+    func toOracleUser() -> OracleUser {
+        OracleUser(
             userId: id,
             userFirstName: firstName.lowercased(),
             userLastName: lastName.lowercased(),
@@ -74,7 +74,7 @@ extension FirestoreUser {
     }
 }
 
-extension ServerUser {
+extension OracleUser {
     func toUser() -> User {
         User(
             id: userId,
@@ -97,6 +97,25 @@ extension UserReport {
             reportedUser: reportedUser.toRemote(),
             reporter: reporterInfo.toRemote(),
             reason: reason.rawValue
+        )
+    }
+}
+
+extension BlockedUser {
+    func toRemote(currentUserId: String) -> RemoteBlockedUser {
+        RemoteBlockedUser(
+            userId: currentUserId,
+            blockedUserId: userId,
+            blockedDate: date.toEpochMilli()
+        )
+    }
+}
+
+extension RemoteBlockedUser {
+    func toBlockedUser() -> BlockedUser {
+        BlockedUser(
+            userId: blockedUserId,
+            date: blockedDate.toDate()
         )
     }
 }

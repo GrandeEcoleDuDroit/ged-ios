@@ -1,19 +1,23 @@
 import Combine
 
 class MockBlockedUserRepository: BlockedUserRepository {
-    var blockedUserEvents: AnyPublisher<BlockUserEvent, Never> {
-        Empty().eraseToAnyPublisher()
-    }
+    var blockedUserEvents: AnyPublisher<BlockUserEvent, Never> { Empty().eraseToAnyPublisher() }
     
-    var blockedUserIds: AnyPublisher<Set<String>, Never> {
-        Empty().eraseToAnyPublisher()
-    }
+    var blockedUsers: AnyPublisher<[String: BlockedUser], Never> { Empty().eraseToAnyPublisher() }
     
-    var currentBlockedUserIds: Set<String> { Set<String>() }
+    var currentBlockedUsers: [String: BlockedUser] { [:] }
     
-    func getRemoteBlockedUserIds(currentUserId: String) async throws -> Set<String> { Set<String>() }
+    func getRemoteBlockedUsers(currentUserId: String) async throws -> [String: BlockedUser]  { [:] }
     
-    func blockUser(currentUserId: String, userId: String) async throws {}
+    func getLocalBlockedUsers() -> [String: BlockedUser] { [:] }
     
-    func unblockUser(currentUserId: String, userId: String) async throws {}
+    func addBlockedUser(currentUserId: String, blockedUser: BlockedUser) async throws {}
+
+    func addLocalBlockedUser(blockedUser: BlockedUser) throws {}
+    
+    func removeBlockedUser(currentUserId: String, blockedUserId: String) async throws {}
+    
+    func removeLocalBlockedUser(blockedUserId: String) throws {}
+    
+    func deleteLocalBlockedUsers() {}
 }

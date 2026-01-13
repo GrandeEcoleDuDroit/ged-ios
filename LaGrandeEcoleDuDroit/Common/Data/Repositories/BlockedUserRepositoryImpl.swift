@@ -5,17 +5,18 @@ class BlockedUserRepositoryImpl: BlockedUserRepository {
     private let blockedUserLocalDataSource: BlockedUserLocalDataSource
     private let blockedUserRemoteDataSource: BlockedUserRemoteDataSource
     
+    private let tag = String(describing: BlockedUserRepositoryImpl.self)
     private let blockedUserEventsSubject = PassthroughSubject<BlockUserEvent, Never>()
     var blockedUserEvents: AnyPublisher<BlockUserEvent, Never> {
         blockedUserEventsSubject.eraseToAnyPublisher()
     }
     
-    private let blockedUserIdsSubject: CurrentValueSubject<Set<String>, Never>
-    var blockedUserIds: AnyPublisher<Set<String>, Never> {
-        blockedUserIdsSubject.eraseToAnyPublisher()
+    private let blockedUsersSubject: CurrentValueSubject<[String: BlockedUser], Never>
+    var blockedUsers: AnyPublisher<[String: BlockedUser], Never> {
+        blockedUsersSubject.eraseToAnyPublisher()
     }
-    var currentBlockedUserIds: Set<String> {
-        blockedUserIdsSubject.value
+    var currentBlockedUsers: [String: BlockedUser] {
+        blockedUsersSubject.value
     }
     
     init(
@@ -24,25 +25,66 @@ class BlockedUserRepositoryImpl: BlockedUserRepository {
     ) {
         self.blockedUserLocalDataSource = blockedUserLocalDataSource
         self.blockedUserRemoteDataSource = blockedUserRemoteDataSource
-        let blockedUserIds = blockedUserLocalDataSource.getBlockedUserIds()
-        self.blockedUserIdsSubject = CurrentValueSubject<Set<String>, Never>(blockedUserIds)
+        let blockedUsers = blockedUserLocalDataSource.getBlockedUsers()
+        self.blockedUsersSubject = .init(blockedUsers)
     }
     
-    func getRemoteBlockedUserIds(currentUserId: String) async throws -> Set<String> {
-        try await blockedUserRemoteDataSource.getBlockedUserIds(currentUserId: currentUserId)
+    func getRemoteBlockedUsers(currentUserId: String) async throws -> [String: BlockedUser] {
+        do {
+            return try await blockedUserRemoteDataSource.getBlockedUsers(currentUserId: currentUserId)
+                .reduce(into: [String: BlockedUser]()) { result, element in
+                    result[element.userId] = element
+                }
+        } catch {
+            e(tag, "Error getting blocked users of user \(currentUserId)", error)
+            throw error
+        }
     }
     
-    func blockUser(currentUserId: String, userId: String) async throws {
-        try await blockedUserRemoteDataSource.blockUser(currentUserId: currentUserId, userId: userId)
-        let blockedUserIds = blockedUserLocalDataSource.blockUser(userId: userId)
-        blockedUserIdsSubject.send(blockedUserIds)
-        blockedUserEventsSubject.send(.block(userId: userId))
+    func getLocalBlockedUsers() -> [String: BlockedUser] {
+        blockedUserLocalDataSource.getBlockedUsers()
     }
     
-    func unblockUser(currentUserId: String, userId: String) async throws {
-        try await blockedUserRemoteDataSource.unblockUser(currentUserId: currentUserId, userId: userId)
-        let blockedUserIds = blockedUserLocalDataSource.unblockUser(userId: userId)
-        blockedUserIdsSubject.send(blockedUserIds)
-        blockedUserEventsSubject.send(.unblock(userId: userId))
+    func addBlockedUser(currentUserId: String, blockedUser: BlockedUser) async throws {
+        do {
+            try await blockedUserRemoteDataSource.addBlockedUser(currentUserId: currentUserId, blockedUser: blockedUser)
+            try blockedUserLocalDataSource.addBlockedUser(blockedUser: blockedUser)
+            blockedUserEventsSubject.send(.block(blockedUser))
+            emitBlockedUsers()
+        } catch {
+            e(tag, "Error adding blocked user \(blockedUser.userId) for user \(currentUserId)", error)
+            throw error
+        }
+    }
+    
+    func addLocalBlockedUser(blockedUser: BlockedUser) throws {
+        try blockedUserLocalDataSource.addBlockedUser(blockedUser: blockedUser)
+        emitBlockedUsers()
+    }
+    
+    func removeBlockedUser(currentUserId: String, blockedUserId: String) async throws {
+        do {
+            try await blockedUserRemoteDataSource.removeBlockedUser(currentUserId: currentUserId, blockedUserId: blockedUserId)
+            try blockedUserLocalDataSource.removeBlockedUser(userId: blockedUserId)
+            blockedUserEventsSubject.send(.unblock(blockedUserId: blockedUserId))
+            emitBlockedUsers()
+        } catch {
+            e(tag, "Error removing blocked user \(blockedUserId) for current user \(currentUserId)", error)
+            throw error
+        }
+    }
+    
+    func removeLocalBlockedUser(blockedUserId: String) throws {
+        try blockedUserLocalDataSource.removeBlockedUser(userId: blockedUserId)
+        emitBlockedUsers()
+    }
+    
+    func deleteLocalBlockedUsers() {
+        blockedUserLocalDataSource.deleteAll()
+    }
+    
+    private func emitBlockedUsers() {
+        let blockedUsers = blockedUserLocalDataSource.getBlockedUsers()
+        blockedUsersSubject.send(blockedUsers)
     }
 }

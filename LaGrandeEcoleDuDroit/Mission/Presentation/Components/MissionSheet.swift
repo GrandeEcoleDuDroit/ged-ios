@@ -56,25 +56,25 @@ private struct PublishedMissionSheet: View {
     
     var body: some View {
         if admin {
-            SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
-                ClickableTextItem(
+            SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
+                SheetItem(
                     icon: Image(systemName: "pencil"),
-                    text: Text(stringResource(.edit)),
+                    text: stringResource(.edit),
                     onClick: onEditClick
                 )
                 
-                ClickableTextItem(
+                SheetItem(
                     icon: Image(systemName: "trash"),
-                    text: Text(stringResource(.delete)),
+                    text: stringResource(.delete),
                     onClick: onDeleteClick
                 )
                 .foregroundColor(.red)
             }
         } else {
-            SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
-                ClickableTextItem(
+            SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 1)) {
+                SheetItem(
                     icon: Image(systemName: "exclamationmark.bubble"),
-                    text: Text(stringResource(.report)),
+                    text: stringResource(.report),
                     onClick: onReportClick
                 )
                 .foregroundColor(.red)
@@ -87,10 +87,10 @@ private struct PublishingMissionSheet: View {
     let onDeleteClick: () -> Void
     
     var body: some View {
-        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 1)) {
-            ClickableTextItem(
+        SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 1)) {
+            SheetItem(
                 icon: Image(systemName: "trash"),
-                text: Text(stringResource(.delete)),
+                text: stringResource(.delete),
                 onClick: onDeleteClick
             )
             .foregroundColor(.red)
@@ -103,16 +103,16 @@ private struct ErrorMissionSheet: View {
     let onResendClick: () -> Void
     
     var body: some View {
-        SheetContainer(fraction: Dimens.sheetFraction(itemCount: 2)) {
-            ClickableTextItem(
-                icon: Image(systemName: "paperplane"),
-                text: Text(stringResource(.resend)),
+        SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
+            SheetItem(
+                icon: Image(systemName: "arrow.clockwise"),
+                text: stringResource(.retry),
                 onClick: onResendClick
             )
             
-            ClickableTextItem(
+            SheetItem(
                 icon: Image(systemName: "trash"),
-                text: Text(stringResource(.delete)),
+                text: stringResource(.delete),
                 onClick: onDeleteClick
             )
             .foregroundColor(.red)

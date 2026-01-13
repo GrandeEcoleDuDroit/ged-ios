@@ -38,7 +38,6 @@ struct NewsNavigation: View {
                                 viewModel.path.append(.authorProfile(user: user))
                             }
                         )
-                        .background(.appBackground)
                 }
             }
         }

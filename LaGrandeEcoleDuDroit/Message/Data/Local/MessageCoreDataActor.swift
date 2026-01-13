@@ -30,8 +30,9 @@ actor MessageCoreDataActor {
         try await context.perform {
             let fetchRequest = LocalMessage.fetchRequest()
             fetchRequest.predicate = NSPredicate(
-                format: "%K == %@",
-                MessageField.Local.messageConversationId, conversationId
+                format: "%K == %@ && %K == %@",
+                MessageField.Local.messageConversationId, conversationId,
+                MessageField.Local.messageState, MessageState.sent.rawValue
             )
             fetchRequest.sortDescriptors = [NSSortDescriptor(
                 key: MessageField.Local.messageDate,
@@ -44,7 +45,7 @@ actor MessageCoreDataActor {
         }
     }
     
-    func getUnreadMessagesByUser(conversationId: String, userId: String) async throws -> [Message] {
+    func getUserUnseenMessages(conversationId: String, userId: String) async throws -> [Message] {
         try await context.perform {
             let fetchRequest = LocalMessage.fetchRequest()
             fetchRequest.predicate = NSPredicate(
@@ -124,7 +125,7 @@ actor MessageCoreDataActor {
         }
     }
     
-    func updateSeenMessages(conversationId: String, userId: String) async throws {
+    func setMessagesSeen(conversationId: String, userId: String) async throws {
         try await context.perform {
             let request = LocalMessage.fetchRequest()
             request.predicate = NSPredicate(
@@ -133,14 +134,21 @@ actor MessageCoreDataActor {
                 MessageField.Local.messageSeen, NSNumber(value: false),
                 MessageField.Local.messageRecipientId, userId
             )
-            let unreadMessages = try self.context.fetch(request)
-            guard !unreadMessages.isEmpty else {
-                return
-            }
-            
-            unreadMessages.forEach {
+            try self.context.fetch(request).forEach {
                 $0.messageSeen = true
             }
+            try self.context.save()
+        }
+    }
+    
+    func setMessageSeen(messageId: String) async throws {
+        try await context.perform {
+            let request = LocalMessage.fetchRequest()
+            request.predicate = NSPredicate(
+                format: "%K == %@",
+                MessageField.Local.messageId, messageId
+            )
+            try self.context.fetch(request).first?.messageSeen = true
             try self.context.save()
         }
     }

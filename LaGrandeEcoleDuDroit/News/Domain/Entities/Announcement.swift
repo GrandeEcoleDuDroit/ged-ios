@@ -11,11 +11,11 @@ struct Announcement: Identifiable, Hashable, Copying {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
-}
-
-enum AnnouncementState: String, Hashable {
-    case draft = "draft"
-    case publishing = "sending"
-    case published = "published"
-    case error = "error"
+    
+    enum AnnouncementState: String, Hashable {
+        case draft = "draft"
+        case publishing = "sending"
+        case published = "published"
+        case error = "error"
+    }
 }

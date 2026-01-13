@@ -26,7 +26,7 @@ struct SelectManagerView: View {
     var body: some View {
         List {
             if users.isEmpty {
-                Text(stringResource(.noUser))
+                Text(stringResource(.noUsersFound))
                     .frame(maxWidth: .infinity)
                     .foregroundStyle(.informationText)
                     .listRowSeparator(.hidden)
@@ -56,7 +56,7 @@ struct SelectManagerView: View {
                             )
                         }
                         .contentShape(.rect)
-                        .padding(.horizontal)
+                        .padding(.leading)
                     }
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())

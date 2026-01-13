@@ -1,86 +1,49 @@
 import Foundation
 import FirebaseFirestore
 
-func mapFirebaseError<T>(
-    block: () async throws -> T,
-    tag: String = "Unknown tag",
-    message: String? = nil,
-    handleSpecificException: (Error) -> Error = { $0 }
-) async throws -> T {
-    do {
-        return try await block()
-    }
-    catch let error as URLError {
-        e(tag, message.orEmpty(), error)
-        switch error.code {
-            case .notConnectedToInternet, .cannotFindHost: throw NetworkError.noInternetConnection
-            default : throw error
-        }
-    }
-    
-    catch let error as NSError {
-        e(tag, message.orEmpty(), error)
-        if let errorCode = FirestoreErrorCode.Code(rawValue: error.code) {
-            switch errorCode {
-                case .resourceExhausted:
-                    throw NetworkError.tooManyRequests
-                default:
-                    throw handleSpecificException(error)
-            }
-        } else {
-            throw handleSpecificException(error)
-        }
-    }
-    
-    catch {
-        e(tag, message.orEmpty(), error)
-        throw handleSpecificException(error)
-    }
-}
-
-func mapServerError(
-    block: () async throws -> (URLResponse, ServerResponse),
-    tag: String = "Unknown tag",
-    message: String? = nil,
-    specificHandle: ((URLResponse, ServerResponse) throws -> Void)? = nil
-) async throws -> Void {
-    let (urlResponse, serverResponse) = try await block()
-    
-    if let httpResponse = urlResponse as? HTTPURLResponse {
-        if httpResponse.statusCode >= 400 {
-            e(tag, "\(message.orEmpty()): \(serverResponse.message)")
-
-            guard specificHandle == nil else {
-                return try specificHandle!(urlResponse, serverResponse)
-            }
-            
-            throw NetworkError.internalServer(serverResponse.message)
-        }
-    }
-}
-
-func mapServerError<T>(
-    block: () async throws -> (URLResponse, T),
-    tag: String = "Unknown tag",
-    message: String? = nil,
-    specificHandle: ((URLResponse, T) -> T)? = nil
-) async throws -> T {
-    let (urlResponse, data) = try await block()
-    
-    if let httpResponse = urlResponse as? HTTPURLResponse {
-        if httpResponse.statusCode >= 400 {
-            let serverResponse = data as? ServerResponse
-            e(tag, "\(message.orEmpty()): \(String(describing: serverResponse?.message))")
-
-            guard specificHandle == nil else {
-                return specificHandle!(urlResponse, data)
-            }
-            
-            throw NetworkError.internalServer(serverResponse?.error)
-        } else {
-            return data
+func mapFirebaseError(_ error: Error) -> Error {
+    if let urlError = error as? URLError {
+        mapUrlError(urlError)
+    } else if let errorCode = FirestoreErrorCode.Code(rawValue: (error as NSError).code) {
+        switch errorCode {
+            case .unknown: CommonError.unknown
+            case .permissionDenied: NetworkError.forbidden
+            case .resourceExhausted: NetworkError.tooManyRequests
+            case .unauthenticated: NetworkError.unauthorized
+            default: error
         }
     } else {
-        return data
+        error
+    }
+}
+
+func mapServerError(_ error: Error) -> Error {
+    if let urlError = error as? URLError {
+        return mapUrlError(urlError)
+    } else if let serverError = error as? ServerError {
+        if let errorCode = serverError.errorCode {
+            switch errorCode {
+                case "ORA-12801": return NetworkError.dupplicateData
+                default: break
+            }
+        }
+        
+        return switch serverError.httpCode {
+            case 400: NetworkError.badRequest
+            case 401: NetworkError.unauthorized
+            case 403: NetworkError.forbidden
+            default: NetworkError.internalServer(serverError.message)
+        }
+    } else {
+        return error
+    }
+}
+
+private func mapUrlError(_ error: URLError) -> any Error {
+    switch error.code {
+        case .notConnectedToInternet: NetworkError.notConnectedToInternet
+        case .cannotFindHost: NetworkError.cannotFindHost
+        case .timedOut: NetworkError.timedOut
+        default: error
     }
 }

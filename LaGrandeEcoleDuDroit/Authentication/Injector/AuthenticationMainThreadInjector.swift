@@ -13,8 +13,7 @@ class AuthenticationMainThreadInjector: MainThreadInjector {
         // View models
         container.register(AuthenticationViewModel.self) { resolver in
             AuthenticationViewModel(
-                loginUseCase: AuthenticationInjector.shared.resolve(LoginUseCase.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
+                loginUseCase: AuthenticationInjector.shared.resolve(LoginUseCase.self)
             )
         }
         
@@ -29,8 +28,7 @@ class AuthenticationMainThreadInjector: MainThreadInjector {
         
         container.register(ThirdRegistrationViewModel.self) { resolver in
             ThirdRegistrationViewModel(
-                registerUseCase:  AuthenticationInjector.shared.resolve(RegisterUseCase.self),
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self)
+                registerUseCase:  AuthenticationInjector.shared.resolve(RegisterUseCase.self)
             )
         }
     }
