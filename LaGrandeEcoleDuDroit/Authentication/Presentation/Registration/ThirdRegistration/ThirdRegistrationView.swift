@@ -16,6 +16,7 @@ struct ThirdRegistrationDestination: View {
             emailError: viewModel.uiState.emailError,
             passwordError: viewModel.uiState.passwordError,
             errorMessage: viewModel.uiState.errorMessage,
+            onEmailChange: viewModel.onEmailChange,
             onRegisterClick: {
                 viewModel.register(
                     firstName: firstName,
@@ -35,6 +36,7 @@ private struct ThirdRegistrationView: View {
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
+    let onEmailChange: (String) -> Void
     let onRegisterClick: () -> Void
     
     var body: some View {
@@ -49,6 +51,7 @@ private struct ThirdRegistrationView: View {
                         emailError: emailError,
                         passwordError: passwordError,
                         errorMessage: errorMessage,
+                        onEmailChange: onEmailChange
                     )
                 }
                 .padding(.horizontal)
@@ -86,6 +89,7 @@ private struct FormContent: View {
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
+    let onEmailChange: (String) -> Void
     
     private let legalNoticeUrl = "https://grandeecoledudroit.github.io/ged-website/legal-notice.html"
     
@@ -102,6 +106,7 @@ private struct FormContent: View {
             )
             .textContentType(.emailAddress)
             .textInputAutocapitalization(.never)
+            .onChange(of: email, perform: onEmailChange)
             
             OutlinedPasswordTextField(
                 stringResource(.password),
@@ -146,6 +151,7 @@ private struct FormContent: View {
             emailError: nil,
             passwordError: nil,
             errorMessage: nil,
+            onEmailChange: { _ in },
             onRegisterClick: {}
         )
         .background(.appBackground)

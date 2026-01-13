@@ -116,10 +116,11 @@ class CreateMissionViewModel: ViewModel {
     
     func onMaxParticipantsChange(_ maxParticipants: String) -> Void {
         let maxParticipantsNumber = maxParticipants.toInt32OrDefault(-1)
-        
+        let validMaxParticipantsNumber = maxParticipantsNumber > 0 && maxParticipantsNumber.description.count <= MissionUtilsPresentation.maxParticipantsLength
+
         let value = switch maxParticipants {
             case _ where maxParticipants.isEmpty: ""
-            case _ where maxParticipantsNumber > 0: maxParticipantsNumber.description
+            case _ where validMaxParticipantsNumber: maxParticipantsNumber.description
             default: uiState.previousMaxParticipants
         }
         

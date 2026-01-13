@@ -177,10 +177,11 @@ class EditMissionViewModel: ViewModel {
     
     func onMaxParticipantsChange(_ maxParticipants: String) -> Void {
         let maxParticipantsNumber = maxParticipants.toInt32OrDefault(-1)
+        let validMaxParticipantsNumber = maxParticipantsNumber > 0 && maxParticipantsNumber.description.count <= MissionUtilsPresentation.maxParticipantsLength
 
         let value = switch maxParticipants {
             case _ where maxParticipants.isEmpty: ""
-            case _ where maxParticipantsNumber > 0: maxParticipantsNumber.description
+            case _ where validMaxParticipantsNumber: maxParticipantsNumber.description
             default: uiState.previousMaxParticipants
         }
         
@@ -228,20 +229,6 @@ class EditMissionViewModel: ViewModel {
     func onUserQueryChange(_ query: String) {
         uiState.userQuery = query
         filterUsersByName(query)
-    }
-    
-    private func filterUsersByName(_ query: String) {
-        let users = if query.isBlank() {
-            defaultUsers
-        } else {
-            defaultUsers.filter {
-                $0.fullName
-                    .lowercased()
-                    .contains(query.lowercased())
-            }
-        }
-        
-        uiState.users = users
     }
     
     func onAddMissionTask(_ value: String) {
@@ -341,6 +328,20 @@ class EditMissionViewModel: ViewModel {
         }
         
         return uiState.maxParticipantsError == nil
+    }
+    
+    private func filterUsersByName(_ query: String) {
+        let users = if query.isBlank() {
+            defaultUsers
+        } else {
+            defaultUsers.filter {
+                $0.fullName
+                    .lowercased()
+                    .contains(query.lowercased())
+            }
+        }
+        
+        uiState.users = users
     }
     
     private func performRequest(block: @escaping () async throws -> Void) {
