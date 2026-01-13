@@ -46,6 +46,7 @@ private class TestNotificationApi: MockNotificationApi {
     var isSent = false
     
     override func sendNotification<T>(
+        userId: String,
         recipientId: String,
         fcmMessage: FcmMessage<T>
     ) async where T : Encodable {

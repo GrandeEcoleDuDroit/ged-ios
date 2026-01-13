@@ -53,7 +53,7 @@ private class TestConversationRepository: MockConversationRepository {
 private class TestMessageRepository: MockMessageRepository {
     var isMessagesDeleted = false
     
-    override func deleteLocalMessages(conversationId: String) {
+    override func deleteLocalMessages(conversationId: String) async throws {
         isMessagesDeleted = true
     }
 }

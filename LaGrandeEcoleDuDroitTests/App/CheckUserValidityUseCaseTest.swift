@@ -12,8 +12,7 @@ class CheckUserValidityUseCaseTest {
         let isAuthenticatedCalled = IsAuthenticatedCalled()
         let useCase = CheckUserValidityUseCase(
             authenticationRepository: isAuthenticatedCalled,
-            userRepository: CurrentUserExist(),
-            networkMonitor: ConnectedToInternet(false)
+            userRepository: CurrentUserExist()
         )
         
         // When
@@ -34,8 +33,7 @@ class CheckUserValidityUseCaseTest {
         let logoutCalled = LogoutCalled()
         let useCase = CheckUserValidityUseCase(
             authenticationRepository: logoutCalled,
-            userRepository: CurrentUserExist(),
-            networkMonitor: ConnectedToInternet()
+            userRepository: CurrentUserExist()
         )
         
         // When
@@ -51,8 +49,7 @@ class CheckUserValidityUseCaseTest {
         let throwUserDisabled = ThrowUserDisabled()
         let useCase = CheckUserValidityUseCase(
             authenticationRepository: throwUserDisabled,
-            userRepository: CurrentUserExist(),
-            networkMonitor: ConnectedToInternet()
+            userRepository: CurrentUserExist()
         )
         
         // When
@@ -60,18 +57,6 @@ class CheckUserValidityUseCaseTest {
         
         // Then
         #expect(throwUserDisabled.logoutCalled)
-    }
-}
-
-private class ConnectedToInternet: MockNetworkMonitor {
-    private let givenConnected: Bool
-    
-    init(_ connected: Bool = true) {
-        self.givenConnected = connected
-    }
-    
-    override var connected: AnyPublisher<Bool, Never> {
-        Just(givenConnected).eraseToAnyPublisher()
     }
 }
 
