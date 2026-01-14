@@ -19,5 +19,5 @@ class MockAuthenticationRepository: AuthenticationRepository {
     
     func deleteAuthUser() async throws {}
     
-    func getToken() async throws -> String? { nil }
+    func getAuthToken() async throws -> String? { nil }
 }

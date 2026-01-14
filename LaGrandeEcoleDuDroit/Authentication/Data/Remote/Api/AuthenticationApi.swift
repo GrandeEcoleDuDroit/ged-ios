@@ -3,9 +3,9 @@ import Combine
 protocol AuthenticationApi {
     func isAuthenticated() async throws -> Bool
     
-    func getToken() async throws -> String?
+    func getAuthToken() async throws -> AuthToken?
     
-    func listenToken() -> AnyPublisher<String?, Never>
+    func listenAuthToken() -> AnyPublisher<AuthToken?, Never>
         
     func login(email: String, password: String)  async throws -> String
 

@@ -1,8 +1,5 @@
 import Foundation
 
-private let calendar = Calendar.current
-private let currentDate = Date()
-
 let longAnnouncementFixture = Announcement(
     id: "1",
     title: "🌴Planification des congés d'été - Soumission des demandes avant le 15 juin 😎☀️",
@@ -20,7 +17,7 @@ let longAnnouncementFixture = Announcement(
     "Je reste à votre disposition pour toute précision complémentaire.\n\n" +
     "Bien cordialement,\n" +
     "Patrick Dupont",
-    date: calendar.date(from : DateComponents(year: 2024, month: 10, day: 9)) ?? currentDate,
+    date: Calendar.current.date(from : DateComponents(year: 2024, month: 10, day: 9))!,
     author: userFixture,
     state: .published
 )
@@ -40,7 +37,7 @@ let announcementFixture = Announcement(
     "sans heurts et de manière efficace. N'hésitez pas à nous contacter si " +
     "vous avez des questions ou si vous avez besoin de plus amples informations " +
     "avant la date prévue",
-    date: calendar.date(from : DateComponents(year: 2024, month: 10, day: 9)) ?? currentDate,
+    date: Calendar.current.date(from : DateComponents(year: 2024, month: 10, day: 9))!,
     author: userFixture,
     state: .published
 )
@@ -48,46 +45,56 @@ let announcementFixture = Announcement(
 let announcementsFixture = [
     Announcement(
         id: "1",
-        title: "First announcement",
-        content: "Hi this is my first announcement",
-        date: currentDate, author: userFixture,
+        title: "Soirée pyjama !",
+        content: "Ceci est une annonce de soirée pyjama.",
+        date: Date(),
+        author: usersFixture[0],
         state: .published
     ),
     Announcement(
         id: "2",
-        title: "Second announcement",
-        content: "Hi this is my second announcement",
-        date: calendar.date(byAdding: .day, value: -1, to: currentDate) ?? currentDate,
-        author:userFixture,
+        title: "Rappel : Rendu de dossier le 23/03",
+        content: "Ceci est une annonce de rendu de dossier.",
+        date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!,
+        author: usersFixture[1],
         state: .published
     ),
     Announcement(
         id: "3",
-        title: "Third announcement",
-        content: "Hi this is my third announcement",
-        date: calendar.date(byAdding: .day, value: -3, to: currentDate) ?? currentDate,
-        author: userFixture,
+        content: "Bonjour à tous, voici la liste des étudiants qui seront absent durant la journée portes ouvertes.",
+        date: Calendar.current.date(byAdding: .day, value: -3, to: Date())!,
+        author: usersFixture[2],
         state: .published
     ),
     Announcement(
         id: "4",
-        content: "Hi this is my fourth announcement",
-        date: calendar.date(byAdding: .weekOfMonth, value: -1, to: currentDate) ?? currentDate,
-        author:userFixture,
+        title: "Attention à la neige ❄️",
+        content: "Ceci est une annonce de rendu de dossier.",
+        date: Calendar.current.date(byAdding: .year, value: -1, to: Date())!,
+        author: usersFixture[5],
         state: .published
     ),
     Announcement(
         id: "5",
-        content: "Hi this is my fifth announcement",
-        date: calendar.date(byAdding: .month, value: -1, to: currentDate) ?? currentDate,
-        author: userFixture,
+        title: "Aide au devoir",
+        content: "Ceci est une annonce pour l'aide au devoir.",
+        date: Calendar.current.date(byAdding: .month, value: -1, to: Date())!,
+        author: usersFixture[4],
         state: .published
     ),
     Announcement(
         id: "6",
-        content: "Hi this is my sixth announcement",
-        date: calendar.date(byAdding: .year, value: -1, to: currentDate) ?? currentDate,
-        author: userFixture,
+        title: "Rendez-vous accueil",
+        content: "Ceci est une annonce pour un rendez-vous d'accueil.",
+        date: Calendar.current.date(byAdding: .weekOfMonth, value: -1, to: Date())!,
+        author: usersFixture[3],
         state: .published
     ),
+    Announcement(
+        id: "7",
+        content: "Cadeau 🎁",
+        date: Calendar.current.date(byAdding: .year, value: -1, to: Date())!,
+        author: usersFixture[6],
+        state: .published
+    )
 ]

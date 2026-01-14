@@ -34,6 +34,11 @@ extension Date {
             ?? self.addingTimeInterval(TimeInterval(value * 86400))
     }
     
+    func minusDay(_ value: Int) -> Date {
+        Calendar.current.date(byAdding: .day, value: -value, to: self)
+            ?? self.addingTimeInterval(TimeInterval(-value * 86400))
+    }
+    
     func minusMinutes(_ value: Int) -> Date {
         Calendar.current.date(byAdding: .minute, value: -value, to: self)
             ?? self.addingTimeInterval(TimeInterval(-value * 3600))

@@ -14,8 +14,8 @@ class AuthenticationApiImpl: AuthenticationApi {
         }
     }
     
-    func listenToken() -> AnyPublisher<String?, Never> {
-        let authTokenSubject = PassthroughSubject<String?, Never>()
+    func listenAuthToken() -> AnyPublisher<AuthToken?, Never> {
+        let authTokenSubject = PassthroughSubject<AuthToken?, Never>()
         
         firebaseAuth.addIDTokenDidChangeListener { auth, user in
             guard let user else {
@@ -23,13 +23,11 @@ class AuthenticationApiImpl: AuthenticationApi {
                 return
             }
             
-            user.getIDTokenResult(forcingRefresh: false) { result, error in
-                if let result, result.expirationDate > Date() {
-                    authTokenSubject.send(result.token)
+            user.getIDTokenResult { result, error in
+                if let result {
+                    authTokenSubject.send(AuthToken(token: result.token, expirationDate: result.expirationDate))
                 } else {
-                    user.getIDTokenResult(forcingRefresh: true) { refreshedResult, error in
-                        authTokenSubject.send(refreshedResult?.token)
-                    }
+                    authTokenSubject.send(nil)
                 }
             }
         }
@@ -37,8 +35,12 @@ class AuthenticationApiImpl: AuthenticationApi {
         return authTokenSubject.eraseToAnyPublisher()
     }
     
-    func getToken() async throws -> String? {
-        try await firebaseAuth.currentUser?.getIDTokenResult().token
+    func getAuthToken() async throws -> AuthToken? {
+        if let result = try await firebaseAuth.currentUser?.getIDTokenResult() {
+            return AuthToken(token: result.token, expirationDate: result.expirationDate)
+        } else {
+            return nil
+        }
     }
     
     func login(email: String, password: String) async throws -> String {

@@ -17,8 +17,7 @@ struct SentMessageItem: View {
                         dateColor: Color(UIColor.lightText)
                     )
                 }
-                .buttonStyle(ClickStyle())
-                .clipShape(.rect(cornerRadius: 24))
+                .clipShape(.rect(cornerRadius: 14))
                 
                 if showSeen {
                     Text(stringResource(.seen))
@@ -96,6 +95,7 @@ private struct MessageBubble: View {
         HStack(alignment: .bottom) {
             Text(text)
                 .foregroundStyle(textColor)
+                .multilineTextAlignment(.leading)
             
             Text(date, style: .time)
                 .foregroundStyle(dateColor)
@@ -104,7 +104,7 @@ private struct MessageBubble: View {
         .padding(.vertical, 10)
         .padding(.horizontal, DimensResource.mediumPadding)
         .background(backgroundColor)
-        .clipShape(.rect(cornerRadius: 20))
+        .clipShape(.rect(cornerRadius: 14))
     }
 }
 
