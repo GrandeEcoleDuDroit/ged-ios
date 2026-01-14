@@ -6,7 +6,7 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     private let authenticationLocalDataSource: AuthenticationLocalDataSource
     private let authenticationRemoteDataSource: AuthenticationRemoteDataSource
     private let authenticationSubjet = PassthroughSubject<Bool, Never>()
-    private var token: String?
+    private var authToken: AuthToken?
     private var cancellables = Set<AnyCancellable>()
     private let tag = String(describing: AuthenticationRepositoryImpl.self)
     
@@ -69,13 +69,19 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
         }
     }
     
-    func getToken() async throws -> String? {
-        token != nil ? token : try await authenticationRemoteDataSource.getToken()
+    func getAuthToken() async throws -> String? {
+        if let authToken, authToken.isValid() {
+            return authToken.token
+        } else {
+            let authToken = try await authenticationRemoteDataSource.getAuthToken()
+            self.authToken = authToken
+            return authToken?.token
+        }
     }
     
     private func listenToken() {
-        authenticationRemoteDataSource.listenToken().sink { [weak self] token in
-            self?.token = token
+        authenticationRemoteDataSource.listenAuthToken().sink { [weak self] authToken in
+            self?.authToken = authToken
         }.store(in: &cancellables)
     }
 }

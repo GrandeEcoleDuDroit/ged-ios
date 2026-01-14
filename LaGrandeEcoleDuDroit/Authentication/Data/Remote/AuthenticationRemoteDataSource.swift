@@ -27,11 +27,11 @@ class AuthenticationRemoteDataSource {
         try await authenticationApi.resetPassword(email: email)
     }
     
-    func getToken() async throws -> String? {
-        try await authenticationApi.getToken()
+    func getAuthToken() async throws -> AuthToken? {
+        try await authenticationApi.getAuthToken()
     }
     
-    func listenToken() -> AnyPublisher<String?, Never> {
-        authenticationApi.listenToken()
+    func listenAuthToken() -> AnyPublisher<AuthToken?, Never> {
+        authenticationApi.listenAuthToken()
     }
 }

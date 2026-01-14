@@ -1,13 +1,12 @@
 import Foundation
 
-private let currentDate = Date()
 
 let messageFixture = Message(
     id: "1",
-    senderId: userFixture.id,
-    recipientId: userFixture2.id,
+    senderId: userFixture2.id,
+    recipientId: userFixture.id,
     conversationId: "1",
-    content: "Hi, how are you ?",
+    content: "Salut, comment tu vas ?",
     date: Date(),
     seen: true,
     state: .sent
@@ -31,61 +30,51 @@ let messagesFixture = [
     Message(
         id: "1",
         senderId: userFixture.id,
-        recipientId: userFixture2.id,
-        conversationId: "1",
-        content: "Hi, how are you ?",
+        recipientId: usersFixture[1].id,
+        conversationId: conversationFixture.id,
+        content: "On s'y retrouve à 14h. 👍",
         date: Date(),
         seen: true,
         state: .sent
     ),
     Message(
         id: "2",
-        senderId: userFixture.id,
-        recipientId: userFixture2.id,
-        conversationId: "1",
-        content: "Hi, how are you ?",
-        date: currentDate.minusMinutes(10),
-        seen: false,
-        state: .error
-    ),
-    Message(
-        id: "3",
-        senderId: userFixture2.id,
+        senderId: usersFixture[1].id,
         recipientId: userFixture.id,
-        conversationId: "1",
-        content: "Fine, and you ?",
-        date: currentDate.minusMinutes(5),
+        conversationId: conversationFixture.id,
+        content: "Top ! Ca va être super.",
+        date: Date().minusMinutes(1),
         seen: true,
         state: .sent
     ),
     Message(
         id: "4",
         senderId: userFixture.id,
-        recipientId: userFixture2.id,
-        conversationId: "1",
-        content: "Fine, thanks !",
-        date: currentDate.minusMinutes(2),
+        recipientId: usersFixture[1].id,
+        conversationId: conversationFixture.id,
+        content: "J'ai ramené quelques cousins venu de l'étranger.",
+        date: Date().minusMinutes(3),
         seen: true,
         state: .sent
     ),
     Message(
         id: "5",
-        senderId: userFixture2.id,
+        senderId: usersFixture[1].id,
         recipientId: userFixture.id,
-        conversationId: "1",
-        content: "Great !",
-        date: currentDate.minusMinutes(1),
+        conversationId: conversationFixture.id,
+        content: "Je suis en route..",
+        date: Date().minusMinutes(4),
         seen: true,
         state: .sent
     ),
     Message(
         id: "6",
         senderId: userFixture.id,
-        recipientId: userFixture2.id,
-        conversationId: "1",
-        content: "Ok, see you later !",
-        date: currentDate,
-        seen: false,
+        recipientId: usersFixture[1].id,
+        conversationId: conversationFixture.id,
+        content: "On m'a signalé que l'événement avait commencé.",
+        date: Date().minusMinutes(5),
+        seen: true,
         state: .sent
     )
 ]
@@ -97,7 +86,7 @@ let lastMessagesFixture = [
         recipientId: userFixture2.id,
         conversationId: "1",
         content: "Last message conversation 1",
-        date: currentDate.minusMinutes(10),
+        date: Date().minusMinutes(10),
         seen: true,
         state: .sent
     ),
@@ -107,7 +96,7 @@ let lastMessagesFixture = [
         recipientId: userFixture2.id,
         conversationId: "2",
         content: "Last message conversation 2",
-        date: currentDate.minusMinutes(5),
+        date: Date().minusMinutes(5),
         seen: true,
         state: .sent
     ),
@@ -117,7 +106,7 @@ let lastMessagesFixture = [
         recipientId: userFixture2.id,
         conversationId: "3",
         content: "Last message conversation 3",
-        date: currentDate.minusMinutes(2),
+        date: Date().minusMinutes(2),
         seen: true,
         state: .sent
     ),
@@ -127,7 +116,7 @@ let lastMessagesFixture = [
         recipientId: userFixture2.id,
         conversationId: "4",
         content: "Last message conversation 4",
-        date: currentDate.minusMinutes(1),
+        date: Date().minusMinutes(1),
         seen: true,
         state: .sent
     ),
@@ -137,7 +126,7 @@ let lastMessagesFixture = [
         recipientId: userFixture2.id,
         conversationId: "5",
         content: "Last message conversation 5",
-        date: currentDate,
+        date: Date(),
         seen: false,
         state: .sent
     )

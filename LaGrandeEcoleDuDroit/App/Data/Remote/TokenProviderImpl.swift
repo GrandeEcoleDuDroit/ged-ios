@@ -6,6 +6,6 @@ class TokenProviderImpl: TokenProvider {
     }
     
     func getAuthToken() async -> String? {
-        try? await authenticationRepository.getToken()
+        try? await authenticationRepository.getAuthToken()
     }
 }
