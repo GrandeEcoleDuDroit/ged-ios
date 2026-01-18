@@ -84,9 +84,9 @@ class AppInjector: Injector {
             MainViewModel(
                 networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
+                authenticationRepository: AuthenticationInjector.shared.resolve(AuthenticationRepository.self),
                 listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!,
-                listenAuthenticationStateUseCase: AuthenticationInjector.shared.resolve(ListenAuthenticationStateUseCase.self),
                 fetchDataUseCase: resolver.resolve(FetchDataUseCase.self)!,
                 checkUserValidityUseCase: resolver.resolve(CheckUserValidityUseCase.self)!,
                 fcmTokenUseCase: resolver.resolve(FcmTokenUseCase.self)!

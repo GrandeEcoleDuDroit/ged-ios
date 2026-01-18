@@ -7,10 +7,18 @@ class AuthenticationRemoteDataSource {
         self.authenticationApi = authenticationApi
     }
     
-    func isAuthenticated() async throws -> Bool {
-        try await authenticationApi.isAuthenticated()
+    func listenAuthenticationState() -> AnyPublisher<Bool, Never> {
+        authenticationApi.listenAuthenticationState()
     }
     
+    func listenAuthTokenState() -> AnyPublisher<AuthTokenState, Never> {
+        authenticationApi.listenAuthTokenState()
+    }
+    
+    func getAuthToken() async throws -> String? {
+        try await authenticationApi.getAuthToken()
+    }
+  
     func loginWithEmailAndPassword(email: String, password: String) async throws -> String {
         try await authenticationApi.login(email: email, password: password)
     }
@@ -25,13 +33,5 @@ class AuthenticationRemoteDataSource {
     
     func resetPassword(email: String) async throws {
         try await authenticationApi.resetPassword(email: email)
-    }
-    
-    func getAuthToken() async throws -> AuthToken? {
-        try await authenticationApi.getAuthToken()
-    }
-    
-    func listenAuthToken() -> AnyPublisher<AuthToken?, Never> {
-        authenticationApi.listenAuthToken()
     }
 }

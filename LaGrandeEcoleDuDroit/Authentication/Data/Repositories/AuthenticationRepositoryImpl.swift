@@ -5,10 +5,15 @@ import FirebaseAuth
 class AuthenticationRepositoryImpl: AuthenticationRepository {
     private let authenticationLocalDataSource: AuthenticationLocalDataSource
     private let authenticationRemoteDataSource: AuthenticationRemoteDataSource
-    private let authenticationSubjet = PassthroughSubject<Bool, Never>()
-    private var authToken: AuthToken?
+    private var authToken: String?
     private var cancellables = Set<AnyCancellable>()
     private let tag = String(describing: AuthenticationRepositoryImpl.self)
+    private let authenticatedSubjet = CurrentValueSubject<Bool?, Never>(nil)
+    var authenticated: AnyPublisher<Bool, Never> {
+        authenticatedSubjet
+            .compactMap { $0 }
+            .eraseToAnyPublisher()
+    }
     
     init(
         authenticationLocalDataSource: AuthenticationLocalDataSource,
@@ -16,27 +21,26 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     ) {
         self.authenticationRemoteDataSource = authenticationRemoteDataSource
         self.authenticationLocalDataSource = authenticationLocalDataSource
-        listenToken()
+        
+        listenAuthenticationState()
+        listenAuthTokenState()
     }
     
-    func isAuthenticated() async throws -> Bool {
-        let localResult = authenticationLocalDataSource.isAuthenticated()
-        let remoteResult = try await authenticationRemoteDataSource.isAuthenticated()
-        return localResult && remoteResult
-    }
-    
-    func getAuthenticationState() -> AnyPublisher<Bool, Never> {
-        let localAuthenticationState = authenticationLocalDataSource.isAuthenticated()
-        return authenticationSubjet
-            .prepend(localAuthenticationState)
-            .eraseToAnyPublisher()
+    func getAuthToken() async throws -> String? {
+        if let authToken {
+            return authToken
+        } else {
+            let token = try await authenticationRemoteDataSource.getAuthToken()
+            self.authToken = token
+            return token
+        }
     }
     
     func loginWithEmailAndPassword(email: String, password: String) async throws -> String {
         do {
             return try await authenticationRemoteDataSource.loginWithEmailAndPassword(email: email, password: password)
         } catch {
-            e(tag, "Error login with email and password", error)
+            e(tag, "Error log in with email and password", error)
             throw error
         }
     }
@@ -57,7 +61,10 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     
     func setAuthenticated(_ isAuthenticated: Bool) {
         authenticationLocalDataSource.setAuthenticated(isAuthenticated)
-        authenticationSubjet.send(isAuthenticated)
+        authenticatedSubjet.send(isAuthenticated)
+        if !isAuthenticated {
+            authToken = nil
+        }
     }
     
     func resetPassword(email: String) async throws {
@@ -69,19 +76,26 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
         }
     }
     
-    func getAuthToken() async throws -> String? {
-        if let authToken, authToken.isValid() {
-            return authToken.token
-        } else {
-            let authToken = try await authenticationRemoteDataSource.getAuthToken()
-            self.authToken = authToken
-            return authToken?.token
-        }
+    private func listenAuthenticationState() {
+        authenticationRemoteDataSource.listenAuthenticationState()
+            .map { [weak self] in
+                self?.authenticationLocalDataSource.isAuthenticated() ?? false && $0
+            }
+            .sink { [weak self] in
+                self?.authenticatedSubjet.send($0)
+            }.store(in: &cancellables)
     }
     
-    private func listenToken() {
-        authenticationRemoteDataSource.listenAuthToken().sink { [weak self] authToken in
-            self?.authToken = authToken
+    private func listenAuthTokenState() {
+        authenticationRemoteDataSource.listenAuthTokenState().sink { [weak self] state in
+            switch state {
+                case let .valid(token): self?.authToken = token
+                    
+                case .unauthenticated: self?.setAuthenticated(false)
+                    
+                case let .error(error):
+                    e(self?.tag ?? "AuthenticationRepositoryImpl", "Error getting auth token", error)
+            }
         }.store(in: &cancellables)
     }
 }
