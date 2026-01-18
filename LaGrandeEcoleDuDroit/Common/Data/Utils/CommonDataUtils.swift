@@ -6,7 +6,7 @@ func mapFirebaseError(_ error: Error) -> Error {
         mapUrlError(urlError)
     } else if let errorCode = FirestoreErrorCode.Code(rawValue: (error as NSError).code) {
         switch errorCode {
-            case .unknown: CommonError.unknown
+            case .unknown: NetworkError.unknown
             case .permissionDenied: NetworkError.forbidden
             case .resourceExhausted: NetworkError.tooManyRequests
             case .unauthenticated: NetworkError.unauthorized
@@ -32,6 +32,7 @@ func mapServerError(_ error: Error) -> Error {
             case 400: NetworkError.badRequest
             case 401: NetworkError.unauthorized
             case 403: NetworkError.forbidden
+            case 404: NetworkError.resourceNotFound
             default: NetworkError.internalServer(serverError.message)
         }
     } else {

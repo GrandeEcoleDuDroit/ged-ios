@@ -17,7 +17,7 @@ class BlockedUserApiImpl: BlockedUserApi {
         if let blockedUsers: [RemoteBlockedUser] = try await RequestUtils.sendDataRequest(session: session, request: request) {
             return blockedUsers
         } else {
-            throw NetworkError.emptyResponse
+            throw NetworkError.unknown
         }
     }
     

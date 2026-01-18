@@ -18,7 +18,7 @@ class AnnouncementApiImpl: AnnouncementApi {
         if let announcements: [InboundRemoteAnnouncement] = try await RequestUtils.sendDataRequest(session: session, request: request) {
             return announcements
         } else {
-            throw NetworkError.emptyResponse
+            throw NetworkError.unknown
         }
     }
     

@@ -79,9 +79,11 @@
 "cannot_find_host_error" = "Impossible de se connecter au serveur.";
 "number_field_error" = "Veuillez entrer un nombre valide.";
 "invalid_image_format_error" = "L'image a un format invalide.";
-"unauthorized_error" = "Vous devez être authentifié pour effectuer cette action.";
+"unauthorized_error" = "Votre session a expiré. Veuillez vous reconnecter.";
 "bad_request_error" = "La requête n'a pu aboutir.";
-"nil_data_error" = "Données nulle";
+"resource_not_found_error" = "La ressource n'a pu être trouvée.";
+"duplicate_data_error" = "La ressource existe déjà.";
+"forbidden_error" = "Vous n'êtes pas autorisé à effectuer cette action.";
 "image_too_large_error_title" = "Image trop volumineuse";
 "image_too_large_error_message" = "La taille totale de l'image doit être inférieur à %@.";
 
