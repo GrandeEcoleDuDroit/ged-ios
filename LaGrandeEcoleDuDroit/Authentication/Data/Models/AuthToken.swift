@@ -8,3 +8,9 @@ struct AuthToken {
         Date() < expirationDate
     }
 }
+
+enum AuthTokenState {
+    case valid(String)
+    case unauthenticated
+    case error(Error? = nil)
+}

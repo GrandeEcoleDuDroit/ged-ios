@@ -2,18 +2,18 @@ import Combine
 import Foundation
 
 class NavigationHostViewModel: ViewModel {
-    private let listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase
+    private let authenticationRepository: AuthenticationRepository
     
     @Published private(set) var uiState = NavigationHostUiState()
     private var cancellables: Set<AnyCancellable> = []
 
-    init(listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase) {
-        self.listenAuthenticationStateUseCase = listenAuthenticationStateUseCase
+    init(authenticationRepository: AuthenticationRepository) {
+        self.authenticationRepository = authenticationRepository
         updateStartDestination()
     }
     
     private func updateStartDestination() {
-        listenAuthenticationStateUseCase.authenticated
+        authenticationRepository.authenticated
             .receive(on: DispatchQueue.main)
             .sink { [weak self] authenticated in
                 self?.uiState.startDestination = authenticated ? .app : .authentication
