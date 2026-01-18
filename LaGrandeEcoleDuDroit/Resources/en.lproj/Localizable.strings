@@ -85,9 +85,11 @@
 "cannot_find_host_error" = "Unable to connect to the server.";
 "number_field_error" = "Please enter a valid number.";
 "invalid_image_format_error" = "The image has an invalid format.";
-"unauthorized_error" = "You must be authenticated to perform this action.";
+"unauthorized_error" = "Your session has expired. Please log in again.";
 "bad_request_error" = "The request could not be successful.";
-"nil_data_error" = "Null data";
+"resource_not_found_error" = "Resource was not found.";
+"duplicate_data_error" = "The resource already exist.";
+"forbidden_error" = "You are not authorized to perform this action.";
 "image_too_large_error_title" = "Image too large";
 "image_too_large_error_message" = "Total image size must be inferior than %@.";
 
