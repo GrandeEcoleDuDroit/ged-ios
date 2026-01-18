@@ -154,7 +154,7 @@
 "resend" = "Resend";
 
 // Message error
-"message_failed_to_send_error" = "Échec de l’envoi du message.";
+"message_failed_to_send_error" = "Failed to send message.";
 
 // Mission
 "mission" = "Mission";
