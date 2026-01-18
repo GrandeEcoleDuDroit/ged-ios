@@ -81,7 +81,9 @@ enum StringResource: String {
     case invalidImageFormatError = "invalid_image_format_error"
     case unauthorizedError = "unauthorized_error"
     case badRequestError = "bad_request_error"
-    case nilDataError = "nil_data_error"
+    case resourceNotFoundError = "resource_not_found_error"
+    case duplicateDataError = "duplicate_data_error"
+    case forbiddenError = "forbidden_error"
     case imageTooLargeErrorTitle = "image_too_large_error_title"
     case imageTooLargeErrorMessage = "image_too_large_error_message"
 
