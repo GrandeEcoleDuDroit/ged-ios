@@ -1,6 +1,7 @@
 let messageContentFixture = MessageNotification.MessageContent(
+    messageId: messageFixture.id,
     content: messageFixture.content,
-    date: messageFixture.date.toEpochMilli(),
+    timestamp: messageFixture.date.toEpochMilli(),
 )
 
 let notificationMessageFixture = MessageNotification(

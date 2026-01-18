@@ -53,8 +53,9 @@ class SendMessageUseCase {
         let messageNotification = MessageNotification(
             conversation: conversation,
             message: MessageNotification.MessageContent(
+                messageId: message.id,
                 content: message.content,
-                date: message.date.toEpochMilli()
+                timestamp: message.date.toEpochMilli()
             )
         )
         await sendMessageNotificationUseCase.execute(notification: messageNotification)

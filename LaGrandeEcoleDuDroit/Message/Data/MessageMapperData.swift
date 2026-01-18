@@ -16,8 +16,9 @@ extension Message {
     
     func toMessageContent() -> MessageNotification.MessageContent {
         MessageNotification.MessageContent(
+            messageId: id,
             content: content,
-            date: date.toEpochMilli()
+            timestamp: date.toEpochMilli()
         )
     }
     
