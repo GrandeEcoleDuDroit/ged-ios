@@ -4,43 +4,59 @@ import Combine
 class AuthenticationApiImpl: AuthenticationApi {
     private let firebaseAuth = Auth.auth()
     private let tag = String(describing: AuthenticationApiImpl.self)
-
-    func isAuthenticated() async throws -> Bool {
-        do {
-            return try await firebaseAuth.currentUser?.getIDTokenResult(forcingRefresh: true) != nil
-        } catch {
-            e(tag, "Failed to check if user is authenticated")
-            throw mapError(error)
-        }
+    
+    func listenAuthenticationState() -> AnyPublisher<Bool, Never> {
+        Deferred { [weak self] in
+           let subject = PassthroughSubject<Bool, Never>()
+            
+           let listener = self?.firebaseAuth.addStateDidChangeListener { auth, _ in
+               subject.send(auth.currentUser != nil)
+           }
+            
+           return subject.handleEvents(receiveCancel: { [weak self] in
+               if let listener {
+                   self?.firebaseAuth.removeStateDidChangeListener(listener)
+               }
+           })
+       }
+       .eraseToAnyPublisher()
     }
     
-    func listenAuthToken() -> AnyPublisher<AuthToken?, Never> {
-        let authTokenSubject = PassthroughSubject<AuthToken?, Never>()
-        
-        firebaseAuth.addIDTokenDidChangeListener { auth, user in
-            guard let user else {
-                authTokenSubject.send(nil)
-                return
-            }
+    func listenAuthTokenState() -> AnyPublisher<AuthTokenState, Never> {
+        Deferred { [weak self] in
+            let subject = PassthroughSubject<AuthTokenState, Never>()
             
-            user.getIDTokenResult { result, error in
-                if let result {
-                    authTokenSubject.send(AuthToken(token: result.token, expirationDate: result.expirationDate))
-                } else {
-                    authTokenSubject.send(nil)
+            let listener = self?.firebaseAuth.addIDTokenDidChangeListener { auth, _ in
+                guard let user = auth.currentUser else {
+                    subject.send(.unauthenticated)
+                    return
+                }
+                
+                user.getIDTokenResult(forcingRefresh: true) { result, error in
+                    if let error {
+                        subject.send(.error(error))
+                        return
+                    }
+                    
+                    if let token = result?.token {
+                        subject.send(.valid(token))
+                    } else {
+                        subject.send(.error())
+                    }
                 }
             }
-        }
-        
-        return authTokenSubject.eraseToAnyPublisher()
+            
+            return subject.handleEvents(receiveCancel: { [weak self] in
+                if let listener {
+                    self?.firebaseAuth.removeIDTokenDidChangeListener(listener)
+                }
+            })
+        }.eraseToAnyPublisher()
     }
     
-    func getAuthToken() async throws -> AuthToken? {
-        if let result = try await firebaseAuth.currentUser?.getIDTokenResult() {
-            return AuthToken(token: result.token, expirationDate: result.expirationDate)
-        } else {
-            return nil
-        }
+    
+    func getAuthToken() async throws -> String? {
+        try await firebaseAuth.currentUser?.getIDTokenResult().token
     }
     
     func login(email: String, password: String) async throws -> String {

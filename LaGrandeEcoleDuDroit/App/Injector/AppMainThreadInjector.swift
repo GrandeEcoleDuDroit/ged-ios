@@ -13,7 +13,7 @@ class AppMainThreadInjector: MainThreadInjector {
         // View models
         container.register(NavigationHostViewModel.self) { resolver in
             NavigationHostViewModel(
-                listenAuthenticationStateUseCase: AuthenticationInjector.shared.resolve(ListenAuthenticationStateUseCase.self)
+                authenticationRepository: AuthenticationInjector.shared.resolve(AuthenticationRepository.self)
             )
         }
         

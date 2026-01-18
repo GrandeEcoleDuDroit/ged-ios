@@ -10,33 +10,39 @@ struct ProfileDestination: View {
     @State private var showErrorAlert: Bool = false
     
     var body: some View {
-        ProfileView(
-            user: viewModel.uiState.user,
-            onAccountInfosClick: onAccountInfosClick,
-            onAccountClick: onAccountClick,
-            onPrivacyClick: onPrivacyClick,
-            onLogoutClick: viewModel.logout
-        )
-        .onReceive(viewModel.$event) { event in
-            if let errorEvent = event as? ErrorEvent {
-                errorMessage = errorEvent.message
-                showErrorAlert = true
-            }
-        }
-        .alert(
-            errorMessage,
-            isPresented: $showErrorAlert,
-            actions: {
-                Button(stringResource(.ok)) {
-                    showErrorAlert = false
+        if let user = viewModel.uiState.user {
+            ProfileView(
+                user: user,
+                onAccountInfosClick: onAccountInfosClick,
+                onAccountClick: onAccountClick,
+                onPrivacyClick: onPrivacyClick,
+                onLogoutClick: viewModel.logout
+            )
+            .onReceive(viewModel.$event) { event in
+                if let errorEvent = event as? ErrorEvent {
+                    errorMessage = errorEvent.message
+                    showErrorAlert = true
                 }
             }
-        )
+            .alert(
+                errorMessage,
+                isPresented: $showErrorAlert,
+                actions: {
+                    Button(stringResource(.ok)) {
+                        showErrorAlert = false
+                    }
+                }
+            )
+        } else {
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                .background(.profileSectionBackground)
+        }
     }
 }
 
 private struct ProfileView: View {
-    let user: User?
+    let user: User
     let onAccountInfosClick: () -> Void
     let onAccountClick: () -> Void
     let onPrivacyClick: () -> Void
@@ -46,62 +52,56 @@ private struct ProfileView: View {
 
     var body: some View {
         List {
-            if let user {
-                Section {
-                    NavigationListItem(onClick: onAccountInfosClick) {
-                        HStack(spacing: DimensResource.mediumPadding) {
-                            ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
-                            
-                            VStack(alignment: .leading) {
-                                HStack {
-                                    Text(user.displayedName)
-                                        .font(.title3)
-                                        .fontWeight(.semibold)
-                                        .lineLimit(1)
-                                    
-                                    if user.admin {
-                                        Image(systemName: "star.fill")
-                                            .foregroundStyle(.gold)
-                                            .font(.system(size: 14))
-                                    }
-                                }
+            Section {
+                NavigationListItem(onClick: onAccountInfosClick) {
+                    HStack(spacing: DimensResource.mediumPadding) {
+                        ProfilePicture(url: user.profilePictureUrl, scale: 0.5)
+                        
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Text(user.displayedName)
+                                    .font(.title3)
+                                    .fontWeight(.semibold)
+                                    .lineLimit(1)
                                 
-                                Text(user.email)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
+                                if user.admin {
+                                    Image(systemName: "star.fill")
+                                        .foregroundStyle(.gold)
+                                        .font(.system(size: 14))
+                                }
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            Text(user.email)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
-                
-                Section {
-                    NavigationListItem(
-                        image: Image(systemName: "key"),
-                        text: stringResource(.account),
-                        onClick: onAccountClick
-                    )
+            }
+            
+            Section {
+                NavigationListItem(
+                    image: Image(systemName: "key"),
+                    text: stringResource(.account),
+                    onClick: onAccountClick
+                )
 
-                    NavigationListItem(
-                        image: Image(systemName: "lock"),
-                        text: stringResource(.privacy),
-                        onClick: onPrivacyClick
+                NavigationListItem(
+                    image: Image(systemName: "lock"),
+                    text: stringResource(.privacy),
+                    onClick: onPrivacyClick
+                )
+            }
+            
+            Section {
+                Button(action: { showLogoutAlert = true }) {
+                    TextIcon(
+                        icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
+                        text: stringResource(.logout)
                     )
                 }
-                
-                Section {
-                    Button(action: { showLogoutAlert = true }) {
-                        TextIcon(
-                            icon: Image(systemName: "rectangle.portrait.and.arrow.right"),
-                            text: stringResource(.logout)
-                        )
-                    }
-                    .foregroundStyle(.red)
-                }
-            } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .listRowBackground(Color.clear)
+                .foregroundStyle(.red)
             }
         }
         .navigationTitle(stringResource(.profile))

@@ -57,11 +57,5 @@ class AuthenticationInjector: Injector {
                 fcmTokenRepository: CommonInjector.shared.resolve(FcmTokenRepository.self)
             )
         }
-        
-        container.register(ListenAuthenticationStateUseCase.self) { resolver in
-            ListenAuthenticationStateUseCase(
-                authenticationRepository: resolver.resolve(AuthenticationRepository.self)!
-            )
-        }.inObjectScope(.container)
     }
 }

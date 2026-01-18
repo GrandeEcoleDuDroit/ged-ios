@@ -4,9 +4,9 @@ import Foundation
 class MainViewModel: ObservableObject {
     private let networkMonitor: NetworkMonitor
     private let userRepository: UserRepository
+    private let authenticationRepository: AuthenticationRepository
     private let listenDataUseCase: ListenDataUseCase
     private let clearDataUseCase: ClearDataUseCase
-    private let listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase
     private let fetchDataUseCase: FetchDataUseCase
     private let checkUserValidityUseCase: CheckUserValidityUseCase
     private let fcmTokenUseCase: FcmTokenUseCase
@@ -16,18 +16,18 @@ class MainViewModel: ObservableObject {
     init(
         networkMonitor: NetworkMonitor,
         userRepository: UserRepository,
+        authenticationRepository: AuthenticationRepository,
         listenDataUseCase: ListenDataUseCase,
         clearDataUseCase: ClearDataUseCase,
-        listenAuthenticationStateUseCase: ListenAuthenticationStateUseCase,
         fetchDataUseCase: FetchDataUseCase,
         checkUserValidityUseCase: CheckUserValidityUseCase,
         fcmTokenUseCase: FcmTokenUseCase
     ) {
         self.networkMonitor = networkMonitor
         self.userRepository = userRepository
+        self.authenticationRepository = authenticationRepository
         self.listenDataUseCase = listenDataUseCase
         self.clearDataUseCase = clearDataUseCase
-        self.listenAuthenticationStateUseCase = listenAuthenticationStateUseCase
         self.fetchDataUseCase = fetchDataUseCase
         self.checkUserValidityUseCase = checkUserValidityUseCase
         self.fcmTokenUseCase = fcmTokenUseCase
@@ -36,7 +36,7 @@ class MainViewModel: ObservableObject {
     }
     
     private func updateDataOnAuthChange() {
-        listenAuthenticationStateUseCase.authenticated
+        authenticationRepository.authenticated
             .receive(on: DispatchQueue.global(qos: .background))
             .sink { [weak self] authenticated in
                 if authenticated {

@@ -14,16 +14,10 @@ class CheckUserValidityUseCase {
     }
     
     func execute() async {
-        do {
-            let isAuthenticated = try await authenticationRepository.isAuthenticated()
-            let currentUser = userRepository.getCurrentUser()
-            if currentUser == nil && isAuthenticated == true {
-                authenticationRepository.logout()
-            }
-        } catch {
-            if error as? AuthenticationError == .userDisabled {
-                authenticationRepository.logout()
-            }
+        let isAuthenticated = await authenticationRepository.authenticated.values.first { $0 }
+        let currentUser = userRepository.getCurrentUser()
+        if currentUser == nil && isAuthenticated == true {
+            authenticationRepository.logout()
         }
     }
 }
