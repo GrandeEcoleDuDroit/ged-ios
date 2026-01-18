@@ -17,7 +17,7 @@ class MissionApiImpl: MissionApi {
         if let missions: [InboundRemoteMission] = try await RequestUtils.sendDataRequest(session: session, request: request) {
             return missions
         } else {
-            throw NetworkError.emptyResponse
+            throw NetworkError.unknown
         }
     }
     

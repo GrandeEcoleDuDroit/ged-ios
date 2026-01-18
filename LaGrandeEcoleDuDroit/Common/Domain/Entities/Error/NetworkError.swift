@@ -13,7 +13,8 @@ enum NetworkError: Error, Equatable {
     case timedOut
     case badRequest
     case any
-    case emptyResponse
+    case resourceNotFound
+    case unknown
 }
 
 extension NetworkError: LocalizedError {
@@ -21,6 +22,8 @@ extension NetworkError: LocalizedError {
         switch self {
             case let .internalServer(message): message ?? stringResource(.internalServerError)
             case .tooManyRequests: stringResource(.tooManyRequestsError)
+            case .dupplicateData: stringResource(.duplicateDataError)
+            case .forbidden: stringResource(.forbiddenError)
             case .unauthorized: stringResource(.unauthorizedError)
             case .notConnectedToInternet: stringResource(.internetConnectionLostError)
             case .cannotFindHost: stringResource(.cannotFindHostError)
@@ -29,8 +32,8 @@ extension NetworkError: LocalizedError {
             case .timedOut: stringResource(.timedOutError)
             case .badRequest: stringResource(.badRequestError)
             case .any: stringResource(.anyNetworkError)
-            case .emptyResponse: stringResource(.nilDataError)
-            default: stringResource(.unknownError)
+            case .resourceNotFound: stringResource(.resourceNotFoundError)
+            case .unknown: stringResource(.unknownError)
         }
     }
 }

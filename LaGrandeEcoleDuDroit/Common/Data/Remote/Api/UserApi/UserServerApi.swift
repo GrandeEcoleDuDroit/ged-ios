@@ -17,7 +17,7 @@ class UserServerApi {
         if let users: [OracleUser] = try await RequestUtils.sendDataRequest(session: session, request: request) {
             return users
         } else {
-            throw NetworkError.emptyResponse
+            throw NetworkError.unknown
         }
     }
     
