@@ -5,26 +5,22 @@ import Combine
 
 @testable import GrandeEcoleDuDroit
 
-class NotificationMessageManagerTest {
+class MessageNotificationPresenterTest {
     @Test
     func presentNotification_should_display_notification_when_is_not_current_view() {
         // Given
         let emptyNavigationRequestUseCase = EmptyNavigationRequestUseCase()
         let nilCurrentRoute = NilCurrentRoute()
-        let notif = RemoteMessageNotification(
-            conversation: conversationFixture,
-            message: .init(content: "content", date: Int64(Date().timeIntervalSince1970))
-        )
-        let jsonData = try! JSONEncoder().encode(notif)
-        let userInfo: [AnyHashable : Any] = ["value": String(data: jsonData, encoding: .utf8)!]
+        
         var result: UNNotificationPresentationOptions = []
-        let useCase = MessageNotificationPresenter(
+        let presenter = MessageNotificationPresenter(
             navigationRequestUseCase: emptyNavigationRequestUseCase,
             routeRepository: nilCurrentRoute
         )
+        let userInfo = getUserInfo()
         
         // When
-        useCase.presentNotification(
+        presenter.presentNotification(
             userInfo: userInfo,
             completionHandler: { presentationOptions in
                 result = presentationOptions
@@ -39,19 +35,16 @@ class NotificationMessageManagerTest {
     func presentNotification_should_not_display_notification_when_is_current_view() {
         // Given
         let chatCurrentRoute = DefinedCurrentRoute(MessageRoute.chat(conversation: conversationFixture))
-        let userInfo = getUserInfo(
-            conversation: conversationFixture,
-            message: messageFixture.toMessageContent()
-        )
+        let userInfo = getUserInfo()
         var result: UNNotificationPresentationOptions = []
         
-        let useCase = MessageNotificationPresenter(
+        let presenter = MessageNotificationPresenter(
             navigationRequestUseCase: MockNavigationRequestUseCase(),
             routeRepository: chatCurrentRoute
         )
         
         // When
-        useCase.presentNotification(
+        presenter.presentNotification(
             userInfo: userInfo,
             completionHandler: { presentationOptions in
                 result = presentationOptions
@@ -67,45 +60,39 @@ class NotificationMessageManagerTest {
         // Given
         let navigate = Navigate()
         let nilCurrentRoute = NilCurrentRoute()
-        let userInfo = getUserInfo(
+        let userInfo = getUserInfo()
+        let messageNotification = MessageNotification(
             conversation: conversationFixture,
             message: messageFixture.toMessageContent()
-        )
+        ).toRemote(currentUser: userFixture).toMessageNotification()
+
         let expectedResult = (
             MessageMainRoute.conversation,
-            [MessageRoute.chat(conversation: conversationFixture)]
+            [MessageRoute.chat(conversation: messageNotification.conversation)]
         )
-        let useCase = MessageNotificationPresenter(
+        let presenter = MessageNotificationPresenter(
             navigationRequestUseCase: navigate,
             routeRepository: nilCurrentRoute
         )
         
         // When
-        useCase.receiveNotification(userInfo: userInfo)
+        presenter.receiveNotification(userInfo: userInfo)
         
         // Then
+        let routes = navigate.navigatedRoute?.routes.map { $0 as? MessageRoute }
         let mainRoute = navigate.navigatedRoute?.mainRoute as? MessageMainRoute
-        let routes = navigate.navigatedRoute?.routes.map { $0 as? MessageRoute }        
         
-        #expect(
-            mainRoute == expectedResult.0 &&
-            routes == expectedResult.1
-        )
+        #expect(mainRoute == expectedResult.0 && routes == expectedResult.1)
     }
 }
 
-private func getUserInfo(conversation: Conversation, message: MessageNotification.MessageContent) -> [AnyHashable: Any] {
-    let jsonEncoder = JSONEncoder()
-    guard let conversationData = try? jsonEncoder.encode(conversation),
-          let conversationJsonString = String(data: conversationData, encoding: .utf8),
-          let messageData = try? jsonEncoder.encode(message),
-          let messageJsonString = String(data: messageData, encoding: .utf8) else {
-        return [:]
-    }
-
-    let valueString = "{\"conversation\": \(conversationJsonString), \"message\": \(messageJsonString)}"
-
-    return ["value": valueString]
+private func getUserInfo() -> [AnyHashable: Any] {
+    let messageNotification = MessageNotification(
+        conversation: conversationFixture,
+        message: messageFixture.toMessageNotificationContent()
+    ).toRemote(currentUser: userFixture)
+    let jsonData = try! JSONEncoder().encode(messageNotification)
+    return ["value": String(data: jsonData, encoding: .utf8)!]
 }
 
 private class EmptyNavigationRequestUseCase: NavigationRequestUseCase {}
