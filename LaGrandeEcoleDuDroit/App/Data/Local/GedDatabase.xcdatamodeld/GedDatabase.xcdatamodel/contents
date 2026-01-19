@@ -22,7 +22,6 @@
         </uniquenessConstraints>
     </entity>
     <entity name="LocalConversation" representedClassName="LocalConversation" syncable="YES" codeGenerationType="class">
-        <attribute name="conversationBlockedBy" optional="YES" attributeType="String"/>
         <attribute name="conversationCreatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="conversationEffectiveFrom" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="conversationId" attributeType="String"/>

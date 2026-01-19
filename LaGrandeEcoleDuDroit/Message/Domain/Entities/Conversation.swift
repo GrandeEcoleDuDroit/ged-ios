@@ -6,7 +6,6 @@ struct Conversation: Hashable, Codable, Copying {
     var createdAt: Date
     var state: ConversationState
     var effectiveFrom: Date?
-    var blockedBy: [String: Bool]?
     
     enum ConversationState: String, Equatable, Hashable, Codable {
         case draft = "draft"
