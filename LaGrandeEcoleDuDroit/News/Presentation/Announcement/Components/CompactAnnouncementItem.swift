@@ -57,7 +57,7 @@ private struct DefaultItem: View {
                         .lineLimit(1)
                     
                     Text(elapsedTimeText)
-                        .font(.subheadline)
+                        .font(.footnote)
                         .foregroundStyle(.supportingText)
                 }
             },
@@ -119,7 +119,7 @@ private struct ErrorItem: View {
                         .lineLimit(1)
                     
                     Text(elapsedTimeText)
-                        .font(.subheadline)
+                        .font(.footnote)
                         .foregroundStyle(.supportingText)
                 }
             },
