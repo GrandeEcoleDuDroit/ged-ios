@@ -3,12 +3,7 @@ import Foundation
 extension MessageNotification {
     func toRemote(currentUser: User) -> RemoteMessageNotification {
         RemoteMessageNotification(
-            conversation: RemoteMessageNotification.NotificationConversation(
-                id: conversation.id,
-                interlocutor: currentUser.toOracleUser(),
-                createdAt: conversation.createdAt.toEpochMilli(),
-                effectiveFrom: conversation.effectiveFrom?.toEpochMilli()
-            ),
+            conversation: conversation.toNotificationConversation(currentUser: currentUser),
             messageId: message.messageId,
             content: message.content,
             timestamp: message.timestamp

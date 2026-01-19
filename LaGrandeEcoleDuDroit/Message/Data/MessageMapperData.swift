@@ -32,6 +32,14 @@ extension Message {
         localMessage.messageSeen = seen
         localMessage.messageState = state.rawValue
     }
+    
+    func toMessageNotificationContent() -> MessageNotification.MessageContent {
+        MessageNotification.MessageContent(
+            messageId: id,
+            content: content,
+            timestamp: date.toEpochMilli()
+        )
+    }
 }
 
 extension LocalMessage {
