@@ -89,7 +89,7 @@ private struct DefaultConversationItem: View {
                         .lineLimit(1)
                     
                     Text(elapsedTimeText)
-                        .font(.subheadline)
+                        .font(.footnote)
                         .foregroundStyle(.supportingText)
                 }
             },
@@ -124,7 +124,7 @@ private struct UnreadConversationItem: View {
                         .lineLimit(1)
                     
                     Text(elapsedTimeText)
-                        .font(.subheadline)
+                        .font(.footnote)
                 }
             },
             leadingContent: {
@@ -178,7 +178,7 @@ private struct ErrorConversationItem: View {
                         .lineLimit(1)
                     
                     Text(elapsedTimeText)
-                        .font(.subheadline)
+                        .font(.footnote)
                         .foregroundStyle(.supportingText)
                 }
             },
