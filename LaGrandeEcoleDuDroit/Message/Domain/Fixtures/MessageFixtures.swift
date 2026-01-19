@@ -131,3 +131,4 @@ let lastMessagesFixture = [
         state: .sent
     )
 ]
+

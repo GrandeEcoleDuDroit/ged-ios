@@ -46,6 +46,15 @@ extension Conversation {
         localConversation.conversationInterlocutorState = Int16(interlocutor.state.rawValue)
         localConversation.conversationInterlocutorTester = interlocutor.tester
     }
+    
+    func toNotificationConversation(currentUser: User) -> RemoteMessageNotification.NotificationConversation {
+        RemoteMessageNotification.NotificationConversation(
+            id: id,
+            interlocutor: currentUser.toOracleUser(),
+            createdAt: createdAt.toEpochMilli(),
+            effectiveFrom: effectiveFrom?.toEpochMilli()
+        )
+    }
 }
 
 extension LocalConversation {
