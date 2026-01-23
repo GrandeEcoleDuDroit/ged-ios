@@ -13,6 +13,6 @@ class DeleteAccountUseCase {
     func execute(user: User, password: String) async throws {
         try await authenticationRepository.loginWithEmailAndPassword(email: user.email, password: password)
         try await userRepository.deleteUser(user: user)
-        authenticationRepository.setAuthenticated(false)
+        authenticationRepository.storeAuthenticationState(.unauthenticated)
     }
 }

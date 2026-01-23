@@ -8,7 +8,6 @@ class MainViewModel: ObservableObject {
     private let listenDataUseCase: ListenDataUseCase
     private let clearDataUseCase: ClearDataUseCase
     private let fetchDataUseCase: FetchDataUseCase
-    private let checkUserValidityUseCase: CheckUserValidityUseCase
     private let fcmTokenUseCase: FcmTokenUseCase
     
     private var cancellables: Set<AnyCancellable> = []
@@ -20,7 +19,6 @@ class MainViewModel: ObservableObject {
         listenDataUseCase: ListenDataUseCase,
         clearDataUseCase: ClearDataUseCase,
         fetchDataUseCase: FetchDataUseCase,
-        checkUserValidityUseCase: CheckUserValidityUseCase,
         fcmTokenUseCase: FcmTokenUseCase
     ) {
         self.networkMonitor = networkMonitor
@@ -29,31 +27,31 @@ class MainViewModel: ObservableObject {
         self.listenDataUseCase = listenDataUseCase
         self.clearDataUseCase = clearDataUseCase
         self.fetchDataUseCase = fetchDataUseCase
-        self.checkUserValidityUseCase = checkUserValidityUseCase
         self.fcmTokenUseCase = fcmTokenUseCase
         
-        updateDataOnAuthChange()
+        updateAppData()
     }
     
-    private func updateDataOnAuthChange() {
-        authenticationRepository.authenticated
+    private func updateAppData() {
+        authenticationRepository.authenticationState
             .receive(on: DispatchQueue.global(qos: .background))
-            .sink { [weak self] authenticated in
-                if authenticated {
-                    Task {
-                        await self?.networkMonitor.connected.values.first { $0 }
-                        await self?.checkUserValidityUseCase.execute()
-                        await self?.fetchDataUseCase.execute()
-                        self?.listenDataUseCase.start()
-                        await self?.fcmTokenUseCase.sendUnsentToken()
-                    }
-                } else {
-                    self?.listenDataUseCase.stop()
-                    Task {
-                        try? await Task.sleep(for: .seconds(2))
-                        await self?.clearDataUseCase.execute()
-                    }
-                }
+            .sink { [weak self] state in
+                switch state {
+                    case let .authenticated(userId):
+                        Task {
+                            await self?.networkMonitor.connected.values.first { $0 }
+                            await self?.fetchDataUseCase.execute(userId: userId)
+                            self?.listenDataUseCase.start()
+                            await self?.fcmTokenUseCase.sendUnsentToken()
+                        }
+                        
+                    case .unauthenticated:
+                        self?.listenDataUseCase.stop()
+                        Task {
+                            try? await Task.sleep(for: .seconds(2))
+                            await self?.clearDataUseCase.execute()
+                        }
+                }                
             }.store(in: &cancellables)
     }
 }

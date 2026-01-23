@@ -13,10 +13,16 @@ class NavigationHostViewModel: ViewModel {
     }
     
     private func updateStartDestination() {
-        authenticationRepository.authenticated
+        authenticationRepository.authenticationState
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] authenticated in
-                self?.uiState.startDestination = authenticated ? .app : .authentication
+            .map { state in
+                switch state {
+                    case .authenticated: AppRoute.app
+                    case .unauthenticated: AppRoute.authentication
+                }
+            }
+            .sink { [weak self] route in
+                self?.uiState.startDestination = route
             }.store(in: &cancellables)
     }
     

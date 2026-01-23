@@ -36,6 +36,6 @@ class RegisterUseCase {
         )
         
         try await userRepository.createUser(user: user)
-        authenticationRepository.setAuthenticated(true)
+        authenticationRepository.storeAuthenticationState(.authenticated(userId: userId))
     }
 }
