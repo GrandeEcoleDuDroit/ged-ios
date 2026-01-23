@@ -1,7 +1,7 @@
 import Combine
 
 protocol AuthenticationRepository {
-    var authenticated: AnyPublisher<Bool, Never> { get }
+    var authenticationState: AnyPublisher<AuthenticationState, Never> { get }
     
     func getAuthToken() async throws -> String?
     
@@ -11,7 +11,7 @@ protocol AuthenticationRepository {
     
     func logout()
             
-    func setAuthenticated(_ isAuthenticated: Bool)
+    func storeAuthenticationState(_ state: AuthenticationState)
     
     func resetPassword(email: String) async throws
 }

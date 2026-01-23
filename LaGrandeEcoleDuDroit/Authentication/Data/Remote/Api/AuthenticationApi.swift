@@ -1,7 +1,7 @@
 import Combine
 
 protocol AuthenticationApi {
-    func listenAuthenticationState() -> AnyPublisher<Bool, Never>
+    func listenAuthenticationState() -> AnyPublisher<AuthenticationState, Never>
     
     func listenAuthTokenState() -> AnyPublisher<AuthTokenState, Never>
 

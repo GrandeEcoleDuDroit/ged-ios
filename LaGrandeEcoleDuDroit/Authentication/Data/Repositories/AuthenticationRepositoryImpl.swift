@@ -8,8 +8,9 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     private var authToken: String?
     private var cancellables = Set<AnyCancellable>()
     private let tag = String(describing: AuthenticationRepositoryImpl.self)
-    private let authenticatedSubjet = CurrentValueSubject<Bool?, Never>(nil)
-    var authenticated: AnyPublisher<Bool, Never> {
+    
+    private let authenticatedSubjet = CurrentValueSubject<AuthenticationState?, Never>(nil)
+    var authenticationState: AnyPublisher<AuthenticationState, Never> {
         authenticatedSubjet
             .compactMap { $0 }
             .eraseToAnyPublisher()
@@ -56,15 +57,11 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     
     func logout() {
         authenticationRemoteDataSource.logout()
-        setAuthenticated(false)
+        storeAuthenticationState(.unauthenticated)
     }
     
-    func setAuthenticated(_ isAuthenticated: Bool) {
-        authenticationLocalDataSource.setAuthenticated(isAuthenticated)
-        authenticatedSubjet.send(isAuthenticated)
-        if !isAuthenticated {
-            authToken = nil
-        }
+    func storeAuthenticationState(_ state: AuthenticationState) {
+        authenticationLocalDataSource.storeAuthenticationState(state)
     }
     
     func resetPassword(email: String) async throws {
@@ -77,22 +74,21 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     }
     
     private func listenAuthenticationState() {
-        authenticationRemoteDataSource.listenAuthenticationState()
-            .map { [weak self] in
-                self?.authenticationLocalDataSource.isAuthenticated() ?? false && $0
-            }
-            .sink { [weak self] in
-                self?.authenticatedSubjet.send($0)
-            }.store(in: &cancellables)
+        Publishers.Merge(
+            authenticationLocalDataSource.listenAuthenticationState(),
+            authenticationRemoteDataSource.listenAuthenticationState().filter { $0 == .unauthenticated }
+        ).sink { [weak self] in
+            self?.authenticatedSubjet.send($0)
+        }.store(in: &cancellables)
     }
     
     private func listenAuthTokenState() {
         authenticationRemoteDataSource.listenAuthTokenState().sink { [weak self] state in
             switch state {
                 case let .valid(token): self?.authToken = token
-                    
-                case .unauthenticated: self?.setAuthenticated(false)
-                    
+
+                case .unauthenticated: self?.authToken = nil
+
                 case let .error(error):
                     e(self?.tag ?? "AuthenticationRepositoryImpl", "Error getting auth token", error)
             }

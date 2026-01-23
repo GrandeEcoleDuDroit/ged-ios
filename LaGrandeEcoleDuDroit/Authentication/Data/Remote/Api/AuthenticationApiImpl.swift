@@ -5,12 +5,16 @@ class AuthenticationApiImpl: AuthenticationApi {
     private let firebaseAuth = Auth.auth()
     private let tag = String(describing: AuthenticationApiImpl.self)
     
-    func listenAuthenticationState() -> AnyPublisher<Bool, Never> {
+    func listenAuthenticationState() -> AnyPublisher<AuthenticationState, Never> {
         Deferred { [weak self] in
-           let subject = PassthroughSubject<Bool, Never>()
+           let subject = PassthroughSubject<AuthenticationState, Never>()
             
            let listener = self?.firebaseAuth.addStateDidChangeListener { auth, _ in
-               subject.send(auth.currentUser != nil)
+               if let user = auth.currentUser {
+                   subject.send(.authenticated(userId: user.uid))
+               } else {
+                   subject.send(.unauthenticated)
+               }
            }
             
            return subject.handleEvents(receiveCancel: { [weak self] in
