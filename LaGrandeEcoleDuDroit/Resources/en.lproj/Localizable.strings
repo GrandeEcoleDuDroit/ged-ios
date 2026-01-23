@@ -198,6 +198,8 @@
 "remove_participant_alert_message" = "Do you want remove %@ from this mission ?";
 "edit_mission_school_level_supporting_text" = "Participants with unmatched school levels will be removed.";
 "select_managers" = "Select managers";
+"open" = "Open";
+"all" = "All";
 
 // Mission error
 "max_participants_lower_than_current_error" = "Maximum number of participants cannot be lower than the current count (%d).";

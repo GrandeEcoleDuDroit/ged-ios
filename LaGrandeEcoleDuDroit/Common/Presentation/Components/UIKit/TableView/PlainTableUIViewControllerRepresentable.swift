@@ -2,15 +2,17 @@ import SwiftUI
 
 struct PlainTableUIViewControllerRepresentable<
     Value: Hashable,
+    Header: View,
     Content: View,
     EmptyContent: View
 >: UIViewControllerRepresentable {
-    typealias Controller = PlainTableUIViewController<Value, Content, EmptyContent>
+    typealias Controller = PlainTableUIViewController<Value, Header, Content, EmptyContent>
     typealias Modifier = PlainTableModifier<Value>
     
     let modifier: Modifier
     let values: [Value]
     let onRowClick: (Value) -> Void
+    let header: (() -> Header)?
     let emptyContent: () -> EmptyContent
     let content: (Value) -> Content
     
@@ -22,6 +24,7 @@ struct PlainTableUIViewControllerRepresentable<
         let controller = PlainTableUIViewController(
             modifier: modifier,
             onRowClick: onRowClick,
+            header: header,
             emptyContent: emptyContent,
             content: content
         )

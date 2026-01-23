@@ -179,6 +179,8 @@ enum StringResource: String {
     case noParticipant = "no_participant"
     case seeProfile = "see_profile"
     case completed = "completed"
+    case open = "open"
+    case all = "all"
     
     case registerMissionButtonText = "register_mission_button_text"
     case registeredMissionButtonText = "registered_mission_button_text"

@@ -15,8 +15,7 @@ struct DimensResource {
     static let inputIconSize: CGFloat = 18
     static let iconSize: CGFloat = 18
     
-    static let toolbarVerticalPadding: CGFloat = 10
-    static let toolbarHorizontalPadding: CGFloat = 16
+    static let toolbarPadding = PaddingValues(vertical: 10, horizontal: 16)
     static let toolbarItemSpacing: CGFloat = 16
     
     private static let defaultSheetFraction: CGFloat = 0.12
@@ -27,4 +26,7 @@ struct DimensResource {
     static func reportSheetFraction(itemCount: Int) -> CGFloat {
         defaultSheetFraction + CGFloat(additionalSheetItemFraction * CGFloat(itemCount))
     }
+    
+    static let chipPadding = PaddingValues(vertical: 2, horizontal: smallPadding + 2)
+    static let chipMinHeight: CGFloat = 32
 }
