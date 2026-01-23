@@ -1,7 +1,7 @@
 import Combine
 import Foundation
 
-private let authenticationKey = "authenticationKey"
+private let authenticationStateKey = "authenticationStateKey"
 
 class AuthenticationLocalDataSource {
     func listenAuthenticationState() -> AnyPublisher<AuthenticationState, Never> {
@@ -20,7 +20,7 @@ class AuthenticationLocalDataSource {
         guard let jsonString = parseAuthenticationStateToJson(state) else {
             return
         }
-        UserDefaults.standard.set(jsonString, forKey: authenticationKey)
+        UserDefaults.standard.authenticationState = jsonString
     }
     
     func getAuthenticationState() -> AuthenticationState? {
@@ -49,6 +49,7 @@ class AuthenticationLocalDataSource {
 
 extension UserDefaults {
     @objc dynamic var authenticationState: String? {
-        string(forKey: authenticationKey)
+        get { string(forKey: authenticationStateKey) }
+        set { set(newValue, forKey: authenticationStateKey) }
     }
 }
