@@ -62,9 +62,9 @@ class MissionRepositoryImpl: MissionRepository {
         }
     }
     
-    func updateMission(mission: Mission, imageData: Data?) async throws {
+    func updateMission(user: User, mission: Mission, imageData: Data?) async throws {
         do {
-            try await missionRemoteDataSource.updateMission(mission: mission, imageData: imageData)
+            try await missionRemoteDataSource.updateMission(user: user, mission: mission, imageData: imageData)
             try await missionLocalDataSource.upsertMission(mission: mission)
         } catch {
             e(tag, "Error updating mission \(mission.id)", error)

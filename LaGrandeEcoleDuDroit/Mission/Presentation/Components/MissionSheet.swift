@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MissionSheet: View {
     let mission: Mission
-    let isAdminUser: Bool
+    let user: User
     let onEditClick: () -> Void
     let onDeleteClick: () -> Void
     let onReportClick: () -> Void
@@ -10,14 +10,14 @@ struct MissionSheet: View {
     
     init(
         mission: Mission,
-        isAdminUser: Bool,
+        user: User,
         onEditClick: @escaping () -> Void,
         onDeleteClick: @escaping () -> Void,
         onReportClick: @escaping () -> Void,
         onResendClick: @escaping () -> Void = {}
     ) {
         self.mission = mission
-        self.isAdminUser = isAdminUser
+        self.user = user
         self.onEditClick = onEditClick
         self.onDeleteClick = onDeleteClick
         self.onReportClick = onReportClick
@@ -28,7 +28,8 @@ struct MissionSheet: View {
         switch mission.state {
             case .published:
                 PublishedMissionSheet(
-                    admin: isAdminUser,
+                    isAdmin: user.admin,
+                    isManager: mission.managers.contains { $0.id ==  user.id },
                     onEditClick: onEditClick,
                     onDeleteClick: onDeleteClick,
                     onReportClick: onReportClick
@@ -49,13 +50,14 @@ struct MissionSheet: View {
 }
 
 private struct PublishedMissionSheet: View {
-    let admin: Bool
+    let isAdmin: Bool
+    let isManager: Bool
     let onEditClick: () -> Void
     let onDeleteClick: () -> Void
     let onReportClick: () -> Void
     
     var body: some View {
-        if admin {
+        if isAdmin || isManager {
             SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
                 SheetItem(
                     icon: Image(systemName: "pencil"),
@@ -63,12 +65,14 @@ private struct PublishedMissionSheet: View {
                     onClick: onEditClick
                 )
                 
-                SheetItem(
-                    icon: Image(systemName: "trash"),
-                    text: stringResource(.delete),
-                    onClick: onDeleteClick
-                )
-                .foregroundColor(.red)
+                if isAdmin {
+                    SheetItem(
+                        icon: Image(systemName: "trash"),
+                        text: stringResource(.delete),
+                        onClick: onDeleteClick
+                    )
+                    .foregroundColor(.red)
+                }
             }
         } else {
             SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 1)) {
