@@ -27,4 +27,10 @@ extension View {
             )
             .cornerRadius(5)
     }
+    
+    func padding(_ paddingValues: PaddingValues) -> some View {
+        self
+            .padding(.horizontal, paddingValues.horizontal)
+            .padding(.vertical, paddingValues.vertical)
+    }
 }
