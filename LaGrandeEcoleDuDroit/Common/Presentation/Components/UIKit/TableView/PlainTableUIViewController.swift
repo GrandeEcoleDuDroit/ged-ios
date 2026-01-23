@@ -35,6 +35,9 @@ class PlainTableUIViewController<
     }
     
     override func viewDidLoad() {
+        if let header {
+            makeHeader(header: header())
+        }
         tableView.register(PlainTableViewCell.self, forCellReuseIdentifier: PlainTableViewCell.plainCellIdentifier)
         tableView.register(PlainTableViewCell.self, forCellReuseIdentifier: PlainTableViewCell.emptyCellIdentifier)
         tableView.separatorStyle = modifier.separatorStyle
