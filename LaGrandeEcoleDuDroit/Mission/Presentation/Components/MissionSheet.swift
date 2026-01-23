@@ -56,9 +56,13 @@ private struct PublishedMissionSheet: View {
     let onDeleteClick: () -> Void
     let onReportClick: () -> Void
     
+    var itemCount: Int {
+        isAdmin ? 2 : 1
+    }
+    
     var body: some View {
         if isAdmin || isManager {
-            SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
+            SheetContainer(fraction: DimensResource.sheetFraction(itemCount: itemCount)) {
                 SheetItem(
                     icon: Image(systemName: "pencil"),
                     text: stringResource(.edit),
