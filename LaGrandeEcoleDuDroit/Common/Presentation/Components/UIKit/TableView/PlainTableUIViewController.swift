@@ -35,10 +35,6 @@ class PlainTableUIViewController<
     }
     
     override func viewDidLoad() {
-        if let header {
-            let frame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: 48)
-            tableView.tableHeaderView = PlainTableViewHeader(frame: frame, header: header())
-        }
         tableView.register(PlainTableViewCell.self, forCellReuseIdentifier: PlainTableViewCell.plainCellIdentifier)
         tableView.register(PlainTableViewCell.self, forCellReuseIdentifier: PlainTableViewCell.emptyCellIdentifier)
         tableView.separatorStyle = modifier.separatorStyle
@@ -70,6 +66,11 @@ class PlainTableUIViewController<
         if let value = coordinator?.values?[indexPath.row] {
             onRowClick(value)
         }
+    }
+    
+    func makeHeader(header: Header) {
+        let frame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: 48)
+        tableView.tableHeaderView = PlainTableViewHeader(frame: frame, header: header)
     }
     
     func makePlainCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
