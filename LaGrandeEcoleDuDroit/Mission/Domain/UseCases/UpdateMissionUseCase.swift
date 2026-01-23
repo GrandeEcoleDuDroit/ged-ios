@@ -12,7 +12,7 @@ class UpdateMissionUseCase {
         self.imageRepository = imageRepository
     }
     
-    func execute(mission: Mission, imageData: Data?) async throws {
+    func execute(user: User, mission: Mission, imageData: Data?) async throws {
         var missionToUpdate = mission
         let missionSchoolLevelsSet = Set(mission.schoolLevels.map(\.number))
         
@@ -25,6 +25,6 @@ class UpdateMissionUseCase {
             missionSchoolLevelsSet.contains($0.schoolLevel.number)
         }
         
-        try await missionRepository.updateMission(mission: missionToUpdate, imageData: imageData)
+        try await missionRepository.updateMission(user: user, mission: missionToUpdate, imageData: imageData)
     }
 }

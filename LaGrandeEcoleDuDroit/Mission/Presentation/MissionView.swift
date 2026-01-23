@@ -109,7 +109,7 @@ private struct MissionView: View {
                 case let .mission(mission):
                     MissionSheet(
                         mission: mission,
-                        isAdminUser: user.admin,
+                        user: user,
                         onEditClick: {
                             activeSheet = .editMission(mission)
                         },
