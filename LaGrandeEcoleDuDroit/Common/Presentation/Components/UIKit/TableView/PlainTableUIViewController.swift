@@ -2,24 +2,28 @@ import SwiftUI
 
 class PlainTableUIViewController<
     Value: Hashable,
+    Header: View,
     Content: View,
     EmptyContent: View
 >: UITableViewController {
     let modifier: PlainTableModifier<Value>
     private let onRowClick: (Value) -> Void
+    private let header: (() -> Header)?
     private let emptyContent: () -> EmptyContent
     private let content: (Value) -> Content
     
-    weak var coordinator: PlainTableUIViewControllerRepresentable<Value, Content, EmptyContent>.Coordinator?
+    weak var coordinator: PlainTableUIViewControllerRepresentable<Value, Header, Content, EmptyContent>.Coordinator?
 
     init(
         modifier: PlainTableModifier<Value>,
         onRowClick: @escaping (Value) -> Void,
+        header: (() -> Header)?,
         emptyContent: @escaping () -> EmptyContent,
         content: @escaping (Value) -> Content,
     ) {
         self.modifier = modifier
         self.onRowClick = onRowClick
+        self.header = header
         self.content = content
         self.emptyContent = emptyContent
         
@@ -31,6 +35,10 @@ class PlainTableUIViewController<
     }
     
     override func viewDidLoad() {
+        if let header {
+            let frame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: 48)
+            tableView.tableHeaderView = PlainTableViewHeader(frame: frame, header: header())
+        }
         tableView.register(PlainTableViewCell.self, forCellReuseIdentifier: PlainTableViewCell.plainCellIdentifier)
         tableView.register(PlainTableViewCell.self, forCellReuseIdentifier: PlainTableViewCell.emptyCellIdentifier)
         tableView.separatorStyle = modifier.separatorStyle
@@ -149,5 +157,32 @@ private class PlainTableViewCell: UITableViewCell {
 
         setNeedsLayout()
         layoutIfNeeded()
+    }
+}
+
+private class PlainTableViewHeader<Header: View>: UIView {
+    init(frame: CGRect, header: Header) {
+        super.init(frame: frame)
+        
+        let hostingController = UIHostingController(rootView: header)
+        let hostedView = hostingController.view!
+        hostedView.translatesAutoresizingMaskIntoConstraints = false
+        hostedView.backgroundColor = .clear
+        hostedView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        
+        addSubview(hostedView)
+        
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: topAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: bottomAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: trailingAnchor),
+        ])
+        
+        backgroundColor = .clear
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

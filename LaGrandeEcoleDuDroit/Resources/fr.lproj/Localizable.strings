@@ -178,6 +178,8 @@
 "no_participant" = "Aucun participant";
 "see_profile" = "Voir profil";
 "completed" = "Terminée";
+"open" = "Ouvert";
+"all" = "Tout";
 
 "register_mission_button_text" = "S'inscrire";
 "registered_mission_button_text" = "Inscrit";
