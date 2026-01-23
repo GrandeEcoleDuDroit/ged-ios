@@ -73,7 +73,10 @@ class EditMissionViewModel: ViewModel {
         }
         
         performRequest { [weak self] in
-            try await self?.updateMissionUseCase.execute(mission: missionToUpdate, imageData: imageData)
+            guard let user = self?.userRepository.currentUser else {
+                throw CommonError.currentUserNotFound
+            }
+            try await self?.updateMissionUseCase.execute(user: user, mission: missionToUpdate, imageData: imageData)
             self?.event = SuccessEvent()
         }
     }

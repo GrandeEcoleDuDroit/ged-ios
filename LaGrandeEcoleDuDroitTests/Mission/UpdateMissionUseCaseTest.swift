@@ -16,6 +16,7 @@ class UpdateMissionUseCaseTest {
         
         // When
         try? await useCase.execute(
+            user: userFixture,
             mission: missionFixture,
             imageData: nil
         )
@@ -37,6 +38,7 @@ class UpdateMissionUseCaseTest {
         
         // When
         try? await useCase.execute(
+            user: userFixture,
             mission: mission,
             imageData: pngImageDataFixture
         )
@@ -57,7 +59,7 @@ private class MissionRepositoryTest: MockMissionRepository {
     var missionUpdated: Bool = false
     var updatedMissionState: Mission.MissionState?
     
-    override func updateMission(mission: Mission, imageData: Data?) async throws {
+    override func updateMission(user: User, mission: Mission, imageData: Data?) async throws {
         missionUpdated = true
         updatedMissionState = mission.state
     }

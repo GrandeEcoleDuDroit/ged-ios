@@ -5,7 +5,7 @@ protocol MissionApi {
     
     func createMission(remoteMission: OutboundRemoteMission, imageData: Data?) async throws
     
-    func updateMission(remoteMission: OutboundRemoteMission, imageData: Data?) async throws
+    func updateMission(userId: String, remoteMission: OutboundRemoteMission, imageData: Data?) async throws
     
     func deleteMission(remoteMission: OutboundRemoteMission) async throws
     
