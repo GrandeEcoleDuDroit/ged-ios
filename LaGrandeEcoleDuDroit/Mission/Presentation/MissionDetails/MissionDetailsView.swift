@@ -197,7 +197,7 @@ private struct MissionDetailsView: View {
                 case .mission:
                     MissionSheet(
                         mission: mission,
-                        isAdminUser: user.admin,
+                        user: user,
                         onEditClick: {
                             activeSheet = .editMission
                         },
