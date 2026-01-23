@@ -1,13 +1,8 @@
 class LoginUseCase {
     private let authenticationRepository: AuthenticationRepository
-    private let userRepository: UserRepository
     
-    init(
-        authenticationRepository: AuthenticationRepository,
-        userRepository: UserRepository
-    ) {
+    init(authenticationRepository: AuthenticationRepository) {
         self.authenticationRepository = authenticationRepository
-        self.userRepository = userRepository
     }
     
     func execute(email: String, password: String) async throws {
