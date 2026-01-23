@@ -35,13 +35,17 @@ struct PlainTableUIViewControllerRepresentable<
     }
 
     func updateUIViewController(_ controller: Controller, context: Context) {
-        updateTableViewProperties(tableView: controller.tableView, coordinator: context.coordinator)
+        updateTableView(controller: controller, coordinator: context.coordinator)
         updateSnapshotIfNeeded(coordinator: context.coordinator)
     }
     
-    private func updateTableViewProperties(tableView: UITableView, coordinator: Coordinator) {
-        tableView.allowsSelection = !values.isEmpty
-        tableView.separatorStyle = values.isEmpty ? .none : modifier.separatorStyle
+    private func updateTableView(controller: Controller, coordinator: Coordinator) {
+        controller.tableView.allowsSelection = !values.isEmpty
+        controller.tableView.separatorStyle = values.isEmpty ? .none : modifier.separatorStyle
+        if let header {
+            controller.makeHeader(header: header())
+        }
+        
     }
     
     private func updateSnapshotIfNeeded(coordinator: Coordinator) {
