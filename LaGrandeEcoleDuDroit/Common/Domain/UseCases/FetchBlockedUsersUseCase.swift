@@ -10,9 +10,8 @@ class FetchBlockedUsersUseCase {
         self.userRepository = userRepository
     }
     
-    func execute() async throws {
-        guard let currentUserId = userRepository.currentUser?.id else { return }
-        let remoteBlockedUserMap = try await blockedUserRepository.getRemoteBlockedUsers(currentUserId: currentUserId)
+    func execute(userId: String) async throws {
+        let remoteBlockedUserMap = try await blockedUserRepository.getRemoteBlockedUsers(currentUserId: userId)
         let localBlockedUserMap = blockedUserRepository.currentBlockedUsers
         
         let blockedUserToAdd = remoteBlockedUserMap.filter { localBlockedUserMap[$0.key] == nil }.values

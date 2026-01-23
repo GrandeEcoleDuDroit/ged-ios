@@ -7,7 +7,7 @@ class AuthenticationRemoteDataSource {
         self.authenticationApi = authenticationApi
     }
     
-    func listenAuthenticationState() -> AnyPublisher<Bool, Never> {
+    func listenAuthenticationState() -> AnyPublisher<AuthenticationState, Never> {
         authenticationApi.listenAuthenticationState()
     }
     

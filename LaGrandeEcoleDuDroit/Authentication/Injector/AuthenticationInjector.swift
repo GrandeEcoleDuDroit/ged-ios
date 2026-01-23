@@ -36,10 +36,7 @@ class AuthenticationInjector: Injector {
         
         // Use cases
         container.register(LoginUseCase.self) { resolver in
-            LoginUseCase(
-                authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
-                userRepository: CommonInjector.shared.resolve(UserRepository.self)
-            )
+            LoginUseCase(authenticationRepository: resolver.resolve(AuthenticationRepository.self)!)
         }.inObjectScope(.container)
     
         container.register(RegisterUseCase.self) { resolver in

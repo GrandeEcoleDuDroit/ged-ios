@@ -20,7 +20,7 @@ class FetchBlockedUsersUseCaseTest {
         )
         
         // When
-        try await useCase.execute()
+        try await useCase.execute(userId: userFixture.id)
         let result = blockedUserRepository.localBlockedUsers.allSatisfy { blockedUser in
             remoteBlockedUsers.contains(where: { $0.userId == blockedUser.userId })
         }
@@ -44,7 +44,7 @@ class FetchBlockedUsersUseCaseTest {
         )
         
         // When
-        try await useCase.execute()
+        try await useCase.execute(userId: userFixture.id)
         let result = blockedUserRepository.localBlockedUsers.isEmpty
         
         // Then

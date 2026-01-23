@@ -66,16 +66,10 @@ class AppInjector: Injector {
         
         container.register(FetchDataUseCase.self) { resolver in
             FetchDataUseCase(
+                fetchCurrentUserUseCase: CommonInjector.shared.resolve(FetchCurrentUserUseCase.self),
                 fetchBlockedUsersUseCase: CommonInjector.shared.resolve(FetchBlockedUsersUseCase.self),
                 fetchAnnouncementsUseCase: NewsInjector.shared.resolve(FetchAnnouncementsUseCase.self),
                 fetchMissionsUseCase: MissionInjector.shared.resolve(FetchMissionsUseCase.self)
-            )
-        }
-        
-        container.register(CheckUserValidityUseCase.self) { resolver in
-            CheckUserValidityUseCase(
-                authenticationRepository: AuthenticationInjector.shared.resolve(AuthenticationRepository.self),
-                userRepository: CommonInjector.shared.resolve(UserRepository.self)
             )
         }
         
@@ -88,7 +82,6 @@ class AppInjector: Injector {
                 listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,
                 clearDataUseCase: resolver.resolve(ClearDataUseCase.self)!,
                 fetchDataUseCase: resolver.resolve(FetchDataUseCase.self)!,
-                checkUserValidityUseCase: resolver.resolve(CheckUserValidityUseCase.self)!,
                 fcmTokenUseCase: resolver.resolve(FcmTokenUseCase.self)!
             )
         }

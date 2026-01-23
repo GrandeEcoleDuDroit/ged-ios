@@ -132,18 +132,22 @@ class CommonInjector: Injector {
                 blockedUserRepository: resolver.resolve(BlockedUserRepository.self)!,
                 userRepository: resolver.resolve(UserRepository.self)!
             )
-        }
+        }.inObjectScope(.weak)
         
         container.register(GetUsersUseCase.self) { resolver in
             GetUsersUseCase(userRepository: resolver.resolve(UserRepository.self)!)
-        }
+        }.inObjectScope(.weak)
         
         container.register(GetBlockedUsersUseCase.self) { resolver in
             GetBlockedUsersUseCase(
                 blockedUserRepository: resolver.resolve(BlockedUserRepository.self)!,
                 userRepository: resolver.resolve(UserRepository.self)!
             )
-        }
+        }.inObjectScope(.weak)
+        
+        container.register(FetchCurrentUserUseCase.self) { resolver in
+            FetchCurrentUserUseCase(userRepository: resolver.resolve(UserRepository.self)!)
+        }.inObjectScope(.weak)
         
         // Others
         container.register(NetworkMonitor.self) { _ in
