@@ -11,6 +11,7 @@ class MissionViewModel: ViewModel {
     @Published private(set) var uiState = MissionUiState()
     @Published private(set) var event: SingleUiEvent? = nil
     private var cancellables: Set<AnyCancellable> = []
+    private var defaultMissions: [Mission] = []
 
     init(
         missionRepository: MissionRepository,
@@ -27,6 +28,10 @@ class MissionViewModel: ViewModel {
         
         listenMissions()
         listenUser()
+    }
+    
+    func onMissionFilterChange(_ filter: MissionFilter) {
+        updateMissions(filter: filter)
     }
 
     func refreshMissions() async {
@@ -51,6 +56,19 @@ class MissionViewModel: ViewModel {
         }
     }
     
+    private func updateMissions(filter: MissionFilter? = nil) {
+        let activeFilter = filter ?? uiState.activeFilter
+        switch activeFilter {
+            case .open:
+                uiState.activeFilter = activeFilter
+                uiState.missions = defaultMissions.filter { !$0.completed }
+                
+            case .all:
+                uiState.activeFilter = activeFilter
+                uiState.missions = defaultMissions
+        }
+    }
+    
     private func performRequest(block: @escaping () async throws -> Void) {
         performUiBlockingRequest(
             block: block,
@@ -69,8 +87,10 @@ class MissionViewModel: ViewModel {
     private func listenMissions() {
         missionRepository.missions
             .receive(on: DispatchQueue.main)
+            .map { $0.missionSorting() }
             .sink { [weak self] in
-                self?.uiState.missions = $0.missionSorting()
+                self?.defaultMissions = $0
+                self?.updateMissions()
             }.store(in: &cancellables)
     }
     
@@ -87,5 +107,19 @@ class MissionViewModel: ViewModel {
         fileprivate(set) var user: User? = nil
         fileprivate(set) var missions: [Mission] = []
         fileprivate(set) var loading: Bool = false
+        fileprivate(set) var activeFilter: MissionFilter = .open
+        fileprivate(set) var filters: [MissionFilter] = MissionFilter.allCases
+    }
+    
+    enum MissionFilter: CaseIterable {
+        case open
+        case all
+        
+        var label: String {
+            switch self {
+                case .open: stringResource(.open)
+                case .all: stringResource(.all)
+            }
+        }
     }
 }
