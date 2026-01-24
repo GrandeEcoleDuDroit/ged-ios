@@ -1,5 +1,5 @@
 extension Dictionary {
-    func has(_ key: Key) -> Bool {
+    func containsKey(_ key: Key) -> Bool {
         self[key] != nil
     }
 }

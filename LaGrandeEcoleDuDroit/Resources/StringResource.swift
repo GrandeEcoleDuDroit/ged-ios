@@ -160,6 +160,8 @@ enum StringResource: String {
     case tasks = "tasks"
     case newMission = "new_mission"
     case editMission = "edit_mission"
+    case selectManagers = "select_managers"
+    case allUsers = "all_users"
     case participantNumber = "participant_number"
     case shortParticipantNumber = "short_participant_number"
     case noMission = "no_mission"
@@ -181,6 +183,7 @@ enum StringResource: String {
     case completed = "completed"
     case open = "open"
     case all = "all"
+    case seeAllUsers = "see_all_users"
     
     case registerMissionButtonText = "register_mission_button_text"
     case registeredMissionButtonText = "registered_mission_button_text"
@@ -194,7 +197,6 @@ enum StringResource: String {
     case unregisterMissionAlertMessage = "unregister_mission_alert_message"
     case removeParticipantAlertMessage = "remove_participant_alert_message"
     case editMissionSchoolLevelSupportingText = "edit_mission_school_level_supporting_text"
-    case selectManagers = "select_managers"
     
     // Mission error
     case maxParticipantsLowerThanCurrentError = "max_participants_lower_than_current_error"

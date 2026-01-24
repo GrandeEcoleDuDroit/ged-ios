@@ -83,7 +83,7 @@ class UserViewModel: ViewModel {
         blockedUserRepository.blockedUsers
             .receive(on: DispatchQueue.main)
             .sink { [weak self] blockedUsers in
-                self?.uiState.isBlocked = blockedUsers.has(userId)
+                self?.uiState.isBlocked = blockedUsers.containsKey(userId)
             }
             .store(in: &cancellables)
     }

@@ -105,7 +105,7 @@ struct PlainListItem<
             }
         }
         .padding(.horizontal)
-        .padding(.vertical, DimensResource.smallPadding)
+        .padding(.vertical, DimensResource.smallPadding + 2)
     }
 }
 
