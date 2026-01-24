@@ -16,7 +16,8 @@ struct MissionFormImageSection: View {
                 selection: $selectedItem,
                 matching: .images
             ) {
-                if let data = imageData, let uiImage = UIImage(data: data) {
+                if let data = imageData,
+                    let uiImage = UIImage(data: data) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFill()
