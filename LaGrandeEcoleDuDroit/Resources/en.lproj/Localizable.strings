@@ -164,6 +164,8 @@
 "tasks" = "Tasks";
 "new_mission" = "New mission";
 "edit_mission" = "Edit mission";
+"select_managers" = "Select managers";
+"all_users" = "All users";
 "participant_number" = "%d of %d participants";
 "short_participant_number" = "%d / %d";
 "no_mission" = "No mission";
@@ -197,9 +199,9 @@
 "unregister_mission_alert_message" = "Unregister from this mission?";
 "remove_participant_alert_message" = "Do you want remove %@ from this mission ?";
 "edit_mission_school_level_supporting_text" = "Participants with unmatched school levels will be removed.";
-"select_managers" = "Select managers";
 "open" = "Open";
 "all" = "All";
+"see_all_users" = "See all (%d more)";
 
 // Mission error
 "max_participants_lower_than_current_error" = "Maximum number of participants cannot be lower than the current count (%d).";

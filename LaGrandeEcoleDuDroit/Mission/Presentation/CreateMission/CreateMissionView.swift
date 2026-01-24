@@ -21,7 +21,6 @@ struct CreateMissionDestination: View {
                 allSchoolLevels: viewModel.uiState.allSchoolLevels,
                 maxParticipants: $viewModel.uiState.maxParticipants,
                 duration: $viewModel.uiState.duration,
-                users: viewModel.uiState.users,
                 managers: viewModel.uiState.managers,
                 userQuery: viewModel.uiState.userQuery,
                 missionTasks: viewModel.uiState.missionTasks,
@@ -110,7 +109,6 @@ private struct CreateMissionView: View {
     let allSchoolLevels: [SchoolLevel]
     @Binding var maxParticipants: String
     @Binding var duration: String
-    let users: [User]
     let managers: [User]
     let userQuery: String
     let missionTasks: [MissionTask]
@@ -218,7 +216,6 @@ private struct CreateMissionView: View {
             allSchoolLevels: SchoolLevel.all,
             maxParticipants: .constant(""),
             duration: .constant(""),
-            users: usersFixture,
             managers: [userFixture],
             userQuery: "",
             missionTasks: [missionTaskFixture],

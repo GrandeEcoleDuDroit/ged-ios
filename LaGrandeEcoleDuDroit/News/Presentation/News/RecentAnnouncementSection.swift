@@ -19,7 +19,6 @@ struct RecentAnnouncementSection: View {
                 )
                 .foregroundStyle(.gedPrimary)
                 .font(.callout)
-                .fontWeight(.semibold)
             }
             .padding(.horizontal)
             

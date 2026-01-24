@@ -263,7 +263,7 @@ class ChatViewModel: ViewModel {
         blockedUserRepository.blockedUsers
             .receive(on: DispatchQueue.main)
             .sink { [weak self] blockedUsers in
-                self?.uiState.isBlocked = blockedUsers.has(interlocutorId)
+                self?.uiState.isBlocked = blockedUsers.containsKey(interlocutorId)
             }.store(in: &cancellables)
     }
     

@@ -14,4 +14,11 @@ extension Array {
             remove(at: index)
         }
     }
+    
+    func take(_ count: Int) -> [Element] {
+        guard count >= 0 else {
+            return []
+        }
+        return Array(prefix(count))
+    }
 }

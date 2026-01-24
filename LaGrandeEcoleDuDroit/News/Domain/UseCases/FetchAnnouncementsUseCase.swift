@@ -17,10 +17,10 @@ class FetchAnnouncementsUseCase {
         
         let announcementToDelete = announcements.filter {
             ($0.state == .published && !remoteAnnouncements.contains($0)) ||
-            blockedUsers.has($0.author.id)
+            blockedUsers.containsKey($0.author.id)
         }
         let announcementToUpsert = remoteAnnouncements.filter {
-            !announcements.contains($0) && !blockedUsers.has($0.author.id)
+            !announcements.contains($0) && !blockedUsers.containsKey($0.author.id)
         }
         
         for announcement in announcementToDelete {
