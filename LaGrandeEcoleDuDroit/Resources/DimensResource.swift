@@ -27,6 +27,6 @@ struct DimensResource {
         defaultSheetFraction + CGFloat(additionalSheetItemFraction * CGFloat(itemCount))
     }
     
-    static let chipPadding = PaddingValues(vertical: 2, horizontal: smallPadding + 2)
+    static let chipPadding = PaddingValues(horizontal: smallPadding)
     static let chipMinHeight: CGFloat = 32
 }
