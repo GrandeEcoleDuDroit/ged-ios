@@ -40,7 +40,8 @@ struct MissionDetailsDestination: View {
                 onParticipantClick: onParticipantClick,
                 onRemoveParticipantsClick: viewModel.removeParticipant,
                 onDeleteMissionClick: viewModel.deleteMission,
-                onReportMissionClick: viewModel.reportMission
+                onReportMissionClick: viewModel.reportMission,
+                
             )
             .onReceive(viewModel.$event) { event in
                 if case let event as MissionDetailsViewModel.MissionDetailsUiEvent = event {
@@ -93,69 +94,25 @@ private struct MissionDetailsView: View {
 
     var body: some View {
         ZStack {
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: DimensResource.mediumPadding) {
-                    MissionImage(
-                        missionState: mission.state,
-                        defaultImageScale: 1.4
-                    )
-                    .ignoresSafeArea(.all)
-                    .frame(height: MissionUtilsPresentation.missionImageHeight)
-                    .clipped()
-                    
-                    VStack(spacing: DimensResource.mediumPadding) {
-                        MissionDetailsTitleAndDescriptionSection(mission: mission)
-                            .padding(.horizontal)
-                        
-                        HorizontalDivider()
-                            .padding(.horizontal)
-                        
-                        MissionDetailsInformationSection(mission: mission)
-                            .padding(.horizontal)
-                        
-                        HorizontalDivider()
-                            .padding(.horizontal)
-                        
-                        MissionDetailsManagerSection(
-                            managers: mission.managers,
-                            onManagerClick: onManagerClick
+            MissionDetailsContent(
+                mission: mission,
+                user: user,
+                isManager: isManager,
+                onManagerClick: onManagerClick,
+                onParticipantClick: onParticipantClick,
+                activeSheet: $activeSheet
+            )
+            .background(
+                GeometryReader { geometry in
+                    Color.clear
+                        .preference(
+                            key: ScrollOffsetPreferenceKey.self,
+                            value: geometry.frame(in: .named("scroll")).origin
                         )
-                        
-                        HorizontalDivider()
-                            .padding(.horizontal)
-                        
-                        MissionDetailsParticipantSection(
-                            participants: mission.participants,
-                            onParticipantClick: {
-                                if user.id != $0.id && (isManager || user.admin) {
-                                    activeSheet = .participant($0)
-                                } else {
-                                    onParticipantClick($0)
-                                }
-                            }
-                        )
-                        
-                        if !mission.tasks.isEmpty {
-                            HorizontalDivider()
-                                .padding(.horizontal)
-                            
-                            MissionDetailsTaskSection(missionTasks: mission.tasks)
-                                .padding(.horizontal)
-                        }
-                    }
                 }
-                .background(
-                    GeometryReader { geometry in
-                        Color.clear
-                            .preference(
-                                key: ScrollOffsetPreferenceKey.self,
-                                value: geometry.frame(in: .named("scroll")).origin
-                            )
-                    }
-                )
-                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                    self.scrollPosition = value
-                }
+            )
+            .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+                self.scrollPosition = value
             }
             .coordinateSpace(name: "scroll")
             .onChange(of: scrollPosition) { newValue in
@@ -193,72 +150,45 @@ private struct MissionDetailsView: View {
             }
         }
         .sheet(item: $activeSheet) {
-            switch $0 {
-                case .mission:
-                    MissionSheet(
-                        mission: mission,
-                        user: user,
-                        onEditClick: {
-                            activeSheet = .editMission
-                        },
-                        onDeleteClick: {
-                            activeSheet = nil
-                            showDeleteMissionAlert = true
-                        },
-                        onReportClick: {
-                            activeSheet = .missionReport
-                        }
-                    )
-                    
-                case let .participant(user):
-                    SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
-                        SheetItem(
-                            icon: Image(systemName: "person"),
-                            text: stringResource(.seeProfile),
-                            onClick: {
-                                activeSheet = nil
-                                onParticipantClick(user)
-                            }
+            Sheets(
+                activeSheet: $0,
+                mission: mission,
+                user: user,
+                onEditMissionClick: {
+                    activeSheet = .editMission
+                },
+                onDeleteMissionClick: {
+                    activeSheet = nil
+                    showDeleteMissionAlert = true
+                },
+                onSelectMissionReportClick: {
+                    activeSheet = .missionReport
+                },
+                onSeeParticipantProfileClick: { user in
+                    activeSheet = nil
+                    onParticipantClick(user)
+                },
+                onRemoveParticipantClick: { user in
+                    activeSheet = nil
+                    alertParticipant = user
+                    showRemoveParticipantAlert = true
+                },
+                onReportMissionClick: { reason in
+                    activeSheet = nil
+                    onReportMissionClick(
+                        MissionReport(
+                            missionId: mission.id,
+                            reporter: MissionReport.Reporter(
+                                fullName: user.fullName,
+                                email: user.email
+                            ),
+                            reason: reason
                         )
-                        
-                        SheetItem(
-                            icon: Image(systemName: "person.badge.minus"),
-                            text: stringResource(.remove),
-                            onClick: {
-                                activeSheet = nil
-                                alertParticipant = user
-                                showRemoveParticipantAlert = true
-                            }
-                        )
-                        .foregroundStyle(.error)
-                    }
-                    
-                case .missionReport:
-                    ReportSheet(
-                        items: MissionReport.Reason.allCases,
-                        fraction: DimensResource.reportSheetFraction(itemCount: MissionReport.Reason.allCases.count),
-                        onReportClick: { reason in
-                            activeSheet = nil
-                            
-                            onReportMissionClick(
-                                MissionReport(
-                                    missionId: mission.id,
-                                    reporter: MissionReport.Reporter(
-                                        fullName: user.fullName,
-                                        email: user.email
-                                    ),
-                                    reason: reason
-                                )
-                            )
-                        }
                     )
-                    
-                case .editMission:
-                    EditMissionDestination(
-                        onBackClick: { activeSheet = nil },
-                        mission: mission
-                    )
-            }
+                },
+                onCancelClick: { activeSheet = nil },
+                onBackClick: { activeSheet = nil }
+            )
         }
         .alert(
             stringResource(.deleteMissionAlertMessage),
@@ -299,6 +229,76 @@ private struct MissionDetailsView: View {
                 alertParticipant = nil
                 showRemoveParticipantAlert = false
                 onRemoveParticipantsClick(participant.id)
+            }
+        }
+    }
+}
+
+private struct MissionDetailsContent: View {
+    let mission: Mission
+    let user: User
+    let isManager: Bool
+    let onManagerClick: (User) -> Void
+    let onParticipantClick: (User) -> Void
+    @Binding var activeSheet: MissionDetailsViewSheet?
+    
+    var body: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: DimensResource.mediumPadding) {
+                MissionImage(
+                    missionState: mission.state,
+                    defaultImageScale: 1.4
+                )
+                .ignoresSafeArea(.all)
+                .frame(height: MissionUtilsPresentation.missionImageHeight)
+                .clipped()
+                
+                VStack(spacing: DimensResource.mediumPadding) {
+                    MissionDetailsTitleAndDescriptionSection(mission: mission)
+                        .padding(.horizontal)
+                    
+                    HorizontalDivider()
+                        .padding(.horizontal)
+                    
+                    MissionDetailsInformationSection(mission: mission)
+                        .padding(.horizontal)
+                    
+                    HorizontalDivider()
+                        .padding(.horizontal)
+                    
+                    MissionDetailsManagerSection(
+                        managers: mission.managers,
+                        onManagerClick: onManagerClick,
+                        onSeeAllClick: {
+                            activeSheet = .seeAllUsers(mission.managers)
+                        }
+                    )
+                    
+                    HorizontalDivider()
+                        .padding(.horizontal)
+                    
+                    MissionDetailsParticipantSection(
+                        participants: mission.participants,
+                        onParticipantClick: {
+                            if user.id != $0.id && (isManager || user.admin) {
+                                activeSheet = .participant($0)
+                            } else {
+                                onParticipantClick($0)
+                            }
+                        },
+                        onSeeAllClick: {
+                            activeSheet = .seeAllUsers(mission.participants)
+                        }
+                    )
+                    
+                    if !mission.tasks.isEmpty {
+                        HorizontalDivider()
+                            .padding(.horizontal)
+                        
+                        MissionDetailsTaskSection(missionTasks: mission.tasks)
+                            .padding(.horizontal)
+                    }
+                }
             }
         }
     }
@@ -364,6 +364,68 @@ private struct BottomSection: View {
     }
 }
 
+private struct Sheets: View {
+    let activeSheet: MissionDetailsViewSheet
+    let mission: Mission
+    let user: User
+    let onEditMissionClick: () -> Void
+    let onDeleteMissionClick: () -> Void
+    let onSelectMissionReportClick: () -> Void
+    let onSeeParticipantProfileClick: (User) -> Void
+    let onRemoveParticipantClick: (User) -> Void
+    let onReportMissionClick: (MissionReport.Reason) -> Void
+    let onCancelClick: () -> Void
+    let onBackClick: () -> Void
+    
+    var body: some View {
+        switch activeSheet {
+            case .mission:
+                MissionSheet(
+                    mission: mission,
+                    user: user,
+                    onEditClick: onEditMissionClick,
+                    onDeleteClick: onDeleteMissionClick,
+                    onReportClick: onSelectMissionReportClick
+                )
+                
+            case let .participant(user):
+                SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
+                    SheetItem(
+                        icon: Image(systemName: "person"),
+                        text: stringResource(.seeProfile),
+                        onClick: { onSeeParticipantProfileClick(user) }
+                    )
+                    
+                    SheetItem(
+                        icon: Image(systemName: "person.badge.minus"),
+                        text: stringResource(.remove),
+                        onClick: { onRemoveParticipantClick(user) }
+                    )
+                    .foregroundStyle(.error)
+                }
+                
+            case .missionReport:
+                ReportSheet(
+                    items: MissionReport.Reason.allCases,
+                    fraction: DimensResource.reportSheetFraction(itemCount: MissionReport.Reason.allCases.count),
+                    onReportClick: onReportMissionClick
+                )
+                
+            case .editMission:
+                EditMissionDestination(
+                    onBackClick: onBackClick,
+                    mission: mission
+                )
+                
+            case let .seeAllUsers(users):
+                AllUsersDestination(
+                    users: users,
+                    onCancelClick: onCancelClick
+                )
+        }
+    }
+}
+
 private struct ScrollOffsetPreferenceKey: PreferenceKey {
     static var defaultValue: CGPoint = .zero
 
@@ -375,6 +437,7 @@ private enum MissionDetailsViewSheet: Identifiable {
     case participant(User)
     case missionReport
     case editMission
+    case seeAllUsers([User])
     
     var id: Int {
         switch self {
@@ -382,6 +445,7 @@ private enum MissionDetailsViewSheet: Identifiable {
             case .participant: 1
             case .missionReport: 2
             case .editMission: 3
+            case .seeAllUsers: 4
         }
     }
 }

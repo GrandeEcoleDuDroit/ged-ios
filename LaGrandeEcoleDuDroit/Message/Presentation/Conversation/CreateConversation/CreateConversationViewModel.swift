@@ -44,7 +44,7 @@ class CreateConversationViewModel: ViewModel {
         let blockedUsers = blockedUserRepository.currentBlockedUsers
         Task { @MainActor [weak self] in
             let users = await self?.getUsersUseCase.execute()
-                .filter { $0.id != user.id && !blockedUsers.has($0.id) }
+                .filter { $0.id != user.id && !blockedUsers.containsKey($0.id) }
                 .sorted { $0.fullName < $1.fullName }
             ?? []
             

@@ -56,5 +56,10 @@ class MissionMainThreadInjector: MainThreadInjector {
                 deleteMissionUseCase: MissionInjector.shared.resolve(DeleteMissionUseCase.self)
             )
         }
+        
+        container.register(AllUsersViewModel.self) { (resolver, users: Any) in
+            let users = users as! [User]
+            return AllUsersViewModel(users: users)
+        }.inObjectScope(.weak)
     }
 }

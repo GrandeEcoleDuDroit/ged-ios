@@ -158,6 +158,8 @@
 "tasks" = "Tâches";
 "new_mission" = "Nouvelle mission";
 "edit_mission" = "Editer mission";
+"select_managers" = "Sélectionner gérants";
+"all_users" = "Tous les utilisateurs";
 "participant_number" = "%d participant sur %d";
 "short_participant_number" = "%d / %d";
 "no_mission" = "Aucune mission";
@@ -180,6 +182,7 @@
 "completed" = "Terminée";
 "open" = "Ouvert";
 "all" = "Tout";
+"see_all_users" = "Voir tout (%d plus)";
 
 "register_mission_button_text" = "S'inscrire";
 "registered_mission_button_text" = "Inscrit";
@@ -193,7 +196,6 @@
 "unregister_mission_alert_message" = "Se désinscrire de cette mission ?";
 "remove_participant_alert_message" = "Voulez-vous retirer %@ de cette mission ?";
 "edit_mission_school_level_supporting_text" = "Les participants avec un niveau scolaire non correspondant seront retirés.";
-"select_managers" = "Sélectionner gérants";
 
 // Mission error
 "max_participants_lower_than_current_error" = "Le nombre maximum de participants ne peut pas être inférieur au nombre actuel (%d).";

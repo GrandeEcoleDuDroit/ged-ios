@@ -10,6 +10,7 @@ struct MissionUtilsPresentation {
     static let maxDurationLength: Int = 100
     static let maxTaskLength: Int = 200
     static let missionImageHeight: CGFloat = 200
+    static let maxUserItemDisplayed: Int = 5
     
     static let titleFont: Font = .title2
     static let contentFont: Font = .body
