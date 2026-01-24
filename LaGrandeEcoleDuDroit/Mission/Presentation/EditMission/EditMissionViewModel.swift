@@ -391,7 +391,7 @@ class EditMissionViewModel: ViewModel {
         
         Task { @MainActor [weak self] in
             guard var users = await self?.getUsersUseCase.execute()
-                .filter({ !managersMap.has($0.id) })
+                .filter({ !managersMap.containsKey($0.id) })
             else { return }
             
             users.append(contentsOf: mission.managers)

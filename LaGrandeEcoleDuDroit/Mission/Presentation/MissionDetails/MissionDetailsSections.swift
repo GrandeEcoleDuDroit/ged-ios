@@ -36,18 +36,72 @@ struct MissionDetailsInformationSection: View {
 struct MissionDetailsManagerSection: View {
     let managers: [User]
     let onManagerClick: (User) -> Void
+    let onSeeAllClick: () -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: DimensResource.smallPadding) {
-            SectionTitle(title: stringResource(.managers))
-                .padding(.horizontal)
+            HStack {
+                SectionTitle(title: stringResource(.managers))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                if managers.count > MissionUtilsPresentation.maxUserItemDisplayed {
+                    SeeAllUsersButton(
+                        userCount: managers.count - MissionUtilsPresentation.maxUserItemDisplayed,
+                        action: onSeeAllClick
+                    )
+                }
+            }
+            .padding(.horizontal)
             
-            ScrollView {
-                VStack(spacing: .zero) {
-                    ForEach(managers) { manager in
-                        Button(action: { onManagerClick(manager) }) {
+            LazyVStack(spacing: .zero) {
+                ForEach(managers.take(MissionUtilsPresentation.maxUserItemDisplayed)) { manager in
+                    Button(action: { onManagerClick(manager) }) {
+                        MissionUserItem(
+                            user: manager,
+                            imageScale: 0.4,
+                            showAdminIndicator: false
+                        )
+                        .font(MissionUtilsPresentation.contentFont)
+                        .frame(maxWidth: .infinity)
+                        .contentShape(.rect)
+                    }
+                    .buttonStyle(ClickStyle())
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+struct MissionDetailsParticipantSection: View {
+    let participants: [User]
+    let onParticipantClick: (User) -> Void
+    let onSeeAllClick: () -> Void
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: DimensResource.smallPadding) {
+            HStack {
+                SectionTitle(title: stringResource(.participants))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                if participants.count > MissionUtilsPresentation.maxUserItemDisplayed {
+                    SeeAllUsersButton(
+                        userCount: participants.count - MissionUtilsPresentation.maxUserItemDisplayed,
+                        action: onSeeAllClick
+                    )
+                }
+            }
+            .padding(.horizontal)
+            
+            LazyVStack(spacing: .zero) {
+                if participants.isEmpty {
+                    EmptyText(stringResource(.noParticipant))
+                        .font(MissionUtilsPresentation.contentFont)
+                } else {
+                    ForEach(participants.take(MissionUtilsPresentation.maxUserItemDisplayed)) { participant in
+                        Button(action: { onParticipantClick(participant) }) {
                             MissionUserItem(
-                                user: manager,
+                                user: participant,
                                 imageScale: 0.4,
                                 showAdminIndicator: false
                             )
@@ -59,44 +113,6 @@ struct MissionDetailsManagerSection: View {
                     }
                 }
             }
-            .frame(maxHeight: 200)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
-struct MissionDetailsParticipantSection: View {
-    let participants: [User]
-    let onParticipantClick: (User) -> Void
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: DimensResource.smallPadding) {
-            SectionTitle(title: stringResource(.participants))
-                .padding(.horizontal)
-            
-            ScrollView {
-                LazyVStack(spacing: .zero) {
-                    if participants.isEmpty {
-                        EmptyText(stringResource(.noParticipant))
-                            .font(MissionUtilsPresentation.contentFont)
-                    } else {
-                        ForEach(participants) { participant in
-                            Button(action: { onParticipantClick(participant) }) {
-                                MissionUserItem(
-                                    user: participant,
-                                    imageScale: 0.4,
-                                    showAdminIndicator: false
-                                )
-                                .font(MissionUtilsPresentation.contentFont)
-                                .frame(maxWidth: .infinity)
-                                .contentShape(.rect)
-                            }
-                            .buttonStyle(ClickStyle())
-                        }
-                    }
-                }
-            }
-            .frame(maxHeight: 200)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -127,6 +143,20 @@ struct MissionDetailsTaskSection: View {
     }
 }
 
+private struct SeeAllUsersButton: View {
+    let userCount: Int
+    let action: () -> Void
+    
+    var body: some View {
+        Button(
+            stringResource(.seeAllUsers, userCount),
+            action: action
+        )
+        .foregroundStyle(.gedPrimary)
+        .font(.callout)
+    }
+}
+
 #Preview("Title and description section") {
     MissionDetailsTitleAndDescriptionSection(mission: missionFixture)
         .padding(.horizontal)
@@ -138,15 +168,17 @@ struct MissionDetailsTaskSection: View {
 
 #Preview("Managers section") {
     MissionDetailsManagerSection(
-        managers: missionFixture.managers,
-        onManagerClick: { _ in }
+        managers: usersFixture + usersFixture,
+        onManagerClick: { _ in },
+        onSeeAllClick: {}
     )
 }
 
 #Preview("Participants section") {
     MissionDetailsParticipantSection(
         participants: missionFixture.participants,
-        onParticipantClick: { _ in }
+        onParticipantClick: { _ in },
+        onSeeAllClick: {}
     )
 }
 
