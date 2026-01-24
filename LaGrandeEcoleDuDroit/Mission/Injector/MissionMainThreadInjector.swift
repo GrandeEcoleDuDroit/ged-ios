@@ -47,6 +47,12 @@ class MissionMainThreadInjector: MainThreadInjector {
             )
         }
         
+        container.register(SelectManagerViewModel.self) { (resolver, users: Any, previousSelectedManagers: Any) in
+            let users = users as! [User]
+            let previousSelectedManagers = previousSelectedManagers as! Set<User>
+            return SelectManagerViewModel(users: users, previousSelectedManagers: previousSelectedManagers)
+        }.inObjectScope(.weak)
+        
         container.register(MissionDetailsViewModel.self) { (resolver, missionId: Any) in
             let missionId = missionId as! String
             return MissionDetailsViewModel(

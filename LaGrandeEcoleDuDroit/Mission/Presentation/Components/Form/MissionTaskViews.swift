@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AddMissionTaskView: View {
     let onAddTaskClick: (String) -> Void
+    let onCancelClick: () -> Void
     
     @State private var value: String = ""
     private var createEnbaled: Bool {
@@ -9,31 +10,38 @@ struct AddMissionTaskView: View {
     }
     
     var body: some View {
-        MissionTaskView(
-            value: $value,
-            enabled: createEnbaled,
-            confirmButtonText: stringResource(.add),
-            onConfirmButtonClick: {
-                onAddTaskClick(value)
-            }
-        )
-        .navigationTitle(stringResource(.addTask))
+        NavigationStack {
+            MissionTaskView(
+                value: $value,
+                enabled: createEnbaled,
+                confirmButtonText: stringResource(.add),
+                onConfirmButtonClick: {
+                    onAddTaskClick(value)
+                },
+                onCancelClick: onCancelClick
+            )
+            .navigationTitle(stringResource(.addTask))
+            .navigationBarTitleDisplayMode(.inline)
+        }
     }
 }
 
 struct EditMissionTaskView: View {
     let missionTask: MissionTask
     let onSaveTaskClick: (MissionTask) -> Void
-    
+    let onCancelClick: () -> Void
+
     @State private var value: String
     
     init(
         missionTask: MissionTask,
-        onSaveTaskClick: @escaping (MissionTask) -> Void
+        onSaveTaskClick: @escaping (MissionTask) -> Void,
+        onCancelClick: @escaping () -> Void
     ) {
         self.missionTask = missionTask
         self.onSaveTaskClick = onSaveTaskClick
         self.value = missionTask.value
+        self.onCancelClick = onCancelClick
     }
     
     private var editEnabled: Bool {
@@ -41,15 +49,19 @@ struct EditMissionTaskView: View {
     }
     
     var body: some View {
-        MissionTaskView(
-            value: $value,
-            enabled: editEnabled,
-            confirmButtonText: stringResource(.save),
-            onConfirmButtonClick: {
-                onSaveTaskClick(missionTask.copy { $0.value = value })
-            }
-        )
-        .navigationTitle(stringResource(.editTask))
+        NavigationStack {
+            MissionTaskView(
+                value: $value,
+                enabled: editEnabled,
+                confirmButtonText: stringResource(.save),
+                onConfirmButtonClick: {
+                    onSaveTaskClick(missionTask.copy { $0.value = value })
+                },
+                onCancelClick: onCancelClick
+            )
+            .navigationTitle(stringResource(.editTask))
+            .navigationBarTitleDisplayMode(.inline)
+        }
     }
 }
 
@@ -58,6 +70,7 @@ private struct MissionTaskView: View {
     let enabled: Bool
     let confirmButtonText: String
     let onConfirmButtonClick: () -> Void
+    let onCancelClick: () -> Void
     
     @FocusState private var focusState: MissionTaskField?
     
@@ -81,6 +94,10 @@ private struct MissionTaskView: View {
         )
         .padding(.horizontal, DimensResource.smallMediumPadding)
         .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button(stringResource(.cancel), action: onCancelClick)
+            }
+            
             ToolbarItem(placement: .confirmationAction) {
                 Button(action: onConfirmButtonClick) {
                     if enabled {
@@ -93,6 +110,7 @@ private struct MissionTaskView: View {
                 .disabled(!enabled)
             }
         }
+        .interactiveDismissDisabled(true)
     }
 }
 
@@ -100,12 +118,13 @@ enum MissionTaskField: Hashable {
     case missionTaskContent
 }
 
-//#Preview {
-//    MissionTaskView(
-//        value: .constant(""),
-//        enabled: false,
-//        confirmButtonText: stringResource(.save),
-//        onConfirmButtonClick: {}
-//    )
-//    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
-//}
+#Preview {
+    MissionTaskView(
+        value: .constant(""),
+        enabled: false,
+        confirmButtonText: stringResource(.save),
+        onConfirmButtonClick: {},
+        onCancelClick: {}
+    )
+    .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
+}

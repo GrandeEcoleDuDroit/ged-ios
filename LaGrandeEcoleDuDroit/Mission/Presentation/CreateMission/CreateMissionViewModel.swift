@@ -9,7 +9,6 @@ class CreateMissionViewModel: ViewModel {
     
     @Published var uiState = CreateMissionUiState()
     @Published var event: SingleUiEvent?
-    private var defaultUsers: [User] = []
     private var cancellable: AnyCancellable?
     
     init(
@@ -133,7 +132,7 @@ class CreateMissionViewModel: ViewModel {
         uiState.duration = duration.take(MissionUtilsPresentation.maxDurationLength)
     }
     
-    func onSaveManagers(_ managers: [User]) {
+    func onUpdateManagers(_ managers: [User]) {
         uiState.managers = managers
     }
     
@@ -145,31 +144,12 @@ class CreateMissionViewModel: ViewModel {
         }
     }
     
-    func onUserQueryChange(_ query: String) {
-        uiState.userQuery = query
-        filterUsersByName(query)
-    }
-    
-    private func filterUsersByName(_ query: String) {
-        let users = if query.isBlank() {
-            defaultUsers
-        } else {
-            defaultUsers.filter {
-                $0.fullName
-                    .lowercased()
-                    .contains(query.lowercased())
-            }
-        }
-        
-        uiState.users = users
-    }
-    
     func onAddMissionTask(_ missionTaskValue: String) {
         let task = MissionTask(id: generateIdUseCase.execute(), value: missionTaskValue)
         uiState.missionTasks.append(task)
     }
     
-    func onEditMissionTask(_ missionTask: MissionTask) {
+    func onUpdateMissionTask(_ missionTask: MissionTask) {
         let trimmedMissionTask = missionTask.copy { $0.value = missionTask.value.trim() }
         let missionTasks = uiState.missionTasks.replace(
             where: { $0.id == missionTask.id },
@@ -221,10 +201,8 @@ class CreateMissionViewModel: ViewModel {
     
     private func initUsers() {
         Task { @MainActor [weak self] in
-            let users = await self?.getUsersUseCase.execute().missionManagerSorting()
-            if let users {
+            if let users = await self?.getUsersUseCase.execute().missionManagerSorting() {
                 self?.uiState.users = users
-                self?.defaultUsers = users
             }
         }
     }
@@ -243,7 +221,6 @@ class CreateMissionViewModel: ViewModel {
         fileprivate(set) var missionTasks: [MissionTask] = []
         fileprivate(set) var user: User?
         fileprivate(set) var users: [User] = []
-        fileprivate(set) var userQuery: String = ""
         fileprivate(set) var createEnabled: Bool = false
         
         fileprivate(set) var maxParticipantsError: String?
