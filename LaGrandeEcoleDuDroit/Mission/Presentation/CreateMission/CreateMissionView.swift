@@ -5,13 +5,12 @@ struct CreateMissionDestination: View {
     let onBackClick: () -> Void
     
     @StateObject private var viewModel = MissionMainThreadInjector.shared.resolve(CreateMissionViewModel.self)
-    @State private var path: [CreateMissionSubDestination] = []
     @State private var showImageErrorAlert: Bool = false
     @State private var errorTitle: String = ""
     @State private var errorMessage: String = ""
     
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack {
             CreateMissionView(
                 title: $viewModel.uiState.title,
                 description: $viewModel.uiState.description,
@@ -21,8 +20,8 @@ struct CreateMissionDestination: View {
                 allSchoolLevels: viewModel.uiState.allSchoolLevels,
                 maxParticipants: $viewModel.uiState.maxParticipants,
                 duration: $viewModel.uiState.duration,
+                users: viewModel.uiState.users,
                 managers: viewModel.uiState.managers,
-                userQuery: viewModel.uiState.userQuery,
                 missionTasks: viewModel.uiState.missionTasks,
                 missionState: .draft,
                 createEnabled: viewModel.uiState.createEnabled,
@@ -34,11 +33,11 @@ struct CreateMissionDestination: View {
                 onSchoolLevelChange: viewModel.onSchoolLevelChange,
                 onMaxParticipantsChange: viewModel.onMaxParticipantsChange,
                 onDurationChange: viewModel.onDurationChange,
-                onAddManagerClick: { path.append(.selectManager) },
+                onUpdateManagersClick: viewModel.onUpdateManagers,
                 onRemoveManagerClick: viewModel.onRemoveManager,
-                onAddTaskClick: { path.append(.addMissionTask) },
-                onEditTaskClick: { path.append(.editMissionTask($0)) },
-                onRemoveTaskClick: viewModel.onRemoveMissionTask,
+                onAddMissionTaskClick: viewModel.onAddMissionTask,
+                onUpdateMissionTaskClick: viewModel.onUpdateMissionTask,
+                onRemoveMissionTaskClick: viewModel.onRemoveMissionTask,
                 onCreateMissionClick: viewModel.createMission,
                 onBackClick: onBackClick
             )
@@ -54,37 +53,6 @@ struct CreateMissionDestination: View {
                     Text(errorMessage)
                 }
             )
-            .navigationDestination(for: CreateMissionSubDestination.self) { destination in
-                switch destination {
-                    case .selectManager:
-                        SelectManagerView(
-                            users: viewModel.uiState.users,
-                            selectedManagers: viewModel.uiState.managers.toSet(),
-                            onUserQueryChange: viewModel.onUserQueryChange,
-                            onSaveManagersClick: {
-                                viewModel.onSaveManagers($0)
-                                path.removeLast()
-                            }
-                        )
-                        
-                    case .addMissionTask:
-                        AddMissionTaskView(
-                            onAddTaskClick: {
-                                viewModel.onAddMissionTask($0)
-                                path.removeLast()
-                            }
-                        )
-                        
-                    case let .editMissionTask(missionTask):
-                        EditMissionTaskView(
-                            missionTask: missionTask,
-                            onSaveTaskClick: {
-                                viewModel.onEditMissionTask($0)
-                                path.removeLast()
-                            }
-                        )
-                }
-            }
             .onReceive(viewModel.$event) { event in
                 if event is SuccessEvent {
                     onBackClick()
@@ -92,12 +60,6 @@ struct CreateMissionDestination: View {
             }
         }
     }
-}
-
-private enum CreateMissionSubDestination: Hashable {
-    case selectManager
-    case addMissionTask
-    case editMissionTask(MissionTask)
 }
 
 private struct CreateMissionView: View {
@@ -109,8 +71,8 @@ private struct CreateMissionView: View {
     let allSchoolLevels: [SchoolLevel]
     @Binding var maxParticipants: String
     @Binding var duration: String
+    let users: [User]
     let managers: [User]
-    let userQuery: String
     let missionTasks: [MissionTask]
     let missionState: Mission.MissionState
     let createEnabled: Bool
@@ -124,16 +86,17 @@ private struct CreateMissionView: View {
     let onSchoolLevelChange: (SchoolLevel) -> Void
     let onMaxParticipantsChange: (String) -> Void
     let onDurationChange: (String) -> Void
-    let onAddManagerClick: () -> Void
+    let onUpdateManagersClick: ([User]) -> Void
     let onRemoveManagerClick: (User) -> Void
-    let onAddTaskClick: () -> Void
-    let onEditTaskClick: (MissionTask) -> Void
-    let onRemoveTaskClick: (MissionTask) -> Void
+    let onAddMissionTaskClick: (String) -> Void
+    let onUpdateMissionTaskClick: (MissionTask) -> Void
+    let onRemoveMissionTaskClick: (MissionTask) -> Void
     let onCreateMissionClick: (Data?) -> Void
     let onBackClick: () -> Void
     
     @State private var imageData: Data?
     @State private var showImageErrorAlert: Bool = false
+    @State private var activeSheet: CrateMissionViewSheet?
 
     var body: some View {
         MissionForm(
@@ -165,11 +128,11 @@ private struct CreateMissionView: View {
             onSchoolLevelChange: onSchoolLevelChange,
             onMaxParticipantsChange: onMaxParticipantsChange,
             onDurationChange: onDurationChange,
-            onAddManagerClick: onAddManagerClick,
+            onAddManagerClick: { activeSheet = .selectManager },
             onRemoveManagerClick: onRemoveManagerClick,
-            onAddTaskClick: onAddTaskClick,
-            onEditTaskClick: onEditTaskClick,
-            onRemoveTaskClick: onRemoveTaskClick
+            onAddTaskClick: { activeSheet = .addMissionTask },
+            onEditTaskClick: { activeSheet = .editMissionTask($0) },
+            onRemoveTaskClick: onRemoveMissionTaskClick
         )
         .navigationTitle(stringResource(.newMission))
         .navigationBarTitleDisplayMode(.inline)
@@ -202,6 +165,59 @@ private struct CreateMissionView: View {
             }
         }
         .alertImageTooLargeError(isPresented: $showImageErrorAlert)
+        .sheet(item: $activeSheet) {
+            switch $0 {
+                case .selectManager:
+                    SelectManagerDestination(
+                        users: users,
+                        selectedManagers: managers.toSet(),
+                        onSaveManagersClick: {
+                            activeSheet = nil
+                            onUpdateManagersClick($0)
+                        },
+                        onCancelClick: {
+                            activeSheet = nil
+                        }
+                    )
+                    
+                case .addMissionTask:
+                    AddMissionTaskView(
+                        onAddTaskClick: {
+                            activeSheet = nil
+                            onAddMissionTaskClick($0)
+                        },
+                        onCancelClick: {
+                            activeSheet = nil
+                        }
+                    )
+                    
+                case let .editMissionTask(missionTask):
+                    EditMissionTaskView(
+                        missionTask: missionTask,
+                        onSaveTaskClick: {
+                            activeSheet = nil
+                            onUpdateMissionTaskClick($0)
+                        },
+                        onCancelClick: {
+                            activeSheet = nil
+                        }
+                    )
+            }
+        }
+    }
+}
+
+private enum CrateMissionViewSheet: Identifiable {
+    case selectManager
+    case addMissionTask
+    case editMissionTask(MissionTask)
+    
+    var id: Int {
+        switch self {
+            case .selectManager: 0
+            case .addMissionTask: 1
+            case .editMissionTask: 2
+        }
     }
 }
 
@@ -216,8 +232,8 @@ private struct CreateMissionView: View {
             allSchoolLevels: SchoolLevel.all,
             maxParticipants: .constant(""),
             duration: .constant(""),
+            users: usersFixture,
             managers: [userFixture],
-            userQuery: "",
             missionTasks: [missionTaskFixture],
             missionState: .draft,
             createEnabled: false,
@@ -229,11 +245,11 @@ private struct CreateMissionView: View {
             onSchoolLevelChange: { _ in },
             onMaxParticipantsChange: { _ in },
             onDurationChange: { _ in },
-            onAddManagerClick: {},
+            onUpdateManagersClick: { _ in },
             onRemoveManagerClick: { _ in },
-            onAddTaskClick: {},
-            onEditTaskClick: { _ in },
-            onRemoveTaskClick: { _ in },
+            onAddMissionTaskClick: { _ in },
+            onUpdateMissionTaskClick: { _ in },
+            onRemoveMissionTaskClick: { _ in },
             onCreateMissionClick: { _ in },
             onBackClick: {}
         )

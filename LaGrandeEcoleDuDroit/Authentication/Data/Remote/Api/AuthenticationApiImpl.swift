@@ -6,56 +6,49 @@ class AuthenticationApiImpl: AuthenticationApi {
     private let tag = String(describing: AuthenticationApiImpl.self)
     
     func listenAuthenticationState() -> AnyPublisher<AuthenticationState, Never> {
-        Deferred { [weak self] in
-           let subject = PassthroughSubject<AuthenticationState, Never>()
-            
-           let listener = self?.firebaseAuth.addStateDidChangeListener { auth, _ in
-               if let user = auth.currentUser {
-                   subject.send(.authenticated(userId: user.uid))
-               } else {
-                   subject.send(.unauthenticated)
-               }
+       let subject = PassthroughSubject<AuthenticationState, Never>()
+        
+       let listener = firebaseAuth.addStateDidChangeListener { auth, _ in
+           if let user = auth.currentUser {
+               subject.send(.authenticated(userId: user.uid))
+           } else {
+               subject.send(.unauthenticated)
            }
-            
-           return subject.handleEvents(receiveCancel: { [weak self] in
-               if let listener {
-                   self?.firebaseAuth.removeStateDidChangeListener(listener)
-               }
-           })
        }
+        
+       return subject.handleEvents(receiveCancel: { [weak self] in
+           self?.firebaseAuth.removeStateDidChangeListener(listener)
+       })
        .eraseToAnyPublisher()
     }
     
     func listenAuthTokenState() -> AnyPublisher<AuthTokenState, Never> {
-        Deferred { [weak self] in
-            let subject = PassthroughSubject<AuthTokenState, Never>()
+        let subject = PassthroughSubject<AuthTokenState, Never>()
+        
+        let listener = firebaseAuth.addIDTokenDidChangeListener { auth, _ in
+            guard let user = auth.currentUser else {
+                subject.send(.unauthenticated)
+                return
+            }
             
-            let listener = self?.firebaseAuth.addIDTokenDidChangeListener { auth, _ in
-                guard let user = auth.currentUser else {
-                    subject.send(.unauthenticated)
+            user.getIDTokenResult(forcingRefresh: false) { result, error in
+                if let error {
+                    subject.send(.error(error))
                     return
                 }
                 
-                user.getIDTokenResult(forcingRefresh: true) { result, error in
-                    if let error {
-                        subject.send(.error(error))
-                        return
-                    }
-                    
-                    if let token = result?.token {
-                        subject.send(.valid(token))
-                    } else {
-                        subject.send(.error())
-                    }
+                if let token = result?.token {
+                    subject.send(.valid(token))
+                } else {
+                    subject.send(.error())
                 }
             }
+        }
             
-            return subject.handleEvents(receiveCancel: { [weak self] in
-                if let listener {
-                    self?.firebaseAuth.removeIDTokenDidChangeListener(listener)
-                }
-            })
-        }.eraseToAnyPublisher()
+        return subject.handleEvents(receiveCancel: { [weak self] in
+            self?.firebaseAuth.removeIDTokenDidChangeListener(listener)
+        })
+        .eraseToAnyPublisher()
     }
     
     
