@@ -207,7 +207,7 @@ class EditMissionViewModel: ViewModel {
         )
     }
     
-    func onSaveManagers(_ managers: [User]) {
+    func onUpdateManagers(_ managers: [User]) {
         uiState.managers = managers
         missionUpdateState.send(
             missionUpdateState.value.copy {
@@ -229,11 +229,6 @@ class EditMissionViewModel: ViewModel {
         }
     }
     
-    func onUserQueryChange(_ query: String) {
-        uiState.userQuery = query
-        filterUsersByName(query)
-    }
-    
     func onAddMissionTask(_ value: String) {
         let missionTask = MissionTask(id: generateIdUseCase.execute(), value: value)
         var missionTasks = uiState.missionTasks
@@ -246,7 +241,7 @@ class EditMissionViewModel: ViewModel {
         )
     }
     
-    func onEditMissionTask(_ missionTask: MissionTask) {
+    func onUpdateMissionTask(_ missionTask: MissionTask) {
         let trimmedMissionTask = missionTask.copy { $0.value = missionTask.value.trim() }
         let missionTasks = uiState.missionTasks.replace(
             where: { $0.id == missionTask.id },
@@ -333,20 +328,6 @@ class EditMissionViewModel: ViewModel {
         return uiState.maxParticipantsError == nil
     }
     
-    private func filterUsersByName(_ query: String) {
-        let users = if query.isBlank() {
-            defaultUsers
-        } else {
-            defaultUsers.filter {
-                $0.fullName
-                    .lowercased()
-                    .contains(query.lowercased())
-            }
-        }
-        
-        uiState.users = users
-    }
-    
     private func performRequest(block: @escaping () async throws -> Void) {
         performUiBlockingRequest(
             block: block,
@@ -414,7 +395,6 @@ class EditMissionViewModel: ViewModel {
         var duration: String = ""
         fileprivate(set) var missionTasks: [MissionTask] = []
         fileprivate(set) var users: [User] = []
-        fileprivate(set) var userQuery: String = ""
         fileprivate(set) var loading: Bool = false
         fileprivate(set) var missionState: Mission.MissionState = .draft
         fileprivate(set) var updateEnabled: Bool = false
