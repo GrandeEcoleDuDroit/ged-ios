@@ -134,6 +134,7 @@ private struct EditMissionView: View {
             maxParticipantsError: maxParticipantsError,
             onImageChange: {
                 if $0.count < CommonUtilsPresentation.maxImageFileSize {
+                    imageData = $0
                     onImageChange()
                 } else {
                     showImageErrorAlert = true
