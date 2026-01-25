@@ -7,8 +7,7 @@ struct UserUtils {
         private init() {}
         
         static func formatName(_ name: String) -> String {
-            name.capitalizeFirstLetters(separator: " ")
-                .capitalizeFirstLetters(separator: "-")
+            name.capitalizeWords()
         }
     }
     

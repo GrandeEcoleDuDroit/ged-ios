@@ -11,17 +11,18 @@ extension String {
         !self.trim().isEmpty
     }
     
-    func capitalizeFirstLetters(separator: Character = " ") -> String {
-        let split = self.split(separator: separator)
-        var result: [String] = []
-        
-        split.forEach { s in
-            let firstLetter = s.prefix(1).uppercased()
-            let remainingText = s.dropFirst()
-            result += [firstLetter + remainingText]
+    func capitalize() -> String {
+        prefix(1).uppercased()
+    }
+    
+    func capitalizeWords() -> String {
+        let pattern = /(^|[\s'-])(\p{L})/
+
+        return replacing(pattern) { match in
+            let separator = match.1
+            let letter = match.2
+            return "\(separator)\(letter.uppercased())"
         }
-        
-        return result.joined(separator: String(separator))
     }
     
     func toInt() -> Int {
