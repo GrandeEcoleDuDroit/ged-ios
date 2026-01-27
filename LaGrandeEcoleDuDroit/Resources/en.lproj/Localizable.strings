@@ -85,9 +85,11 @@
 "cannot_find_host_error" = "Unable to connect to the server.";
 "number_field_error" = "Please enter a valid number.";
 "invalid_image_format_error" = "The image has an invalid format.";
-"unauthorized_error" = "You must be authenticated to perform this action.";
+"unauthorized_error" = "Your session has expired. Please log in again.";
 "bad_request_error" = "The request could not be successful.";
-"nil_data_error" = "Null data";
+"resource_not_found_error" = "Resource was not found.";
+"duplicate_data_error" = "The resource already exist.";
+"forbidden_error" = "You are not authorized to perform this action.";
 "image_too_large_error_title" = "Image too large";
 "image_too_large_error_message" = "Total image size must be inferior than %@.";
 
@@ -152,7 +154,7 @@
 "resend" = "Resend";
 
 // Message error
-"message_failed_to_send_error" = "Échec de l’envoi du message.";
+"message_failed_to_send_error" = "Failed to send message.";
 
 // Mission
 "mission" = "Mission";
@@ -162,6 +164,8 @@
 "tasks" = "Tasks";
 "new_mission" = "New mission";
 "edit_mission" = "Edit mission";
+"select_managers" = "Select managers";
+"all_users" = "All users";
 "participant_number" = "%d of %d participants";
 "short_participant_number" = "%d / %d";
 "no_mission" = "No mission";
@@ -195,7 +199,9 @@
 "unregister_mission_alert_message" = "Unregister from this mission?";
 "remove_participant_alert_message" = "Do you want remove %@ from this mission ?";
 "edit_mission_school_level_supporting_text" = "Participants with unmatched school levels will be removed.";
-"select_managers" = "Select managers";
+"open" = "Open";
+"all" = "All";
+"see_all_users" = "See all (%d more)";
 
 // Mission error
 "max_participants_lower_than_current_error" = "Maximum number of participants cannot be lower than the current count (%d).";

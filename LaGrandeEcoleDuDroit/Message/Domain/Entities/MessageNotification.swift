@@ -1,9 +1,10 @@
 struct MessageNotification: Codable {
     let conversation: Conversation
-    let message: MessageContent
+    let message: MessageNotification.MessageContent
     
     struct MessageContent: Codable {
+        let messageId: String
         let content: String
-        let date: Int64
+        let timestamp: Int64
     }
 }

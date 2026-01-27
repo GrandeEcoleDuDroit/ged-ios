@@ -2,15 +2,17 @@ import SwiftUI
 
 struct PlainTableUIViewControllerRepresentable<
     Value: Hashable,
+    Header: View,
     Content: View,
     EmptyContent: View
 >: UIViewControllerRepresentable {
-    typealias Controller = PlainTableUIViewController<Value, Content, EmptyContent>
+    typealias Controller = PlainTableUIViewController<Value, Header, Content, EmptyContent>
     typealias Modifier = PlainTableModifier<Value>
     
     let modifier: Modifier
     let values: [Value]
     let onRowClick: (Value) -> Void
+    let header: (() -> Header)?
     let emptyContent: () -> EmptyContent
     let content: (Value) -> Content
     
@@ -22,6 +24,7 @@ struct PlainTableUIViewControllerRepresentable<
         let controller = PlainTableUIViewController(
             modifier: modifier,
             onRowClick: onRowClick,
+            header: header,
             emptyContent: emptyContent,
             content: content
         )
@@ -32,13 +35,17 @@ struct PlainTableUIViewControllerRepresentable<
     }
 
     func updateUIViewController(_ controller: Controller, context: Context) {
-        updateTableViewProperties(tableView: controller.tableView, coordinator: context.coordinator)
+        updateTableView(controller: controller, coordinator: context.coordinator)
         updateSnapshotIfNeeded(coordinator: context.coordinator)
     }
     
-    private func updateTableViewProperties(tableView: UITableView, coordinator: Coordinator) {
-        tableView.allowsSelection = !values.isEmpty
-        tableView.separatorStyle = values.isEmpty ? .none : modifier.separatorStyle
+    private func updateTableView(controller: Controller, coordinator: Coordinator) {
+        controller.tableView.allowsSelection = !values.isEmpty
+        controller.tableView.separatorStyle = values.isEmpty ? .none : modifier.separatorStyle
+        if let header {
+            controller.makeHeader(header: header())
+        }
+        
     }
     
     private func updateSnapshotIfNeeded(coordinator: Coordinator) {

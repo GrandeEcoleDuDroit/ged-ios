@@ -1,27 +1,52 @@
 import SwiftUI
 
-struct SelectManagerView: View {
-    let users: [User]
-    let selectedManagers: Set<User>
-    let onUserQueryChange: (String) -> Void
+struct SelectManagerDestination: View {
     let onSaveManagersClick: ([User]) -> Void
-    
-    @State private var currentSelectedManagers: Set<User>
-    @State private var saveEnabled: Bool = false
-    @State private var userQuery: String = ""
+    let onCancelClick: () -> Void
+
+    @StateObject private var viewModel: SelectManagerViewModel
     
     init(
         users: [User],
         selectedManagers: Set<User>,
-        onUserQueryChange: @escaping (String) -> Void,
-        onSaveManagersClick: @escaping ([User]) -> Void
+        onSaveManagersClick: @escaping ([User]) -> Void,
+        onCancelClick: @escaping () -> Void
     ) {
-        self.users = users
-        self.selectedManagers = selectedManagers
-        self.onUserQueryChange = onUserQueryChange
+        _viewModel = StateObject(
+            wrappedValue: MissionMainThreadInjector.shared.resolve(
+                SelectManagerViewModel.self,
+                arguments: users, selectedManagers
+            )!
+        )
         self.onSaveManagersClick = onSaveManagersClick
-        self.currentSelectedManagers = selectedManagers
+        self.onCancelClick = onCancelClick
     }
+    
+    var body: some View {
+        NavigationStack {
+            SelectManagerView(
+                users: viewModel.uiState.users,
+                selectedManagers: viewModel.uiState.selectedManagers,
+                userQuery: $viewModel.uiState.userQuery,
+                saveEnabled: viewModel.uiState.saveEnabled,
+                onManagerClick: viewModel.onManagerClick,
+                onUserQueryChange: viewModel.onUserQueryChange,
+                onSaveManagersClick: onSaveManagersClick,
+                onCancelClick: onCancelClick
+            )
+        }
+    }
+}
+
+private struct SelectManagerView: View {
+    let users: [User]
+    let selectedManagers: Set<User>
+    @Binding var userQuery: String
+    let saveEnabled: Bool
+    let onManagerClick: (User) -> Void
+    let onUserQueryChange: (String) -> Void
+    let onSaveManagersClick: ([User]) -> Void
+    let onCancelClick: () -> Void
     
     var body: some View {
         List {
@@ -33,23 +58,9 @@ struct SelectManagerView: View {
                     .listRowInsets(EdgeInsets())
             } else {
                 ForEach(users) { user in
-                    let selected = currentSelectedManagers.contains(user)
-                    
-                    Button(
-                        action: {
-                            if selected {
-                                currentSelectedManagers.remove(user)
-                            } else {
-                                currentSelectedManagers.insert(user)
-                            }
-                            
-                            saveEnabled =
-                                !currentSelectedManagers.isEmpty &&
-                                    currentSelectedManagers != selectedManagers
-                        }
-                    ) {
+                    Button(action: { onManagerClick(user) }) {
                         HStack {
-                            CheckBox(checked: selected)
+                            CheckBox(checked: selectedManagers.contains(user))
                             MissionUserItem(
                                 user: user,
                                 imageScale: 0.5
@@ -72,8 +83,12 @@ struct SelectManagerView: View {
         .navigationTitle(stringResource(.selectManagers))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button(stringResource(.cancel), action: onCancelClick)
+            }
+            
             ToolbarItem(placement: .confirmationAction) {
-                Button(action: { onSaveManagersClick(currentSelectedManagers.toList()) }) {
+                Button(action: { onSaveManagersClick(selectedManagers.toList()) }) {
                     if saveEnabled {
                         Text(stringResource(.save))
                             .foregroundColor(.gedPrimary)
@@ -84,6 +99,7 @@ struct SelectManagerView: View {
                 .disabled(!saveEnabled)
             }
         }
+        .interactiveDismissDisabled(true)
     }
 }
 
@@ -92,8 +108,12 @@ struct SelectManagerView: View {
         SelectManagerView(
             users: usersFixture,
             selectedManagers: [userFixture],
+            userQuery: .constant(""),
+            saveEnabled: false,
+            onManagerClick: { _ in },
             onUserQueryChange: { _ in },
-            onSaveManagersClick: { _ in }
+            onSaveManagersClick: { _ in },
+            onCancelClick: {}
         )
     }.environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

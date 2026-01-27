@@ -13,11 +13,14 @@ struct MissionDestination: View {
                 user: user,
                 missions: viewModel.uiState.missions,
                 loading: viewModel.uiState.loading,
+                activeFilter: viewModel.uiState.activeFilter,
+                filters: viewModel.uiState.filters,
                 onMissionClick: onMissionClick,
                 onDeleteMissionClick: viewModel.deleteMission,
                 onReportMissionClick: viewModel.reportMission,
                 onRecreateMissionClick: viewModel.recreateMission,
                 onRefreshMissions: viewModel.refreshMissions,
+                onMissionFilterChange: viewModel.onMissionFilterChange
             )
             .onReceive(viewModel.$event) { event in
                 if let errorEvent = event as? ErrorEvent {
@@ -45,11 +48,14 @@ private struct MissionView: View {
     let user: User
     let missions: [Mission]?
     let loading: Bool
+    let activeFilter: MissionViewModel.MissionFilter
+    let filters: [MissionViewModel.MissionFilter]
     let onMissionClick: (String) -> Void
     let onDeleteMissionClick: (Mission) -> Void
     let onReportMissionClick: (MissionReport) -> Void
     let onRecreateMissionClick: (Mission) -> Void
     let onRefreshMissions: () async -> Void
+    let onMissionFilterChange: (MissionViewModel.MissionFilter) -> Void
     
     @State private var activeSheet: MissionViewSheet?
     @State private var showDeleteMissionAlert: Bool = false
@@ -58,32 +64,14 @@ private struct MissionView: View {
     var body: some View {
         Group {
             if let missions {
-                PlainTableView(
-                    modifier: PlainTableModifier(
-                        backgroundColor: .appBackground,
-                        selectionStyle: .none,
-                        onRefresh: onRefreshMissions
-                    ),
-                    values: missions,
-                    onRowClick: { mission in
-                        if case .published = mission.state {
-                            onMissionClick(mission.id)
-                        } else {
-                            activeSheet = .mission(mission)
-                        }
-                    },
-                    emptyContent: {
-                        Text(stringResource(.noMission))
-                            .foregroundStyle(.informationText)
-                    },
-                    content: { mission in
-                        MissionCard(
-                            mission: mission,
-                            onOptionsClick: { activeSheet = .mission(mission) }
-                        )
-                        .padding(.horizontal)
-                        .padding(.vertical, DimensResource.smallMediumPadding)
-                    }
+                MissionList(
+                    missions: missions,
+                    activeFilter: activeFilter,
+                    filters: filters,
+                    onMissionClick: onMissionClick,
+                    onRefreshMissions: onRefreshMissions,
+                    onMissionFilterChange: onMissionFilterChange,
+                    activeSheet: $activeSheet
                 )
             } else {
                 ProgressView()
@@ -109,7 +97,7 @@ private struct MissionView: View {
                 case let .mission(mission):
                     MissionSheet(
                         mission: mission,
-                        isAdminUser: user.admin,
+                        user: user,
                         onEditClick: {
                             activeSheet = .editMission(mission)
                         },
@@ -176,6 +164,59 @@ private struct MissionView: View {
     }
 }
 
+private struct MissionList: View {
+    let missions: [Mission]
+    let activeFilter: MissionViewModel.MissionFilter
+    let filters: [MissionViewModel.MissionFilter]
+    let onMissionClick: (String) -> Void
+    let onRefreshMissions: () async -> Void
+    let onMissionFilterChange: (MissionViewModel.MissionFilter) -> Void
+    @Binding var activeSheet: MissionViewSheet?
+    
+    var body: some View {
+        PlainTableView(
+            modifier: PlainTableModifier(
+                backgroundColor: .appBackground,
+                selectionStyle: .none,
+                onRefresh: onRefreshMissions
+            ),
+            values: missions,
+            onRowClick: { mission in
+                if case .published = mission.state {
+                    onMissionClick(mission.id)
+                } else {
+                    activeSheet = .mission(mission)
+                }
+            },
+            header: {
+                LazyHStack {
+                    ForEach(filters, id: \.self) { filter in
+                        FilterChip(
+                            label: filter.label,
+                            selected: filter == activeFilter,
+                            onClick: { onMissionFilterChange(filter) }
+                        )
+                    }
+                }
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+            },
+            emptyContent: {
+                Text(stringResource(.noMission))
+                    .foregroundStyle(.informationText)
+            },
+            content: { mission in
+                MissionCard(
+                    mission: mission,
+                    onOptionsClick: { activeSheet = .mission(mission) }
+                )
+                .padding(.horizontal)
+                .padding(.vertical, DimensResource.smallMediumPadding)
+            }
+        )
+    }
+}
+
 private enum MissionViewSheet: Identifiable {
     case mission(Mission)
     case missionReport(Mission)
@@ -198,11 +239,14 @@ private enum MissionViewSheet: Identifiable {
             user: userFixture,
             missions: missionsFixture,
             loading: false,
+            activeFilter: .open,
+            filters: MissionViewModel.MissionFilter.allCases,
             onMissionClick: { _ in },
             onDeleteMissionClick: { _ in },
             onReportMissionClick: { _ in },
             onRecreateMissionClick: { _ in},
-            onRefreshMissions: {}
+            onRefreshMissions: {},
+            onMissionFilterChange: { _ in}
         )
     }
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)

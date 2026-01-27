@@ -19,7 +19,7 @@ struct AnnouncementHeader: View {
                     .fontWeight(.semibold)
                 
                 Text(elapsedTimeText)
-                    .font(.subheadline)
+                    .font(.footnote)
                     .foregroundStyle(.supportingText)
             }
             .onTapGesture(perform: onAuthorClick)

@@ -3,29 +3,28 @@ import Testing
 @testable import GrandeEcoleDuDroit
 
 class LoginUseCaseTest {
-    let email = "example@email.com"
-    let password = "password123"
-    
     @Test
-    func loginUseCase_should_throw_auth_user_not_found_when_user_not_exist() async throws {
+    func loginUseCase_should_throw_timed_out_when_takes_more_than_10_seconds() async throws {
         // Given
+        let email = "example@email.com"
+        let password = "password123"
         let useCase = LoginUseCase(
-            authenticationRepository: MockAuthenticationRepository(),
-            userRepository: TestUserRepository()
+            authenticationRepository: TestAuthenticationRepository()
         )
         
         // When
-        let error = await #expect(throws: AuthenticationError.authUserNotFound.self) {
-            try await useCase.execute(email: self.email, password: self.password)
+        let error = await #expect(throws: NetworkError.timedOut.self) {
+            try await useCase.execute(email: email, password: password)
         }
         
         // Then
-        #expect(error == AuthenticationError.authUserNotFound)
+        #expect(error == NetworkError.timedOut)
     }
 }
 
-private class TestUserRepository: MockUserRepository {
-    override func getUser(userId: String) async -> User? {
-        nil
+private class TestAuthenticationRepository: MockAuthenticationRepository {
+    override func loginWithEmailAndPassword(email: String, password: String) async throws -> String {
+        try await Task.sleep(for: .seconds(11))
+        return "userId"
     }
 }

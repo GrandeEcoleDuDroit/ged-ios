@@ -24,7 +24,14 @@ class FirstRegistrationViewModel: ViewModel {
     }
     
     private func validNameChanges(_ name: String) -> String {
-        name.take(maxNameLength).filter { $0.isLetter || $0 == " " || $0 == "-" }
+        name
+            .take(maxNameLength)
+            .filter {
+                $0.isLetter ||
+                $0 == " " ||
+                $0 == "-" ||
+                $0 == "'"
+            }
     }
     
     private func validateName(_ name: String) -> String? {

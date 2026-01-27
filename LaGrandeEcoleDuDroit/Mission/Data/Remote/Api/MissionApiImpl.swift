@@ -17,7 +17,7 @@ class MissionApiImpl: MissionApi {
         if let missions: [InboundRemoteMission] = try await RequestUtils.sendDataRequest(session: session, request: request) {
             return missions
         } else {
-            throw NetworkError.emptyResponse
+            throw NetworkError.unknown
         }
     }
     
@@ -58,7 +58,7 @@ class MissionApiImpl: MissionApi {
         try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func updateMission(remoteMission: OutboundRemoteMission, imageData: Data?) async throws {
+    func updateMission(userId: String, remoteMission: OutboundRemoteMission, imageData: Data?) async throws {
         let url = RequestUtils.getUrl(base: base, endPoint: "/update")
         let session = RequestUtils.getDefaultSession()
         let boundary = "Boundary-\(UUID().uuidString)"
@@ -73,6 +73,10 @@ class MissionApiImpl: MissionApi {
             body.append(imageData)
             body.append("\r\n".data(using: .utf8)!)
         }
+        
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"\(UserField.Oracle.userId)\"\r\n\r\n".data(using: .utf8)!)
+        body.append("\(userId)\r\n".data(using: .utf8)!)
         
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
         body.append("Content-Disposition: form-data; name=\"mission\"\r\n".data(using: .utf8)!)
