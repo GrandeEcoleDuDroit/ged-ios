@@ -11,16 +11,16 @@ class RecreateMissionUseCaseTest {
         let imagePath = "imagePath"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
         let missionRepositoryTest = MissionRepositoryTest()
-        let missionTaskReferences = MissionTaskQueue()
+        let missionTaskQueue = MissionTaskQueue()
 
         // When
         let useCase = RecreateMissionUseCase(
             missionRepository: missionRepositoryTest,
             imageRepository: MockImageRepository(),
-            missionTaskReferences: missionTaskReferences
+            missionTaskQueue: missionTaskQueue
         )
         await useCase.execute(mission: mission)
-        await missionTaskReferences.tasks[mission.id]?.value
+        await missionTaskQueue.tasks[mission.id]?.value
 
         // Then
         #expect(missionRepositoryTest.createdMissionState?.type == .publishingType)
@@ -38,16 +38,16 @@ class RecreateMissionUseCaseTest {
         let imagePath = "imagePath"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
         let missionRepositoryTest = MissionRepositoryTest()
-        let missionTaskReferences = MissionTaskQueue()
+        let missionTaskQueue = MissionTaskQueue()
 
         // When
         let useCase = RecreateMissionUseCase(
             missionRepository: missionRepositoryTest,
             imageRepository: MockImageRepository(),
-            missionTaskReferences: missionTaskReferences
+            missionTaskQueue: missionTaskQueue
         )
         await useCase.execute(mission: mission)
-        await missionTaskReferences.tasks[mission.id]?.value
+        await missionTaskQueue.tasks[mission.id]?.value
         
         // Then
         #expect(missionRepositoryTest.updatedMissionState?.type == .publishedType)
@@ -68,16 +68,16 @@ class RecreateMissionUseCaseTest {
         let imageData = pngImageDataFixture
         let missionRepositoryTest = MissionRepositoryTest()
         let imageRepositoryTest = ImageRepositoryTest(givenImageData: imageData)
-        let missionTaskReferences = MissionTaskQueue()
+        let missionTaskQueue = MissionTaskQueue()
 
         // When
         let useCase = RecreateMissionUseCase(
             missionRepository: missionRepositoryTest,
             imageRepository: imageRepositoryTest,
-            missionTaskReferences: missionTaskReferences
+            missionTaskQueue: missionTaskQueue
         )
         await useCase.execute(mission: mission)
-        await missionTaskReferences.tasks[mission.id]?.value
+        await missionTaskQueue.tasks[mission.id]?.value
 
         // Then
         #expect(missionRepositoryTest.transmittedImageData == imageData)
@@ -89,16 +89,16 @@ class RecreateMissionUseCaseTest {
         let imagePath = "/path/to/image"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
         let createMissionException = CreateMissionThrowsException()
-        let missionTaskReferences = MissionTaskQueue()
+        let missionTaskQueue = MissionTaskQueue()
         
         // When
         let useCase = RecreateMissionUseCase(
             missionRepository: createMissionException,
             imageRepository: MockImageRepository(),
-            missionTaskReferences: missionTaskReferences
+            missionTaskQueue: missionTaskQueue
         )
         await useCase.execute(mission: mission)
-        await missionTaskReferences.tasks[mission.id]?.value
+        await missionTaskQueue.tasks[mission.id]?.value
         
         // Then
         #expect(createMissionException.updatedMissionState?.type == .errorType)

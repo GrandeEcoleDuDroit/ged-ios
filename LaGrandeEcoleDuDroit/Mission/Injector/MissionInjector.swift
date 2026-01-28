@@ -45,12 +45,16 @@ class MissionInjector: Injector {
             DeleteMissionUseCase(
                 missionRepository: resolver.resolve(MissionRepository.self)!,
                 imageRepository: CommonInjector.shared.resolve(ImageRepository.self),
-                missionTaskReferences: resolver.resolve(MissionTaskQueue.self)!
+                missionTaskQueue: resolver.resolve(MissionTaskQueue.self)!
             )
         }
         
         container.register(FetchMissionsUseCase.self) { resolver in
-            FetchMissionsUseCase(missionRepository: resolver.resolve(MissionRepository.self)!)
+            FetchMissionsUseCase(
+                missionRepository: resolver.resolve(MissionRepository.self)!,
+                deleteMissionUseCase: resolver.resolve(DeleteMissionUseCase.self)!,
+                upsertMissionUseCase: resolver.resolve(UpsertMissionUseCase.self)!
+            )
         }
         
         container.register(RefreshMissionsUseCase.self) { resolver in
@@ -68,7 +72,22 @@ class MissionInjector: Injector {
             RecreateMissionUseCase(
                 missionRepository: resolver.resolve(MissionRepository.self)!,
                 imageRepository: CommonInjector.shared.resolve(ImageRepository.self),
-                missionTaskReferences: resolver.resolve(MissionTaskQueue.self)!
+                missionTaskQueue: resolver.resolve(MissionTaskQueue.self)!
+            )
+        }
+        
+        container.register(UpsertMissionUseCase.self) { resolver in
+            UpsertMissionUseCase(
+                missionRepository: resolver.resolve(MissionRepository.self)!,
+                imageRepository: CommonInjector.shared.resolve(ImageRepository.self)
+            )
+        }.inObjectScope(.weak)
+        
+        container.register(DeleteMissionUseCase.self) { resolver in
+            DeleteMissionUseCase(
+                missionRepository: resolver.resolve(MissionRepository.self)!,
+                imageRepository: CommonInjector.shared.resolve(ImageRepository.self),
+                missionTaskQueue: resolver.resolve(MissionTaskQueue.self)!
             )
         }
         
