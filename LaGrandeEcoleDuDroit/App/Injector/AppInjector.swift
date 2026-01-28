@@ -76,7 +76,6 @@ class AppInjector: Injector {
         // View models
         container.register(MainViewModel.self) { resolver in
             MainViewModel(
-                networkMonitor: CommonInjector.shared.resolve(NetworkMonitor.self),
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
                 authenticationRepository: AuthenticationInjector.shared.resolve(AuthenticationRepository.self),
                 listenDataUseCase: resolver.resolve(ListenDataUseCase.self)!,

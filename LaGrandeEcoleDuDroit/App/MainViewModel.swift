@@ -2,7 +2,6 @@ import Combine
 import Foundation
 
 class MainViewModel: ObservableObject {
-    private let networkMonitor: NetworkMonitor
     private let userRepository: UserRepository
     private let authenticationRepository: AuthenticationRepository
     private let listenDataUseCase: ListenDataUseCase
@@ -13,7 +12,6 @@ class MainViewModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
     
     init(
-        networkMonitor: NetworkMonitor,
         userRepository: UserRepository,
         authenticationRepository: AuthenticationRepository,
         listenDataUseCase: ListenDataUseCase,
@@ -21,7 +19,6 @@ class MainViewModel: ObservableObject {
         fetchDataUseCase: FetchDataUseCase,
         fcmTokenUseCase: FcmTokenUseCase
     ) {
-        self.networkMonitor = networkMonitor
         self.userRepository = userRepository
         self.authenticationRepository = authenticationRepository
         self.listenDataUseCase = listenDataUseCase
@@ -39,7 +36,6 @@ class MainViewModel: ObservableObject {
                 switch state {
                     case let .authenticated(userId):
                         Task {
-                            await self?.networkMonitor.connected.values.first { $0 }
                             await self?.fetchDataUseCase.execute(userId: userId)
                             self?.listenDataUseCase.start()
                             await self?.fcmTokenUseCase.sendUnsentToken()
