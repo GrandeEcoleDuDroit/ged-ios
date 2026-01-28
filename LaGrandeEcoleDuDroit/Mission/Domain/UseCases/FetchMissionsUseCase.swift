@@ -1,15 +1,12 @@
 class FetchMissionsUseCase {
     private let missionRepository: MissionRepository
-    private let deleteMissionUseCase: DeleteMissionUseCase
     private let upsertMissionUseCase: UpsertMissionUseCase
     
     init(
         missionRepository: MissionRepository,
-        deleteMissionUseCase: DeleteMissionUseCase,
         upsertMissionUseCase: UpsertMissionUseCase
     ) {
         self.missionRepository = missionRepository
-        self.deleteMissionUseCase = deleteMissionUseCase
         self.upsertMissionUseCase = upsertMissionUseCase
     }
     
@@ -21,7 +18,7 @@ class FetchMissionsUseCase {
         let missionsToUpsert = remoteMissions.filter { !missions.contains($0) }
         
         for mission in missionsToDelete {
-            try? await deleteMissionUseCase.execute(mission: mission)
+            try? await missionRepository.deleteLocalMission(missionId: mission.id)
         }
         for mission in missionsToUpsert {
             try? await upsertMissionUseCase.execute(mission: mission)
