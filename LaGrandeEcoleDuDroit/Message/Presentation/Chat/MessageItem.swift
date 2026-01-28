@@ -104,7 +104,7 @@ private struct MessageBubble: View {
         .padding(.vertical, 10)
         .padding(.horizontal, DimensResource.mediumPadding)
         .background(backgroundColor)
-        .clipShape(.rect(cornerRadius: 14))
+        .clipShape(.rect(cornerRadius: DimensResource.mediumPadding))
     }
 }
 
@@ -224,6 +224,12 @@ struct MessageBlockedUserIndicator: View {
             
             SentMessageItem(
                 message: messageFixture.copy { $0.state = .error },
+                showSeen: false,
+                onClick: {}
+            )
+            
+            SentMessageItem(
+                message: messageFixture.copy { $0.content = longAnnouncementFixture.content },
                 showSeen: false,
                 onClick: {}
             )
