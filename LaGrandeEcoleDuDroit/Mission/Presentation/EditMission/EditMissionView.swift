@@ -140,7 +140,10 @@ private struct EditMissionView: View {
                     showImageErrorAlert = true
                 }
             },
-            onImageRemove: onImageRemove,
+            onImageRemove: {
+                imageData = nil
+                onImageRemove()
+            },
             onTitleChange: onTitleChange,
             onDescriptionChange: onDescriptionChange,
             onStartDateChange: onStartDateChange,
