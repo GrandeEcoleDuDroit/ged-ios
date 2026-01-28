@@ -56,6 +56,10 @@ class MissionLocalDataSource {
         try await missionActor.getMissions().compactMap { $0.toMission(getImagePath: getImagePath) }
     }
     
+    func getMission(missionId: String) async throws -> Mission? {
+        try await missionActor.getMission(missionId: missionId)?.toMission(getImagePath: getImagePath)
+    }
+    
     func updateMission(mission: Mission) async throws {
         try await missionActor.update(mission: mission)
     }
@@ -73,17 +77,17 @@ class MissionLocalDataSource {
     }
     
     func addParticipant(missionId: String, user: User) async throws {
-        let localMisison = try await missionActor.getMission(missionId: missionId)
-        var mission = localMisison.toMission(getImagePath: getImagePath)!
-        mission.participants = mission.participants + [user]
-        try await missionActor.upsert(mission: mission)
+        if var mission = try await missionActor.getMission(missionId: missionId)?.toMission(getImagePath: getImagePath) {
+            mission.participants = mission.participants + [user]
+            try await missionActor.upsert(mission: mission)
+        }
     }
     
     func removeParticipant(missionId: String, userId: String) async throws {
-        let localMisison = try await missionActor.getMission(missionId: missionId)
-        var mission = localMisison.toMission(getImagePath: getImagePath)!
-        mission.participants = mission.participants.filter { $0.id != userId }
-        try await missionActor.upsert(mission: mission)
+        if var mission = try await missionActor.getMission(missionId: missionId)?.toMission(getImagePath: getImagePath) {
+            mission.participants = mission.participants.filter { $0.id != userId }
+            try await missionActor.upsert(mission: mission)
+        }
     }
     
     private func getImagePath(_ fileName: String) -> String? {
