@@ -9,6 +9,7 @@ struct RequestUtils {
     
     static func getDefaultSession() -> URLSession {
         let config = URLSessionConfiguration.default
+        config.waitsForConnectivity = true
         config.timeoutIntervalForRequest = 20
         return URLSession(configuration: config)
     }
