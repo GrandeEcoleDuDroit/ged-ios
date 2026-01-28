@@ -58,11 +58,7 @@ class MissionDetailsViewModel: ViewModel {
     }
     
     func removeParticipant(userId: String) {
-        guard let userId = uiState.currentUser?.id else {
-            return
-        }
         let missionId = missionId
-        
         performRequest { [weak self] in
             try await self?.missionRepository.removeParticipant(missionId: missionId, userId: userId)
         }
