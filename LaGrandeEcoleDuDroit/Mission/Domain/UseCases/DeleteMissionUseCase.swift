@@ -1,16 +1,16 @@
 class DeleteMissionUseCase {
     private let missionRepository: MissionRepository
     private let imageRepository: ImageRepository
-    private let missionTaskReferences: MissionTaskQueue
+    private let missionTaskQueue: MissionTaskQueue
 
     init(
         missionRepository: MissionRepository,
         imageRepository: ImageRepository,
-        missionTaskReferences: MissionTaskQueue
+        missionTaskQueue: MissionTaskQueue
     ) {
         self.missionRepository = missionRepository
         self.imageRepository = imageRepository
-        self.missionTaskReferences = missionTaskReferences
+        self.missionTaskQueue = missionTaskQueue
     }
     
     func execute(mission: Mission) async throws {
@@ -18,7 +18,7 @@ class DeleteMissionUseCase {
             case .draft: try await missionRepository.deleteLocalMission(missionId: mission.id)
                 
             case let .publishing(imagePath):
-                await missionTaskReferences.cancelTask(for: mission.id)
+                await missionTaskQueue.cancelTask(for: mission.id)
                 try await missionRepository.deleteLocalMission(missionId: mission.id)
                 if let imagePath {
                     try await imageRepository.deleteLocalImage(imagePath: imagePath)

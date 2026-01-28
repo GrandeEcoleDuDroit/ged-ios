@@ -8,15 +8,15 @@ class RecreateAnnouncementUseCaseTest {
         // Given
         let announcement = announcementFixture
         let announcementSetPublished = AnnouncementSetPublished()
-        let announcementTaskReferences = AnnouncementTaskQueue()
+        let announcementTaskQueue = AnnouncementTaskQueue()
         let useCase = RecreateAnnouncementUseCase(
             announcementRepository: announcementSetPublished,
-            announcementTaskReferences: announcementTaskReferences
+            announcementTaskQueue: announcementTaskQueue
         )
         
         // When
         await useCase.execute(announcement: announcement)
-        await announcementTaskReferences.tasks[announcement.id]?.value
+        await announcementTaskQueue.tasks[announcement.id]?.value
 
         // Then
         #expect(announcementSetPublished.announcementSetToPublished)
@@ -27,15 +27,15 @@ class RecreateAnnouncementUseCaseTest {
         // Given
         let announcement = announcementFixture
         let announcementSetError = AnnouncementSetError()
-        let announcementTaskReferences = AnnouncementTaskQueue()
+        let announcementTaskQueue = AnnouncementTaskQueue()
         let useCase = RecreateAnnouncementUseCase(
             announcementRepository: announcementSetError,
-            announcementTaskReferences: announcementTaskReferences
+            announcementTaskQueue: announcementTaskQueue
         )
         
         // When
         await useCase.execute(announcement: announcement)
-        await announcementTaskReferences.tasks[announcement.id]?.value
+        await announcementTaskQueue.tasks[announcement.id]?.value
 
         // Then
         #expect(announcementSetError.announcementSetToError)

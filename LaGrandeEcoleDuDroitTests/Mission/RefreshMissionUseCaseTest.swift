@@ -38,7 +38,7 @@ class RefreshMissionUseCaseTest {
     }
 }
 
-private class SyncronizedMission: MockSynchronizeMissionsUseCase {
+private class SyncronizedMission: MockFetchMissionsUseCase {
     var synchronizedMission: Bool = false
     
     override func execute() async throws {

@@ -42,6 +42,58 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5EB670AA2F29DBA6000577FC /* Exceptions for "LaGrandeEcoleDuDroitTests" folder in "LaGrandeEcoleDuDroit" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				App/Mock/MockFcmTokenRepository.swift,
+				Authentication/Mock/MockAuthenticationRepository.swift,
+				Common/Mock/MockBlockedUserRepository.swift,
+				Common/Mock/MockImageRepository.swift,
+				Common/Mock/MockNavigationRequestUseCase.swift,
+				Common/Mock/MockNetworkMonitor.swift,
+				Common/Mock/MockNotificationApi.swift,
+				Common/Mock/MockRouteRepository.swift,
+				Common/Mock/MockUserRepository.swift,
+				Common/Mock/MockWhiteListRepository.swift,
+				Message/Mock/MockConversationMessageRepository.swift,
+				Message/Mock/MockConversationRepository.swift,
+				Message/Mock/MockMessageNotificationManager.swift,
+				Message/Mock/MockMessageRepository.swift,
+				Message/Mock/MockSendMessageNotificationUseCase.swift,
+				Mission/Mock/MockDeleteMissionUseCase.swift,
+				Mission/Mock/MockMissionRepository.swift,
+				Mission/Mock/MockRefreshMissionsUseCase.swift,
+				Mission/Mock/MockUpsertMissionUseCase.swift,
+				News/Mock/MockAnnouncementRepository.swift,
+			);
+			target = 5EB5784C2CB3CCD3004524AD /* LaGrandeEcoleDuDroit */;
+		};
+		5EB670AB2F29DBA6000577FC /* Exceptions for "LaGrandeEcoleDuDroitTests" folder in "LaGrandeEcoleDuDroitTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				App/Mock/MockFcmTokenRepository.swift,
+				Authentication/Mock/MockAuthenticationRepository.swift,
+				Common/Mock/MockBlockedUserRepository.swift,
+				Common/Mock/MockImageRepository.swift,
+				Common/Mock/MockNavigationRequestUseCase.swift,
+				Common/Mock/MockNetworkMonitor.swift,
+				Common/Mock/MockNotificationApi.swift,
+				Common/Mock/MockRouteRepository.swift,
+				Common/Mock/MockUserRepository.swift,
+				Common/Mock/MockWhiteListRepository.swift,
+				Message/Mock/MockConversationMessageRepository.swift,
+				Message/Mock/MockConversationRepository.swift,
+				Message/Mock/MockMessageNotificationManager.swift,
+				Message/Mock/MockMessageRepository.swift,
+				Message/Mock/MockSendMessageNotificationUseCase.swift,
+				Mission/Mock/MockDeleteMissionUseCase.swift,
+				Mission/Mock/MockMissionRepository.swift,
+				Mission/Mock/MockRefreshMissionsUseCase.swift,
+				Mission/Mock/MockUpsertMissionUseCase.swift,
+				News/Mock/MockAnnouncementRepository.swift,
+			);
+			target = 5EB5785C2CB3CCD4004524AD /* LaGrandeEcoleDuDroitTests */;
+		};
 		5EDC1C052E47A2D000A3C603 /* Exceptions for "LaGrandeEcoleDuDroit" folder in "LaGrandeEcoleDuDroit" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -62,6 +114,10 @@
 		};
 		5EB578602CB3CCD4004524AD /* LaGrandeEcoleDuDroitTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5EB670AA2F29DBA6000577FC /* Exceptions for "LaGrandeEcoleDuDroitTests" folder in "LaGrandeEcoleDuDroit" target */,
+				5EB670AB2F29DBA6000577FC /* Exceptions for "LaGrandeEcoleDuDroitTests" folder in "LaGrandeEcoleDuDroitTests" target */,
+			);
 			path = LaGrandeEcoleDuDroitTests;
 			sourceTree = "<group>";
 		};

@@ -12,6 +12,8 @@ protocol MissionRepository {
     
     func getRemoteMissions() async throws -> [Mission]
     
+    func getLocalMission(missionId: String) async throws -> Mission?
+    
     func createMission(mission: Mission, imageData: Data?) async throws
     
     func updateMission(user: User, mission: Mission, imageData: Data?) async throws
