@@ -52,7 +52,6 @@ class MissionInjector: Injector {
         container.register(FetchMissionsUseCase.self) { resolver in
             FetchMissionsUseCase(
                 missionRepository: resolver.resolve(MissionRepository.self)!,
-                deleteMissionUseCase: resolver.resolve(DeleteMissionUseCase.self)!,
                 upsertMissionUseCase: resolver.resolve(UpsertMissionUseCase.self)!
             )
         }

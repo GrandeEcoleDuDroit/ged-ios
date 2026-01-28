@@ -15,7 +15,6 @@ class FetchMissionsUseCaseTest {
         let testUpsertMissionUseCase = TestUpsertMissionUseCase()
         let useCase = FetchMissionsUseCase(
             missionRepository: testMissionsRepository,
-            deleteMissionUseCase: TestDeleteMissionUseCase(),
             upsertMissionUseCase: testUpsertMissionUseCase
         )
         
@@ -34,10 +33,8 @@ class FetchMissionsUseCaseTest {
             givenCurrentMissions: currentMissions,
             givenRemoteMissions: []
         )
-        let testDeleteMissionUseCase = TestDeleteMissionUseCase()
         let useCase = FetchMissionsUseCase(
             missionRepository: testMissionsRepository,
-            deleteMissionUseCase: testDeleteMissionUseCase,
             upsertMissionUseCase: MockUpsertMissionUseCase()
         )
         
@@ -45,13 +42,14 @@ class FetchMissionsUseCaseTest {
         try? await useCase.execute()
         
         // Then
-        #expect(testDeleteMissionUseCase.deletedMissionIds == currentMissions.map { $0.id })
+        #expect(testMissionsRepository.deletedMissionIds == currentMissions.map { $0.id })
     }
 }
 
 private class TestMissionRepository: MockMissionRepository {
     private let givenCurrentMissions: [Mission]
     private let givenRemoteMissions: [Mission]
+    private(set) var deletedMissionIds: [String] = []
     
     init(
         givenCurrentMissions: [Mission],
@@ -68,13 +66,9 @@ private class TestMissionRepository: MockMissionRepository {
     override func getRemoteMissions() async throws -> [Mission] {
         givenRemoteMissions
     }
-}
-
-private class TestDeleteMissionUseCase: MockDeleteMissionUseCase {
-    private(set) var deletedMissionIds: [String] = []
     
-    override func execute(mission: Mission) async throws {
-        deletedMissionIds.append(mission.id)
+    override func deleteLocalMission(missionId: String) async throws {
+        deletedMissionIds.append(missionId)
     }
 }
 
