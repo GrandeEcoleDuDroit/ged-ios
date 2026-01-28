@@ -97,6 +97,14 @@ struct Mission: Copying, Identifiable, Hashable {
             }
         }
         
+        func getImagePath() -> String? {
+            switch self {
+                case let .publishing(imagePath: imagePath): imagePath
+                case let .error(imagePath: imagePath): imagePath
+                default: nil
+            }
+        }
+        
         enum StateType: String {
             case draftType = "DRAFT"
             case publishingType = "PUBLISHING"

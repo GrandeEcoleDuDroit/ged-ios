@@ -40,13 +40,14 @@ struct MissionDestination: View {
         } else {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                .background(.appBackground)
         }
     }
 }
 
 private struct MissionView: View {
     let user: User
-    let missions: [Mission]?
+    let missions: [Mission]
     let loading: Bool
     let activeFilter: MissionViewModel.MissionFilter
     let filters: [MissionViewModel.MissionFilter]
@@ -62,24 +63,15 @@ private struct MissionView: View {
     @State private var alertMission: Mission?
     
     var body: some View {
-        Group {
-            if let missions {
-                MissionList(
-                    missions: missions,
-                    activeFilter: activeFilter,
-                    filters: filters,
-                    onMissionClick: onMissionClick,
-                    onRefreshMissions: onRefreshMissions,
-                    onMissionFilterChange: onMissionFilterChange,
-                    activeSheet: $activeSheet
-                )
-            } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                    .background(.appBackground)
-                    .padding(.top)
-            }
-        }
+        MissionList(
+            missions: missions,
+            activeFilter: activeFilter,
+            filters: filters,
+            onMissionClick: onMissionClick,
+            onRefreshMissions: onRefreshMissions,
+            onMissionFilterChange: onMissionFilterChange,
+            activeSheet: $activeSheet
+        )
         .loading(loading)
         .navigationTitle(stringResource(.mission))
         .toolbar {

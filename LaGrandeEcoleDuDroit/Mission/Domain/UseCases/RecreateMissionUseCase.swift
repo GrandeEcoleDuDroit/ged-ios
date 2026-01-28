@@ -3,26 +3,21 @@ import Foundation
 class RecreateMissionUseCase {
     private let missionRepository: MissionRepository
     private let imageRepository: ImageRepository
-    private let missionTaskReferences: MissionTaskQueue
+    private let missionTaskQueue: MissionTaskQueue
     
     init(
         missionRepository: MissionRepository,
         imageRepository: ImageRepository,
-        missionTaskReferences: MissionTaskQueue
+        missionTaskQueue: MissionTaskQueue
     ) {
         self.missionRepository = missionRepository
         self.imageRepository = imageRepository
-        self.missionTaskReferences = missionTaskReferences
+        self.missionTaskQueue = missionTaskQueue
     }
     
     func execute(mission: Mission) async {
         let task = Task {
-            let imagePath: String? = switch mission.state {
-                case let .publishing(imagePath: imagePath): imagePath
-                case let .error(imagePath: imagePath): imagePath
-                default: nil
-            }
-            
+            let imagePath = mission.state.getImagePath()
             let imageData: Data? = if let imagePath {
                 try? await imageRepository.getLocalImage(imagePath: imagePath)
             } else {
@@ -39,7 +34,7 @@ class RecreateMissionUseCase {
                     mission: mission.copy { $0.state = .published(imageUrl: imagePath) }
                 )
                 
-                await missionTaskReferences.removeTask(for: mission.id)
+                await missionTaskQueue.removeTask(for: mission.id)
                 
                 if let imagePath {
                     try? await imageRepository.deleteLocalImage(imagePath: imagePath)
@@ -48,10 +43,10 @@ class RecreateMissionUseCase {
                 try? await missionRepository.updateLocalMission(
                     mission: mission.copy { $0.state = .error(imagePath: imagePath) }
                 )
-                await missionTaskReferences.removeTask(for: mission.id)
+                await missionTaskQueue.removeTask(for: mission.id)
             }
         }
         
-        await missionTaskReferences.addTask(task, for: mission.id)
+        await missionTaskQueue.addTask(task, for: mission.id)
     }
 }

@@ -8,15 +8,15 @@ class DeleteAnnouncementUseCaseTest {
         // Given
         let announcement = announcementFixture
         let testAnnouncementRepository = TestAnnouncementRepository()
-        let announcementTaskReferences = AnnouncementTaskQueue()
+        let announcementTaskQueue = AnnouncementTaskQueue()
         let useCase = DeleteAnnouncementUseCase(
             announcementRepository: testAnnouncementRepository,
-            announcementTaskReferences: announcementTaskReferences
+            announcementTaskQueue: announcementTaskQueue
         )
         
         // When
         try? await useCase.execute(announcement: announcement.copy{ $0.state = .published })
-        await announcementTaskReferences.tasks[announcement.id]?.value
+        await announcementTaskQueue.tasks[announcement.id]?.value
         
         // Then
         #expect(testAnnouncementRepository.deleteAnnouncementCalled)
@@ -27,15 +27,15 @@ class DeleteAnnouncementUseCaseTest {
         // Given
         let announcement = announcementFixture
         let announcementDeletedLocally = AnnouncementDeletedLocally()
-        let announcementTaskReferences = AnnouncementTaskQueue()
+        let announcementTaskQueue = AnnouncementTaskQueue()
         let useCase = DeleteAnnouncementUseCase(
             announcementRepository: announcementDeletedLocally,
-            announcementTaskReferences: announcementTaskReferences
+            announcementTaskQueue: announcementTaskQueue
         )
         
         // When
         try? await useCase.execute(announcement: announcement.copy{ $0.state = .draft })
-        await announcementTaskReferences.tasks[announcement.id]?.value
+        await announcementTaskQueue.tasks[announcement.id]?.value
         
         // Then
         #expect(announcementDeletedLocally.deleteLocalAnnouncementCalled)
