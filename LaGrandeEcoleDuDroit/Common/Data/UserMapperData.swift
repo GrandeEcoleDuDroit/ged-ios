@@ -96,7 +96,7 @@ extension UserReport {
             userId: userId,
             reportedUser: reportedUser.toRemote(),
             reporter: reporterInfo.toRemote(),
-            reason: reason.rawValue
+            reason: reason
         )
     }
 }

@@ -259,7 +259,7 @@ extension MissionReport {
         RemoteMissionReport(
             missionId: missionId,
             reporter: reporter.toRemote(),
-            reason: reason.rawValue
+            reason: reason.description
         )
     }
 }

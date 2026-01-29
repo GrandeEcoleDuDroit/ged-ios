@@ -2,7 +2,7 @@ struct UserReport {
     let userId: String
     let reportedUser: ReportedUser
     let reporterInfo: Reporter
-    let reason: Reason
+    let reason: String
     
     struct ReportedUser {
         let fullName: String
@@ -14,13 +14,15 @@ struct UserReport {
         let email: String
     }
     
-    enum Reason: String, Encodable, CaseIterable, CustomStringConvertible {
-        case hackedAccount = "Hacked account"
-        case pretendingToBeSomeoneElse = "Pretending to be someone else"
-        case other = "Other"
+    enum Reason: Encodable, CaseIterable, CustomStringConvertible {
+        case hackedAccount
+        case pretendingToBeSomeoneElse
         
         var description: String {
-            rawValue
+            switch self {
+                case .hackedAccount: stringResource(.hackedAccount)
+                case .pretendingToBeSomeoneElse: stringResource(.pretendingToBeSomeoneElse)
+            }
         }
     }
 }

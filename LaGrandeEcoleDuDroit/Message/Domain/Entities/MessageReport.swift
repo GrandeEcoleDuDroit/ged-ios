@@ -2,7 +2,7 @@ struct MessageReport {
     let conversationId: String
     let messageId: String
     let recipient: Recipient
-    let reason: Reason
+    let reason: String
     
     struct Recipient {
         let fullName: String
@@ -10,16 +10,22 @@ struct MessageReport {
     }
     
     enum Reason: String, CaseIterable, CustomStringConvertible {
-        case nudityOrSexualContent = "Nudity or sexual content"
-        case hateSpeechOrSymbols = "Hate speech or symbols"
-        case spam = "Spam"
-        case bulliingOrHarassment = "Bullying or harassment"
-        case illegalContent = "Illegal content"
-        case scamOrFraud = "Scam or fraud"
-        case other = "Other"
+        case nudityOrSexualContent
+        case hateSpeechOrSymbols
+        case spam
+        case bulliingOrHarassment
+        case illegalContent
+        case scamOrFraud
         
         var description: String {
-            rawValue
+            switch self {
+                case .nudityOrSexualContent: stringResource(.nudityOrSexualContent)
+                case .hateSpeechOrSymbols: stringResource(.hateSpeechOrSymbols)
+                case .spam: stringResource(.spam)
+                case .bulliingOrHarassment: stringResource(.bulliingOrHarassment)
+                case .illegalContent: stringResource(.illegalContent)
+                case .scamOrFraud: stringResource(.scamOrFraud)
+            }
         }
     }
 }

@@ -373,7 +373,7 @@ private struct Sheets: View {
     let onSelectMissionReportClick: () -> Void
     let onSeeParticipantProfileClick: (User) -> Void
     let onRemoveParticipantClick: (User) -> Void
-    let onReportMissionClick: (MissionReport.Reason) -> Void
+    let onReportMissionClick: (String) -> Void
     let onCancelClick: () -> Void
     let onBackClick: () -> Void
     
@@ -407,7 +407,6 @@ private struct Sheets: View {
             case .missionReport:
                 ReportSheet(
                     items: MissionReport.Reason.allCases,
-                    fraction: DimensResource.reportSheetFraction(itemCount: MissionReport.Reason.allCases.count),
                     onReportClick: onReportMissionClick
                 )
                 
