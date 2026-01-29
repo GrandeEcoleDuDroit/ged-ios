@@ -123,7 +123,6 @@ private struct AllAnnouncementsView: View {
                 case let .announcementReport(announcement):
                     ReportSheet(
                         items: AnnouncementReport.Reason.allCases,
-                        fraction: DimensResource.reportSheetFraction(itemCount: AnnouncementReport.Reason.allCases.count),
                         onReportClick: { reason in
                             activeSheet = nil
                             onReportAnnouncementClick(

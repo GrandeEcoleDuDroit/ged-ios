@@ -2,7 +2,7 @@ struct AnnouncementReport: Encodable {
     let announcementId: String
     let author: Author
     let reporter: Reporter
-    let reason: Reason
+    let reason: String
     
     struct Author: Encodable {
         let fullName: String
@@ -14,16 +14,21 @@ struct AnnouncementReport: Encodable {
         let email: String
     }
     
-    enum Reason: String, Encodable, CaseIterable, CustomStringConvertible {
-        case sellingPromotingInappropriateContent = "Selling or promoting inappropriate content"
-        case violentHatefulContent = "Violent or hateful content"
-        case spamScam = "Spam or scam"
-        case falseInformation = "False information"
-        case intellectualPropertyViolation = "Intellectual property violation"
-        case other = "Other"
+    enum Reason: Encodable, CaseIterable, CustomStringConvertible {
+        case sellingPromotingInappropriateContent
+        case violentHatefulContent
+        case spamScam
+        case falseInformation
+        case intellectualPropertyViolation
         
         var description: String {
-            rawValue
+            switch self {
+                case .sellingPromotingInappropriateContent: stringResource(.sellingPromotingInappropriateContentReportReason)
+                case .violentHatefulContent: stringResource(.violentHatefulContentReportReason)
+                case .spamScam: stringResource(.spamScamReportReason)
+                case .falseInformation: stringResource(.falseInformationReportReason)
+                case .intellectualPropertyViolation: stringResource(.intellectualPropertyViolationReportReason)
+            }
         }
     }
 }

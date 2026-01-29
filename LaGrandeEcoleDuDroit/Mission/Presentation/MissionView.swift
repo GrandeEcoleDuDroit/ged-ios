@@ -110,7 +110,6 @@ private struct MissionView: View {
                 case let .missionReport(mission):
                     ReportSheet(
                         items: MissionReport.Reason.allCases,
-                        fraction: DimensResource.reportSheetFraction(itemCount: MissionReport.Reason.allCases.count),
                         onReportClick: { reason in
                         activeSheet = nil
                         onReportMissionClick(
@@ -228,7 +227,7 @@ private enum MissionViewSheet: Identifiable {
 #Preview {
     NavigationStack {
         MissionView(
-            user: userFixture,
+            user: userFixture3,
             missions: missionsFixture,
             loading: false,
             activeFilter: .open,
