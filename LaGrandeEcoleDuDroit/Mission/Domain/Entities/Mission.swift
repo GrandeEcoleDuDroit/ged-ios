@@ -15,36 +15,6 @@ struct Mission: Copying, Identifiable, Hashable {
     var tasks: [MissionTask]
     var state: MissionState
     
-    init(
-        id: String,
-        title: String,
-        description: String,
-        date: Date,
-        startDate: Date,
-        endDate: Date,
-        schoolLevels: [SchoolLevel],
-        duration: String?,
-        managers: [User],
-        participants: [User],
-        maxParticipants: Int,
-        tasks: [MissionTask],
-        state: MissionState
-    ) {
-        self.id = id
-        self.title = title
-        self.description = description
-        self.date = date
-        self.startDate = startDate
-        self.endDate = endDate
-        self.schoolLevels = schoolLevels
-        self.duration = duration
-        self.managers = managers
-        self.participants = participants
-        self.maxParticipants = maxParticipants
-        self.tasks = tasks
-        self.state = state
-    }
-    
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }

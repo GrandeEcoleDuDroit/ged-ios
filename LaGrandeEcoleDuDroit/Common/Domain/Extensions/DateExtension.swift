@@ -53,4 +53,8 @@ extension Date {
         }
         return formatter.string(from: self)
     }
+    
+    func withoutTime() -> Date {
+        Calendar.current.startOfDay(for: self)
+    }
 }
