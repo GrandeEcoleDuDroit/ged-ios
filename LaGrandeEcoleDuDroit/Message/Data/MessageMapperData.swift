@@ -117,7 +117,7 @@ extension MessageReport {
             conversationId: conversationId,
             messageId: messageId,
             recipient: recipient.toRemote(),
-            reason: reason.rawValue
+            reason: reason
         )
     }
 }

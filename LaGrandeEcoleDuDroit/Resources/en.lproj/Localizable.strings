@@ -58,6 +58,7 @@
 "unblock" = "Unblock";
 "confirm" = "Confirm";
 "remove" = "Remove";
+"submit" = "Submit";
 "block_user_alert_title" = "Block user?";
 "block_user_alert_message" = "You will no longer see any of their content.";
 "unblock_user_alert_message" = "Do you want to unblock this user?";
@@ -66,6 +67,15 @@
 "deleted_user_first_name" = "Deleted";
 "deleted_user_last_name" = "User";
 "mb" = "MB";
+"selling_promoting_inappropriate_content_report_reason" = "Selling or promoting inappropriate content";
+"violent_hateful_content_report_reason" = "Violent or hateful content";
+"spam_scam_report_reason" = "Spam or scam";
+"false_information_report_reason" = "False information";
+"intellectual_property_violation_report_reason" = "Intellectual property violation";
+"other_report_reason" = "Other";
+"other_report_reason_placeholder" = "Enter reason";
+"hacked_account" = "Hacked account";
+"pretending_to_be_someone_else" = "Pretending to be someone else";
 
 // Common error
 "mandatory_field_error" = "Mandatory field";
@@ -152,6 +162,12 @@
 "delete_message_alert_content" = "Do you want to delete this message?";
 "chat_blocked_user_indicator_text" = "You cannot send messages to this user unless you unblock them.";
 "resend" = "Resend";
+"nudity_or_sexual_content" = "Nudity or sexual content";
+"hate_speech_or_symbols" = "Hate speech or symbols";
+"spam" = "Spam";
+"bullying_or_harassment" = "Bullying or harassment";
+"illegal_content" = "Illegal content";
+"scam_or_fraud" = "Scam or fraud";
 
 // Message error
 "message_failed_to_send_error" = "Failed to send message.";

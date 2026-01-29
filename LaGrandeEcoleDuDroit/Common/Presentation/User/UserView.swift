@@ -96,7 +96,6 @@ private struct UserView: View {
                 case .userReport:
                     ReportSheet(
                         items: UserReport.Reason.allCases,
-                        fraction: DimensResource.reportSheetFraction(itemCount: UserReport.Reason.allCases.count),
                         onReportClick: { reason in
                             activeSheet = nil
                             onReportUserClick(

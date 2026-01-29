@@ -178,7 +178,6 @@ private struct ChatView: View {
                 case let .messageReport(message):
                     ReportSheet(
                         items: MessageReport.Reason.allCases,
-                        fraction: DimensResource.reportSheetFraction(itemCount: MessageReport.Reason.allCases.count),
                         onReportClick: { reason in
                             activeSheet = nil
                             onReportMessageClick(
