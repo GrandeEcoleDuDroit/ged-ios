@@ -2,27 +2,42 @@ import Foundation
 
 extension Array<Mission> {
     func missionSorting() -> [Mission] {
-        func priority(_ mission: Mission) -> Int {
+        func priority(_ mission: Mission) -> Priority {
             switch mission {
-                case _ where mission.state.type != Mission.MissionState.StateType.publishedType: 0
-                case _ where !mission.completed: 1
-                default: 2
+                case _ where mission.state.type != Mission.MissionState.StateType.publishedType: .first
+                case _ where !mission.completed: .second
+                default: .third
+            }
+        }
+        
+        func compareNotCompletedMission(_ lhs: Mission, _ rhs: Mission) -> Bool {
+            if let startDateResult = lhs.startDate.withoutTime().compare(rhs.startDate.withoutTime())
+                .takeUnless({ $0 == .orderedSame })?
+                .letBlock({ $0 == .orderedAscending })
+            {
+                return startDateResult
+            } else if let endDateResult = lhs.endDate.withoutTime().compare(rhs.endDate.withoutTime())
+                .takeUnless({ $0 == .orderedSame })?
+                .letBlock({ $0 == .orderedAscending })
+            {
+                return endDateResult
+            } else {
+                return lhs.date.compare(rhs.date) == .orderedDescending
             }
         }
         
         return sorted { lhs, rhs in
-            let pa = priority(lhs)
-            let pb = priority(rhs)
+            let pl = priority(lhs)
+            let pr = priority(rhs)
 
-            if pa != pb {
-                return pa < pb
+            if pl != pr {
+                return pl < pr
             }
 
-            return switch pa {
-                case 0: lhs.date < rhs.date
-                case 1: abs(lhs.startDate.timeIntervalSinceNow) <= abs(rhs.startDate.timeIntervalSinceNow)
-                case 2: lhs.endDate > rhs.endDate
-                default: lhs.date < rhs.date
+            return switch pl {
+                case .first: lhs.date > rhs.date
+                case .second: compareNotCompletedMission(lhs, rhs)
+                case .third: lhs.endDate > rhs.endDate
             }
         }
     }
