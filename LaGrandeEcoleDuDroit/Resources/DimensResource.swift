@@ -26,6 +26,7 @@ struct DimensResource {
     static func reportSheetFraction(itemCount: Int) -> CGFloat {
         defaultSheetFraction + CGFloat(additionalSheetItemFraction * CGFloat(itemCount))
     }
+    static let sheetItemSpacing: CGFloat = 30
     
     static let chipPadding = PaddingValues(horizontal: smallPadding)
     static let chipMinHeight: CGFloat = 32

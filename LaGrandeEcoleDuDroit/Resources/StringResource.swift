@@ -52,6 +52,7 @@ enum StringResource: String {
     case unblock = "unblock"
     case confirm = "confirm"
     case remove = "remove"
+    case submit = "submit"
     case blockUserAlertTitle = "block_user_alert_title"
     case blockUserAlertMessage = "block_user_alert_message"
     case unblockUserAlertMessage = "unblock_user_alert_message"
@@ -60,6 +61,15 @@ enum StringResource: String {
     case deletedUserFirstName = "deleted_user_first_name"
     case deletedUserLastName = "deleted_user_last_name"
     case mb = "mb"
+    case sellingPromotingInappropriateContentReportReason = "selling_promoting_inappropriate_content_report_reason"
+    case violentHatefulContentReportReason = "violent_hateful_content_report_reason"
+    case spamScamReportReason = "spam_scam_report_reason"
+    case falseInformationReportReason = "false_information_report_reason"
+    case intellectualPropertyViolationReportReason = "intellectual_property_violation_report_reason"
+    case otherReportReason = "other_report_reason"
+    case otherReportSheetPlaceholder = "other_report_reason_placeholder"
+    case hackedAccount = "hacked_account"
+    case pretendingToBeSomeoneElse = "pretending_to_be_someone_else"
     
     // Common errors
     case mandatoryFieldError = "mandatory_field_error"
@@ -148,6 +158,12 @@ enum StringResource: String {
     case deleteMessageAlertContent = "delete_message_alert_content"
     case chatBlockedUserIndicatorText = "chat_blocked_user_indicator_text"
     case resend = "resend"
+    case nudityOrSexualContent = "nudity_or_sexual_content"
+    case hateSpeechOrSymbols = "hate_speech_or_symbols"
+    case spam = "spam"
+    case bulliingOrHarassment = "bullying_or_harassment"
+    case illegalContent = "illegal_content"
+    case scamOrFraud = "scam_or_fraud"
     
     // Message error
     case messageFailedToSendError = "message_failed_to_send_error"
