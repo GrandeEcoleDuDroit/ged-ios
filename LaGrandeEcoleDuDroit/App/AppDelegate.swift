@@ -14,6 +14,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         FirebaseApp.configure()
         configureFirestoreDb()
         registerForPushNotifications(application: application)
+        #if DEBUG
+        triggerLocalNetworkPrivacyAlert()
+        #endif
         runStartupTasks()
         return true
     }
