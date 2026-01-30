@@ -119,12 +119,14 @@
 "level" = "Level";
 "enter_names" = "Enter your name";
 "enter_email_password" = "Enter your email and password";
-"forgot_password" = "Forgot Password?";
-"forgot_password_description" = "Enter your email address";
-"forgot_password_success" = "If an account with this email exists, a password reset email will be sent.";
+"enter_email" = "Enter your email";
 "agree_terms_privacy_beginning_text" = "I read and agree to the";
 "terms_and_privacy" = "Terms of Use and Privacy Policy";
 "password_registration_field_supporting_text" = "The password must be at least 8 characters long.";
+"forgotten_password" = "Forgotten password";
+"forgotten_password_button_text" = "Forgotten password?";
+"forgotten_password_information_text" = "Enter your email address";
+"forgotten_password_sucess_message" = "If an account is associated with this email address, a reset link will be sent.";
 
 // Authentification errors
 "incorrect_email_format_error" = "Please enter a valid email address.";

@@ -3,7 +3,6 @@ import Combine
 
 class AuthenticationApiImpl: AuthenticationApi {
     private let firebaseAuth = Auth.auth()
-    private let tag = String(describing: AuthenticationApiImpl.self)
     
     func listenAuthenticationState() -> AnyPublisher<AuthenticationState, Never> {
        let subject = PassthroughSubject<AuthenticationState, Never>()
@@ -60,7 +59,6 @@ class AuthenticationApiImpl: AuthenticationApi {
         do {
             return try await firebaseAuth.signIn(withEmail: email, password: password).user.uid
         } catch {
-            e(tag, "Failed to login with email and password")
             throw mapError(error)
         }
     }
@@ -69,7 +67,6 @@ class AuthenticationApiImpl: AuthenticationApi {
         do {
             return try await firebaseAuth.createUser(withEmail: email, password: password).user.uid
         } catch {
-            e(tag, "Failed to register with email and password")
             throw mapError(error)
         }
     }
@@ -82,7 +79,6 @@ class AuthenticationApiImpl: AuthenticationApi {
         do {
             try await firebaseAuth.sendPasswordReset(withEmail: email)
         } catch {
-            e(tag, "Failed to reset password")
             throw mapError(error)
         }
     }

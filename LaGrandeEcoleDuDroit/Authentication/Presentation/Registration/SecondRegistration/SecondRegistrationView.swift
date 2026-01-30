@@ -32,25 +32,9 @@ private struct SecondRegistrationView: View {
                     Text(stringResource(.selectSchoolLevel))
                         .font(.title3)
                     
-                    HStack {
-                        Text(stringResource(.level))
-                        
-                        Spacer()
-                        
-                        Picker(
-                            stringResource(.selectSchoolLevel),
-                            selection: $schoolLevel
-                        ) {
-                            ForEach(schoolLevels) { level in
-                                Text(level.rawValue).tag(level)
-                            }
-                        }
-                    }
-                    .padding(.horizontal, DimensResource.mediumPadding)
-                    .padding(.vertical, 10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(.outline, lineWidth: 1)
+                    OutlinedSchoolLevelPicker(
+                        schoolLevels: schoolLevels,
+                        schoolLevel: $schoolLevel
                     )
                 }
                 .padding(.horizontal)
@@ -71,6 +55,34 @@ private struct SecondRegistrationView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle(stringResource(.registration))
+    }
+}
+
+private struct OutlinedSchoolLevelPicker: View {
+    let schoolLevels: [SchoolLevel]
+    @Binding var schoolLevel: SchoolLevel
+    
+    var body: some View {
+        HStack {
+            Text(stringResource(.level))
+            
+            Spacer()
+            
+            Picker(
+                stringResource(.selectSchoolLevel),
+                selection: $schoolLevel
+            ) {
+                ForEach(schoolLevels) { level in
+                    Text(level.rawValue).tag(level)
+                }
+            }
+        }
+        .padding(.horizontal, DimensResource.mediumPadding)
+        .padding(.vertical, 10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 5)
+                .stroke(.outline, lineWidth: 1)
+        )
     }
 }
 
