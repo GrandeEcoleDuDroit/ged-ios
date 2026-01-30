@@ -73,6 +73,14 @@ class AppInjector: Injector {
             )
         }
         
+        container.register(LogoutUseCase.self) { resolver in
+            LogoutUseCase(
+                userRepository: CommonInjector.shared.resolve(UserRepository.self),
+                authenticationRepository: AuthenticationInjector.shared.resolve(AuthenticationRepository.self),
+                fcmTokenRepository: CommonInjector.shared.resolve(FcmTokenRepository.self)
+            )
+        }
+        
         // View models
         container.register(MainViewModel.self) { resolver in
             MainViewModel(
