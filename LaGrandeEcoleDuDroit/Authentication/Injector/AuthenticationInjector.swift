@@ -46,13 +46,5 @@ class AuthenticationInjector: Injector {
                 whiteListRepository: CommonInjector.shared.resolve(WhiteListRepository.self)
             )
         }
-        
-        container.register(LogoutUseCase.self) { resolver in
-            LogoutUseCase(
-                userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
-                fcmTokenRepository: CommonInjector.shared.resolve(FcmTokenRepository.self)
-            )
-        }
     }
 }

@@ -4,6 +4,7 @@ import Foundation
 
 struct AppNavigation: View {
     @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(AppNavigationViewModel.self)
+    @StateObject private var appStateManager = AppStateManager()
     
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
@@ -15,6 +16,8 @@ struct AppNavigation: View {
                 )
             }
         }
+        .loading(appStateManager.state.loading)
+        .environmentObject(appStateManager)
     }
 }
 
@@ -22,6 +25,8 @@ private struct TabContent: View {
     let tab: TopLevelDestination
     let icon: String
     let badge: Int
+    
+    @EnvironmentObject private var appStateManager: AppStateManager
     
     init(
         tab: TopLevelDestination,
@@ -39,7 +44,7 @@ private struct TabContent: View {
                 case .home: NewsNavigation()
                 case .message: MessageNavigation().badge(badge)
                 case .mission: MissionNavigation()
-                case .profile: ProfileNavigation()
+                case .profile: ProfileNavigation().environmentObject(appStateManager)
             }
         }
         .tabItem {
