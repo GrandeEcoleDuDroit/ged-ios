@@ -42,7 +42,10 @@ private struct ThirdRegistrationView: View {
     var body: some View {
         VStack {
             ScrollView {
-                VStack(spacing: DimensResource.mediumPadding) {
+                VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
+                    Text(stringResource(.enterEmailPassword))
+                        .font(.title3)
+                    
                     FormContent(
                         email: $email,
                         password: $password,
@@ -95,9 +98,6 @@ private struct FormContent: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
-            Text(stringResource(.enterEmailPassword))
-                .font(.title3)
-            
             OutlinedTextField(
                 stringResource(.email),
                 text: $email,
