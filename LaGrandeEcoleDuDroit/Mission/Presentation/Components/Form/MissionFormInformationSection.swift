@@ -33,7 +33,7 @@ struct MissionFormInformationSection: View {
                 onDateChange: onEndDateChange
             )
             
-            OutlinedSchoolLevelPicker(
+            OutlinedSchoolLevelsPicker(
                 selectedSchoolLevels: selectedSchoolLevels,
                 onSelectedSchoolLevelChange: onSchoolLevelChange,
                 allSchoolLevels: allSchoolLevels,
@@ -113,7 +113,7 @@ private struct OutlinedDatePicker: View {
     }
 }
 
-struct OutlinedSchoolLevelPicker: View {
+struct OutlinedSchoolLevelsPicker: View {
     let selectedSchoolLevels: [SchoolLevel]
     let onSelectedSchoolLevelChange: (SchoolLevel) -> Void
     let allSchoolLevels: [SchoolLevel]
@@ -169,7 +169,7 @@ struct OutlinedSchoolLevelPicker: View {
         onDateChange: { _ in }
     )
     
-    OutlinedSchoolLevelPicker(
+    OutlinedSchoolLevelsPicker(
         selectedSchoolLevels: [.ged1, .ged2, .ged3, .ged4],
         onSelectedSchoolLevelChange: { _ in },
         allSchoolLevels: SchoolLevel.all,

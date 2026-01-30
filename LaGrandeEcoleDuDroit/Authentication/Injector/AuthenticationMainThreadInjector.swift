@@ -31,5 +31,11 @@ class AuthenticationMainThreadInjector: MainThreadInjector {
                 registerUseCase:  AuthenticationInjector.shared.resolve(RegisterUseCase.self)
             )
         }
+        
+        container.register(ForgottenPasswordViewModel.self) { resolver in
+            ForgottenPasswordViewModel(
+                authenticationRepository: AuthenticationInjector.shared.resolve(AuthenticationRepository.self)
+            )
+        }
     }
 }
