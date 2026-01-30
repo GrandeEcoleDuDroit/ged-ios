@@ -6,6 +6,7 @@ struct ProfileDestination: View {
     let onPrivacyClick: () -> Void
     
     @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(ProfileViewModel.self)
+    @EnvironmentObject private var appStateManager: AppStateManager
     @State private var errorMessage: String = ""
     @State private var showErrorAlert: Bool = false
     
@@ -18,6 +19,13 @@ struct ProfileDestination: View {
                 onPrivacyClick: onPrivacyClick,
                 onLogoutClick: viewModel.logout
             )
+            .onChange(of: viewModel.uiState.loading) { loading in
+                if loading {
+                    appStateManager.updateState(.logginOut)
+                } else if appStateManager.state == .logginOut {
+                    appStateManager.resetState()
+                }
+            }
             .onReceive(viewModel.$event) { event in
                 if let errorEvent = event as? ErrorEvent {
                     errorMessage = errorEvent.message

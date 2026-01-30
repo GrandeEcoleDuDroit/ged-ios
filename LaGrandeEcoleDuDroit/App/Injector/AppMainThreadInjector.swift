@@ -28,7 +28,7 @@ class AppMainThreadInjector: MainThreadInjector {
         container.register(ProfileViewModel.self) { resolver in
             ProfileViewModel(
                 userRepository: CommonInjector.shared.resolve(UserRepository.self),
-                logoutUseCase: AuthenticationInjector.shared.resolve(LogoutUseCase.self)
+                logoutUseCase: AppInjector.shared.resolve(LogoutUseCase.self)
             )
         }
         
