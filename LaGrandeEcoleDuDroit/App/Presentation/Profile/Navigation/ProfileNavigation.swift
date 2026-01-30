@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProfileNavigation: View {
     @StateObject private var viewModel = AppMainThreadInjector.shared.resolve(ProfileNavigationViewModel.self)
+    @EnvironmentObject private var appStateManager: AppStateManager
 
     var body: some View {
         NavigationStack(path: $viewModel.path) {
@@ -10,6 +11,7 @@ struct ProfileNavigation: View {
                 onAccountClick: { viewModel.path.append(.account) },
                 onPrivacyClick: { viewModel.path.append(.privacy) }
             )
+            .environmentObject(appStateManager)
             .toolbar(viewModel.path.isEmpty ? .visible : .hidden, for: .tabBar)
             .background(.profileSectionBackground)
             .navigationDestination(for: ProfileRoute.self) { route in
