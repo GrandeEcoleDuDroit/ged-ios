@@ -4,19 +4,21 @@ struct AuthenticationForm: View {
     @Binding var email: String
     @Binding var password: String
     let loading: Bool
+    @FocusState var focusState: AuthenticationFocusField?
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
     let onForgottenPasswordClick: () -> Void
     let onLoginClick: () -> Void
     let onRegisterClick: () -> Void
-    
+
     var body: some View {
         VStack(spacing: DimensResource.mediumPadding) {
             CredentialsInputs(
                 email: $email,
                 password: $password,
                 loading: loading,
+                focusState: _focusState,
                 emailError: emailError,
                 passwordError: passwordError,
                 errorMessage: errorMessage,
@@ -26,11 +28,13 @@ struct AuthenticationForm: View {
             LoadingButton(
                 label: stringResource(.login),
                 loading: loading,
-                action: onLoginClick
+                action: {
+                    focusState = nil
+                    onLoginClick()
+                }
             )
             
             RegistrationText(onRegisterClick: onRegisterClick)
-            
         }
     }
 }
@@ -39,6 +43,7 @@ private struct CredentialsInputs: View {
     @Binding var email: String
     @Binding var password: String
     let loading: Bool
+    @FocusState var focusState: AuthenticationFocusField?
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
@@ -50,7 +55,9 @@ private struct CredentialsInputs: View {
                 stringResource(.email),
                 text: $email,
                 disabled: loading,
-                errorMessage: emailError
+                errorMessage: emailError,
+                focusState: _focusState,
+                field: .email
             )
             .keyboardType(.emailAddress)
             .textContentType(.emailAddress)
@@ -60,7 +67,9 @@ private struct CredentialsInputs: View {
                 stringResource(.password),
                 text: $password,
                 disabled: loading,
-                errorMessage: passwordError
+                errorMessage: passwordError,
+                focusState: _focusState,
+                field: .password
             )
             .textContentType(.password)
             
@@ -70,9 +79,12 @@ private struct CredentialsInputs: View {
                     .foregroundStyle(.error)
             }
             
-            Button(stringResource(.forgottenPasswordButtonText), action: onForgottenPasswordClick)
-                .font(.callout)
-                .fontWeight(.medium)
+            Button(
+                stringResource(.forgottenPasswordButtonText),
+                action: onForgottenPasswordClick
+            )
+            .font(.callout)
+            .fontWeight(.medium)
         }
     }
 }
@@ -101,8 +113,8 @@ private struct RegistrationText: View {
         emailError: nil,
         passwordError: nil,
         errorMessage: nil,
-        onForgottenPasswordClick: {}
-        , onLoginClick: {},
+        onForgottenPasswordClick: {},
+        onLoginClick: {},
         onRegisterClick: {}
     )
 }
