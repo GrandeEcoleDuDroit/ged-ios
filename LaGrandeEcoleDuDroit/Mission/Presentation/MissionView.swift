@@ -130,7 +130,7 @@ private struct MissionView: View {
                     
                 case let .editMission(mission):
                     EditMissionDestination(
-                        onBackClick: { activeSheet = nil },
+                        onCancelClick: { activeSheet = nil },
                         mission: mission
                     )
             }
