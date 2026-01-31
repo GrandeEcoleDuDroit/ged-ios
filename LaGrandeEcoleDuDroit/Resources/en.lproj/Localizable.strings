@@ -59,6 +59,7 @@
 "confirm" = "Confirm";
 "remove" = "Remove";
 "submit" = "Submit";
+"copy" = "Copy";
 "block_user_alert_title" = "Block user?";
 "block_user_alert_message" = "You will no longer see any of their content.";
 "unblock_user_alert_message" = "Do you want to unblock this user?";

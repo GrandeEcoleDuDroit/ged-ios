@@ -8,6 +8,7 @@ struct MessageFeed: View {
     let loadMoreMessages: (Int) -> Void
     let newMessagesEventPublisher: AnyPublisher<Message, Never>
     let onErrorMessageClick: (Message) -> Void
+    let onSentMessageLongClick: (Message) -> Void
     let onReceivedMessageLongClick: (Message) -> Void
     let onInterlocutorProfilePictureClick: () -> Void
     
@@ -32,6 +33,7 @@ struct MessageFeed: View {
                         condition: messageCondition,
                         interlocutor: conversation.interlocutor,
                         onErrorMessageClick: onErrorMessageClick,
+                        onSentMessageLongClick: onSentMessageLongClick,
                         onReceivedMessageLongClick: onReceivedMessageLongClick,
                         onInterlocutorProfilePictureClick: onInterlocutorProfilePictureClick
                     )
@@ -80,23 +82,29 @@ private struct MessageListContent: View {
     let condition: MessageCondition
     let interlocutor: User
     let onErrorMessageClick: (Message) -> Void
+    let onSentMessageLongClick: (Message) -> Void
     let onReceivedMessageLongClick: (Message) -> Void
     let onInterlocutorProfilePictureClick: () -> Void
     
     var body: some View {
-        MessageItem(
-            message: message,
-            interlocutorId: interlocutor.id,
-            showSeen: condition.showSeenMessage,
-            displayProfilePicture: condition.displayProfilePicture,
-            profilePictureUrl: interlocutor.profilePictureUrl,
-            onErrorMessageClick: onErrorMessageClick,
-            onLongClick: {
-                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                onReceivedMessageLongClick(message)
-            },
-            onInterlocutorProfilePictureClick: onInterlocutorProfilePictureClick
-        )
+        Group {
+            if message.senderId == interlocutor.id {
+                ReceiveMessageItem(
+                    message: message,
+                    profilePictureUrl: interlocutor.profilePictureUrl,
+                    displayProfilePicture: condition.displayProfilePicture,
+                    onLongClick: { onReceivedMessageLongClick(message) },
+                    onInterlocutorProfilePictureClick: onInterlocutorProfilePictureClick
+                )
+            } else {
+                SentMessageItem(
+                    message: message,
+                    showSeen: condition.showSeenMessage,
+                    onClick: { onErrorMessageClick(message) },
+                    onLongClick: { onSentMessageLongClick(message) },
+                )
+            }
+        }
         .padding(.top, messageTopPadding)
         
         if condition.isOldestMessage || !condition.sameDay {
@@ -121,37 +129,6 @@ private struct MessageListContent: View {
             0
         } else {
             DimensResource.mediumPadding
-        }
-    }
-}
-
-private struct MessageItem: View {
-    let message: Message
-    let interlocutorId: String
-    let showSeen: Bool
-    let displayProfilePicture: Bool
-    let profilePictureUrl: String?
-    let onErrorMessageClick: (Message) -> Void
-    let onLongClick: () -> Void
-    let onInterlocutorProfilePictureClick: () -> Void
-    
-    var body: some View {
-        if message.senderId == interlocutorId {
-            ReceiveMessageItem(
-                message: message,
-                profilePictureUrl: profilePictureUrl,
-                displayProfilePicture: displayProfilePicture,
-                onLongClick: onLongClick,
-                onInterlocutorProfilePictureClick: onInterlocutorProfilePictureClick
-            )
-        } else {
-            VStack(alignment: .trailing) {
-                SentMessageItem(
-                    message: message,
-                    showSeen: showSeen,
-                    onClick: { onErrorMessageClick(message) }
-                )
-            }
         }
     }
 }
@@ -219,6 +196,7 @@ private struct MessageCondition {
         loadMoreMessages: { _ in },
         newMessagesEventPublisher: Empty().eraseToAnyPublisher(),
         onErrorMessageClick: { _ in },
+        onSentMessageLongClick: { _ in },
         onReceivedMessageLongClick: { _ in },
         onInterlocutorProfilePictureClick: {}
     )

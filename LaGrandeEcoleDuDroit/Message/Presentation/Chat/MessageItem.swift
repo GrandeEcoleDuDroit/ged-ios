@@ -4,6 +4,7 @@ struct SentMessageItem: View {
     let message: Message
     let showSeen: Bool
     let onClick: () -> Void
+    let onLongClick: () -> Void
         
     var body: some View {
         HStack(alignment: .bottom) {
@@ -15,6 +16,12 @@ struct SentMessageItem: View {
                         backgroundColor: .gedPrimary,
                         textColor: .white,
                         dateColor: Color(UIColor.lightText)
+                    )
+                    .onTapGesture(perform: onClick)
+                    .simultaneousGesture(
+                        LongPressGesture().onEnded { _ in
+                            onLongClick()
+                        }
                     )
                 }
                 .clipShape(.rect(cornerRadius: 14))
@@ -74,10 +81,8 @@ struct ReceiveMessageItem: View {
                 backgroundColor: .chatInputBackground,
                 textColor: .primary,
                 dateColor: .gray
-            ).onLongPressGesture {
-                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                onLongClick()
-            }
+            )
+            .onLongPressGesture(perform: onLongClick)
         }
         .padding(.trailing, DimensResource.veryExtraLargePadding)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -102,9 +107,9 @@ private struct MessageBubble: View {
                 .font(.caption)
         }
         .padding(.vertical, 10)
-        .padding(.horizontal, DimensResource.mediumPadding)
+        .padding(.horizontal, DimensResource.smallMediumPadding)
         .background(backgroundColor)
-        .clipShape(.rect(cornerRadius: DimensResource.mediumPadding))
+        .clipShape(.rect(cornerRadius: DimensResource.smallMediumPadding))
     }
 }
 
@@ -225,25 +230,29 @@ struct MessageBlockedUserIndicator: View {
             SentMessageItem(
                 message: messageFixture.copy { $0.state = .error },
                 showSeen: false,
-                onClick: {}
+                onClick: {},
+                onLongClick: {}
             )
             
             SentMessageItem(
                 message: messageFixture.copy { $0.content = longAnnouncementFixture.content },
                 showSeen: false,
-                onClick: {}
+                onClick: {},
+                onLongClick: {}
             )
             
             SentMessageItem(
                 message: messageFixture.copy { $0.state = .sending },
                 showSeen: false,
-                onClick: {}
+                onClick: {},
+                onLongClick: {}
             )
             
             SentMessageItem(
                 message: messageFixture,
                 showSeen: true,
-                onClick: {}
+                onClick: {},
+                onLongClick: {}
             )
             
             NewMessageIndicator(onClick: {})
