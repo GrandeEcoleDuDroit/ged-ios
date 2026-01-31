@@ -2,7 +2,8 @@ import SwiftUI
 
 struct AuthenticationNavigation: View {
     @State private var path: [AuthenticationRoute] = []
-    
+    @StateObject private var appStateManager = AppStateManager()
+
     var body: some View {
         NavigationStack(path: $path) {
             AuthenticationDestination(
@@ -45,6 +46,7 @@ struct AuthenticationNavigation: View {
                             schoolLevel: schoolLevel
                         )
                         .background(Color.appBackground.ignoresSafeArea(.all))
+                        .environmentObject(appStateManager)
                         
                     case .forgottenPassword:
                         ForgottenPasswordDestination()
@@ -52,6 +54,7 @@ struct AuthenticationNavigation: View {
                 }
             }
         }
+        .loading(appStateManager.state.loading)
     }
 }
 

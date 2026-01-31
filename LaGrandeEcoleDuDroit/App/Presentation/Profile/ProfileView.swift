@@ -21,8 +21,8 @@ struct ProfileDestination: View {
             )
             .onChange(of: viewModel.uiState.loading) { loading in
                 if loading {
-                    appStateManager.updateState(.logginOut)
-                } else if appStateManager.state == .logginOut {
+                    appStateManager.updateState(.loggingInOut)
+                } else if appStateManager.state == .loggingInOut {
                     appStateManager.resetState()
                 }
             }
