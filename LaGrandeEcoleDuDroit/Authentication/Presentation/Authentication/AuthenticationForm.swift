@@ -4,7 +4,6 @@ struct AuthenticationForm: View {
     @Binding var email: String
     @Binding var password: String
     let loading: Bool
-    @FocusState var focusState: AuthenticationFocusField?
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
@@ -12,6 +11,8 @@ struct AuthenticationForm: View {
     let onLoginClick: () -> Void
     let onRegisterClick: () -> Void
 
+    @FocusState private var focusState: AuthenticationFocusField?
+    
     var body: some View {
         VStack(spacing: DimensResource.mediumPadding) {
             CredentialsInputs(
