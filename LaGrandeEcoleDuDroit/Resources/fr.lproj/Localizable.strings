@@ -117,7 +117,6 @@
 "enter_email" = "Saisissez votre adresse mail";
 "agree_terms_privacy_beginning_text" = "J’ai lu et j’accepte les";
 "terms_and_privacy" = "Conditions d'utilisation et la Politique de Confidentialité";
-"password_registration_field_supporting_text" = "Le mot de passe doit contenir au moins 8 caractères.";
 "forgotten_password" = "Mot de passe oublié";
 "forgotten_password_button_text" = "Mot de passe oublié ?";
 "forgotten_password_sucess_message" = "Si un compte est associé à cette adresse mail, un lien de réinitialisation vous sera envoyé.";

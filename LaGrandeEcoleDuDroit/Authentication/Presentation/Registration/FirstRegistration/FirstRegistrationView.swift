@@ -31,6 +31,8 @@ private struct FirstRegistrationView: View {
     let onLastNameChange: (String) -> Void
     let onNextClick: (String, String) -> Void
     
+    @FocusState private var focusState: RegistrationFocusField?
+
     var body: some View {
         VStack {
             ScrollView {
@@ -41,14 +43,18 @@ private struct FirstRegistrationView: View {
                     OutlinedTextField(
                         stringResource(.firstName),
                         text: $firstName,
-                        errorMessage: firstNameError
+                        errorMessage: firstNameError,
+                        focusState: _focusState,
+                        field: .firstName
                     )
                     .onChange(of: firstName, perform: onFirstNameChange)
                     
                     OutlinedTextField(
                         stringResource(.lastName),
                         text: $lastName,
-                        errorMessage: lastNameError
+                        errorMessage: lastNameError,
+                        focusState: _focusState,
+                        field: .lastName
                     )
                     .onChange(of: lastName, perform: onLastNameChange)
                 }
@@ -59,7 +65,12 @@ private struct FirstRegistrationView: View {
             
             Spacer()
             
-            Button(action: { onNextClick(firstName, lastName)}) {
+            Button(
+                action: {
+                    focusState = nil
+                    onNextClick(firstName, lastName)
+                }
+            ) {
                 Text(stringResource(.next))
                     .foregroundStyle(.gedPrimary)
             }

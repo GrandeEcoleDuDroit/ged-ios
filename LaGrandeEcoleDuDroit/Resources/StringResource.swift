@@ -118,7 +118,6 @@ enum StringResource: String {
     case enterEmail = "enter_email"
     case agreeTermsPrivacyBeginningText = "agree_terms_privacy_beginning_text"
     case termsAndPrivacy = "terms_and_privacy"
-    case passwordRegistrationFieldSupportingText = "password_registration_field_supporting_text"
     case forgottenPassword = "forgotten_password"
     case forgottenPasswordButtonText = "forgotten_password_button_text"
     case forgottenPasswordSuccessMessage = "forgotten_password_sucess_message"
