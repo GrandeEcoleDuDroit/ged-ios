@@ -14,11 +14,12 @@ class AppStateManager: ObservableObject {
 
 enum AppState {
     case defaultState
-    case logginOut
+    case registering
+    case loggingInOut
     
     var loading: Bool {
         switch self {
-            case .logginOut: true
+            case .loggingInOut, .registering: true
             default: false
         }
     }
