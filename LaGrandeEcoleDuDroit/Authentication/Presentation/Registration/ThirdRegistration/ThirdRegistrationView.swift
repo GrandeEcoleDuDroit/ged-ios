@@ -47,6 +47,8 @@ private struct ThirdRegistrationView: View {
     let onEmailChange: (String) -> Void
     let onRegisterClick: () -> Void
     
+    @FocusState private var focusState: RegistrationFocusField?
+
     var body: some View {
         VStack {
             ScrollView {
@@ -59,6 +61,7 @@ private struct ThirdRegistrationView: View {
                         password: $password,
                         legalNoticeChecked: $legalNoticeChecked,
                         loading: loading,
+                        focusState: _focusState,
                         emailError: emailError,
                         passwordError: passwordError,
                         errorMessage: errorMessage,
@@ -72,7 +75,12 @@ private struct ThirdRegistrationView: View {
             
             Spacer()
             
-            Button(action: onRegisterClick) {
+            Button(
+                action: {
+                    focusState = nil
+                    onRegisterClick()
+                }
+            ) {
                 if loading {
                     Text(stringResource(.next))
                 } else {
@@ -97,6 +105,7 @@ private struct FormContent: View {
     @Binding var password: String
     @Binding var legalNoticeChecked: Bool
     let loading: Bool
+    @FocusState var focusState: RegistrationFocusField?
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
@@ -110,7 +119,9 @@ private struct FormContent: View {
                 stringResource(.email),
                 text: $email,
                 disabled: loading,
-                errorMessage: emailError
+                errorMessage: emailError,
+                focusState: _focusState,
+                field: .email
             )
             .textContentType(.emailAddress)
             .textInputAutocapitalization(.never)
@@ -121,7 +132,8 @@ private struct FormContent: View {
                 text: $password,
                 disabled: loading,
                 errorMessage: passwordError,
-                supportingText: stringResource(.passwordRegistrationFieldSupportingText)
+                focusState: _focusState,
+                field: .password
             )
             .textContentType(.password)
             
