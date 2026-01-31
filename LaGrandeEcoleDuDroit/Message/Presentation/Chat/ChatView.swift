@@ -117,6 +117,10 @@ private struct ChatView: View {
                     activeSheet = .sentMessage($0)
                 }
             },
+            onSentMessageLongClick: {
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                activeSheet = .sentMessage($0)
+            },
             onReceivedMessageLongClick: {
                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 activeSheet = .receivedMessage($0)
@@ -157,6 +161,11 @@ private struct ChatView: View {
             switch $0 {
                 case let .sentMessage(message):
                     SentMessageSheet(
+                        messageState: message.state,
+                        onCopyClick: {
+                            activeSheet = nil
+                            UIPasteboard.general.string = message.content
+                        },
                         onResendMessage: {
                             activeSheet = nil
                             onResendMessage(message)
@@ -170,7 +179,12 @@ private struct ChatView: View {
                     
                 case let .receivedMessage(message):
                     ReceivedMessageSheet(
+                        onCopyClick: {
+                            activeSheet = nil
+                            UIPasteboard.general.string = message.content
+                        },
                         onReportClick: {
+                            activeSheet = nil
                             activeSheet = .messageReport(message)
                         }
                     )
@@ -253,32 +267,51 @@ private struct ChatView: View {
 }
 
 private struct SentMessageSheet: View {
+    let messageState: MessageState
+    let onCopyClick: () -> Void
     let onResendMessage: () -> Void
     let onDeleteMessage: () -> Void
     
     var body: some View {
-        SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
-            SheetItem(
-                icon: Image(systemName: "paperplane"),
-                text: stringResource(.resend),
-                onClick: onResendMessage
-            )
-                            
-            SheetItem(
-                icon: Image(systemName: "trash"),
-                text: stringResource(.delete),
-                onClick: onDeleteMessage
-            )
-            .foregroundColor(.red)
+        if messageState != .error {
+            SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 1)) {
+                SheetItem(
+                    icon: Image(systemName: "document.on.document"),
+                    text: stringResource(.copy),
+                    onClick: onCopyClick
+                )
+            }
+        } else {
+            SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
+                SheetItem(
+                    icon: Image(systemName: "paperplane"),
+                    text: stringResource(.resend),
+                    onClick: onResendMessage
+                )
+                
+                SheetItem(
+                    icon: Image(systemName: "trash"),
+                    text: stringResource(.delete),
+                    onClick: onDeleteMessage
+                )
+                .foregroundColor(.red)
+            }
         }
     }
 }
 
 private struct ReceivedMessageSheet: View {
+    let onCopyClick: () -> Void
     let onReportClick: () -> Void
     
     var body: some View {
-        SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 1)) {
+        SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
+            SheetItem(
+                icon: Image(systemName: "document.on.document"),
+                text: stringResource(.copy),
+                onClick: onCopyClick
+            )
+            
             SheetItem(
                 icon: Image(systemName: "exclamationmark.bubble"),
                 text: stringResource(.report),
