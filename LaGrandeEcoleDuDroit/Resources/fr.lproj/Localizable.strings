@@ -52,6 +52,7 @@
 "confirm" = "Confirmer";
 "remove" = "Retirer";
 "submit" = "Soumettre";
+"copy" = "Copier";
 "block_user_alert_title" = "Bloquer utilisateur ?";
 "block_user_alert_message" = "Vous ne verrez plus aucun de ses contenus.";
 "unblock_user_alert_message" = "Voulez-vous débloquer cet utilisateur ?";
