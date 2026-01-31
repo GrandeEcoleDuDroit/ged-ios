@@ -32,6 +32,7 @@ private struct ForgottenPasswordView: View {
                 OutlinedTextField(
                     stringResource(.email),
                     text: $email,
+                    disabled: loading,
                     errorMessage: emailError
                 )
                 .keyboardType(.emailAddress)
@@ -44,8 +45,9 @@ private struct ForgottenPasswordView: View {
                         .foregroundStyle(.error)
                 }
             
-                PrimaryButton(
+                LoadingButton(
                     label: stringResource(.send),
+                    loading: loading,
                     action: onSendResetEmailClick
                 )
                 
@@ -56,9 +58,9 @@ private struct ForgottenPasswordView: View {
             }
             .padding(.horizontal)
         }
+        .disabled(loading)
         .scrollIndicators(.hidden)
         .scrollDismissesKeyboard(.interactively)
-        .loading(loading)
         .navigationTitle(stringResource(.forgottenPassword))
         .navigationBarTitleDisplayMode(.inline)
     }
