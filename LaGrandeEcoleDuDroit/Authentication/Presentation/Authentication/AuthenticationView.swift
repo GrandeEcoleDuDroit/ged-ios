@@ -68,6 +68,7 @@ private struct AuthenticationView: View {
             }
             .padding()
         }
+        .disabled(loading)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
