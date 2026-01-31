@@ -53,6 +53,7 @@ enum StringResource: String {
     case confirm = "confirm"
     case remove = "remove"
     case submit = "submit"
+    case copy = "copy"
     case blockUserAlertTitle = "block_user_alert_title"
     case blockUserAlertMessage = "block_user_alert_message"
     case unblockUserAlertMessage = "unblock_user_alert_message"
