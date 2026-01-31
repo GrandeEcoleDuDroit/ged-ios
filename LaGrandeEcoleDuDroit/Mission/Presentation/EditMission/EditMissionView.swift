@@ -2,7 +2,7 @@ import SwiftUI
 import PhotosUI
 
 struct EditMissionDestination: View {
-    private let onBackClick: () -> Void
+    private let onCancelClick: () -> Void
     
     @StateObject private var viewModel: EditMissionViewModel
     @State private var showErrorAlert: Bool = false
@@ -11,10 +11,10 @@ struct EditMissionDestination: View {
     @State private var errorMessage: String = ""
 
     init(
-        onBackClick: @escaping () -> Void,
+        onCancelClick: @escaping () -> Void,
         mission: Mission
     ) {
-        self.onBackClick = onBackClick
+        self.onCancelClick = onCancelClick
         self._viewModel = StateObject(
             wrappedValue: MissionMainThreadInjector.shared.resolve(EditMissionViewModel.self, arguments: mission)!
         )
@@ -54,11 +54,11 @@ struct EditMissionDestination: View {
                 onUpdateMissionTaskClick: viewModel.onUpdateMissionTask,
                 onRemoveMissionTaskClick: viewModel.onRemoveMissionTask,
                 onSaveMissionClick: viewModel.updateMission,
-                onBackClick: onBackClick
+                onCancelClick: onCancelClick
             )
             .onReceive(viewModel.$event) { event in
                 if event is SuccessEvent {
-                    onBackClick()
+                    onCancelClick()
                 } else if case let event as ErrorEvent = event {
                     errorMessage = event.message
                     showErrorAlert = true
@@ -110,7 +110,7 @@ private struct EditMissionView: View {
     let onUpdateMissionTaskClick: (MissionTask) -> Void
     let onRemoveMissionTaskClick: (MissionTask) -> Void
     let onSaveMissionClick: (Data?) -> Void
-    let onBackClick: () -> Void
+    let onCancelClick: () -> Void
     
     @State private var imageData: Data?
     @State private var showImageErrorAlert: Bool = false
@@ -165,7 +165,7 @@ private struct EditMissionView: View {
             ToolbarItem(placement: .cancellationAction) {
                 Button(
                     stringResource(.cancel),
-                    action: onBackClick
+                    action: onCancelClick
                 )
             }
             
@@ -273,7 +273,7 @@ private enum EditMissionViewSheet: Identifiable {
             onUpdateMissionTaskClick: { _ in },
             onRemoveMissionTaskClick: { _ in },
             onSaveMissionClick: { _ in },
-            onBackClick: {}
+            onCancelClick: {}
         )
         .background(.appBackground)
     }

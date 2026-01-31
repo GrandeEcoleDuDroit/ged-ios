@@ -76,6 +76,7 @@ struct MissionDetailsManagerSection: View {
 struct MissionDetailsParticipantSection: View {
     let participants: [User]
     let onParticipantClick: (User) -> Void
+    let onLongParticipantClick: (User) -> Void
     let onSeeAllClick: () -> Void
     
     var body: some View {
@@ -110,6 +111,11 @@ struct MissionDetailsParticipantSection: View {
                             .contentShape(.rect)
                         }
                         .buttonStyle(ClickStyle())
+                        .simultaneousGesture(
+                            LongPressGesture().onEnded{ _ in
+                                onLongParticipantClick(participant)
+                            }
+                        )
                     }
                 }
             }
@@ -178,6 +184,7 @@ private struct SeeAllUsersButton: View {
     MissionDetailsParticipantSection(
         participants: missionFixture.participants,
         onParticipantClick: { _ in },
+        onLongParticipantClick: { _ in },
         onSeeAllClick: {}
     )
 }
