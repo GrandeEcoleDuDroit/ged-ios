@@ -6,7 +6,8 @@ struct ThirdRegistrationDestination: View {
     let schoolLevel: SchoolLevel
     
     @StateObject private var viewModel = AuthenticationMainThreadInjector.shared.resolve(ThirdRegistrationViewModel.self)
-    
+    @EnvironmentObject private var appStateManager: AppStateManager
+
     var body: some View {
         ThirdRegistrationView(
             email: $viewModel.uiState.email,
@@ -25,6 +26,13 @@ struct ThirdRegistrationDestination: View {
                 )
             }
         )
+        .onChange(of: viewModel.uiState.loading) { loading in
+            if loading {
+                appStateManager.updateState(.registering)
+            } else if appStateManager.state == .registering {
+                appStateManager.resetState()
+            }
+        }
     }
 }
 
@@ -77,7 +85,7 @@ private struct ThirdRegistrationView: View {
             .padding()
             .frame(maxWidth: .infinity, alignment: .trailing)
         }
-        .loading(loading)
+        .disabled(loading)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle(stringResource(.registration))
