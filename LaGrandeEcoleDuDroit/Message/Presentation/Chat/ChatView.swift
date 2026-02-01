@@ -343,7 +343,7 @@ private struct MessageBottomSection: View {
                 onSendClick: onSendMessagesClick
             )
             .padding(.horizontal)
-            .padding(.top, DimensResource.smallPadding)
+            .padding(.top, DimensResource.extraSmallPadding)
         }
     }
 }
