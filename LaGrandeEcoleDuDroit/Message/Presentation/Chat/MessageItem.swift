@@ -216,9 +216,9 @@ struct MessageBlockedUserIndicator: View {
     }
 }
 
-#Preview {
+#Preview("Message items") {
     ScrollView {
-        VStack(spacing: 40) {
+        VStack {
             ReceiveMessageItem(
                 message: messageFixture,
                 profilePictureUrl: nil,
@@ -254,20 +254,26 @@ struct MessageBlockedUserIndicator: View {
                 onClick: {},
                 onLongClick: {}
             )
-            
-            NewMessageIndicator(onClick: {})
-            
-            MessageInput(
-                text: .constant(""),
-                onTextChange: { _ in },
-                onSendClick: {}
-            )
-            
-            MessageBlockedUserIndicator(
-                onDeleteChatClick: {},
-                onUnblockUserClick: {}
-            )
         }
         .padding(.horizontal)
     }
+}
+
+#Preview("New message indicator") {
+    NewMessageIndicator(onClick: {})
+}
+
+#Preview("Message input") {
+    MessageInput(
+        text: .constant(""),
+        onTextChange: { _ in },
+        onSendClick: {}
+    )
+}
+
+#Preview("Blocked user indicator") {
+    MessageBlockedUserIndicator(
+        onDeleteChatClick: {},
+        onUnblockUserClick: {}
+    )
 }
