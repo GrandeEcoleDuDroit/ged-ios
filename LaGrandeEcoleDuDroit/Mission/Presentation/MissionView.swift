@@ -40,13 +40,14 @@ struct MissionDestination: View {
         } else {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                .background(.appBackground)
         }
     }
 }
 
 private struct MissionView: View {
     let user: User
-    let missions: [Mission]?
+    let missions: [Mission]
     let loading: Bool
     let activeFilter: MissionViewModel.MissionFilter
     let filters: [MissionViewModel.MissionFilter]
@@ -62,24 +63,15 @@ private struct MissionView: View {
     @State private var alertMission: Mission?
     
     var body: some View {
-        Group {
-            if let missions {
-                MissionList(
-                    missions: missions,
-                    activeFilter: activeFilter,
-                    filters: filters,
-                    onMissionClick: onMissionClick,
-                    onRefreshMissions: onRefreshMissions,
-                    onMissionFilterChange: onMissionFilterChange,
-                    activeSheet: $activeSheet
-                )
-            } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                    .background(.appBackground)
-                    .padding(.top)
-            }
-        }
+        MissionList(
+            missions: missions,
+            activeFilter: activeFilter,
+            filters: filters,
+            onMissionClick: onMissionClick,
+            onRefreshMissions: onRefreshMissions,
+            onMissionFilterChange: onMissionFilterChange,
+            activeSheet: $activeSheet
+        )
         .loading(loading)
         .navigationTitle(stringResource(.mission))
         .toolbar {
@@ -118,7 +110,6 @@ private struct MissionView: View {
                 case let .missionReport(mission):
                     ReportSheet(
                         items: MissionReport.Reason.allCases,
-                        fraction: DimensResource.reportSheetFraction(itemCount: MissionReport.Reason.allCases.count),
                         onReportClick: { reason in
                         activeSheet = nil
                         onReportMissionClick(
@@ -139,7 +130,7 @@ private struct MissionView: View {
                     
                 case let .editMission(mission):
                     EditMissionDestination(
-                        onBackClick: { activeSheet = nil },
+                        onCancelClick: { activeSheet = nil },
                         mission: mission
                     )
             }
@@ -236,7 +227,7 @@ private enum MissionViewSheet: Identifiable {
 #Preview {
     NavigationStack {
         MissionView(
-            user: userFixture,
+            user: userFixture3,
             missions: missionsFixture,
             loading: false,
             activeFilter: .open,

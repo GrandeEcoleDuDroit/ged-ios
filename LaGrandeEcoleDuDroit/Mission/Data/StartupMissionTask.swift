@@ -30,7 +30,7 @@ class StartupMissionTask {
                 }
             }
         } catch {
-            e(tag, "Failed to send unsent missions", error)
+            w(tag, "Failed to send unsent missions: \(error.localizedDescription)")
         }
     }
 }

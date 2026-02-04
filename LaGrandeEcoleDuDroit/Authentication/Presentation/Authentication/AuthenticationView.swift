@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AuthenticationDestination: View {
     let onRegisterClick: () -> Void
+    let onForgottenPasswordClick: () -> Void
     
     @StateObject private var viewModel = AuthenticationMainThreadInjector.shared.resolve(AuthenticationViewModel.self)
     @State private var showErrorAlert = false
@@ -16,7 +17,8 @@ struct AuthenticationDestination: View {
             passwordError: viewModel.uiState.passwordError,
             errorMessage: viewModel.uiState.errorMessage,
             onLoginClick: viewModel.login,
-            onRegisterClick: onRegisterClick
+            onRegisterClick: onRegisterClick,
+            onForgottenPasswordClick: onForgottenPasswordClick
         )
         .onReceive(viewModel.$event) { event in
             if let errorEvent = event as? ErrorEvent {
@@ -45,30 +47,28 @@ private struct AuthenticationView: View {
     let errorMessage: String?
     let onLoginClick: () -> Void
     let onRegisterClick: () -> Void
+    let onForgottenPasswordClick: () -> Void
     
     var body: some View {
         ScrollView {
             VStack(spacing: DimensResource.largePadding) {
                 HeaderSection()
                 
-                CredentialsInputs(
+                AuthenticationForm(
                     email: $email,
                     password: $password,
                     loading: loading,
                     emailError: emailError,
                     passwordError: passwordError,
                     errorMessage: errorMessage,
-                )
-                .padding(.top, DimensResource.mediumPadding)
-                
-                Buttons(
-                    loading: loading,
+                    onForgottenPasswordClick: onForgottenPasswordClick,
                     onLoginClick: onLoginClick,
                     onRegisterClick: onRegisterClick
                 )
             }
             .padding()
         }
+        .disabled(loading)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
@@ -100,73 +100,6 @@ private struct HeaderSection: View {
     }
 }
 
-private struct CredentialsInputs: View {
-    @Binding var email: String
-    @Binding var password: String
-    let loading: Bool
-    let emailError: String?
-    let passwordError: String?
-    let errorMessage: String?
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
-            OutlinedTextField(
-                stringResource(.email),
-                text: $email,
-                disabled: loading,
-                errorMessage: emailError
-            )
-            .keyboardType(.emailAddress)
-            .textContentType(.emailAddress)
-            .textInputAutocapitalization(.never)
-            
-            OutlinedPasswordTextField(
-                stringResource(.password),
-                text: $password,
-                disabled: loading,
-                errorMessage: passwordError
-            )
-            .textContentType(.password)
-            
-            if let errorMessage {
-                Text(errorMessage)
-                    .font(.callout)
-                    .foregroundStyle(.error)
-            }
-        }
-    }
-}
-
-private struct Buttons: View {
-    let loading: Bool
-    let onLoginClick: () -> Void
-    let onRegisterClick: () -> Void
-    
-    var body: some View {
-        VStack(spacing: DimensResource.mediumPadding) {
-            LoadingButton(
-                label: stringResource(.login),
-                loading: loading,
-                action: onLoginClick
-            )
-            
-            HStack {
-                Text(stringResource(.notRegisterYet))
-                    .foregroundStyle(Color.primary)
-                
-                Button(
-                    action: onRegisterClick,
-                    label: {
-                        Text(stringResource(.register))
-                            .foregroundColor(.gedPrimary)
-                            .fontWeight(.semibold)
-                    }
-                )
-            }
-        }
-    }
-}
-
 #Preview {
     AuthenticationView(
         email: .constant(""),
@@ -176,7 +109,8 @@ private struct Buttons: View {
         passwordError: nil,
         errorMessage: nil,
         onLoginClick: {},
-        onRegisterClick: {}
+        onRegisterClick: {},
+        onForgottenPasswordClick: {}
     )
     .background(.appBackground)
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)

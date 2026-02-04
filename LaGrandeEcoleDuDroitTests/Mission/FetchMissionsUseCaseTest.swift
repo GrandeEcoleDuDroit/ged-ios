@@ -3,50 +3,53 @@ import Combine
 
 @testable import GrandeEcoleDuDroit
 
-class SynchronizeMissionsUseCaseTest {
+class FetchMissionsUseCaseTest {
     @Test
     func fetchMissionsUseCase_should_upsert_new_remote_missions() async {
         // Given
         let remoteMissions = missionsFixture
-        let missionsUpserted = MissionsUpserted(
+        let testMissionsRepository = TestMissionRepository(
             givenCurrentMissions: [],
             givenRemoteMissions: remoteMissions
         )
+        let testUpsertMissionUseCase = TestUpsertMissionUseCase()
         let useCase = FetchMissionsUseCase(
-            missionRepository: missionsUpserted
+            missionRepository: testMissionsRepository,
+            upsertMissionUseCase: testUpsertMissionUseCase
         )
         
         // When
         try? await useCase.execute()
         
         // Then
-        #expect(missionsUpserted.missionsUpserted == remoteMissions)
+        #expect(testUpsertMissionUseCase.upsertedMissionIds == remoteMissions.map { $0.id })
     }
     
     @Test
     func fetchMissionsUseCase_should_delete_missions_not_present_in_remote() async {
         // Given
         let currentMissions = missionsFixture
-        let missionsDeleted = MissionsDeleted(
+        let testMissionsRepository = TestMissionRepository(
             givenCurrentMissions: currentMissions,
             givenRemoteMissions: []
         )
         let useCase = FetchMissionsUseCase(
-            missionRepository: missionsDeleted
+            missionRepository: testMissionsRepository,
+            upsertMissionUseCase: MockUpsertMissionUseCase()
         )
         
         // When
         try? await useCase.execute()
         
         // Then
-        #expect(missionsDeleted.missionDeletedIds == currentMissions.map { $0.id })
+        #expect(testMissionsRepository.deletedMissionIds == currentMissions.map { $0.id })
     }
 }
 
-private class MissionsDeleted: MockMissionRepository {
-    var missionDeletedIds: [String] = []
+private class TestMissionRepository: MockMissionRepository {
     private let givenCurrentMissions: [Mission]
     private let givenRemoteMissions: [Mission]
+    private(set) var deletedMissionIds: [String] = []
     
     init(
         givenCurrentMissions: [Mission],
@@ -58,39 +61,21 @@ private class MissionsDeleted: MockMissionRepository {
     
     override var currentMissions: [Mission] {
         givenCurrentMissions
+    }
+    
+    override func getRemoteMissions() async throws -> [Mission] {
+        givenRemoteMissions
     }
     
     override func deleteLocalMission(missionId: String) async throws {
-        missionDeletedIds.append(missionId)
-    }
-    
-    override func getRemoteMissions() async throws -> [Mission] {
-        givenRemoteMissions
+        deletedMissionIds.append(missionId)
     }
 }
 
-private class MissionsUpserted: MockMissionRepository {
-    var missionsUpserted: [Mission] = []
-    private let givenCurrentMissions: [Mission]
-    private let givenRemoteMissions: [Mission]
+private class TestUpsertMissionUseCase: MockUpsertMissionUseCase {
+    private(set) var upsertedMissionIds: [String] = []
     
-    init(
-        givenCurrentMissions: [Mission],
-        givenRemoteMissions: [Mission]
-    ) {
-        self.givenCurrentMissions = givenCurrentMissions
-        self.givenRemoteMissions = givenRemoteMissions
-    }
-    
-    override var currentMissions: [Mission] {
-        givenCurrentMissions
-    }
-    
-    override func upsertLocalMission(mission: Mission) async throws {
-        missionsUpserted.append(mission)
-    }
-    
-    override func getRemoteMissions() async throws -> [Mission] {
-        givenRemoteMissions
+    override func execute(mission: Mission) async throws {
+        upsertedMissionIds.append(mission.id)
     }
 }

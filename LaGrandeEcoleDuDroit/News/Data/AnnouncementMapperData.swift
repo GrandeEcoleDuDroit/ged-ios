@@ -112,7 +112,7 @@ extension AnnouncementReport {
             announcementId: announcementId,
             author: author.toRemote(),
             reporter: reporter.toRemote(),
-            reason: reason.rawValue
+            reason: reason
         )
     }
 }

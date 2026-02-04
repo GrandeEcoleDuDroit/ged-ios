@@ -51,6 +51,8 @@
 "unblock" = "Débloquer";
 "confirm" = "Confirmer";
 "remove" = "Retirer";
+"submit" = "Soumettre";
+"copy" = "Copier";
 "block_user_alert_title" = "Bloquer utilisateur ?";
 "block_user_alert_message" = "Vous ne verrez plus aucun de ses contenus.";
 "unblock_user_alert_message" = "Voulez-vous débloquer cet utilisateur ?";
@@ -59,6 +61,15 @@
 "deleted_user_first_name" = "Utilisateur";
 "deleted_user_last_name" = "Supprimé";
 "mb" = "Mo";
+"selling_promoting_inappropriate_content_report_reason" = "Vente ou promotion de contenu inapproprié";
+"violent_hateful_content_report_reason" = "Contenu violent ou haineux";
+"spam_scam_report_reason" = "Spam ou arnaque";
+"false_information_report_reason" = "Fausses informations";
+"intellectual_property_violation_report_reason" = "Violation de la propriété intelectuelle";
+"other_report_reason" = "Autre";
+"other_report_reason_placeholder" = "Entrez la raison";
+"hacked_account" = "Compte piraté";
+"pretending_to_be_someone_else" = "Prétend être quelqu'un d'autre";
 
 // Common error
 "mandatory_field_error" = "Champs obligatoire.";
@@ -103,12 +114,12 @@
 "level" = "Niveau";
 "enter_names" = "Saisissez votre nom";
 "enter_email_password" = "Saisissez votre adresse mail et votre mot de passe";
-"forgot_password" = "Mot de passe oublié";
-"forgot_password_description" = "Entrez votre adresse e-mail";
-"forgot_password_success" = "Si un compte associé à cette adresse e-mail existe, un lien de réinitialisation vous sera envoyé.";
+"enter_email" = "Saisissez votre adresse mail";
 "agree_terms_privacy_beginning_text" = "J’ai lu et j’accepte les";
 "terms_and_privacy" = "Conditions d'utilisation et la Politique de Confidentialité";
-"password_registration_field_supporting_text" = "Le mot de passe doit contenir au moins 8 caractères.";
+"forgotten_password" = "Mot de passe oublié";
+"forgotten_password_button_text" = "Mot de passe oublié ?";
+"forgotten_password_sucess_message" = "Si un compte est associé à cette adresse mail, un lien de réinitialisation vous sera envoyé.";
 
 // Authtentication errors
 "incorrect_email_format_error" = "Veuillez entrer une adresse e-mail valide.";
@@ -146,6 +157,12 @@
 "delete_message_alert_content" = "Voulez-vous supprimer ce message ?";
 "chat_blocked_user_indicator_text" = "Vous ne pouvez pas envoyer de messages à cet utilisateur à moins que vous ne le débloquiez.";
 "resend" = "Renvoyer";
+"nudity_or_sexual_content" = "Nudité ou contenu sexuel";
+"hate_speech_or_symbols" = "Discours ou symbole de haine";
+"spam" = "Spam";
+"bullying_or_harassment" = "Intimidation ou harcèlement";
+"illegal_content" = "Contenu illégal";
+"scam_or_fraud" = "Escroquerie ou fraude";
 
 // Message error
 "message_failed_to_send_error" = "Échec de l’envoi du message.";

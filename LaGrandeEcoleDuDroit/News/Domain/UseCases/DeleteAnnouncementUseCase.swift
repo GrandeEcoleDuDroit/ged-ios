@@ -1,13 +1,13 @@
 class DeleteAnnouncementUseCase {
     private let announcementRepository: AnnouncementRepository
-    private let announcementTaskReferences: AnnouncementTaskQueue
+    private let announcementTaskQueue: AnnouncementTaskQueue
     
     init(
         announcementRepository: AnnouncementRepository,
-        announcementTaskReferences: AnnouncementTaskQueue
+        announcementTaskQueue: AnnouncementTaskQueue
     ) {
         self.announcementRepository = announcementRepository
-        self.announcementTaskReferences = announcementTaskReferences
+        self.announcementTaskQueue = announcementTaskQueue
     }
     
     func execute(announcement: Announcement) async throws {
@@ -19,7 +19,7 @@ class DeleteAnnouncementUseCase {
                 )
                 
             case .publishing:
-                await announcementTaskReferences.cancelTask(for: announcement.id)
+                await announcementTaskQueue.cancelTask(for: announcement.id)
                 try await announcementRepository.deleteLocalAnnouncement(announcementId: announcement.id)
                 
             case .error, .draft:

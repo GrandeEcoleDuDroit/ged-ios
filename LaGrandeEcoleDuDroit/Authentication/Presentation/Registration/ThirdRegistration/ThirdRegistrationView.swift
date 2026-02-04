@@ -6,7 +6,8 @@ struct ThirdRegistrationDestination: View {
     let schoolLevel: SchoolLevel
     
     @StateObject private var viewModel = AuthenticationMainThreadInjector.shared.resolve(ThirdRegistrationViewModel.self)
-    
+    @EnvironmentObject private var appStateManager: AppStateManager
+
     var body: some View {
         ThirdRegistrationView(
             email: $viewModel.uiState.email,
@@ -25,6 +26,13 @@ struct ThirdRegistrationDestination: View {
                 )
             }
         )
+        .onChange(of: viewModel.uiState.loading) { loading in
+            if loading {
+                appStateManager.updateState(.registering)
+            } else if appStateManager.state == .registering {
+                appStateManager.resetState()
+            }
+        }
     }
 }
 
@@ -39,15 +47,21 @@ private struct ThirdRegistrationView: View {
     let onEmailChange: (String) -> Void
     let onRegisterClick: () -> Void
     
+    @FocusState private var focusState: RegistrationFocusField?
+
     var body: some View {
         VStack {
             ScrollView {
-                VStack(spacing: DimensResource.mediumPadding) {
+                VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
+                    Text(stringResource(.enterEmailPassword))
+                        .font(.title3)
+                    
                     FormContent(
                         email: $email,
                         password: $password,
                         legalNoticeChecked: $legalNoticeChecked,
                         loading: loading,
+                        focusState: _focusState,
                         emailError: emailError,
                         passwordError: passwordError,
                         errorMessage: errorMessage,
@@ -61,7 +75,12 @@ private struct ThirdRegistrationView: View {
             
             Spacer()
             
-            Button(action: onRegisterClick) {
+            Button(
+                action: {
+                    focusState = nil
+                    onRegisterClick()
+                }
+            ) {
                 if loading {
                     Text(stringResource(.next))
                 } else {
@@ -74,7 +93,7 @@ private struct ThirdRegistrationView: View {
             .padding()
             .frame(maxWidth: .infinity, alignment: .trailing)
         }
-        .loading(loading)
+        .disabled(loading)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle(stringResource(.registration))
@@ -86,6 +105,7 @@ private struct FormContent: View {
     @Binding var password: String
     @Binding var legalNoticeChecked: Bool
     let loading: Bool
+    @FocusState var focusState: RegistrationFocusField?
     let emailError: String?
     let passwordError: String?
     let errorMessage: String?
@@ -95,14 +115,13 @@ private struct FormContent: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
-            Text(stringResource(.enterEmailPassword))
-                .font(.title3)
-            
             OutlinedTextField(
                 stringResource(.email),
                 text: $email,
                 disabled: loading,
-                errorMessage: emailError
+                errorMessage: emailError,
+                focusState: _focusState,
+                field: .email
             )
             .textContentType(.emailAddress)
             .textInputAutocapitalization(.never)
@@ -113,7 +132,8 @@ private struct FormContent: View {
                 text: $password,
                 disabled: loading,
                 errorMessage: passwordError,
-                supportingText: stringResource(.passwordRegistrationFieldSupportingText)
+                focusState: _focusState,
+                field: .password
             )
             .textContentType(.password)
             

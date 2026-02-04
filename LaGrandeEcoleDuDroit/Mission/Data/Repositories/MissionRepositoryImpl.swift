@@ -52,6 +52,15 @@ class MissionRepositoryImpl: MissionRepository {
         }
     }
     
+    func getLocalMission(missionId: String) async throws -> Mission? {
+        do {
+            return try await missionLocalDataSource.getMission(missionId: missionId)
+        } catch {
+            e(tag, "Error getting local mission", error)
+            throw error
+        }
+    }
+    
     func createMission(mission: Mission, imageData: Data?) async throws {
         do {
             try await missionLocalDataSource.upsertMission(mission: mission)

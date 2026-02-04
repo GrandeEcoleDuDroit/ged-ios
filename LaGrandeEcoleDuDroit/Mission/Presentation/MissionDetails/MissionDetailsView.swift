@@ -150,45 +150,63 @@ private struct MissionDetailsView: View {
             }
         }
         .sheet(item: $activeSheet) {
-            Sheets(
-                activeSheet: $0,
-                mission: mission,
-                user: user,
-                onEditMissionClick: {
-                    activeSheet = .editMission
-                },
-                onDeleteMissionClick: {
-                    activeSheet = nil
-                    showDeleteMissionAlert = true
-                },
-                onSelectMissionReportClick: {
-                    activeSheet = .missionReport
-                },
-                onSeeParticipantProfileClick: { user in
-                    activeSheet = nil
-                    onParticipantClick(user)
-                },
-                onRemoveParticipantClick: { user in
-                    activeSheet = nil
-                    alertParticipant = user
-                    showRemoveParticipantAlert = true
-                },
-                onReportMissionClick: { reason in
-                    activeSheet = nil
-                    onReportMissionClick(
-                        MissionReport(
-                            missionId: mission.id,
-                            reporter: MissionReport.Reporter(
-                                fullName: user.fullName,
-                                email: user.email
-                            ),
-                            reason: reason
-                        )
+            switch $0 {
+                case .mission:
+                    MissionSheet(
+                        mission: mission,
+                        user: user,
+                        onEditClick: { activeSheet = .editMission },
+                        onDeleteClick: {
+                            activeSheet = nil
+                            showDeleteMissionAlert = true
+                        },
+                        onReportClick: { activeSheet = .missionReport }
                     )
-                },
-                onCancelClick: { activeSheet = nil },
-                onBackClick: { activeSheet = nil }
-            )
+                    
+                case let .participant(user):
+                    SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 1)) {
+                        SheetItem(
+                            icon: Image(systemName: "person.badge.minus"),
+                            text: stringResource(.remove),
+                            onClick: {
+                                activeSheet = nil
+                                alertParticipant = user
+                                showRemoveParticipantAlert = true
+                            }
+                        )
+                        .foregroundStyle(.error)
+                    }
+                    
+                case .missionReport:
+                    ReportSheet(
+                        items: MissionReport.Reason.allCases,
+                        onReportClick: { reason in
+                            activeSheet = nil
+                            onReportMissionClick(
+                                MissionReport(
+                                    missionId: mission.id,
+                                    reporter: MissionReport.Reporter(
+                                        fullName: user.fullName,
+                                        email: user.email
+                                    ),
+                                    reason: reason
+                                )
+                            )
+                        }
+                    )
+                    
+                case .editMission:
+                    EditMissionDestination(
+                        onCancelClick: { activeSheet = nil },
+                        mission: mission
+                    )
+                    
+                case let .seeAllUsers(users):
+                    AllUsersDestination(
+                        users: users,
+                        onCancelClick: { activeSheet = nil }
+                    )
+            }
         }
         .alert(
             stringResource(.deleteMissionAlertMessage),
@@ -279,11 +297,11 @@ private struct MissionDetailsContent: View {
                     
                     MissionDetailsParticipantSection(
                         participants: mission.participants,
-                        onParticipantClick: {
+                        onParticipantClick: onParticipantClick,
+                        onLongParticipantClick: {
                             if user.id != $0.id && (isManager || user.admin) {
+                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                                 activeSheet = .participant($0)
-                            } else {
-                                onParticipantClick($0)
                             }
                         },
                         onSeeAllClick: {
@@ -360,68 +378,6 @@ private struct BottomSection: View {
                         enabled: false
                     )
                 }
-        }
-    }
-}
-
-private struct Sheets: View {
-    let activeSheet: MissionDetailsViewSheet
-    let mission: Mission
-    let user: User
-    let onEditMissionClick: () -> Void
-    let onDeleteMissionClick: () -> Void
-    let onSelectMissionReportClick: () -> Void
-    let onSeeParticipantProfileClick: (User) -> Void
-    let onRemoveParticipantClick: (User) -> Void
-    let onReportMissionClick: (MissionReport.Reason) -> Void
-    let onCancelClick: () -> Void
-    let onBackClick: () -> Void
-    
-    var body: some View {
-        switch activeSheet {
-            case .mission:
-                MissionSheet(
-                    mission: mission,
-                    user: user,
-                    onEditClick: onEditMissionClick,
-                    onDeleteClick: onDeleteMissionClick,
-                    onReportClick: onSelectMissionReportClick
-                )
-                
-            case let .participant(user):
-                SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
-                    SheetItem(
-                        icon: Image(systemName: "person"),
-                        text: stringResource(.seeProfile),
-                        onClick: { onSeeParticipantProfileClick(user) }
-                    )
-                    
-                    SheetItem(
-                        icon: Image(systemName: "person.badge.minus"),
-                        text: stringResource(.remove),
-                        onClick: { onRemoveParticipantClick(user) }
-                    )
-                    .foregroundStyle(.error)
-                }
-                
-            case .missionReport:
-                ReportSheet(
-                    items: MissionReport.Reason.allCases,
-                    fraction: DimensResource.reportSheetFraction(itemCount: MissionReport.Reason.allCases.count),
-                    onReportClick: onReportMissionClick
-                )
-                
-            case .editMission:
-                EditMissionDestination(
-                    onBackClick: onBackClick,
-                    mission: mission
-                )
-                
-            case let .seeAllUsers(users):
-                AllUsersDestination(
-                    users: users,
-                    onCancelClick: onCancelClick
-                )
         }
     }
 }

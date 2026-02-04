@@ -7,19 +7,6 @@ actor MissionCoreDataActor {
         self.context = context
     }
     
-    func getMission(missionId: String) async throws -> LocalMission {
-        try await context.perform {
-            let fetchRequest = LocalMission.fetchRequest()
-            fetchRequest.predicate = NSPredicate(
-                format: "%K == %@",
-                MissionField.Local.missionId, missionId
-            )
-            fetchRequest.fetchLimit = 1
-            
-            return try self.context.fetch(fetchRequest)[0]
-        }
-    }
-    
     func getMissions() async throws -> [LocalMission] {
         try await context.perform {
             let fetchRequest = LocalMission.fetchRequest()
@@ -30,6 +17,19 @@ actor MissionCoreDataActor {
             )]
             
             return try self.context.fetch(fetchRequest)
+        }
+    }
+    
+    func getMission(missionId: String) async throws -> LocalMission? {
+        try await context.perform {
+            let fetchRequest = LocalMission.fetchRequest()
+            fetchRequest.predicate = NSPredicate(
+                format: "%K == %@",
+                MissionField.Local.missionId, missionId
+            )
+            fetchRequest.fetchLimit = 1
+            
+            return try self.context.fetch(fetchRequest).first
         }
     }
     
