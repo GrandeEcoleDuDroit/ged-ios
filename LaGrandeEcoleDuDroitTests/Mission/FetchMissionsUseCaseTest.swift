@@ -12,17 +12,17 @@ class FetchMissionsUseCaseTest {
             givenCurrentMissions: [],
             givenRemoteMissions: remoteMissions
         )
-        let testUpsertMissionUseCase = TestUpsertMissionUseCase()
+        let testUpsertLocalMissionUseCase = TestUpsertLocalMissionUseCase()
         let useCase = FetchMissionsUseCase(
             missionRepository: testMissionsRepository,
-            upsertMissionUseCase: testUpsertMissionUseCase
+            upsertLocalMissionUseCase: testUpsertLocalMissionUseCase
         )
         
         // When
         try? await useCase.execute()
         
         // Then
-        #expect(testUpsertMissionUseCase.upsertedMissionIds == remoteMissions.map { $0.id })
+        #expect(testUpsertLocalMissionUseCase.upsertedMissionIds == remoteMissions.map { $0.id })
     }
     
     @Test
@@ -35,7 +35,7 @@ class FetchMissionsUseCaseTest {
         )
         let useCase = FetchMissionsUseCase(
             missionRepository: testMissionsRepository,
-            upsertMissionUseCase: MockUpsertMissionUseCase()
+            upsertLocalMissionUseCase: MockUpsertLocalMissionUseCase()
         )
         
         // When
@@ -72,7 +72,7 @@ private class TestMissionRepository: MockMissionRepository {
     }
 }
 
-private class TestUpsertMissionUseCase: MockUpsertMissionUseCase {
+private class TestUpsertLocalMissionUseCase: MockUpsertLocalMissionUseCase {
     private(set) var upsertedMissionIds: [String] = []
     
     override func execute(mission: Mission) async throws {

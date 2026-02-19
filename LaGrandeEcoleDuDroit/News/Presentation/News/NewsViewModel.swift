@@ -7,6 +7,7 @@ class NewsViewModel: ViewModel {
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
     private let recreateAnnouncementUseCase: RecreateAnnouncementUseCase
     private let refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
+    private let postRepository: PostRepository
     
     @Published private(set) var uiState: NewsUiState = NewsUiState()
     @Published private(set) var event: SingleUiEvent? = nil
@@ -18,15 +19,18 @@ class NewsViewModel: ViewModel {
         deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
         recreateAnnouncementUseCase: RecreateAnnouncementUseCase,
         refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase,
+        postRepository: PostRepository
     ) {
         self.userRepository = userRepository
         self.announcementRepository = announcementRepository
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
         self.recreateAnnouncementUseCase = recreateAnnouncementUseCase
         self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
+        self.postRepository = postRepository
         
         listenUser()
         listenAnnouncements()
+        listenPosts()
     }
     
     func refreshAnnouncements() async {
@@ -55,7 +59,7 @@ class NewsViewModel: ViewModel {
     func getAnnouncement(announcementId: String) -> Announcement? {
         announcementRepository.currentAnnouncements.first { $0.id == announcementId }
     }
-    
+        
     private func performRequest(block: @escaping () async throws -> Void) {
         performUiBlockingRequest(
             block: block,
@@ -92,9 +96,20 @@ class NewsViewModel: ViewModel {
             .store(in: &cancellables)
     }
     
+    private func listenPosts() {
+        postRepository.posts
+            .map { [weak self] posts in
+                posts.compactMap { self?.truncatePosts($0) }
+            }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] posts in
+                self?.uiState.posts = posts
+            }.store(in: &cancellables)
+    }
+    
     private func truncateAnnouncement(_ announcement: Announcement) -> Announcement {
         let truncatedTitle = if let title = announcement.title { String(title.prefix(100)) } else { "" }
-        let truncatedContent = String(announcement.content.prefix(100))
+        let truncatedContent = announcement.content.take(100)
         
         return announcement.copy {
             $0.title = truncatedTitle
@@ -102,9 +117,17 @@ class NewsViewModel: ViewModel {
         }
     }
     
+    private func truncatePosts(_ post: Post) -> Post {
+        let truncatedContent = post.content.take(300)
+        return post.copy {
+            $0.content = truncatedContent
+        }
+    }
+    
     struct NewsUiState {
         var user: User? = nil
         var announcements: [Announcement]? = nil
+        var posts: [Post]? = nil
         var loading: Bool = false
     }
 }

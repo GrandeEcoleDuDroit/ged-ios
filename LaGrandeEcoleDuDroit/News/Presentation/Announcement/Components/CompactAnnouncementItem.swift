@@ -5,31 +5,29 @@ struct CompactAnnouncementItem: View {
     let onOptionsClick: () -> Void
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 60)) { _ in
-            let elapsedTimeText = getElapsedTimeText(date: announcement.date)
+        let elapsedTimeText = getElapsedTimeValue(date: announcement.date)
 
-            switch (announcement.state) {
-                case .published, .draft:
-                    DefaultItem(
-                        announcement: announcement,
-                        elapsedTimeText: elapsedTimeText,
-                        onOptionsClick: onOptionsClick
-                    )
-                    
-                case .publishing:
-                    PublishingItem(
-                        announcement: announcement,
-                        elapsedTimeText: elapsedTimeText,
-                        onOptionsClick: onOptionsClick
-                    )
-                    
-                case .error:
-                    ErrorItem(
-                        announcement: announcement,
-                        elapsedTimeText: elapsedTimeText,
-                        onOptionsClick: onOptionsClick
-                    )
-            }
+        switch (announcement.state) {
+            case .published, .draft:
+                DefaultItem(
+                    announcement: announcement,
+                    elapsedTimeText: elapsedTimeText,
+                    onOptionsClick: onOptionsClick
+                )
+                
+            case .publishing:
+                PublishingItem(
+                    announcement: announcement,
+                    elapsedTimeText: elapsedTimeText,
+                    onOptionsClick: onOptionsClick
+                )
+                
+            case .error:
+                ErrorItem(
+                    announcement: announcement,
+                    elapsedTimeText: elapsedTimeText,
+                    onOptionsClick: onOptionsClick
+                )
         }
     }
 }
@@ -141,7 +139,7 @@ private struct ErrorItem: View {
             supportingContent: {
                 Text(content)
                     .foregroundStyle(.supportingText)
-                    .font(.subheadline)
+                    .font(.footnote)
                     .lineLimit(1)
             }
         )

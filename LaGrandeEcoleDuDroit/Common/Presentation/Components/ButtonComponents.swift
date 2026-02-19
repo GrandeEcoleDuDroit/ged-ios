@@ -34,14 +34,14 @@ struct PrimaryButton: View {
                     .padding(10)
                     .foregroundStyle(contentColor)
                     .background(containerColor)
-                    .clipShape(.rect(cornerRadius: 30))
+                    .clipShape(ShapeDefaults.full)
             } else {
                 Text(label)
                     .frame(maxWidth: maxWidth)
                     .padding(10)
                     .foregroundStyle(.disabledButtonContent)
                     .background(.disabledButtonContainer)
-                    .clipShape(.rect(cornerRadius: 30))
+                    .clipShape(ShapeDefaults.full)
             }
         }
         .disabled(!enabled)
@@ -156,8 +156,36 @@ struct TextButton: View {
     }
 }
 
+struct OutlinedButton: View {
+    let text: String
+    let action: () -> Void
+    
+    init(
+        _ text: String,
+        action: @escaping () -> Void
+    ) {
+        self.text = text
+        self.action = action
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            Text(text)
+                .fontWeight(.semibold)
+                .font(.callout)
+                .padding(8)
+                .padding(.horizontal, 10)
+                .foregroundStyle(.gedPrimary)
+                .overlay(
+                    ShapeDefaults.full
+                        .stroke(.outline, lineWidth: 1)
+                )
+        }
+    }
+}
+
 #Preview {
-    VStack(spacing: 20) {
+    VStack(alignment: .leading, spacing: 20) {
         PrimaryButton(
             label: "Primary button",
             action: {}
@@ -169,25 +197,20 @@ struct TextButton: View {
             action: {}
         )
         
-        HStack {
-            Text("Option button")
-            Spacer()
-            OptionsButton(action: {})
-        }
+        OptionsButton(action: {})
         
-        HStack {
-            Text("Remove button")
-            Spacer()
-            RemoveButton(action: {})
-        }
+        RemoveButton(action: {})
         
         Button(action: {}) {
             Text("Click style")
                 .padding(10)
-                .frame(maxWidth: .infinity)
-                .contentShape(.rect)
         }
         .buttonStyle(ClickStyle())
+        
+        OutlinedButton(
+            "Outlined button",
+            action: {}
+        )
     }
     .padding(.horizontal)
 }

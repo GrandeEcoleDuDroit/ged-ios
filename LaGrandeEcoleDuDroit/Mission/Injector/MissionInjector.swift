@@ -52,7 +52,7 @@ class MissionInjector: Injector {
         container.register(FetchMissionsUseCase.self) { resolver in
             FetchMissionsUseCase(
                 missionRepository: resolver.resolve(MissionRepository.self)!,
-                upsertMissionUseCase: resolver.resolve(UpsertMissionUseCase.self)!
+                upsertLocalMissionUseCase: resolver.resolve(UpsertLocalMissionUseCase.self)!
             )
         }
         
@@ -75,8 +75,8 @@ class MissionInjector: Injector {
             )
         }
         
-        container.register(UpsertMissionUseCase.self) { resolver in
-            UpsertMissionUseCase(
+        container.register(UpsertLocalMissionUseCase.self) { resolver in
+            UpsertLocalMissionUseCase(
                 missionRepository: resolver.resolve(MissionRepository.self)!,
                 imageRepository: CommonInjector.shared.resolve(ImageRepository.self)
             )

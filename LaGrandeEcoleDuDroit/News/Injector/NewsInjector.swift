@@ -15,6 +15,10 @@ class NewsInjector: Injector {
             AnnouncementApiImpl(tokenProvider: AppInjector.shared.resolve(TokenProvider.self))
         }.inObjectScope(.container)
         
+        container.register(PostApi.self) { _ in
+            PostApiImpl(tokenProvider: AppInjector.shared.resolve(TokenProvider.self))
+        }.inObjectScope(.container)
+        
         // Data sources
         container.register(AnnouncementRemoteDataSource.self) { resolver in
             AnnouncementRemoteDataSource(announcementApi: resolver.resolve(AnnouncementApi.self)!)
@@ -24,11 +28,26 @@ class NewsInjector: Injector {
             AnnouncementLocalDataSource(gedDatabaseContainer: CommonInjector.shared.resolve(GedDatabaseContainer.self))
         }.inObjectScope(.container)
         
+        container.register(PostRemoteDataSource.self) { resolver in
+            PostRemoteDataSource(postApi: resolver.resolve(PostApi.self)!)
+        }.inObjectScope(.container)
+        
+        container.register(PostLocalDataSource.self) { resolver in
+            PostLocalDataSource(gedDatabaseContainer: CommonInjector.shared.resolve(GedDatabaseContainer.self))
+        }.inObjectScope(.container)
+        
         // Repositories
         container.register(AnnouncementRepository.self) { resolver in
             AnnouncementRepositoryImpl(
                 announcementLocalDataSource: resolver.resolve(AnnouncementLocalDataSource.self)!,
                 announcementRemoteDataSource: resolver.resolve(AnnouncementRemoteDataSource.self)!
+            )
+        }.inObjectScope(.container)
+        
+        container.register(PostRepository.self) { resolver in
+            PostRepositoryImpl(
+                postLocalDataSource: resolver.resolve(PostLocalDataSource.self)!,
+                postRemoteDataSource: resolver.resolve(PostRemoteDataSource.self)!
             )
         }.inObjectScope(.container)
         
@@ -64,6 +83,20 @@ class NewsInjector: Injector {
             FetchAnnouncementsUseCase(
                 announcementRepository: resolver.resolve(AnnouncementRepository.self)!,
                 blockedUserRepository: CommonInjector.shared.resolve(BlockedUserRepository.self)
+            )
+        }.inObjectScope(.weak)
+        
+        container.register(FetchPostsUseCase.self) { resolver in
+            FetchPostsUseCase(
+                postRepository: resolver.resolve(PostRepository.self)!,
+                upsertLocalPostUseCase: resolver.resolve(UpsertLocalPostUseCase.self)!
+            )
+        }.inObjectScope(.weak)
+        
+        container.register(UpsertLocalPostUseCase.self) { resolver in
+            UpsertLocalPostUseCase(
+                postRepository: resolver.resolve(PostRepository.self)!,
+                imageRepository: CommonInjector.shared.resolve(ImageRepository.self)
             )
         }.inObjectScope(.weak)
         

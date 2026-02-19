@@ -9,7 +9,7 @@ class UpsertMissionUseCaseTest {
     func upsertMissionUseCase_should_upsert_mission() async {
         // Given
         let testMissionRepository = TestMissionRepository()
-        let useCase = UpsertMissionUseCase(
+        let useCase = UpsertLocalMissionUseCase(
             missionRepository: testMissionRepository,
             imageRepository: MockImageRepository(),
         )
@@ -28,7 +28,7 @@ class UpsertMissionUseCaseTest {
         let mission = missionFixture.copy { $0.state = .publishing(imagePath: imagePath) }
         let testMissionRepository = TestMissionRepository(givenMission: mission)
         let testImageRepository = TestImageRepository()
-        let useCase = UpsertMissionUseCase(
+        let useCase = UpsertLocalMissionUseCase(
             missionRepository: testMissionRepository,
             imageRepository: testImageRepository
         )

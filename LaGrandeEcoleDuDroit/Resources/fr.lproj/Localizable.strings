@@ -31,7 +31,6 @@
 "edit" = "Editer";
 "save" = "Enregistrer";
 "home" = "Accueil";
-"now" = "Maintenant";
 "finish" = "Terminer";
 "retry" = "Réessayer";
 "loading" = "Chargement";
@@ -39,10 +38,13 @@
 "publish" = "Publier";
 "add" = "Ajouter";
 "search" = "Rechercher";
+"now" = "Maintenant";
 "minutes_ago_short" = "%d min";
 "hours_ago_short" = "%d h";
 "days_ago_short" = "%d j";
-"weeks_ago_short" = "%d sem";
+"minutes_ago_long" = "Il y a %d minutes";
+"hours_ago_long" = "Il y a %d heures";
+"days_ago_long" = "Il y a %d jours";
 "today" = "Aujourd'hui";
 "yester" = "Hier";
 "sending" = "Envoi...";
@@ -53,6 +55,7 @@
 "remove" = "Retirer";
 "submit" = "Soumettre";
 "copy" = "Copier";
+"see" = "Voir";
 "block_user_alert_title" = "Bloquer utilisateur ?";
 "block_user_alert_message" = "Vous ne verrez plus aucun de ses contenus.";
 "unblock_user_alert_message" = "Voulez-vous débloquer cet utilisateur ?";
@@ -143,6 +146,8 @@
 "delete_announcement_alert_message" = "Voulez-vous supprimer cette annonce ?";
 "see_all" = "Voir tout";
 "all_announcements" = "Toutes les annonces";
+"ged_news" = "Actualités GED";
+"no_news" = "Aucune actualité";
 
 // Message
 "messages" = "Messages";

@@ -69,6 +69,7 @@ class AppInjector: Injector {
                 fetchCurrentUserUseCase: CommonInjector.shared.resolve(FetchCurrentUserUseCase.self),
                 fetchBlockedUsersUseCase: CommonInjector.shared.resolve(FetchBlockedUsersUseCase.self),
                 fetchAnnouncementsUseCase: NewsInjector.shared.resolve(FetchAnnouncementsUseCase.self),
+                fetchPostsUseCase: NewsInjector.shared.resolve(FetchPostsUseCase.self),
                 fetchMissionsUseCase: MissionInjector.shared.resolve(FetchMissionsUseCase.self)
             )
         }
