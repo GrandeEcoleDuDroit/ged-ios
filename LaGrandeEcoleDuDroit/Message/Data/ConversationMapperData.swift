@@ -14,7 +14,7 @@ extension Conversation {
         localConversation.conversationInterlocutorFirstName = interlocutor.firstName
         localConversation.conversationInterlocutorLastName = interlocutor.lastName
         localConversation.conversationInterlocutorEmail = interlocutor.email
-        localConversation.conversationInterlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
+        localConversation.conversationInterlocutorSchoolLevel = Int16(interlocutor.schoolLevel.rawValue)
         localConversation.conversationInterlocutorAdmin = interlocutor.admin
         localConversation.conversationInterlocutorProfilePictureFileName = UserUtils.ProfilePicture.getFileName(url: interlocutor.profilePictureUrl)
         localConversation.conversationInterlocutorState = Int16(interlocutor.state.rawValue)
@@ -40,7 +40,7 @@ extension Conversation {
         localConversation.conversationInterlocutorFirstName = interlocutor.firstName
         localConversation.conversationInterlocutorLastName = interlocutor.lastName
         localConversation.conversationInterlocutorEmail = interlocutor.email
-        localConversation.conversationInterlocutorSchoolLevel = interlocutor.schoolLevel.rawValue
+        localConversation.conversationInterlocutorSchoolLevel = Int16(interlocutor.schoolLevel.rawValue)
         localConversation.conversationInterlocutorAdmin = interlocutor.admin
         localConversation.conversationInterlocutorProfilePictureFileName = UserUtils.ProfilePicture.getFileName(url: interlocutor.profilePictureUrl)
         localConversation.conversationInterlocutorState = Int16(interlocutor.state.rawValue)
@@ -66,8 +66,7 @@ extension LocalConversation {
               let interlocutorId = conversationInterlocutorId,
               let interlocutorFirstName = conversationInterlocutorFirstName,
               let interlocutorLastName = conversationInterlocutorLastName,
-              let interlocutorEmail = conversationInterlocutorEmail,
-              let interlocutorSchoolLevel = conversationInterlocutorSchoolLevel
+              let interlocutorEmail = conversationInterlocutorEmail
         else { return nil }
         
         let interlocutor = User(
@@ -75,7 +74,7 @@ extension LocalConversation {
             firstName: interlocutorFirstName,
             lastName: interlocutorLastName,
             email: interlocutorEmail,
-            schoolLevel: SchoolLevel(rawValue: interlocutorSchoolLevel) ?? SchoolLevel.unknown,
+            schoolLevel: SchoolLevel(rawValue: Int(conversationInterlocutorSchoolLevel)) ?? .unknown,
             admin: conversationInterlocutorAdmin,
             profilePictureUrl: UserUtils.ProfilePicture.getUrl(fileName: conversationInterlocutorProfilePictureFileName),
             state: User.UserState(rawValue: Int(conversationInterlocutorState)) ?? .active,
@@ -100,7 +99,7 @@ extension LocalConversation {
         conversationInterlocutorFirstName = conversation.interlocutor.firstName
         conversationInterlocutorLastName = conversation.interlocutor.lastName
         conversationInterlocutorEmail = conversation.interlocutor.email
-        conversationInterlocutorSchoolLevel = conversation.interlocutor.schoolLevel.rawValue
+        conversationInterlocutorSchoolLevel = Int16(conversation.interlocutor.schoolLevel.rawValue)
         conversationInterlocutorAdmin = conversation.interlocutor.admin
         conversationInterlocutorProfilePictureFileName = UserUtils.ProfilePicture.getFileName(url: conversation.interlocutor.profilePictureUrl)
         conversationInterlocutorState = Int16(conversation.interlocutor.state.rawValue)

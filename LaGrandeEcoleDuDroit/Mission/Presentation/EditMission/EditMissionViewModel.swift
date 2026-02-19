@@ -162,7 +162,7 @@ class EditMissionViewModel: ViewModel {
             schoolLevels.append(schoolLevel)
         }
         
-        schoolLevels = schoolLevels.sorted { $0.number < $1.number }
+        schoolLevels = schoolLevels.sorted { $0 < $1 }
         uiState.selectedSchoolLevels = schoolLevels
         uiState.schoolLevelSupportingText = showSchoolLevelSupportingText(schoolLevels: schoolLevels) ? stringResource(.editMissionSchoolLevelSupportingText) : nil
         missionUpdateState.send(

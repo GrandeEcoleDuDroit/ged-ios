@@ -11,7 +11,7 @@ struct UserInformationItems: View {
             InformationItemValue(label: stringResource(.lastName), value: user.lastName),
             InformationItemValue(label: stringResource(.firstName), value: user.firstName),
             InformationItemValue(label: stringResource(.email), value: user.email),
-            InformationItemValue(label: stringResource(.schoolLevel), value: user.schoolLevel.rawValue)
+            InformationItemValue(label: stringResource(.schoolLevel), value: user.schoolLevel.description)
         ]
     }
     
