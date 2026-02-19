@@ -77,4 +77,19 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
+    <entity name="LocalPost" representedClassName="LocalPost" syncable="YES" codeGenerationType="class">
+        <attribute name="postContent" optional="YES" attributeType="String"/>
+        <attribute name="postDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="postId" optional="YES" attributeType="String"/>
+        <attribute name="postImageFileNames" optional="YES" attributeType="String"/>
+        <attribute name="postLink" optional="YES" attributeType="String"/>
+        <attribute name="postSourceId" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="postState" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="postTitle" optional="YES" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="postId"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
 </model>

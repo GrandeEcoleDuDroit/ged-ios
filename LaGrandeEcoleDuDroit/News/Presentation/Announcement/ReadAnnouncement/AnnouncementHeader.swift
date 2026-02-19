@@ -6,7 +6,7 @@ struct AnnouncementHeader: View {
     
     var body: some View {
         TimelineView(.periodic(from: .now, by: 60)) { _ in
-            let elapsedTimeText = getElapsedTimeText(date: announcement.date)
+            let elapsedTimeText = getElapsedTimeValue(date: announcement.date)
 
             HStack(spacing: DimensResource.smallMediumPadding) {
                 ProfilePicture(

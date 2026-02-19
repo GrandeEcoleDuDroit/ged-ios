@@ -110,6 +110,22 @@ extension CacheAsyncImage {
     }
 }
 
+struct LocalImage: View {
+    let imagePath: String
+    
+    var body: some View {
+        if let uiImage = UIImage(contentsOfFile: imagePath) {
+            Image(uiImage: uiImage)
+                .resizable()
+                .scaledToFill()
+                .clipped()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+            ErrorImage()
+        }
+    }
+}
+
 struct ProfilePicture: View {
     let url: String?
     var scale: CGFloat = 1.0
@@ -164,7 +180,6 @@ private struct DefaultProfilePicture: View {
 }
 
 private struct LoadingImage: View {
-    
     var body: some View {
         Color.imageLoadingBackground
             .overlay {
@@ -174,9 +189,9 @@ private struct LoadingImage: View {
 }
 
 private struct ErrorImage: View {
-    
     var body: some View {
         Color.imageLoadingBackground
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

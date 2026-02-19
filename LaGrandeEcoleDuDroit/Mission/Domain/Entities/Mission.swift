@@ -67,7 +67,7 @@ struct Mission: Copying, Identifiable, Hashable {
             }
         }
         
-        func getImagePath() -> String? {
+        func resolveImagePath() -> String? {
             switch self {
                 case let .publishing(imagePath: imagePath): imagePath
                 case let .error(imagePath: imagePath): imagePath

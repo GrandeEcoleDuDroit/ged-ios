@@ -2,11 +2,11 @@ class MockFetchMissionsUseCase: FetchMissionsUseCase {
     
     override init(
         missionRepository: MissionRepository = MockMissionRepository(),
-        upsertMissionUseCase: UpsertMissionUseCase = MockUpsertMissionUseCase()
+        upsertLocalMissionUseCase: UpsertLocalMissionUseCase = MockUpsertLocalMissionUseCase()
     ) {
         super.init(
             missionRepository: missionRepository,
-            upsertMissionUseCase: upsertMissionUseCase
+            upsertLocalMissionUseCase: upsertLocalMissionUseCase
         )
     }
     

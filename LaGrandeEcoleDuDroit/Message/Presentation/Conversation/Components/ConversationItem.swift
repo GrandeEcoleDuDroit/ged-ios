@@ -39,7 +39,7 @@ private struct SwitchConversationItem: View {
     
     var body: some View {
         TimelineView(.periodic(from: .now, by: 60)) { _ in
-            let elapsedTimeText = getElapsedTimeText(date: lastMessage.date)
+            let elapsedTimeText = getElapsedTimeValue(date: lastMessage.date)
             
             switch conversationState {
                 case .draft, .creating, .deleting:
@@ -101,7 +101,7 @@ private struct DefaultConversationItem: View {
             },
             supportingContent: {
                 Text(text)
-                    .font(.subheadline)
+                    .font(.footnote)
                     .foregroundStyle(.supportingText)
                     .lineLimit(1)
             }
@@ -140,7 +140,7 @@ private struct UnreadConversationItem: View {
             },
             supportingContent: {
                 Text(text)
-                    .font(.subheadline)
+                    .font(.footnote)
                     .fontWeight(.semibold)
                     .lineLimit(1)
             }
@@ -195,7 +195,7 @@ private struct ErrorConversationItem: View {
             },
             supportingContent: {
                 Text(text)
-                    .font(.subheadline)
+                    .font(.footnote)
                     .foregroundStyle(.supportingText)
                     .lineLimit(1)
             }

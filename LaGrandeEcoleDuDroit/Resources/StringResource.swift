@@ -43,6 +43,10 @@ enum StringResource: String {
     case hoursAgoShort = "hours_ago_short"
     case daysAgoShort = "days_ago_short"
     case weeksAgoShort = "weeks_ago_short"
+    case minutesAgoLong = "minutes_ago_long"
+    case hoursAgoLong = "hours_ago_long"
+    case daysAgoLong = "days_ago_long"
+    case weeksAgoLong = "weeks_ago_long"
     case today = "today"
     case yesterday = "yesterday"
     case home = "home"
@@ -54,6 +58,7 @@ enum StringResource: String {
     case remove = "remove"
     case submit = "submit"
     case copy = "copy"
+    case see = "see"
     case blockUserAlertTitle = "block_user_alert_title"
     case blockUserAlertMessage = "block_user_alert_message"
     case unblockUserAlertMessage = "unblock_user_alert_message"
@@ -145,7 +150,9 @@ enum StringResource: String {
     case deleteAnnouncementAlertMessage = "delete_announcement_alert_message"
     case seeAll = "see_all"
     case allAnnouncements = "all_announcements"
-    
+    case gedNews = "ged_news"
+    case noNews = "no_news"
+
     // Message
     case messages = "messages"
     case tapToChat = "tap_to_chat"
