@@ -35,7 +35,7 @@ class FetchMissionsUseCaseTest {
         )
         let useCase = FetchMissionsUseCase(
             missionRepository: testMissionsRepository,
-            upsertMissionUseCase: MockUpsertMissionUseCase()
+            upsertMissionUseCase: MockUpsertLocalMissionUseCase()
         )
         
         // When
@@ -72,7 +72,7 @@ private class TestMissionRepository: MockMissionRepository {
     }
 }
 
-private class TestUpsertMissionUseCase: MockUpsertMissionUseCase {
+private class TestUpsertMissionUseCase: MockUpsertLocalMissionUseCase {
     private(set) var upsertedMissionIds: [String] = []
     
     override func execute(mission: Mission) async throws {

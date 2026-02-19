@@ -1,13 +1,13 @@
 class FetchMissionsUseCase {
     private let missionRepository: MissionRepository
-    private let upsertMissionUseCase: UpsertMissionUseCase
+    private let upsertLocalMissionUseCase: UpsertLocalMissionUseCase
     
     init(
         missionRepository: MissionRepository,
-        upsertMissionUseCase: UpsertMissionUseCase
+        upsertLocalMissionUseCase: UpsertLocalMissionUseCase
     ) {
         self.missionRepository = missionRepository
-        self.upsertMissionUseCase = upsertMissionUseCase
+        self.upsertLocalMissionUseCase = upsertLocalMissionUseCase
     }
     
     func execute() async throws {
@@ -21,7 +21,7 @@ class FetchMissionsUseCase {
             try? await missionRepository.deleteLocalMission(missionId: mission.id)
         }
         for mission in missionsToUpsert {
-            try? await upsertMissionUseCase.execute(mission: mission)
+            try? await upsertLocalMissionUseCase.execute(mission: mission)
         }
     }
 }

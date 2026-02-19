@@ -62,7 +62,7 @@
 				Message/Mock/MockSendMessageNotificationUseCase.swift,
 				Mission/Mock/MockMissionRepository.swift,
 				Mission/Mock/MockRefreshMissionsUseCase.swift,
-				Mission/Mock/MockUpsertMissionUseCase.swift,
+				Mission/Mock/MockUpsertLocalMissionUseCase.swift,
 				News/Mock/MockAnnouncementRepository.swift,
 			);
 			target = 5EB5784C2CB3CCD3004524AD /* LaGrandeEcoleDuDroit */;
@@ -87,7 +87,7 @@
 				Message/Mock/MockSendMessageNotificationUseCase.swift,
 				Mission/Mock/MockMissionRepository.swift,
 				Mission/Mock/MockRefreshMissionsUseCase.swift,
-				Mission/Mock/MockUpsertMissionUseCase.swift,
+				Mission/Mock/MockUpsertLocalMissionUseCase.swift,
 				News/Mock/MockAnnouncementRepository.swift,
 			);
 			target = 5EB5785C2CB3CCD4004524AD /* LaGrandeEcoleDuDroitTests */;

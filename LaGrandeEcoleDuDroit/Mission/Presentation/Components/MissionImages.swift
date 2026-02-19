@@ -88,21 +88,6 @@ private struct ErrorMissionImage<DefaultImage: View>: View {
     }
 }
 
-private struct LocalImage: View {
-    let imagePath: String
-    
-    var body: some View {
-        if let uiImage = UIImage(contentsOfFile: imagePath) {
-            Image(uiImage: uiImage)
-                .resizable()
-                .scaledToFill()
-                .clipped()
-        } else {
-            ErrorImage()
-        }
-    }
-}
-
 struct DefaultMissionImage: View {
     let scale: CGFloat
     
@@ -113,21 +98,5 @@ struct DefaultMissionImage: View {
             .padding(DimensResource.mediumPadding)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(.surfaceVariant)
-    }
-}
-
-private struct LoadingImage: View {
-    var body: some View {
-        ProgressView()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(.imageLoadingBackground)
-    }
-}
-
-private struct ErrorImage: View {
-    var body: some View {
-        Rectangle()
-            .fill(.imageLoadingBackground)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

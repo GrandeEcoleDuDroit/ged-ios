@@ -17,7 +17,7 @@ class RecreateMissionUseCase {
     
     func execute(mission: Mission) async {
         let task = Task {
-            let imagePath = mission.state.getImagePath()
+            let imagePath = mission.state.resolveImagePath()
             let imageData: Data? = if let imagePath {
                 try? await imageRepository.getLocalImage(imagePath: imagePath)
             } else {
