@@ -19,8 +19,9 @@ struct MissionUtilsPresentation {
         if schoolLevels.count == SchoolLevel.all.count {
             stringResource(.everyone)
         } else {
-            schoolLevels.sorted { $0.number < $1.number }
-                .map { $0.rawValue }
+            schoolLevels
+                .sorted { $0 < $1 }
+                .map { $0.description }
                 .joined(separator: " - ")
         }
     }
