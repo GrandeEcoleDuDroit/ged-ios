@@ -32,21 +32,12 @@ struct GetElapsedTimeUseCaseTests {
     }
 
     @Test
-    func should_return_days_when_duration_is_between_1_and_7_days() {
+    func should_return_days_when_duration_is_between_1_and_30_days() {
         let date = Date().addingTimeInterval(-86400 * 2) // 2 days ago
 
         let result = GetElapsedTimeUseCase.execute(date: date)
 
         #expect(result == .day(days: 2))
-    }
-
-    @Test
-    func should_return_weeks_when_duration_is_between_7_and_30_days() {
-        let date = Date().addingTimeInterval(-86400 * 14) // 14 days ago
-
-        let result = GetElapsedTimeUseCase.execute(date: date)
-
-        #expect(result == .week(weeks: 2))
     }
 
     @Test
