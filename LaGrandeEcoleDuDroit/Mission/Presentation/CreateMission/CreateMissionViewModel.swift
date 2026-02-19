@@ -109,7 +109,7 @@ class CreateMissionViewModel: ViewModel {
             schoolLevels.append(schoolLevel)
         }
         
-        uiState.selectedSchoolLevels = schoolLevels.sorted { $0.number < $1.number }
+        uiState.selectedSchoolLevels = schoolLevels.sorted { $0 < $1 }
         uiState.createEnabled = validateCreate()
     }
     

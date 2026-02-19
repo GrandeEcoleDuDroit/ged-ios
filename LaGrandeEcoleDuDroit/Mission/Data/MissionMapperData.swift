@@ -2,7 +2,7 @@ import Foundation
 
 extension Mission {
     func toRemote() -> OutboundRemoteMission? {
-        let schoolevelNumbers = schoolLevels.map { $0.number }
+        let schoolevelNumbers = schoolLevels.map { $0.rawValue }
         guard let schoolLevelNumbersJson = try? JSONEncoder().encode(schoolevelNumbers) else {
             return nil
         }
@@ -106,7 +106,7 @@ extension LocalMission {
             date: missionDate,
             startDate: missionStartDate,
             endDate: missionEndDate,
-            schoolLevels: schoolLevelNumbers.map { SchoolLevel.fromNumber($0) },
+            schoolLevels: schoolLevelNumbers.compactMap { SchoolLevel(rawValue: $0) },
             duration: missionDuration,
             managers: localManagers.map { $0.toUser() },
             participants: localParticipants.map { $0.toUser() },
@@ -117,7 +117,7 @@ extension LocalMission {
     }
     
     func modify(mission: Mission) {
-        let schoolevelNumbers = mission.schoolLevels.map { $0.number }
+        let schoolevelNumbers = mission.schoolLevels.map { $0.rawValue }
         let managers = mission.managers.map { $0.toLocal() }
         let participants = mission.participants.map { $0.toLocal() }
         let tasks = mission.tasks.map { $0.toLocal() }
@@ -157,7 +157,7 @@ extension LocalMission {
     }
     
     func equals(_ mission: Mission) -> Bool {
-        let schoolevelNumbers = mission.schoolLevels.map { $0.number }
+        let schoolevelNumbers = mission.schoolLevels.map { $0.rawValue }
         let managers = mission.managers.map { $0.toLocal() }
         let participants = mission.participants.map { $0.toLocal() }
         let tasks = mission.tasks.map { $0.toLocal() }
@@ -226,7 +226,7 @@ extension InboundRemoteMission {
             date: missionDate.toDate(),
             startDate: missionStartDate.toDate(),
             endDate: missionEndDate.toDate(),
-            schoolLevels: schoolLevelNumbers.map { SchoolLevel.fromNumber($0) },
+            schoolLevels: schoolLevelNumbers.compactMap { SchoolLevel(rawValue: $0) },
             duration: missionDuration,
             managers: missionManagers.map { $0.toUser() },
             participants: missionParticipants?.map { $0.toUser() } ?? [],

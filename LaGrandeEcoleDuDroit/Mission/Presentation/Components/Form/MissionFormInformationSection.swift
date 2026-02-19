@@ -123,11 +123,11 @@ struct OutlinedSchoolLevelsPicker: View {
         MultiSelectionPicker(
             text: schoolLevelText,
             placeholder: stringResource(.missionSchoolLevelField),
-            items: allSchoolLevels.map(\.rawValue),
+            items: allSchoolLevels.map(\.description),
             leadingIcon: Image(systemName: "graduationcap"),
-            seletctedItems: selectedSchoolLevels.map(\.rawValue),
+            seletctedItems: selectedSchoolLevels.map(\.description),
             onItemSelected: {
-                if let schoolLevel = SchoolLevel(rawValue: $0) {
+                if let schoolLevel = SchoolLevel.fromLabel($0) {
                     onSelectedSchoolLevelChange(schoolLevel)
                 }
             },
