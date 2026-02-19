@@ -115,8 +115,8 @@ class MissionDetailsViewModel: ViewModel {
         }
         else if !mission.schoolLevels.contains(user.schoolLevel) {
             let formattedSchoolLevels = mission.schoolLevels
-                .sorted { $0.number < $1.number }
-                .map { $0.rawValue }
+                .sorted { $0 < $1 }
+                .map { $0.description }
                 .joined(separator: ", ")
             return MissionButtonState.unavailable(reason: stringResource(.nonMatchingSchoolLevelInformationText, formattedSchoolLevels))
         }

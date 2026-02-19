@@ -17,7 +17,7 @@ struct Post: Copying, Hashable {
         case linkedin = 1
         case instagram = 2
         case blogLlm = 3
-        case unknown
+        case unknown = 0
         
         var label: String {
             switch self {

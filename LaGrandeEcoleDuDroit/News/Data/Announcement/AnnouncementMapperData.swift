@@ -19,7 +19,6 @@ extension LocalAnnouncement {
               let authorFirstName = announcementAuthorFirstName,
               let authorLastName = announcementAuthorLastName,
               let authorEmail = announcementAuthorEmail,
-              let authorSchoolLevel = announcementAuthorSchoolLevel,
               let announcementId = announcementId,
               let announcementContent = announcementContent,
               let announcementDate = announcementDate,
@@ -31,7 +30,7 @@ extension LocalAnnouncement {
             firstName: UserUtils.Name.formatName(authorFirstName),
             lastName: UserUtils.Name.formatName(authorLastName),
             email: authorEmail,
-            schoolLevel: SchoolLevel(rawValue: authorSchoolLevel) ?? SchoolLevel.unknown,
+            schoolLevel: SchoolLevel(rawValue: Int(announcementAuthorSchoolLevel)) ?? SchoolLevel.unknown,
             admin: announcementAuthorAdmin,
             profilePictureUrl: UserUtils.ProfilePicture.getUrl(fileName: announcementAuthorProfilePictureFileName)
         )
@@ -56,7 +55,7 @@ extension LocalAnnouncement {
         announcementAuthorFirstName = announcement.author.firstName.lowercased()
         announcementAuthorLastName = announcement.author.lastName.lowercased()
         announcementAuthorEmail = announcement.author.email
-        announcementAuthorSchoolLevel = announcement.author.schoolLevel.rawValue
+        announcementAuthorSchoolLevel = Int16(announcement.author.schoolLevel.rawValue)
         announcementAuthorAdmin = announcement.author.admin
         announcementAuthorProfilePictureFileName = UserUtils.ProfilePicture.getFileName(url: announcement.author.profilePictureUrl)
         announcementAuthorState = Int16(announcement.author.state.rawValue)
@@ -88,7 +87,7 @@ extension InboundRemoteAnnouncement {
             firstName: UserUtils.Name.formatName(userFirstName),
             lastName: UserUtils.Name.formatName(userLastName),
             email: userEmail,
-            schoolLevel: SchoolLevel.fromNumber(userSchoolLevel),
+            schoolLevel: SchoolLevel(rawValue: userSchoolLevel) ?? SchoolLevel.unknown,
             admin: userAdmin == 1,
             profilePictureUrl: UserUtils.ProfilePicture.getUrl(fileName: userProfilePictureFileName),
             state: User.UserState(rawValue: userState) ?? .active,

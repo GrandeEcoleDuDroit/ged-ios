@@ -7,7 +7,7 @@
         <attribute name="announcementAuthorId" attributeType="String" defaultValueString=""/>
         <attribute name="announcementAuthorLastName" attributeType="String" defaultValueString=""/>
         <attribute name="announcementAuthorProfilePictureFileName" optional="YES" attributeType="String"/>
-        <attribute name="announcementAuthorSchoolLevel" attributeType="String" defaultValueString=""/>
+        <attribute name="announcementAuthorSchoolLevel" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="announcementAuthorState" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="announcementAuthorTester" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="announcementContent" attributeType="String" defaultValueString=""/>
@@ -31,7 +31,7 @@
         <attribute name="conversationInterlocutorId" optional="YES" attributeType="String"/>
         <attribute name="conversationInterlocutorLastName" optional="YES" attributeType="String"/>
         <attribute name="conversationInterlocutorProfilePictureFileName" optional="YES" attributeType="String"/>
-        <attribute name="conversationInterlocutorSchoolLevel" optional="YES" attributeType="String"/>
+        <attribute name="conversationInterlocutorSchoolLevel" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="conversationInterlocutorState" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="conversationInterlocutorTester" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="conversationState" optional="YES" attributeType="String"/>

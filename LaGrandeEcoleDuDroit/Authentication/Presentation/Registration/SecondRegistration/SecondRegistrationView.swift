@@ -73,7 +73,7 @@ private struct OutlinedSchoolLevelPicker: View {
                 selection: $schoolLevel
             ) {
                 ForEach(schoolLevels) { level in
-                    Text(level.rawValue).tag(level)
+                    Text(level.description).tag(level)
                 }
             }
         }
