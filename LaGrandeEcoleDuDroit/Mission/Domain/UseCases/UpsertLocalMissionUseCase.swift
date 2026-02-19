@@ -1,4 +1,4 @@
-class UpsertMissionUseCase {
+class UpsertLocalMissionUseCase {
     private let missionRepository: MissionRepository
     private let imageRepository: ImageRepository
     
@@ -14,7 +14,7 @@ class UpsertMissionUseCase {
         let localMission = try await missionRepository.getLocalMission(missionId: mission.id)
         try await missionRepository.upsertLocalMission(mission: mission)
         
-        if let imagePath = localMission?.state.getImagePath() {
+        if let imagePath = localMission?.state.resolveImagePath() {
             try await imageRepository.deleteLocalImage(imagePath: imagePath)
         }
     }

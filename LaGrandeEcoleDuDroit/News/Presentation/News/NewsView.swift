@@ -13,6 +13,7 @@ struct NewsDestination: View {
             NewsView(
                 user: user,
                 announcements: viewModel.uiState.announcements,
+                posts: viewModel.uiState.posts,
                 loading: viewModel.uiState.loading,
                 onRefreshAnnouncements: viewModel.refreshAnnouncements,
                 onAnnouncementClick: onAnnouncementClick,
@@ -47,6 +48,7 @@ struct NewsDestination: View {
 private struct NewsView: View {
     let user: User
     let announcements: [Announcement]?
+    let posts: [Post]?
     let loading: Bool
     let onRefreshAnnouncements: () async -> Void
     let onAnnouncementClick: (String) -> Void
@@ -59,24 +61,56 @@ private struct NewsView: View {
     @State private var showDeleteAnnouncementAlert: Bool = false
     @State private var alertAnnouncement: Announcement?
     @State private var activeSheet:  NewsViewSheet?
+    
+    private static let announcementSectionFraction: CGFloat = 0.9
+    private static let postSectionFraction: CGFloat = 1
+    private static let totalSectionsFraction: CGFloat = announcementSectionFraction + postSectionFraction
 
     var body: some View {
-        RecentAnnouncementSection(
-            announcements: announcements,
-            onAnnouncementClick: { announcement in
-                switch announcement.state {
-                    case .published: onAnnouncementClick(announcement.id)
-                    default: activeSheet = .announcement(announcement)
+        GeometryReader { geo in
+            TimelineView(.periodic(from: .now, by: 60)) { _ in
+                VStack(spacing: DimensResource.mediumPadding) {
+                    RecentAnnouncementSection(
+                        announcements: announcements,
+                        onAnnouncementClick: { announcement in
+                            switch announcement.state {
+                                case .published: onAnnouncementClick(announcement.id)
+                                default: activeSheet = .announcement(announcement)
+                            }
+                        },
+                        onAnnouncementOptionsClick: { announcement in
+                            activeSheet = .announcement(announcement)
+                        },
+                        onSeeAllAnnouncementClick: onSeeAllAnnouncementClick,
+                        onRefreshAnnouncements: onRefreshAnnouncements
+                    )
+                    .frame(height: geo.size.height * (NewsView.announcementSectionFraction / NewsView.totalSectionsFraction))
+                    
+                    GedNewsSection(
+                        posts: posts,
+                        onPostClick: { _ in
+                            // TODO
+                        },
+                        onUncreatedPostClick: {
+                            // TODO
+                        },
+                        onRedirectPostClick: { _ in
+                            // TODO
+                        },
+                        onPostOptionClick: { _ in
+                            // TODO
+                        },
+                        onSeeAllPostsClick: {
+                            // TODO
+                        }
+                    )
+                    .padding(.bottom)
+                    .frame(height: geo.size.height * (NewsView.postSectionFraction / NewsView.totalSectionsFraction))
                 }
-            },
-            onAnnouncementOptionsClick: { announcement in
-                activeSheet = .announcement(announcement)
-            },
-            onSeeAllAnnouncementClick: onSeeAllAnnouncementClick,
-            onRefreshAnnouncements: onRefreshAnnouncements
-        )
+            }
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .padding(.top)
+        .padding(.vertical)
         .loading(loading)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -203,6 +237,7 @@ private enum NewsViewSheet: Identifiable {
        NewsView(
             user: userFixture,
             announcements: announcementsFixture,
+            posts: postsFixture,
             loading: false,
             onRefreshAnnouncements: {},
             onAnnouncementClick: {_ in },

@@ -14,6 +14,8 @@ struct DimensResource {
     static let leadingIconSpacing: CGFloat = 14
     static let inputIconSize: CGFloat = 18
     static let iconSize: CGFloat = 18
+    static let smallIconSIze: CGFloat = 16
+    static let smallMediumIconSIze: CGFloat = 20
     
     static let toolbarPadding = PaddingValues(vertical: 10, horizontal: 16)
     static let toolbarItemSpacing: CGFloat = 16

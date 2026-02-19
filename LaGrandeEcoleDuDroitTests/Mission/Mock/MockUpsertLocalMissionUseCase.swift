@@ -1,4 +1,4 @@
-class MockUpsertMissionUseCase: UpsertMissionUseCase {
+class MockUpsertLocalMissionUseCase: UpsertLocalMissionUseCase {
     override init(
         missionRepository: MissionRepository = MockMissionRepository(),
         imageRepository: ImageRepository = MockImageRepository()
