@@ -75,13 +75,13 @@ class CreateMissionViewModel: ViewModel {
     }
     
     func onTitleChange(_ title: String) -> Void {
-        let truncatedTitle = title.take(MissionUtilsPresentation.maxTitleLength)
+        let truncatedTitle = title.take(MissionPresentationUtils.maxTitleLength)
         uiState.title = truncatedTitle
         uiState.createEnabled = validateCreate(title: truncatedTitle)
     }
     
     func onDescriptionChange(_ description: String) -> Void {
-        let truncatedDescription = description.take(MissionUtilsPresentation.maxDescriptionLength)
+        let truncatedDescription = description.take(MissionPresentationUtils.maxDescriptionLength)
         uiState.description = truncatedDescription
         uiState.createEnabled = validateCreate(description: truncatedDescription)
     }
@@ -115,7 +115,7 @@ class CreateMissionViewModel: ViewModel {
     
     func onMaxParticipantsChange(_ maxParticipants: String) -> Void {
         let maxParticipantsNumber = maxParticipants.toInt32OrDefault(-1)
-        let validMaxParticipantsNumber = maxParticipantsNumber > 0 && maxParticipantsNumber.description.count <= MissionUtilsPresentation.maxParticipantsLength
+        let validMaxParticipantsNumber = maxParticipantsNumber > 0 && maxParticipantsNumber.description.count <= MissionPresentationUtils.maxParticipantsLength
 
         let value = switch maxParticipants {
             case _ where maxParticipants.isEmpty: ""
@@ -129,7 +129,7 @@ class CreateMissionViewModel: ViewModel {
     }
     
     func onDurationChange(_ duration: String) -> Void {
-        uiState.duration = duration.take(MissionUtilsPresentation.maxDurationLength)
+        uiState.duration = duration.take(MissionPresentationUtils.maxDurationLength)
     }
     
     func onUpdateManagers(_ managers: [User]) {

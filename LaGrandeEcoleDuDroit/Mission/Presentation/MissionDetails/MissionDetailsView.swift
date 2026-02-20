@@ -268,7 +268,7 @@ private struct MissionDetailsContent: View {
                     defaultImageScale: 1.4
                 )
                 .ignoresSafeArea(.all)
-                .frame(height: MissionUtilsPresentation.missionImageHeight)
+                .frame(height: MissionPresentationUtils.missionImageHeight)
                 .clipped()
                 
                 VStack(spacing: DimensResource.mediumPadding) {

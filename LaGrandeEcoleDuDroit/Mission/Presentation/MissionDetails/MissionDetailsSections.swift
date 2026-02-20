@@ -6,13 +6,13 @@ struct MissionDetailsTitleAndDescriptionSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
             Text(mission.title)
-                .font(MissionUtilsPresentation.titleFont)
+                .font(MissionPresentationUtils.titleFont)
                 .fontWeight(.semibold)
                 .lineSpacing(3)
                 .multilineTextAlignment(.leading)
             
             Text(mission.description)
-                .font(MissionUtilsPresentation.contentFont)
+                .font(MissionPresentationUtils.contentFont)
                 .multilineTextAlignment(.leading)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -27,7 +27,7 @@ struct MissionDetailsInformationSection: View {
             SectionTitle(title: stringResource(.information))
             
             MissionInformationValuesItem(mission: mission)
-                .font(MissionUtilsPresentation.contentFont)
+                .font(MissionPresentationUtils.contentFont)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -44,9 +44,9 @@ struct MissionDetailsManagerSection: View {
                 SectionTitle(title: stringResource(.managers))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
-                if managers.count > MissionUtilsPresentation.maxUserItemDisplayed {
+                if managers.count > MissionPresentationUtils.maxUserItemDisplayed {
                     SeeAllUsersButton(
-                        userCount: managers.count - MissionUtilsPresentation.maxUserItemDisplayed,
+                        userCount: managers.count - MissionPresentationUtils.maxUserItemDisplayed,
                         action: onSeeAllClick
                     )
                 }
@@ -54,14 +54,14 @@ struct MissionDetailsManagerSection: View {
             .padding(.horizontal)
             
             LazyVStack(spacing: .zero) {
-                ForEach(managers.take(MissionUtilsPresentation.maxUserItemDisplayed)) { manager in
+                ForEach(managers.take(MissionPresentationUtils.maxUserItemDisplayed)) { manager in
                     Button(action: { onManagerClick(manager) }) {
                         MissionUserItem(
                             user: manager,
                             imageScale: 0.4,
                             showAdminIndicator: false
                         )
-                        .font(MissionUtilsPresentation.contentFont)
+                        .font(MissionPresentationUtils.contentFont)
                         .frame(maxWidth: .infinity)
                         .contentShape(.rect)
                     }
@@ -85,9 +85,9 @@ struct MissionDetailsParticipantSection: View {
                 SectionTitle(title: stringResource(.participants))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
-                if participants.count > MissionUtilsPresentation.maxUserItemDisplayed {
+                if participants.count > MissionPresentationUtils.maxUserItemDisplayed {
                     SeeAllUsersButton(
-                        userCount: participants.count - MissionUtilsPresentation.maxUserItemDisplayed,
+                        userCount: participants.count - MissionPresentationUtils.maxUserItemDisplayed,
                         action: onSeeAllClick
                     )
                 }
@@ -97,16 +97,16 @@ struct MissionDetailsParticipantSection: View {
             LazyVStack(spacing: .zero) {
                 if participants.isEmpty {
                     EmptyText(stringResource(.noParticipant))
-                        .font(MissionUtilsPresentation.contentFont)
+                        .font(MissionPresentationUtils.contentFont)
                 } else {
-                    ForEach(participants.take(MissionUtilsPresentation.maxUserItemDisplayed)) { participant in
+                    ForEach(participants.take(MissionPresentationUtils.maxUserItemDisplayed)) { participant in
                         Button(action: { onParticipantClick(participant) }) {
                             MissionUserItem(
                                 user: participant,
                                 imageScale: 0.4,
                                 showAdminIndicator: false
                             )
-                            .font(MissionUtilsPresentation.contentFont)
+                            .font(MissionPresentationUtils.contentFont)
                             .frame(maxWidth: .infinity)
                             .contentShape(.rect)
                         }
@@ -139,7 +139,7 @@ struct MissionDetailsTaskSection: View {
                             .padding(.top, -6)
                         
                         Text(missionTask.value)
-                            .font(MissionUtilsPresentation.contentFont)
+                            .font(MissionPresentationUtils.contentFont)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }

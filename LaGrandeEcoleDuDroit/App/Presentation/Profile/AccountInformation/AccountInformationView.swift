@@ -78,7 +78,7 @@ private struct AccountInformationView: View {
         .loading(loading)
         .task(id: selectedItem) {
             if let data = try? await selectedItem?.loadTransferable(type: Data.self) {
-                if data.count < CommonUtilsPresentation.maxImageFileSize {
+                if data.count < CommonPresentationUtils.maxImageFileSize {
                     onScreenStateChange(.edit)
                     profilePictureImageData = data
                 } else {

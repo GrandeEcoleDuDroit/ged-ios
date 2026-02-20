@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct AnnouncementUtilsPresentation {
+struct AnnouncementPresentationUtils {
     private init() {}
     
     static let maxTitleLength: Int = 300

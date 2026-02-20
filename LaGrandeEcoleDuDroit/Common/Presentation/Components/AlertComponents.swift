@@ -11,7 +11,7 @@ extension View {
                 }
             },
             message: {
-                Text(stringResource(.imageTooLargeErrorMessage, CommonUtilsPresentation.maxImageFileSizeString))
+                Text(stringResource(.imageTooLargeErrorMessage, CommonPresentationUtils.maxImageFileSizeString))
             }
         )
     }

@@ -128,8 +128,20 @@ private struct NewsView: View {
             
             ToolbarItem(placement: .primaryAction) {
                 if user.admin {
-                    Button(
-                        action: { activeSheet = .createAnnouncement },
+                    Menu(
+                        content: {
+                            Button(
+                                stringResource(.newAnnouncement),
+                                systemImage: "megaphone",
+                                action: { activeSheet = .createAnnouncement }
+                            )
+                            
+                            Button(
+                                stringResource(.newPost),
+                                systemImage: "newspaper",
+                                action: { activeSheet = .createPost }
+                            )
+                        },
                         label: { Image(systemName: "plus") }
                     )
                 }
@@ -194,6 +206,11 @@ private struct NewsView: View {
                         announcement: announcement,
                         onCancelClick: { activeSheet = nil }
                     )
+                    
+                case .createPost:
+                    CreatePostDestination(
+                        onCancelClick: { activeSheet = nil }
+                    )
             }
         }
         .alert(
@@ -221,6 +238,7 @@ private enum NewsViewSheet: Identifiable {
     case announcementReport(Announcement)
     case createAnnouncement
     case editAnnouncement(Announcement)
+    case createPost
     
     var id: Int {
         switch self {
@@ -228,6 +246,7 @@ private enum NewsViewSheet: Identifiable {
             case .announcementReport: 1
             case .createAnnouncement: 2
             case .editAnnouncement: 3
+            case .createPost: 4
         }
     }
 }

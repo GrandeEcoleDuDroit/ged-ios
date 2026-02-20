@@ -63,5 +63,12 @@ class NewsMainThreadInjector: MainThreadInjector {
                 refreshAnnouncementsUseCase: NewsInjector.shared.resolve(RefreshAnnouncementsUseCase.self)
             )
         }
+        
+        container.register(CreatePostViewModel.self) { resolver in
+            CreatePostViewModel(
+                createPostUseCase: NewsInjector.shared.resolve(CreatePostUseCase.self),
+                generateIdUseCase: CommonInjector.shared.resolve(GenerateIdUseCase.self)
+            )
+        }
     }
 }

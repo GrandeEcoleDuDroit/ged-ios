@@ -1,4 +1,4 @@
-struct CommonUtilsPresentation {
+struct CommonPresentationUtils {
     private init() {}
     
     static let maxImageFileSize: Int = 3 * 1024 * 1024

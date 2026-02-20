@@ -42,7 +42,7 @@ struct MessageFeed: View {
                     .listRowInsets(EdgeInsets())
                     .onAppear {
                         if message == messages.last &&
-                            messages.count >= MessageUtilsPresentation.loadLimit &&
+                            messages.count >= MessagePresentationUtils.loadLimit &&
                             canLoadMoreMessages
                         {
                             loadMoreMessages(index + 1)
