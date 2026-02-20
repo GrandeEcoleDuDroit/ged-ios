@@ -10,6 +10,8 @@ struct DimensResource {
     static let extraLargePadding: CGFloat = 32
     static let veryExtraLargePadding: CGFloat = 64
     
+    static let supportingTextTopPadding: CGFloat = 4
+    
     static let defaultImageSize: CGFloat = 100
     static let leadingIconSpacing: CGFloat = 14
     static let inputIconSize: CGFloat = 18

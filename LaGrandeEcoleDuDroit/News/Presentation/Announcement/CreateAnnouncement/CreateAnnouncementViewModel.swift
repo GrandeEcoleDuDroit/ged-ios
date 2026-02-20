@@ -44,20 +44,20 @@ class CreateAnnouncementViewModel: ViewModel {
     }
     
     func onTitleChange(_ title: String) {
-        if title.count <= AnnouncementUtilsPresentation.maxTitleLength {
+        if title.count <= AnnouncementPresentationUtils.maxTitleLength {
             uiState.title = title
             uiState.createEnabled = validateInput()
         } else {
-            uiState.title = String(title.prefix(AnnouncementUtilsPresentation.maxTitleLength))
+            uiState.title = String(title.prefix(AnnouncementPresentationUtils.maxTitleLength))
         }
     }
     
     func onContentChange(_ content: String) {
-        if content.count <= AnnouncementUtilsPresentation.maxContentLength {
+        if content.count <= AnnouncementPresentationUtils.maxContentLength {
             uiState.content = content
             uiState.createEnabled = validateInput()
         } else {
-            uiState.content = String(content.prefix(AnnouncementUtilsPresentation.maxContentLength))
+            uiState.content = String(content.prefix(AnnouncementPresentationUtils.maxContentLength))
         }
     }
     

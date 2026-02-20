@@ -2,12 +2,9 @@ import SwiftUI
 import PhotosUI
 
 struct CreateMissionDestination: View {
-    let onBackClick: () -> Void
+    let onCancelClick: () -> Void
     
     @StateObject private var viewModel = MissionMainThreadInjector.shared.resolve(CreateMissionViewModel.self)
-    @State private var showImageErrorAlert: Bool = false
-    @State private var errorTitle: String = ""
-    @State private var errorMessage: String = ""
     
     var body: some View {
         NavigationStack {
@@ -38,26 +35,12 @@ struct CreateMissionDestination: View {
                 onAddMissionTaskClick: viewModel.onAddMissionTask,
                 onUpdateMissionTaskClick: viewModel.onUpdateMissionTask,
                 onRemoveMissionTaskClick: viewModel.onRemoveMissionTask,
-                onCreateMissionClick: viewModel.createMission,
-                onBackClick: onBackClick
-            )
-            .alert(
-                errorTitle,
-                isPresented: $showImageErrorAlert,
-                actions: {
-                    Button(stringResource(.ok)) {
-                        showImageErrorAlert = false
-                    }
+                onCreateMissionClick: {
+                    viewModel.createMission(imageData: $0)
+                    onCancelClick()
                 },
-                message: {
-                    Text(errorMessage)
-                }
+                onCancelClick: onCancelClick
             )
-            .onReceive(viewModel.$event) { event in
-                if event is SuccessEvent {
-                    onBackClick()
-                }
-            }
         }
     }
 }
@@ -92,7 +75,7 @@ private struct CreateMissionView: View {
     let onUpdateMissionTaskClick: (MissionTask) -> Void
     let onRemoveMissionTaskClick: (MissionTask) -> Void
     let onCreateMissionClick: (Data?) -> Void
-    let onBackClick: () -> Void
+    let onCancelClick: () -> Void
     
     @State private var imageData: Data?
     @State private var showImageErrorAlert: Bool = false
@@ -114,7 +97,7 @@ private struct CreateMissionView: View {
             missionState: missionState,
             maxParticipantsError: maxParticipantsError,
             onImageChange: {
-                if $0.count < CommonUtilsPresentation.maxImageFileSize {
+                if $0.count < CommonPresentationUtils.maxImageFileSize {
                     imageData = $0
                 } else {
                     showImageErrorAlert = true
@@ -140,7 +123,7 @@ private struct CreateMissionView: View {
             ToolbarItem(placement: .cancellationAction) {
                 Button(
                     stringResource(.cancel),
-                    action: onBackClick
+                    action: onCancelClick
                 )
             }
             
@@ -251,7 +234,7 @@ private enum CrateMissionViewSheet: Identifiable {
             onUpdateMissionTaskClick: { _ in },
             onRemoveMissionTaskClick: { _ in },
             onCreateMissionClick: { _ in },
-            onBackClick: {}
+            onCancelClick: {}
         )
         .background(.appBackground)
     }

@@ -1,5 +1,32 @@
 import SwiftUI
 
+struct HybridImage: View {
+    let imageReference: ImageReference
+    var width: CGFloat?
+    var height: CGFloat?
+    
+    var body: some View {
+        switch imageReference {
+            case let .imageUrl(url):
+                CacheAsyncImage(url: url, width: width, height: height)
+            
+            case let .imagePath(path):
+                LocalImage(imagePath: path)
+                    .frame(width: width, height: height)
+            
+            case let .imageData(data):
+                Group {
+                    if let uiImage = UIImage(data: data) {
+                        Image(uiImage: uiImage)
+                    } else {
+                        ErrorImage()
+                    }
+                }
+                .frame(width: width, height: height)
+        }
+    }
+}
+
 struct CacheAsyncImage: View {
     let url: String
     var width: CGFloat?

@@ -140,14 +140,20 @@
 "recent_announcements" = "Annonces récentes";
 "new_announcement" = "Nouvelle Annonce";
 "edit_announcement" = "Editer Annonce";
-"title" = "Titre";
-"content" = "Contenu";
+"title_field_placeholder" = "Titre";
+"content_field_placeholder" = "Contenu";
 "no_announcement" = "Aucune annonce";
 "delete_announcement_alert_message" = "Voulez-vous supprimer cette annonce ?";
 "see_all" = "Voir tout";
 "all_announcements" = "Toutes les annonces";
 "ged_news" = "Actualités GED";
 "no_news" = "Aucune actualité";
+"new_post" = "Nouveau post";
+"post_link_field_placeholder" = "Lien du post";
+
+// News error
+"post_link_length_error" = "Le lien dépasse la limite autorisée (%d caractères maximum).";
+"post_max_image_count_error" = "Vous pouvez ajouter jusqu’à %d images maximum.";
 
 // Message
 "messages" = "Messages";

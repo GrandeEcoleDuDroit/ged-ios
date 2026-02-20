@@ -14,18 +14,8 @@ let postFixture = Post(
     date: Date(),
     state: .published(
         imageUrls: [
-            "https://scontent-mrs2-2.cdninstagram.com/v/t51.29350-15/470261175_1141962874105867_8281625977925169270_n.jpg?" +
-            "stp=dst-jpg_e35_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQuaW1hZ2VfdXJsZ2VuLjg1NHg2NDAuc2RyLmYyOTM1MC5kZWZhd" +
-            "Wx0X2ltYWdlLmMyIn0&_nc_ht=scontent-mrs2-2.cdninstagram.com&_nc_cat=107&_nc_oc=Q6cZ2QHWyNJjN2AaGoriQbbiPGAR" +
-            "6k62vJMRALoyxY4uetZ_tITZEghxN86Gv7p3tNFT1lcsT_UGXMywg4Fqj8gDFAh3&_nc_ohc=EVb0Mu5rbL4Q7kNvwF6YSHy&_nc_gid=9yRIER" +
-            "x1jH2VZYx8NkAM4A&edm=APoiHPcBAAAA&ccb=7-5&ig_cache_key=MzUyMjE2MTczODAxMTM2NDk3MQ%3D%3D.3-ccb7-5&oh=00_AfuHJ8AkC9hlB" +
-            "_XhZJNSX1-gjQAm0oqHjEhhpp0ofgBuvA&oe=69903DD7&_nc_sid=22de04",
-            "https://scontent-mrs2-1.cdninstagram.com/v/t51.29350-15/473055644_1131912055152501_4490089768798385257_n.jpg?" +
-            "stp=dst-jpg_e35_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0uaW1hZ2VfdXJsZ2VuLjEyMDB4MTM3MC5zZHIuZjI5M" +
-            "zUwLmRlZmF1bHRfaW1hZ2UuYzIifQ&_nc_ht=scontent-mrs2-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2QGuL0GTlQw9Dj9g8" +
-            "fNKrx1ytF62jDHodBtnNthfia6CaTBdCUrQtniwVndnftYts8A2ozUAvaSLIrDGq8-N_eFj&_nc_ohc=BzYFqJ_3mlAQ7kNvwFw4FCx&_nc_gid=mSJy" +
-            "Q2R-H-HInIEOTUJxSg&edm=APoiHPcBAAAA&ccb=7-5&ig_cache_key=MzU0NTI5NTk1NTE3MTQ4NTUwMQ%3D%3D.3-ccb7-5&oh=00_Afv8oxGtCJna-M" +
-            "H8EpiRLvXMrCRJWcrTwP4TEzhkC0IT_A&oe=6990EF9A&_nc_sid=22de04"
+            "https://cdn.britannica.com/85/13085-050-C2E88389/Corpus-Christi-College-University-of-Cambridge-England.jpg",
+            "https://www.travellovers.fr/wp-content/uploads/2014/11/patinoire-central-park-new-york-1.jpg"
         ]
     )
 )
