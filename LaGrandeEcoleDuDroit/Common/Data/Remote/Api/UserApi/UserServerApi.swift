@@ -22,7 +22,7 @@ class UserServerApi {
     }
     
     func getUser(userId: String) async throws -> OracleUser? {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/\(userId)")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/\(userId)")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.simpleGetRequest(url: url, authToken: authToken)
@@ -31,7 +31,7 @@ class UserServerApi {
     }
     
     func createUser(serverUser: OracleUser) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/create")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/create")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.simplePostRequest(url: url, dataToSend: serverUser, authToken: authToken)
@@ -40,7 +40,7 @@ class UserServerApi {
     }
     
     func updateProfilePicture(serverUser: OracleUser, imageData: Data, fileName: String) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/profile-picture/update")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/profile-picture/update")
         let session = RequestUtils.getDefaultSession()
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
@@ -78,7 +78,7 @@ class UserServerApi {
     }
     
     func deleteUser(serverUser: OracleUser) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/delete")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/delete")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.simplePostRequest(url: url, dataToSend: serverUser, authToken: authToken)
@@ -87,7 +87,7 @@ class UserServerApi {
     }
     
     func deleteProfilePicture(userId: String, profilePictureFileName: String) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/profile-picture/delete")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/profile-picture/delete")
         let session = RequestUtils.getDefaultSession()
         let dataToSend = [
             UserField.Oracle.userId: userId,
@@ -105,7 +105,7 @@ class UserServerApi {
     }
     
     func reportUser(report: RemoteUserReport) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/report")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/report")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.simplePostRequest(

@@ -7,3 +7,9 @@ struct SuccessEvent: SingleUiEvent {
 struct ErrorEvent: SingleUiEvent {
     let message: String
 }
+
+extension ErrorEvent {
+    init(messages: Set<String>) {
+        self.message = messages.joined(separator: "\n")
+    }
+}

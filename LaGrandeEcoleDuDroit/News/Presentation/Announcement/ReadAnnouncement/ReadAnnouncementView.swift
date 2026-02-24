@@ -78,7 +78,7 @@ private struct ReadAnnouncementView: View {
                 
                 if let title = announcement.title {
                     Text(title)
-                        .font(AnnouncementUtilsPresentation.titleFont)
+                        .font(AnnouncementPresentationUtils.titleFont)
                         .fontWeight(.semibold)
                         .lineSpacing(3)
                         .frame(maxWidth: .infinity, alignment: .leading)

@@ -233,13 +233,14 @@ extension OutlinedPasswordTextField {
 struct TransparentTextField<FocusField: Hashable>: View {
     private let placeHolder: String
     @Binding private var text: String
+    private var axis: Axis = .vertical
     
     @FocusState private var focusState: FocusField?
     private var field: FocusField?
     
     init(
         _ placeHolder: String,
-        text: Binding<String>,
+        text: Binding<String>
     ) where FocusField == Never {
         self.placeHolder = placeHolder
         self._text = text
@@ -258,7 +259,7 @@ struct TransparentTextField<FocusField: Hashable>: View {
             "",
             text: $text,
             prompt: prompt,
-            axis: .vertical
+            axis: axis
         )
         .focused($focusState, equals: field)
     }
@@ -269,12 +270,14 @@ extension TransparentTextField {
         _ placeHolder: String,
         text: Binding<String>,
         focusState: FocusState<FocusField?>,
-        field: FocusField
+        field: FocusField,
+        axis: Axis = .vertical
     ) {
         self.placeHolder = placeHolder
         self._text = text
         self._focusState = focusState
         self.field = field
+        self.axis = axis
     }
 }
 

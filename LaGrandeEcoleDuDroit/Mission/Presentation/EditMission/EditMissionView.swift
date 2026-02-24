@@ -133,7 +133,7 @@ private struct EditMissionView: View {
             schoolLevelSupportingText: schoolLevelSupportingText,
             maxParticipantsError: maxParticipantsError,
             onImageChange: {
-                if $0.count < CommonUtilsPresentation.maxImageFileSize {
+                if $0.count < CommonPresentationUtils.maxImageFileSize {
                     imageData = $0
                     onImageChange()
                 } else {

@@ -63,7 +63,8 @@
 				Mission/Mock/MockMissionRepository.swift,
 				Mission/Mock/MockRefreshMissionsUseCase.swift,
 				Mission/Mock/MockUpsertLocalMissionUseCase.swift,
-				News/Mock/MockAnnouncementRepository.swift,
+				News/Announcement/Mock/MockAnnouncementRepository.swift,
+				News/Post/Mock/MockPostRepository.swift,
 			);
 			target = 5EB5784C2CB3CCD3004524AD /* LaGrandeEcoleDuDroit */;
 		};
@@ -88,7 +89,8 @@
 				Mission/Mock/MockMissionRepository.swift,
 				Mission/Mock/MockRefreshMissionsUseCase.swift,
 				Mission/Mock/MockUpsertLocalMissionUseCase.swift,
-				News/Mock/MockAnnouncementRepository.swift,
+				News/Announcement/Mock/MockAnnouncementRepository.swift,
+				News/Post/Mock/MockPostRepository.swift,
 			);
 			target = 5EB5785C2CB3CCD4004524AD /* LaGrandeEcoleDuDroitTests */;
 		};

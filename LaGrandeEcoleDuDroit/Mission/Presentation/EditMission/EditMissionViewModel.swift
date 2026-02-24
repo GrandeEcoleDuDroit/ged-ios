@@ -110,7 +110,7 @@ class EditMissionViewModel: ViewModel {
     }
     
     func onTitleChange(_ title: String) -> Void {
-        let truncatedTitle = title.take(MissionUtilsPresentation.maxTitleLength)
+        let truncatedTitle = title.take(MissionPresentationUtils.maxTitleLength)
         uiState.title = truncatedTitle
         missionUpdateState.send(
             missionUpdateState.value.copy {
@@ -120,7 +120,7 @@ class EditMissionViewModel: ViewModel {
     }
     
     func onDescriptionChange(_ description: String) -> Void {
-        let truncatedDescription = description.take(MissionUtilsPresentation.maxDescriptionLength)
+        let truncatedDescription = description.take(MissionPresentationUtils.maxDescriptionLength)
         uiState.description = truncatedDescription
         missionUpdateState.send(
             missionUpdateState.value.copy {
@@ -180,7 +180,7 @@ class EditMissionViewModel: ViewModel {
     
     func onMaxParticipantsChange(_ maxParticipants: String) -> Void {
         let maxParticipantsNumber = maxParticipants.toInt32OrDefault(-1)
-        let validMaxParticipantsNumber = maxParticipantsNumber > 0 && maxParticipantsNumber.description.count <= MissionUtilsPresentation.maxParticipantsLength
+        let validMaxParticipantsNumber = maxParticipantsNumber > 0 && maxParticipantsNumber.description.count <= MissionPresentationUtils.maxParticipantsLength
 
         let value = switch maxParticipants {
             case _ where maxParticipants.isEmpty: ""
@@ -198,7 +198,7 @@ class EditMissionViewModel: ViewModel {
     }
     
     func onDurationChange(_ duration: String) -> Void {
-        let truncatedDuration = duration.take(MissionUtilsPresentation.maxDurationLength)
+        let truncatedDuration = duration.take(MissionPresentationUtils.maxDurationLength)
         uiState.duration = truncatedDuration
         missionUpdateState.send(
             missionUpdateState.value.copy {

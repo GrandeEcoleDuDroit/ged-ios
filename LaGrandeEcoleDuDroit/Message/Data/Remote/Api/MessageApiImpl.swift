@@ -81,7 +81,7 @@ class MessageServerApi {
     }
     
     func reportMessage(report: RemoteMessageReport) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/report")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/report")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.simplePostRequest(url: url, dataToSend: report, authToken: authToken)

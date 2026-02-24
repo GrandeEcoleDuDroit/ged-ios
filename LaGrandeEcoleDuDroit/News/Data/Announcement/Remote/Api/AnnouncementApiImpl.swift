@@ -23,7 +23,7 @@ class AnnouncementApiImpl: AnnouncementApi {
     }
     
     func createAnnouncement(remoteAnnouncement: OutbondRemoteAnnouncement) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/create")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/create")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.simplePostRequest(url: url, dataToSend: remoteAnnouncement, authToken: authToken)
@@ -32,7 +32,7 @@ class AnnouncementApiImpl: AnnouncementApi {
     }
     
     func updateAnnouncement(remoteAnnouncement: OutbondRemoteAnnouncement) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/update")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/update")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.simplePostRequest(url: url, dataToSend: remoteAnnouncement, authToken: authToken)
@@ -41,7 +41,7 @@ class AnnouncementApiImpl: AnnouncementApi {
     }
     
     func deleteAnnouncement(announcementId: String, authorId: String) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/delete")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/delete")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let dataToSend = [
@@ -54,7 +54,7 @@ class AnnouncementApiImpl: AnnouncementApi {
     }
     
     func reportAnnouncement(report: RemoteAnnouncementReport) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/report")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/report")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.simplePostRequest(url: url, dataToSend: report, authToken: authToken)

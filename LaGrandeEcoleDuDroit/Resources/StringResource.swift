@@ -66,7 +66,6 @@ enum StringResource: String {
     case noUsersFound = "no_users_found"
     case deletedUserFirstName = "deleted_user_first_name"
     case deletedUserLastName = "deleted_user_last_name"
-    case mb = "mb"
     case sellingPromotingInappropriateContentReportReason = "selling_promoting_inappropriate_content_report_reason"
     case violentHatefulContentReportReason = "violent_hateful_content_report_reason"
     case spamScamReportReason = "spam_scam_report_reason"
@@ -143,8 +142,8 @@ enum StringResource: String {
     case recentAnnouncements = "recent_announcements"
     case newAnnouncement = "new_announcement"
     case editAnnouncement = "edit_announcement"
-    case title = "title"
-    case content = "content"
+    case titleFieldPlaceholder = "title_field_placeholder"
+    case contentFieldPlaceholder = "content_field_placeholder"
     case announcementCreated = "announcement_created"
     case noAnnouncement = "no_announcement"
     case deleteAnnouncementAlertMessage = "delete_announcement_alert_message"
@@ -152,6 +151,12 @@ enum StringResource: String {
     case allAnnouncements = "all_announcements"
     case gedNews = "ged_news"
     case noNews = "no_news"
+    case newPost = "new_post"
+    case postLinkFieldPlaceholder = "post_link_field_placeholder"
+    
+    // News errors
+    case postLinkLengthError = "post_link_length_error"
+    case postMaxImageCountError = "post_max_image_count_error"
 
     // Message
     case messages = "messages"

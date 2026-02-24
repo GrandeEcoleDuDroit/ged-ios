@@ -15,7 +15,7 @@ struct AnnouncementHeader: View {
                 )
                 
                 Text(announcement.author.displayedName)
-                    .font(AnnouncementUtilsPresentation.authorNameFont)
+                    .font(AnnouncementPresentationUtils.authorNameFont)
                     .fontWeight(.semibold)
                 
                 Text(elapsedTimeText)

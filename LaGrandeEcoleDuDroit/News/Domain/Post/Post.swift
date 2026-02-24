@@ -7,17 +7,21 @@ struct Post: Copying, Hashable {
     let link: String
     let source: PostSource
     let date: Date
-    let state: PostState
+    var state: PostState
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
     
-    enum PostSource: Int, Codable {
+    enum PostSource: Int, Codable, Identifiable {
         case linkedin = 1
         case instagram = 2
         case blogLlm = 3
         case unknown = 0
+        
+        static var all: [PostSource] {
+            [.linkedin, .instagram, .blogLlm]
+        }
         
         var label: String {
             switch self {
@@ -27,6 +31,10 @@ struct Post: Copying, Hashable {
                 case .unknown: ""
             }
         }
+        
+        var id: Int {
+            self.rawValue
+        }
     }
     
     enum PostState: Hashable, Identifiable {
@@ -34,7 +42,7 @@ struct Post: Copying, Hashable {
         case publishing(imagePaths: [String] = [])
         case published(imageUrls: [String] = [])
         case error(imagePaths: [String] = [])
-
+        
         var type: StateType {
             switch self {
                 case .draft: .draftType

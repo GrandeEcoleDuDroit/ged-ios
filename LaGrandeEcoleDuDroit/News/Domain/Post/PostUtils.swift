@@ -10,7 +10,7 @@ struct PostUtils {
             "\(postId)-post-image-\(Date().toEpochMilli())"
         }
         
-        static func getFileName(uri: String?) -> String? {
+        static func extractFileName(uri: String?) -> String? {
             uri?.components(separatedBy: "/").last
         }
     }

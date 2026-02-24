@@ -3,9 +3,10 @@ import Combine
 class PostRepositoryImpl: PostRepository {
     private let postLocalDataSource: PostLocalDataSource
     private let postRemoteDataSource: PostRemoteDataSource
-    private var postsSubject = PassthroughSubject<[Post], Never>()
+    
     private let tag = String(describing: PostRepositoryImpl.self)
-
+    private var cancellables: Set<AnyCancellable> = []
+    private var postsSubject = PassthroughSubject<[Post], Never>()
     var posts: AnyPublisher<[Post], Never> {
         let localPosts = Future<[Post], Never> { promise in
             Task { [weak self] in
@@ -25,6 +26,7 @@ class PostRepositoryImpl: PostRepository {
     ) {
         self.postLocalDataSource = postLocalDataSource
         self.postRemoteDataSource = postRemoteDataSource
+        listenDataChanges()
     }
     
     func getLocalPosts() async throws -> [Post] {
@@ -54,6 +56,16 @@ class PostRepositoryImpl: PostRepository {
         }
     }
     
+    func createPost(post: Post, imageFileData: [FileData]) async throws {
+        do {
+            try await postLocalDataSource.upsertPost(post: post)
+            try await postRemoteDataSource.createPost(post: post, imageFileData: imageFileData)
+        } catch {
+            e(tag, "Error creating post \(post.id)", error)
+            throw error
+        }
+    }
+    
     func upsertLocalPost(post: Post) async throws {
         do {
             try await postLocalDataSource.upsertPost(post: post)
@@ -69,6 +81,21 @@ class PostRepositoryImpl: PostRepository {
         } catch {
             e(tag, "Error deleting local post \(postId)", error)
             throw error
+        }
+    }
+    
+    private func listenDataChanges() {
+        postLocalDataSource.listenDataChange()
+            .sink { [weak self] _ in
+                self?.loadPosts()
+            }.store(in: &cancellables)
+    }
+    
+    private func loadPosts() {
+        Task {
+            if let posts = try? await postLocalDataSource.getPosts() {
+                postsSubject.send(posts)
+            }
         }
     }
 }
