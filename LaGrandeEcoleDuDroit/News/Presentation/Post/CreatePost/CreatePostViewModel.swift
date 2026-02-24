@@ -51,10 +51,25 @@ class CreatePostViewModel: ViewModel {
     }
     
     func onAddImageData(_ imageData: [Data]) {
-        let newImageData = uiState.imageData + imageData
-        if newImageData.count > PostPresentationUtils.maxImageCount {
-            event = ErrorEvent(message: stringResource(.postMaxImageCountError, PostPresentationUtils.maxImageCount))
-            return
+        var newImageData = uiState.imageData
+        var errorMessages: Set<String> = []
+        
+        for data in imageData {
+            guard newImageData.count < PostPresentationUtils.maxImageCount else {
+                errorMessages.insert(stringResource(.postMaxImageCountError, PostPresentationUtils.maxImageCount))
+                break
+            }
+            
+            guard data.count <= CommonPresentationUtils.maxImageFileSize else {
+                errorMessages.insert(CommonPresentationUtils.imageTooLargeErrorMessage())
+                continue
+            }
+            
+            newImageData.append(data)
+        }
+        
+        if !errorMessages.isEmpty {
+            event = ErrorEvent(messages: errorMessages)
         }
         
         uiState.imageData = newImageData

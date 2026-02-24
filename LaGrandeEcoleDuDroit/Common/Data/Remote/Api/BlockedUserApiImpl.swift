@@ -9,7 +9,7 @@ class BlockedUserApiImpl: BlockedUserApi {
     }
     
     func getBlockedUsers(currentUserId: String) async throws -> [RemoteBlockedUser] {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/\(currentUserId)")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/\(currentUserId)")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = RequestUtils.simpleGetRequest(url: url, authToken: authToken)
@@ -22,7 +22,7 @@ class BlockedUserApiImpl: BlockedUserApi {
     }
     
     func addBlockedUser(remoteBlockedUser: RemoteBlockedUser) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/create")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/create")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.simplePostRequest(url: url, dataToSend: remoteBlockedUser, authToken: authToken)
@@ -31,7 +31,7 @@ class BlockedUserApiImpl: BlockedUserApi {
     }
     
     func removeBlockedUser(currentUserId: String, blockedUserId: String) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/delete")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/delete")
         let session = RequestUtils.getDefaultSession()
         let data = [
             BlockedUserField.Remote.userId: currentUserId,

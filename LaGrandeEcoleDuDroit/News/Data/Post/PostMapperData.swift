@@ -1,5 +1,27 @@
 import Foundation
 
+extension Post {
+    func toRemote() -> RemotePost {
+        let imageFileNames = extractImageFileNames(state: state)
+        var postImageFileNames: String = "[]"
+        
+        if let data = try? JSONEncoder().encode(imageFileNames),
+           let imageFileNamesJson = String(data: data, encoding: .utf8) {
+            postImageFileNames = imageFileNamesJson
+        }
+        
+        return RemotePost(
+            postId: id,
+            postTitle: title,
+            postContent: content,
+            postLink: link,
+            postSourceId: source.id,
+            postDate: date.toEpochMilli(),
+            postImageFileNames: postImageFileNames
+        )
+    }
+}
+
 extension LocalPost {
     func toPost(getImagePath: (String) -> String?) -> Post? {
         guard let postId = postId,
@@ -26,12 +48,7 @@ extension LocalPost {
     }
     
     func modify(post: Post) {
-        let imageFileNames: [String] = switch post.state {
-            case .draft: []
-            case let .publishing(imagePaths): imagePaths.compactMap(PostUtils.Image.getFileName)
-            case let .published(imageUrls): imageUrls.compactMap(PostUtils.Image.getFileName)
-            case let .error(imagePaths): imagePaths.compactMap(PostUtils.Image.getFileName)
-        }
+        let imageFileNames = extractImageFileNames(state: post.state)
         
         postId = post.id
         postTitle = post.title
@@ -47,12 +64,7 @@ extension LocalPost {
     }
     
     func equals(_ post: Post) -> Bool {
-        let imageFileNames: [String] = switch post.state {
-            case .draft: []
-            case let .publishing(imagePaths): imagePaths.compactMap(PostUtils.Image.getFileName)
-            case let .published(imageUrls): imageUrls.compactMap(PostUtils.Image.getFileName)
-            case let .error(imagePaths): imagePaths.compactMap(PostUtils.Image.getFileName)
-        }
+        let imageFileNames = extractImageFileNames(state: post.state)
         let postImageFileNamesArray: [String] = if let postImageFileNames {
             (try? JSONDecoder().decode([String].self, from: postImageFileNames.data(using: .utf8)!)) ?? []
         } else { [] }
@@ -113,4 +125,13 @@ private func mapRemotePostState(postImageFileNames: String) -> Post.PostState {
     ) ?? []
     
     return .published(imageUrls: imageFileNames.compactMap(PostUtils.Image.formatUrl))
+}
+
+private func extractImageFileNames(state: Post.PostState) -> [String] {
+    switch state {
+        case .draft: []
+        case let .publishing(imagePaths): imagePaths.compactMap(PostUtils.Image.extractFileName)
+        case let .published(imageUrls): imageUrls.compactMap(PostUtils.Image.extractFileName)
+        case let .error(imagePaths): imagePaths.compactMap(PostUtils.Image.extractFileName)
+    }
 }

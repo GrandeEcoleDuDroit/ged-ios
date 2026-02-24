@@ -7,7 +7,7 @@ struct Post: Copying, Hashable {
     let link: String
     let source: PostSource
     let date: Date
-    let state: PostState
+    var state: PostState
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)

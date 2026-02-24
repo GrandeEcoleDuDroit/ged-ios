@@ -109,7 +109,7 @@ class NewsViewModel: ViewModel {
     
     private func truncateAnnouncement(_ announcement: Announcement) -> Announcement {
         let truncatedTitle = if let title = announcement.title { String(title.prefix(100)) } else { "" }
-        let truncatedContent = announcement.content.take(100)
+        let truncatedContent = announcement.content.take(300)
         
         return announcement.copy {
             $0.title = truncatedTitle
@@ -118,7 +118,7 @@ class NewsViewModel: ViewModel {
     }
     
     private func truncatePosts(_ post: Post) -> Post {
-        let truncatedContent = post.content.take(300)
+        let truncatedContent = post.content.take(1000)
         return post.copy {
             $0.content = truncatedContent
         }

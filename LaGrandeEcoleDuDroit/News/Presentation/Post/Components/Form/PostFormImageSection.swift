@@ -10,8 +10,8 @@ struct PostFormImageSection: View {
                 ForEach(imageReferences.indices, id: \.self) { index in
                     ImageRailItem(
                         imageReference: imageReferences[index],
-                        width: 180,
-                        height: 220,
+                        width: DimensResource.News.createPostImageRailItemWidth,
+                        height: DimensResource.News.createPostImageRailItemHeight,
                         onRemoveImageClick: { onRemoveImageClick(index) }
                     )
                 }
@@ -34,19 +34,28 @@ private struct ImageRailItem: View {
                 height: height
             )
             
-            Button(action: onRemoveImageClick) {
-                Image(systemName: "xmark")
-                    .resizable()
-                    .frame(width: 12, height: 12)
-                    .foregroundStyle(.white)
-                    .padding(10)
-                    .background(.imageIconButtonContainer)
-            }
-            .clipShape(.circle)
-            .padding(DimensResource.smallPadding)
+            RemoveImageButton(action: onRemoveImageClick)
         }
         .clipShape(ShapeDefaults.small)
         .frame(width: width, height: height)
+    }
+}
+
+private struct RemoveImageButton: View {
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "xmark")
+                .resizable()
+                .frame(width: 10, height: 10)
+                .foregroundStyle(.white)
+                .padding(DimensResource.smallPadding)
+                .background(.imageIconButtonContainer)
+        }
+        .clipShape(.circle)
+        .padding(DimensResource.smallPadding)
+
     }
 }
 

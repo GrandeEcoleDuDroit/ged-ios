@@ -63,7 +63,6 @@
 "no_users_found" = "Aucun utilisateur trouvé";
 "deleted_user_first_name" = "Utilisateur";
 "deleted_user_last_name" = "Supprimé";
-"mb" = "Mo";
 "selling_promoting_inappropriate_content_report_reason" = "Vente ou promotion de contenu inapproprié";
 "violent_hateful_content_report_reason" = "Contenu violent ou haineux";
 "spam_scam_report_reason" = "Spam ou arnaque";
@@ -138,8 +137,8 @@
 "news" = "Actualités";
 "announcement" = "Annonce";
 "recent_announcements" = "Annonces récentes";
-"new_announcement" = "Nouvelle Annonce";
-"edit_announcement" = "Editer Annonce";
+"new_announcement" = "Nouvelle annonce";
+"edit_announcement" = "Editer annonce";
 "title_field_placeholder" = "Titre";
 "content_field_placeholder" = "Contenu";
 "no_announcement" = "Aucune annonce";
