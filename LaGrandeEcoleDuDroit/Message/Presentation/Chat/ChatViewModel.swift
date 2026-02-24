@@ -107,8 +107,8 @@ class ChatViewModel: ViewModel {
     }
     
     func onMessageTextChange(_ text: String) {
-        if text.count > MessageUtilsPresentation.maxMessageTextLength {
-            uiState.messageText = text.take(MessageUtilsPresentation.maxMessageTextLength)
+        if text.count > MessagePresentationUtils.maxMessageTextLength {
+            uiState.messageText = text.take(MessagePresentationUtils.maxMessageTextLength)
         }
     }
     
@@ -207,7 +207,7 @@ class ChatViewModel: ViewModel {
             guard let messages = try? await self?.messageRepository.getMessages(
                 conversationId: conversation.id,
                 offset: offset,
-                limit: MessageUtilsPresentation.loadLimit
+                limit: MessagePresentationUtils.loadLimit
             ) else {
                 return
             }

@@ -21,7 +21,7 @@ struct MissionFormImageSection: View {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFill()
-                        .frame(height: MissionUtilsPresentation.missionImageHeight)
+                        .frame(height: MissionPresentationUtils.missionImageHeight)
                         .frame(maxWidth: .infinity)
                         .clipped()
                 } else {
@@ -29,7 +29,7 @@ struct MissionFormImageSection: View {
                         missionState: missionState,
                         defaultImage: EmptyImage()
                     )
-                    .frame(height: MissionUtilsPresentation.missionImageHeight)
+                    .frame(height: MissionPresentationUtils.missionImageHeight)
                     .clipped()
                 }
             }
@@ -43,11 +43,11 @@ struct MissionFormImageSection: View {
                 .clipShape(.circle)
                 .padding(DimensResource.smallMediumPadding)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                .frame(height: MissionUtilsPresentation.missionImageHeight)
+                .frame(height: MissionPresentationUtils.missionImageHeight)
             }
         }
         .frame(maxWidth: .infinity)
-        .frame(height: MissionUtilsPresentation.missionImageHeight)
+        .frame(height: MissionPresentationUtils.missionImageHeight)
         .contentShape(Rectangle())
         .task(id: selectedItem) {
             if let data = try? await selectedItem?.loadTransferable(type: Data.self) {

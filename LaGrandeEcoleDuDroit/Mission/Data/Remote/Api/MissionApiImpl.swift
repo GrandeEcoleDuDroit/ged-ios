@@ -22,7 +22,7 @@ class MissionApiImpl: MissionApi {
     }
     
     func createMission(remoteMission: OutboundRemoteMission, imageData: Data?) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/create")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/create")
         let session = RequestUtils.getDefaultSession()
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
@@ -59,7 +59,7 @@ class MissionApiImpl: MissionApi {
     }
     
     func updateMission(userId: String, remoteMission: OutboundRemoteMission, imageData: Data?) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/update")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/update")
         let session = RequestUtils.getDefaultSession()
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
@@ -100,7 +100,7 @@ class MissionApiImpl: MissionApi {
     }
     
     func deleteMission(remoteMission: OutboundRemoteMission) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/delete")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/delete")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.simplePostRequest(url: url, dataToSend: remoteMission, authToken: authToken)
@@ -109,7 +109,7 @@ class MissionApiImpl: MissionApi {
     }
     
     func addParticipant(missionId: String, oracleUser: OracleUser) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/add-participant")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/add-participant")
         let session = RequestUtils.getDefaultSession()
         let data = [
             MissionField.Remote.missionId: missionId,
@@ -123,7 +123,7 @@ class MissionApiImpl: MissionApi {
     }
     
     func removeParticipant(missionId: String, userId: String) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/remove-participant")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/remove-participant")
         let session = RequestUtils.getDefaultSession()
         let dataToSend = [MissionField.Remote.missionId: missionId, UserField.Oracle.userId: userId]
         let authToken = await tokenProvider.getAuthToken()
@@ -133,7 +133,7 @@ class MissionApiImpl: MissionApi {
     }
     
     func reportMission(report: RemoteMissionReport) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/report")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/report")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
         let request = try RequestUtils.simplePostRequest(url: url, dataToSend: report, authToken: authToken)

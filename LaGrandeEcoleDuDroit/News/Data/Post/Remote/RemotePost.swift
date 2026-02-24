@@ -17,6 +17,24 @@ struct RemotePost: Codable {
         case postImageFileNames = "POST_IMAGE_FILE_NAMES"
     }
     
+    init(
+        postId: String,
+        postTitle: String,
+        postContent: String,
+        postLink: String,
+        postSourceId: Int,
+        postDate: Int64,
+        postImageFileNames: String
+    ) {
+        self.postId = postId
+        self.postTitle = postTitle
+        self.postContent = postContent
+        self.postLink = postLink
+        self.postSourceId = postSourceId
+        self.postDate = postDate
+        self.postImageFileNames = postImageFileNames
+    }
+    
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.postId = try container.decode(String.self, forKey: .postId)

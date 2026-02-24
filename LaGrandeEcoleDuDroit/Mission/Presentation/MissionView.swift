@@ -126,7 +126,7 @@ private struct MissionView: View {
                 )
                     
                 case .createMission:
-                    CreateMissionDestination(onBackClick: { activeSheet = nil })
+                    CreateMissionDestination(onCancelClick: { activeSheet = nil })
                     
                 case let .editMission(mission):
                     EditMissionDestination(

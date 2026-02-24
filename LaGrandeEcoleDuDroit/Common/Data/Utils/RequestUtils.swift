@@ -3,8 +3,8 @@ import Foundation
 struct RequestUtils {
     private init() {}
     
-    static func getUrl(base: String, endPoint: String = "") -> URL {
-        URL(string: base + endPoint, relativeTo: URL(string: GedConfiguration.serverUrl))!
+    static func getUrl(base: String, endpoint: String = "") -> URL {
+        URL(string: base + endpoint, relativeTo: URL(string: GedConfiguration.serverUrl))!
     }
     
     static func getDefaultSession() -> URLSession {

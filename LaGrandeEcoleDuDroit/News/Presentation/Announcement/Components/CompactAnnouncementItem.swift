@@ -50,7 +50,7 @@ private struct DefaultItem: View {
             headlineContent: {
                 HStack {
                     Text(announcement.author.displayedName)
-                        .font(AnnouncementUtilsPresentation.authorNameFont)
+                        .font(AnnouncementPresentationUtils.authorNameFont)
                         .fontWeight(.semibold)
                         .lineLimit(1)
                     
@@ -112,7 +112,7 @@ private struct ErrorItem: View {
             headlineContent: {
                 HStack {
                     Text(announcement.author.displayedName)
-                        .font(AnnouncementUtilsPresentation.authorNameFont)
+                        .font(AnnouncementPresentationUtils.authorNameFont)
                         .fontWeight(.semibold)
                         .lineLimit(1)
                     

@@ -20,15 +20,15 @@ struct MissionInformationValuesItem: View {
         var missionInformationValues : [MissionInformationValue] = [
             .init(
                 imageSystemName: "calendar",
-                text: MissionUtilsPresentation.formatDate(startDate: mission.startDate, endDate: mission.endDate)
+                text: MissionPresentationUtils.formatDate(startDate: mission.startDate, endDate: mission.endDate)
             ),
             .init(
                 imageSystemName: "graduationcap",
-                text: MissionUtilsPresentation.formatSchoolLevels(schoolLevels: mission.schoolLevels)
+                text: MissionPresentationUtils.formatSchoolLevels(schoolLevels: mission.schoolLevels)
             ),
             .init(
                 imageSystemName: "person.2",
-                text: MissionUtilsPresentation.formatParticipantNumber(
+                text: MissionPresentationUtils.formatParticipantNumber(
                     participantsCount: mission.participants.count,
                     maxParticipants: mission.maxParticipants
                 )

@@ -32,12 +32,12 @@ private struct AnnouncementTitleInput: View {
 
     var body: some View {
         TransparentTextField(
-            stringResource(.title),
+            stringResource(.titleFieldPlaceholder),
             text: $title,
             focusState: focusState,
             field: .title
         )
-        .font(AnnouncementUtilsPresentation.titleFont)
+        .font(AnnouncementPresentationUtils.titleFont)
         .fontWeight(.semibold)
         .onChange(of: title, perform: onTitleChange)
         .padding(.leading, 5)
@@ -51,12 +51,12 @@ private struct AnnouncementContentInput: View {
 
     var body: some View {
         TransparentTextFieldArea(
-            stringResource(.content),
+            stringResource(.contentFieldPlaceholder),
             text: $content,
             focusState: focusState,
             field: .content
         )
-        .font(AnnouncementUtilsPresentation.contentFont)
+        .font(AnnouncementPresentationUtils.contentFont)
         .scrollDismissesKeyboard(.interactively)
         .onChange(of: content, perform: onContentChange)
     }

@@ -82,7 +82,7 @@ private struct MissionTaskView: View {
             field: .missionTaskContent
         )
         .onChange(of: value) {
-            value = $0.take(MissionUtilsPresentation.maxTaskLength)
+            value = $0.take(MissionPresentationUtils.maxTaskLength)
         }
         .onAppear {
             focusState = .missionTaskContent

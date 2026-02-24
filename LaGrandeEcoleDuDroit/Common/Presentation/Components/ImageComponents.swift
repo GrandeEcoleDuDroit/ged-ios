@@ -1,5 +1,37 @@
 import SwiftUI
 
+struct HybridImage: View {
+    let imageReference: ImageReference
+    var width: CGFloat?
+    var height: CGFloat?
+    
+    var body: some View {
+        switch imageReference {
+            case let .imageUrl(url):
+                CacheAsyncImage(url: url, width: width, height: height)
+            
+            case let .imagePath(path):
+                LocalImage(
+                    imagePath: path,
+                    width: width,
+                    height: height
+                )
+            
+            case let .imageData(data):
+                if let uiImage = UIImage(data: data) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .frame(width: width, height: height)
+                } else {
+                    ErrorImage()
+                        .frame(width: width, height: height)
+                }
+        }
+    }
+}
+
 struct CacheAsyncImage: View {
     let url: String
     var width: CGFloat?
@@ -101,28 +133,38 @@ private enum CachedImagePhase {
     }
 }
 
-extension CacheAsyncImage {
-    func cacheImageFrame(width: CGFloat, height: CGFloat) -> Self {
-        var copy = self
-        copy.width = width
-        copy.height = height
-        return copy
-    }
-}
-
 struct LocalImage: View {
     let imagePath: String
+    var width: CGFloat?
+    var height: CGFloat?
     
     var body: some View {
         if let uiImage = UIImage(contentsOfFile: imagePath) {
             Image(uiImage: uiImage)
                 .resizable()
                 .scaledToFill()
-                .clipped()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(width: width, height: height)
+                .clipped()
         } else {
             ErrorImage()
         }
+    }
+}
+
+private struct LoadingImage: View {
+    var body: some View {
+        Color.imageLoadingBackground
+            .overlay {
+                ProgressView()
+            }
+    }
+}
+
+private struct ErrorImage: View {
+    var body: some View {
+        Color.imageLoadingBackground
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
@@ -132,12 +174,12 @@ struct ProfilePicture: View {
    
     var body: some View {
         if let url {
-            CacheAsyncImage(url: url)
-                .cacheImageFrame(
-                    width: DimensResource.defaultImageSize * scale,
-                    height: DimensResource.defaultImageSize * scale
-                )
-                .clipShape(.circle)
+            CacheAsyncImage(
+                url: url,
+                width: DimensResource.defaultImageSize * scale,
+                height: DimensResource.defaultImageSize * scale
+            )
+            .clipShape(.circle)
         } else {
             DefaultProfilePicture(scale: scale)
         }
@@ -179,28 +221,15 @@ private struct DefaultProfilePicture: View {
     }
 }
 
-private struct LoadingImage: View {
-    var body: some View {
-        Color.imageLoadingBackground
-            .overlay {
-                ProgressView()
-            }
-    }
-}
-
-private struct ErrorImage: View {
-    var body: some View {
-        Color.imageLoadingBackground
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
-
 #Preview {
     ScrollView {
         VStack(spacing: DimensResource.mediumPadding) {
-            CacheAsyncImage(url: "https://cdn.britannica.com/16/234216-050-C66F8665/beagle-hound-dog.jpg")
-                .cacheImageFrame(width: 200, height: 120)
-            Text("Simple async image").font(.caption)
+            CacheAsyncImage(
+                url: "https://cdn.britannica.com/16/234216-050-C66F8665/beagle-hound-dog.jpg",
+                width: 200,
+                height: 120
+            )
+            Text("Cache async image").font(.caption)
             
             LoadingImage()
                 .frame(width: 100, height: 100)
