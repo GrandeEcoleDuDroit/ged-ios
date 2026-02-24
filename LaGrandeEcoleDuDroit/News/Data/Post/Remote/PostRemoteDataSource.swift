@@ -1,3 +1,5 @@
+import Foundation
+
 class PostRemoteDataSource {
     private let postApi: PostApi
     
@@ -7,5 +9,9 @@ class PostRemoteDataSource {
     
     func getPosts() async throws -> [Post] {
         try await postApi.getPosts().map { $0.toPost() }
+    }
+    
+    func createPost(post: Post, imageFileData: [FileData]) async throws {
+        try await postApi.createPost(remotePost: post.toRemote(), imageFileData: imageFileData)
     }
 }

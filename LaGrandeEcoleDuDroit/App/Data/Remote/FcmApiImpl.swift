@@ -9,7 +9,7 @@ class FcmApiImpl: FcmApi {
     }
     
     func addToken(userId: String, value: String) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/add-token")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/add-token")
         let dataToSend: [String: String] = ["userId": userId, "token": value]
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
@@ -19,7 +19,7 @@ class FcmApiImpl: FcmApi {
     }
     
     func deleteToken(userId: String, value: String) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/delete-token")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/delete-token")
         let dataToSend: [String: String] = ["userId": userId, "token": value]
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
@@ -29,7 +29,7 @@ class FcmApiImpl: FcmApi {
     }
     
     func sendNotification(userId: String, recipientId: String, fcmMessage: String) async throws {
-        let url = RequestUtils.getUrl(base: base, endPoint: "/send-notification")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/send-notification")
         let dataToSend: [String: String] = ["userId": userId, "recipientId": recipientId,"fcmMessage": fcmMessage]
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()

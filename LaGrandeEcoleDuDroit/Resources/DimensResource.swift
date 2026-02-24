@@ -34,4 +34,9 @@ struct DimensResource {
     
     static let chipPadding = PaddingValues(horizontal: smallPadding)
     static let chipMinHeight: CGFloat = 32
+    
+    struct News {
+        static let createPostImageRailItemWidth: CGFloat = 180
+        static let createPostImageRailItemHeight: CGFloat = 220
+    }
 }

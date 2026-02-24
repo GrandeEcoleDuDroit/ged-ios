@@ -66,7 +66,6 @@ enum StringResource: String {
     case noUsersFound = "no_users_found"
     case deletedUserFirstName = "deleted_user_first_name"
     case deletedUserLastName = "deleted_user_last_name"
-    case mb = "mb"
     case sellingPromotingInappropriateContentReportReason = "selling_promoting_inappropriate_content_report_reason"
     case violentHatefulContentReportReason = "violent_hateful_content_report_reason"
     case spamScamReportReason = "spam_scam_report_reason"

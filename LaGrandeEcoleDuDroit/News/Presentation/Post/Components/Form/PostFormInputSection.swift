@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PostInputSection: View {
     let value: PostFormValue
+    @FocusState var focusState: PostFormFocusField?
     let onTitleChange: (String) -> Void
     let onPostLinkChange: (String) -> Void
     let onPostSourceChange: (Post.PostSource) -> Void
@@ -12,6 +13,8 @@ struct PostInputSection: View {
             TransparentTextField(
                 stringResource(.titleFieldPlaceholder),
                 text: value.$title,
+                focusState: _focusState,
+                field: .title
             )
             .font(.title2)
             .onChange(of: value.title, perform: onTitleChange)
@@ -20,6 +23,8 @@ struct PostInputSection: View {
             PostLinkInput(
                 postLink: value.$postLink,
                 postLinkError: value.postLinkError,
+                focusState: _focusState,
+                field: .link,
                 onPostLinkChange: onPostLinkChange
             )
             
@@ -31,7 +36,9 @@ struct PostInputSection: View {
             
             TransparentTextFieldArea(
                 stringResource(.contentFieldPlaceholder),
-                text: value.$content
+                text: value.$content,
+                focusState: _focusState,
+                field: .content
             )
             .font(.body)
             .onChange(of: value.content, perform: onContentChange)
@@ -43,6 +50,8 @@ struct PostInputSection: View {
 private struct PostLinkInput: View {
     @Binding var postLink: String
     let postLinkError: String?
+    @FocusState var focusState: PostFormFocusField?
+    let field: PostFormFocusField?
     let onPostLinkChange: (String) -> Void
     
     var body: some View {
@@ -56,11 +65,15 @@ private struct PostLinkInput: View {
                 TransparentTextField(
                     stringResource(.postLinkFieldPlaceholder),
                     text: $postLink,
+                    focusState: _focusState,
+                    field: .link,
+                    axis: .horizontal
                 )
-                .textInputAutocapitalization(.never)
                 .lineLimit(1)
+                .textInputAutocapitalization(.never)
                 .onChange(of: postLink, perform: onPostLinkChange)
                 .frame(maxWidth: .infinity)
+                .font(.callout)
             }
             
             if let postLinkError {
@@ -72,7 +85,6 @@ private struct PostLinkInput: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .font(.callout)
     }
 }
 
