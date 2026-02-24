@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if [[ $CI_PULL_REQUEST_TARGET_BRANCH = "development" ]] && [[ $CI_XCODEBUILD_ACTION = "build" ]]; then
-    ./debug/pre_build_debug_script.sh
+if [[ $CI_PULL_REQUEST_TARGET_BRANCH = "development" ]] && [[ $CI_XCODEBUILD_ACTION = "build" || $CI_XCODEBUILD_ACTION = "build-for-testing" ]]; then
+./debug/pre_build_debug_script.sh
 fi
 
 if [[ $CI_PULL_REQUEST_TARGET_BRANCH == release/* ]] && [[ $CI_XCODEBUILD_ACTION == "build" ]]; then
