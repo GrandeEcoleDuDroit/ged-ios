@@ -153,6 +153,7 @@ enum StringResource: String {
     case noNews = "no_news"
     case newPost = "new_post"
     case postLinkFieldPlaceholder = "post_link_field_placeholder"
+    case deletePostAlertMessage = "delete_post_alert_message"
     
     // News errors
     case postLinkLengthError = "post_link_length_error"
