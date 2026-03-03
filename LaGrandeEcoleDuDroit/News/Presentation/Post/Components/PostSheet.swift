@@ -1,47 +1,46 @@
 import SwiftUI
 
-struct MissionSheet: View {
-    let mission: Mission
-    let user: User
+struct PostSheet: View {
+    let postState: Post.PostState
+    let editable: Bool
     let onEditClick: () -> Void
+    let onRecreateClick: () -> Void
     let onDeleteClick: () -> Void
     let onReportClick: () -> Void
-    let onRecreateClick: () -> Void
     
     init(
-        mission: Mission,
-        user: User,
+        postState: Post.PostState,
+        editable: Bool,
         onEditClick: @escaping () -> Void,
+        onRecreateClick: @escaping () -> Void = {},
         onDeleteClick: @escaping () -> Void,
-        onReportClick: @escaping () -> Void,
-        onRecreateClick: @escaping () -> Void = {}
+        onReportClick: @escaping () -> Void
     ) {
-        self.mission = mission
-        self.user = user
+        self.postState = postState
+        self.editable = editable
         self.onEditClick = onEditClick
+        self.onRecreateClick = onRecreateClick
         self.onDeleteClick = onDeleteClick
         self.onReportClick = onReportClick
-        self.onRecreateClick = onRecreateClick
     }
     
     var body: some View {
-        switch mission.state {
+        switch postState {
             case .published:
-                PublishedMissionSheet(
-                    isAdmin: user.admin,
-                    isManager: mission.managers.contains { $0.id ==  user.id },
+                PublishedPostSheet(
+                    editable: editable,
                     onEditClick: onEditClick,
                     onDeleteClick: onDeleteClick,
                     onReportClick: onReportClick
                 )
                 
             case .publishing:
-                PublishingMissionSheet(onDeleteClick: onDeleteClick)
+                PublishingPostSheet(onDeleteClick: onDeleteClick)
                 
             case .error:
-                ErrorMissionSheet(
-                    onDeleteClick: onDeleteClick,
-                    onRecreateClick: onRecreateClick
+                ErrorPostSheet(
+                    onRecreateClick: onRecreateClick,
+                    onDeleteClick: onDeleteClick
                 )
                 
             default: EmptyView()
@@ -49,34 +48,27 @@ struct MissionSheet: View {
     }
 }
 
-private struct PublishedMissionSheet: View {
-    let isAdmin: Bool
-    let isManager: Bool
+private struct PublishedPostSheet: View {
+    let editable: Bool
     let onEditClick: () -> Void
     let onDeleteClick: () -> Void
     let onReportClick: () -> Void
     
-    var itemCount: Int {
-        isAdmin ? 2 : 1
-    }
-    
     var body: some View {
-        if isAdmin || isManager {
-            SheetContainer(fraction: DimensResource.sheetFraction(itemCount: itemCount)) {
+        if editable {
+            SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
                 SheetItem(
                     icon: Image(systemName: "pencil"),
                     text: stringResource(.edit),
                     onClick: onEditClick
                 )
                 
-                if isAdmin {
-                    SheetItem(
-                        icon: Image(systemName: "trash"),
-                        text: stringResource(.delete),
-                        onClick: onDeleteClick
-                    )
-                    .foregroundColor(.red)
-                }
+                SheetItem(
+                    icon: Image(systemName: "trash"),
+                    text: stringResource(.delete),
+                    onClick: onDeleteClick
+                )
+                .foregroundColor(.red)
             }
         } else {
             SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 1)) {
@@ -91,9 +83,9 @@ private struct PublishedMissionSheet: View {
     }
 }
 
-private struct PublishingMissionSheet: View {
+private struct PublishingPostSheet: View {
     let onDeleteClick: () -> Void
-    
+
     var body: some View {
         SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 1)) {
             SheetItem(
@@ -106,9 +98,9 @@ private struct PublishingMissionSheet: View {
     }
 }
 
-private struct ErrorMissionSheet: View {
-    let onDeleteClick: () -> Void
+private struct ErrorPostSheet: View {
     let onRecreateClick: () -> Void
+    let onDeleteClick: () -> Void
     
     var body: some View {
         SheetContainer(fraction: DimensResource.sheetFraction(itemCount: 2)) {
@@ -127,3 +119,15 @@ private struct ErrorMissionSheet: View {
         }
     }
 }
+
+#Preview {
+    PostSheet(
+        postState: postFixture.state,
+        editable: true,
+        onEditClick: {},
+        onRecreateClick: {},
+        onDeleteClick: {},
+        onReportClick: {}
+    )
+}
+
