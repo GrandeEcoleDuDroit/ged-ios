@@ -4,7 +4,7 @@ struct AnnouncementSheet: View {
     let announcementState: Announcement.AnnouncementState
     let editable: Bool
     let onEditClick: () -> Void
-    let onResendClick: () -> Void
+    let onRecreateClick: () -> Void
     let onDeleteClick: () -> Void
     let onReportClick: () -> Void
     
@@ -12,14 +12,14 @@ struct AnnouncementSheet: View {
         announcementState: Announcement.AnnouncementState,
         editable: Bool,
         onEditClick: @escaping () -> Void,
-        onResendClick: @escaping () -> Void = {},
+        onRecreateClick: @escaping () -> Void = {},
         onDeleteClick: @escaping () -> Void,
         onReportClick: @escaping () -> Void
     ) {
         self.announcementState = announcementState
         self.editable = editable
         self.onEditClick = onEditClick
-        self.onResendClick = onResendClick
+        self.onRecreateClick = onRecreateClick
         self.onDeleteClick = onDeleteClick
         self.onReportClick = onReportClick
     }
@@ -39,7 +39,7 @@ struct AnnouncementSheet: View {
                 
             case .error:
                 ErrorAnnouncementSheet(
-                    onResendClick: onResendClick,
+                    onRecreateClick: onRecreateClick,
                     onDeleteClick: onDeleteClick
                 )
                 
@@ -99,7 +99,7 @@ private struct PublishingAnnouncementSheet: View {
 }
 
 private struct ErrorAnnouncementSheet: View {
-    let onResendClick: () -> Void
+    let onRecreateClick: () -> Void
     let onDeleteClick: () -> Void
     
     var body: some View {
@@ -107,7 +107,7 @@ private struct ErrorAnnouncementSheet: View {
             SheetItem(
                 icon: Image(systemName: "arrow.clockwise"),
                 text: stringResource(.retry),
-                onClick: onResendClick
+                onClick: onRecreateClick
             )
             
             SheetItem(
@@ -125,7 +125,7 @@ private struct ErrorAnnouncementSheet: View {
         announcementState: announcementFixture.state,
         editable: true,
         onEditClick: {},
-        onResendClick: {},
+        onRecreateClick: {},
         onDeleteClick: {},
         onReportClick: {}
     )

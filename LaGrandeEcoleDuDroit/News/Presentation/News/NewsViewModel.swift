@@ -8,6 +8,7 @@ class NewsViewModel: ViewModel {
     private let recreateAnnouncementUseCase: RecreateAnnouncementUseCase
     private let refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
     private let postRepository: PostRepository
+    private let deletePostUseCase: DeletePostUseCase
     
     @Published private(set) var uiState: NewsUiState = NewsUiState()
     @Published private(set) var event: SingleUiEvent? = nil
@@ -19,7 +20,8 @@ class NewsViewModel: ViewModel {
         deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
         recreateAnnouncementUseCase: RecreateAnnouncementUseCase,
         refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase,
-        postRepository: PostRepository
+        postRepository: PostRepository,
+        deletePostUseCase: DeletePostUseCase
     ) {
         self.userRepository = userRepository
         self.announcementRepository = announcementRepository
@@ -27,6 +29,7 @@ class NewsViewModel: ViewModel {
         self.recreateAnnouncementUseCase = recreateAnnouncementUseCase
         self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
         self.postRepository = postRepository
+        self.deletePostUseCase = deletePostUseCase
         
         listenUser()
         listenAnnouncements()
@@ -58,6 +61,12 @@ class NewsViewModel: ViewModel {
     
     func getAnnouncement(announcementId: String) -> Announcement? {
         announcementRepository.currentAnnouncements.first { $0.id == announcementId }
+    }
+    
+    func deletePost(post: Post) {
+        performRequest { [weak self] in
+            try await self?.deletePostUseCase.execute(post: post)
+        }
     }
         
     private func performRequest(block: @escaping () async throws -> Void) {

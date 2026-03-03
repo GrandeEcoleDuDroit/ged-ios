@@ -101,7 +101,7 @@ private struct MissionView: View {
                         onReportClick: {
                             activeSheet = .missionReport(mission)
                         },
-                        onResendClick: {
+                        onRecreateClick: {
                             activeSheet = nil
                             onRecreateMissionClick(mission)
                         }

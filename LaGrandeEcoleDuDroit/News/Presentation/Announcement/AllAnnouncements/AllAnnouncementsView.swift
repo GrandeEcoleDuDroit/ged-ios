@@ -17,7 +17,7 @@ struct AllAnnouncementsDestination: View {
                 onRefresh: viewModel.refreshAnnouncements,
                 onAuthorClick: onAuthorClick,
                 onAnnouncementClick: onAnnouncementClick,
-                onResendAnnouncementClick: { viewModel.recreateAnnouncement(announcement: $0) },
+                onRecreateAnnouncementClick: { viewModel.recreateAnnouncement(announcement: $0) },
                 onReportAnnouncementClick: { viewModel.reportAnnouncement(report: $0) },
                 onDeleteAnnouncementClick: { viewModel.deleteAnnouncement(announcement: $0) }
             )
@@ -50,7 +50,7 @@ private struct AllAnnouncementsView: View {
     let onRefresh: () async -> Void
     let onAuthorClick: (User) -> Void
     let onAnnouncementClick: (String) -> Void
-    let onResendAnnouncementClick: (Announcement) -> Void
+    let onRecreateAnnouncementClick: (Announcement) -> Void
     let onReportAnnouncementClick: (AnnouncementReport) -> Void
     let onDeleteAnnouncementClick: (Announcement) -> Void
     
@@ -106,9 +106,9 @@ private struct AllAnnouncementsView: View {
                         onEditClick: {
                             activeSheet = .editAnnouncement(announcement)
                         },
-                        onResendClick: {
+                        onRecreateClick: {
                             activeSheet = nil
-                            onResendAnnouncementClick(announcement)
+                            onRecreateAnnouncementClick(announcement)
                         },
                         onDeleteClick: {
                             activeSheet = nil
@@ -190,7 +190,7 @@ private enum AllAnnouncementViewSheet: Identifiable {
             onRefresh: {},
             onAuthorClick: { _ in },
             onAnnouncementClick: { _ in },
-            onResendAnnouncementClick: { _ in },
+            onRecreateAnnouncementClick: { _ in },
             onReportAnnouncementClick: { _ in },
             onDeleteAnnouncementClick: {  _ in }
         )
