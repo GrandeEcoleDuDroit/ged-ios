@@ -18,7 +18,8 @@ class NewsMainThreadInjector: MainThreadInjector {
                 deleteAnnouncementUseCase: NewsInjector.shared.resolve(DeleteAnnouncementUseCase.self),
                 recreateAnnouncementUseCase: NewsInjector.shared.resolve(RecreateAnnouncementUseCase.self),
                 refreshAnnouncementsUseCase: NewsInjector.shared.resolve(RefreshAnnouncementsUseCase.self),
-                postRepository: NewsInjector.shared.resolve(PostRepository.self)
+                postRepository: NewsInjector.shared.resolve(PostRepository.self),
+                deletePostUseCase: NewsInjector.shared.resolve(DeletePostUseCase.self)
             )
         }
         

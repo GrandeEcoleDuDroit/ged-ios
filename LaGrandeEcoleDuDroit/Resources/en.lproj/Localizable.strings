@@ -156,6 +156,7 @@
 "no_news" = "No news";
 "new_post" = "New post";
 "post_link_field_placeholder" = "Post link";
+"delete_post_alert_message" = "Do you want to delete this post?";
 
 // News error
 "post_link_length_error" = "The link exceeds the allowed limit (maximum %d characters).";

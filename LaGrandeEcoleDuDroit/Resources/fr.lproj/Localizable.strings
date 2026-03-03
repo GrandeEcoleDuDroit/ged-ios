@@ -149,6 +149,7 @@
 "no_news" = "Aucune actualité";
 "new_post" = "Nouveau post";
 "post_link_field_placeholder" = "Lien du post";
+"delete_post_alert_message" = "Voulez-vous supprimer cette post ?";
 
 // News error
 "post_link_length_error" = "Le lien dépasse la limite autorisée (%d caractères maximum).";

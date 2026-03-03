@@ -17,11 +17,12 @@ struct NewsDestination: View {
                 loading: viewModel.uiState.loading,
                 onRefreshAnnouncements: viewModel.refreshAnnouncements,
                 onAnnouncementClick: onAnnouncementClick,
-                onResendAnnouncementClick: viewModel.recreateAnnouncement,
+                onRecreateAnnouncementClick: viewModel.recreateAnnouncement,
                 onDeleteAnnouncementClick: viewModel.deleteAnnouncement,
                 onReportAnnouncementClick: viewModel.reportAnnouncement,
                 onSeeAllAnnouncementClick: onSeeAllAnnouncementClick,
-                getAnnouncement: viewModel.getAnnouncement
+                getAnnouncement: viewModel.getAnnouncement,
+                onDeletePostClick: viewModel.deletePost
             )
             .onReceive(viewModel.$event) { event in
                 if let errorEvent = event as? ErrorEvent {
@@ -52,14 +53,15 @@ private struct NewsView: View {
     let loading: Bool
     let onRefreshAnnouncements: () async -> Void
     let onAnnouncementClick: (String) -> Void
-    let onResendAnnouncementClick: (Announcement) -> Void
+    let onRecreateAnnouncementClick: (Announcement) -> Void
     let onDeleteAnnouncementClick: (Announcement) -> Void
     let onReportAnnouncementClick: (AnnouncementReport) -> Void
     let onSeeAllAnnouncementClick: () -> Void
     let getAnnouncement: (String) -> Announcement?
+    let onDeletePostClick: (Post) -> Void
     
-    @State private var showDeleteAnnouncementAlert: Bool = false
-    @State private var alertAnnouncement: Announcement?
+    @State private var deleteAnnouncementAlert = AlertData<Announcement>(stringResource(.deleteAnnouncementAlertMessage))
+    @State private var deletePostAlert = AlertData<Post>(stringResource(.deletePostAlertMessage))
     @State private var activeSheet:  NewsViewSheet?
     
     private static let announcementSectionFraction: CGFloat = 0.9
@@ -97,8 +99,8 @@ private struct NewsView: View {
                         onRedirectPostClick: { _ in
                             // TODO
                         },
-                        onPostOptionClick: { _ in
-                            // TODO
+                        onPostOptionClick: { post in
+                            activeSheet = .post(post)
                         },
                         onSeeAllPostsClick: {
                             // TODO
@@ -160,14 +162,13 @@ private struct NewsView: View {
                                 activeSheet = nil
                             }
                         },
-                        onResendClick: {
+                        onRecreateClick: {
                             activeSheet = nil
-                            onResendAnnouncementClick(announcement)
+                            onRecreateAnnouncementClick(announcement)
                         },
                         onDeleteClick: {
                             activeSheet = nil
-                            alertAnnouncement = announcement
-                            showDeleteAnnouncementAlert = true
+                            deleteAnnouncementAlert.present(data: announcement)
                         },
                         onReportClick: {
                             activeSheet = .announcementReport(announcement)
@@ -207,6 +208,22 @@ private struct NewsView: View {
                         onCancelClick: { activeSheet = nil }
                     )
                     
+                case let .post(post):
+                    PostSheet(
+                        postState: post.state,
+                        editable: user.admin,
+                        onEditClick: {
+                            // TODO
+                        },
+                        onDeleteClick: {
+                            activeSheet = nil
+                            deletePostAlert.present(data: post)
+                        },
+                        onReportClick: {
+                            // TODO
+                        }
+                    )
+
                 case .createPost:
                     CreatePostDestination(
                         onCancelClick: { activeSheet = nil }
@@ -214,19 +231,32 @@ private struct NewsView: View {
             }
         }
         .alert(
-            stringResource(.deleteAnnouncementAlertMessage),
-            isPresented: $showDeleteAnnouncementAlert,
-            presenting: alertAnnouncement,
+            deleteAnnouncementAlert.title,
+            isPresented: $deleteAnnouncementAlert.presented,
+            presenting: deleteAnnouncementAlert.data,
             actions: { announcement in
                 Button(stringResource(.cancel), role: .cancel) {
-                    alertAnnouncement = nil
-                    showDeleteAnnouncementAlert = false
+                    deleteAnnouncementAlert.dismiss()
                 }
                 
                 Button(stringResource(.delete), role: .destructive) {
                     onDeleteAnnouncementClick(announcement)
-                    alertAnnouncement = nil
-                    showDeleteAnnouncementAlert = false
+                    deleteAnnouncementAlert.dismiss()
+                }
+            }
+        )
+        .alert(
+            deletePostAlert.title,
+            isPresented: $deletePostAlert.presented,
+            presenting: deletePostAlert.data,
+            actions: { post in
+                Button(stringResource(.cancel), role: .cancel) {
+                    deletePostAlert.dismiss()
+                }
+                
+                Button(stringResource(.delete), role: .destructive) {
+                    onDeletePostClick(post)
+                    deletePostAlert.dismiss()
                 }
             }
         )
@@ -238,6 +268,7 @@ private enum NewsViewSheet: Identifiable {
     case announcementReport(Announcement)
     case createAnnouncement
     case editAnnouncement(Announcement)
+    case post(Post)
     case createPost
     
     var id: Int {
@@ -246,7 +277,8 @@ private enum NewsViewSheet: Identifiable {
             case .announcementReport: 1
             case .createAnnouncement: 2
             case .editAnnouncement: 3
-            case .createPost: 4
+            case .post: 4
+            case .createPost: 5
         }
     }
 }
@@ -260,11 +292,12 @@ private enum NewsViewSheet: Identifiable {
             loading: false,
             onRefreshAnnouncements: {},
             onAnnouncementClick: {_ in },
-            onResendAnnouncementClick: {_ in },
+            onRecreateAnnouncementClick: {_ in },
             onDeleteAnnouncementClick: {_ in },
             onReportAnnouncementClick: {_ in },
             onSeeAllAnnouncementClick: {},
-            getAnnouncement: { _ in nil }
+            getAnnouncement: { _ in nil },
+            onDeletePostClick: { _ in }
        )
        .background(.appBackground)
    }

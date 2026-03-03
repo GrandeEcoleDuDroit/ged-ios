@@ -55,4 +55,13 @@ class PostApiImpl: PostApi {
         
         try await RequestUtils.sendRequest(session: session, request: request)
     }
+    
+    func deletePost(postId: String) async throws {
+        let url = RequestUtils.getUrl(base: base, endpoint: "/\(postId)")
+        let session = RequestUtils.getDefaultSession()
+        let authToken = await tokenProvider.getAuthToken()
+        let request = RequestUtils.simpleDeleteRequest(url: url, authToken: authToken)
+        
+        try await RequestUtils.sendRequest(session: session, request: request)
+    }
 }

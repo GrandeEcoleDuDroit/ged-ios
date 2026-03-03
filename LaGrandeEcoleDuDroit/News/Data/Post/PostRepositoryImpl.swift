@@ -75,6 +75,16 @@ class PostRepositoryImpl: PostRepository {
         }
     }
     
+    func deletePost(postId: String) async throws {
+        do {
+            try await postRemoteDataSource.deletePost(postId: postId)
+            try await postLocalDataSource.deletePost(postId: postId)
+        } catch {
+            e(tag, "Error deleting post \(postId)", error)
+            throw error
+        }
+    }
+    
     func deleteLocalPost(postId: String) async throws {
         do {
             try await postLocalDataSource.deletePost(postId: postId)
