@@ -1,0 +1,764 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5EC0EA442CC5644100632199 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 5EC0EA432CC5644100632199 /* FirebaseAnalytics */; };
+		5EC0EA462CC5644100632199 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 5EC0EA452CC5644100632199 /* FirebaseAuth */; };
+		5EC0EA482CC5644100632199 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 5EC0EA472CC5644100632199 /* FirebaseCore */; };
+		5EC0EA4A2CC5644100632199 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 5EC0EA492CC5644100632199 /* FirebaseCrashlytics */; };
+		5EC0EA4C2CC5644100632199 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 5EC0EA4B2CC5644100632199 /* FirebaseFirestore */; };
+		5EDC1C082E47A34B00A3C603 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 5EDC1C072E47A34B00A3C603 /* FirebaseMessaging */; };
+		5EDC292D2EC79CE8006F4F95 /* ci_pre_xcodebuild.sh in Resources */ = {isa = PBXBuildFile; fileRef = 5EDC292C2EC79CE8006F4F95 /* ci_pre_xcodebuild.sh */; };
+		5EE765C82D2A1B2600EC8447 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 5EE765C72D2A1B2600EC8447 /* Swinject */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		5EB5785E2CB3CCD4004524AD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5EB578452CB3CCD3004524AD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5EB5784C2CB3CCD3004524AD;
+			remoteInfo = gedoise;
+		};
+		5EB578682CB3CCD4004524AD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5EB578452CB3CCD3004524AD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5EB5784C2CB3CCD3004524AD;
+			remoteInfo = gedoise;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		5EB5784D2CB3CCD3004524AD /* ItsCloudy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ItsCloudy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5EB5785D2CB3CCD4004524AD /* ItsCloudyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ItsCloudyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5EB578672CB3CCD4004524AD /* ItsCloudyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ItsCloudyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5EDC292C2EC79CE8006F4F95 /* ci_pre_xcodebuild.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_pre_xcodebuild.sh; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5EB670AA2F29DBA6000577FC /* Exceptions for "ItsCloudyTests" folder in "ItsCloudy" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				App/Mock/MockFcmTokenRepository.swift,
+				Authentication/Mock/MockAuthenticationRepository.swift,
+				Common/Mock/MockBlockedUserRepository.swift,
+				Common/Mock/MockImageRepository.swift,
+				Common/Mock/MockNavigationRequestUseCase.swift,
+				Common/Mock/MockNetworkMonitor.swift,
+				Common/Mock/MockNotificationApi.swift,
+				Common/Mock/MockRouteRepository.swift,
+				Common/Mock/MockUserRepository.swift,
+				Common/Mock/MockWhiteListRepository.swift,
+				Message/Mock/MockConversationMessageRepository.swift,
+				Message/Mock/MockConversationRepository.swift,
+				Message/Mock/MockMessageNotificationManager.swift,
+				Message/Mock/MockMessageRepository.swift,
+				Message/Mock/MockSendMessageNotificationUseCase.swift,
+				Mission/Mock/MockMissionRepository.swift,
+				Mission/Mock/MockRefreshMissionsUseCase.swift,
+				Mission/Mock/MockUpsertLocalMissionUseCase.swift,
+				News/Announcement/Mock/MockAnnouncementRepository.swift,
+				News/Post/Mock/MockPostRepository.swift,
+			);
+			target = 5EB5784C2CB3CCD3004524AD /* ItsCloudy */;
+		};
+		5EB670AB2F29DBA6000577FC /* Exceptions for "ItsCloudyTests" folder in "ItsCloudyTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				App/Mock/MockFcmTokenRepository.swift,
+				Authentication/Mock/MockAuthenticationRepository.swift,
+				Common/Mock/MockBlockedUserRepository.swift,
+				Common/Mock/MockImageRepository.swift,
+				Common/Mock/MockNavigationRequestUseCase.swift,
+				Common/Mock/MockNetworkMonitor.swift,
+				Common/Mock/MockNotificationApi.swift,
+				Common/Mock/MockRouteRepository.swift,
+				Common/Mock/MockUserRepository.swift,
+				Common/Mock/MockWhiteListRepository.swift,
+				Message/Mock/MockConversationMessageRepository.swift,
+				Message/Mock/MockConversationRepository.swift,
+				Message/Mock/MockMessageNotificationManager.swift,
+				Message/Mock/MockMessageRepository.swift,
+				Message/Mock/MockSendMessageNotificationUseCase.swift,
+				Mission/Mock/MockMissionRepository.swift,
+				Mission/Mock/MockRefreshMissionsUseCase.swift,
+				Mission/Mock/MockUpsertLocalMissionUseCase.swift,
+				News/Announcement/Mock/MockAnnouncementRepository.swift,
+				News/Post/Mock/MockPostRepository.swift,
+			);
+			target = 5EB5785C2CB3CCD4004524AD /* ItsCloudyTests */;
+		};
+		5EDC1C052E47A2D000A3C603 /* Exceptions for "ItsCloudy" folder in "ItsCloudy" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5EB5784C2CB3CCD3004524AD /* ItsCloudy */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		5EB5784F2CB3CCD3004524AD /* ItsCloudy */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5EDC1C052E47A2D000A3C603 /* Exceptions for "ItsCloudy" folder in "ItsCloudy" target */,
+			);
+			path = ItsCloudy;
+			sourceTree = "<group>";
+		};
+		5EB578602CB3CCD4004524AD /* ItsCloudyTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5EB670AA2F29DBA6000577FC /* Exceptions for "ItsCloudyTests" folder in "ItsCloudy" target */,
+				5EB670AB2F29DBA6000577FC /* Exceptions for "ItsCloudyTests" folder in "ItsCloudyTests" target */,
+			);
+			path = ItsCloudyTests;
+			sourceTree = "<group>";
+		};
+		5EB5786A2CB3CCD4004524AD /* ItsCloudyUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ItsCloudyUITests;
+			sourceTree = "<group>";
+		};
+		5EBF28E12EC805E700FB2567 /* debug */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = debug;
+			sourceTree = "<group>";
+		};
+		5EBF28E22EC805F000FB2567 /* release */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = release;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5EB5784A2CB3CCD3004524AD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5EC0EA442CC5644100632199 /* FirebaseAnalytics in Frameworks */,
+				5EC0EA4A2CC5644100632199 /* FirebaseCrashlytics in Frameworks */,
+				5EDC1C082E47A34B00A3C603 /* FirebaseMessaging in Frameworks */,
+				5EC0EA482CC5644100632199 /* FirebaseCore in Frameworks */,
+				5EC0EA4C2CC5644100632199 /* FirebaseFirestore in Frameworks */,
+				5EC0EA462CC5644100632199 /* FirebaseAuth in Frameworks */,
+				5EE765C82D2A1B2600EC8447 /* Swinject in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5EB5785A2CB3CCD4004524AD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5EB578642CB3CCD4004524AD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5EB578442CB3CCD3004524AD = {
+			isa = PBXGroup;
+			children = (
+				5EDC29322EC7B286006F4F95 /* ci_scripts */,
+				5EB578602CB3CCD4004524AD /* ItsCloudyTests */,
+				5EB5786A2CB3CCD4004524AD /* ItsCloudyUITests */,
+				5EB5784E2CB3CCD3004524AD /* Products */,
+				5EB5784F2CB3CCD3004524AD /* ItsCloudy */,
+			);
+			sourceTree = "<group>";
+		};
+		5EB5784E2CB3CCD3004524AD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5EB5784D2CB3CCD3004524AD /* ItsCloudy.app */,
+				5EB5785D2CB3CCD4004524AD /* ItsCloudyTests.xctest */,
+				5EB578672CB3CCD4004524AD /* ItsCloudyUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5EDC29322EC7B286006F4F95 /* ci_scripts */ = {
+			isa = PBXGroup;
+			children = (
+				5EBF28E22EC805F000FB2567 /* release */,
+				5EBF28E12EC805E700FB2567 /* debug */,
+				5EDC292C2EC79CE8006F4F95 /* ci_pre_xcodebuild.sh */,
+			);
+			path = ci_scripts;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5EB5784C2CB3CCD3004524AD /* ItsCloudy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5EB578712CB3CCD4004524AD /* Build configuration list for PBXNativeTarget "ItsCloudy" */;
+			buildPhases = (
+				5EB578492CB3CCD3004524AD /* Sources */,
+				5EB5784A2CB3CCD3004524AD /* Frameworks */,
+				5EB5784B2CB3CCD3004524AD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				5EB5784F2CB3CCD3004524AD /* ItsCloudy */,
+				5EBF28E12EC805E700FB2567 /* debug */,
+				5EBF28E22EC805F000FB2567 /* release */,
+			);
+			name = ItsCloudy;
+			packageProductDependencies = (
+				5EC0EA432CC5644100632199 /* FirebaseAnalytics */,
+				5EC0EA452CC5644100632199 /* FirebaseAuth */,
+				5EC0EA472CC5644100632199 /* FirebaseCore */,
+				5EC0EA492CC5644100632199 /* FirebaseCrashlytics */,
+				5EC0EA4B2CC5644100632199 /* FirebaseFirestore */,
+				5EE765C72D2A1B2600EC8447 /* Swinject */,
+				5EDC1C072E47A34B00A3C603 /* FirebaseMessaging */,
+			);
+			productName = gedoise;
+			productReference = 5EB5784D2CB3CCD3004524AD /* ItsCloudy.app */;
+			productType = "com.apple.product-type.application";
+		};
+		5EB5785C2CB3CCD4004524AD /* ItsCloudyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5EB578742CB3CCD4004524AD /* Build configuration list for PBXNativeTarget "ItsCloudyTests" */;
+			buildPhases = (
+				5EB578592CB3CCD4004524AD /* Sources */,
+				5EB5785A2CB3CCD4004524AD /* Frameworks */,
+				5EB5785B2CB3CCD4004524AD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5EB5785F2CB3CCD4004524AD /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				5EB578602CB3CCD4004524AD /* ItsCloudyTests */,
+			);
+			name = ItsCloudyTests;
+			packageProductDependencies = (
+			);
+			productName = gedoiseTests;
+			productReference = 5EB5785D2CB3CCD4004524AD /* ItsCloudyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		5EB578662CB3CCD4004524AD /* ItsCloudyUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5EB578772CB3CCD4004524AD /* Build configuration list for PBXNativeTarget "ItsCloudyUITests" */;
+			buildPhases = (
+				5EB578632CB3CCD4004524AD /* Sources */,
+				5EB578642CB3CCD4004524AD /* Frameworks */,
+				5EB578652CB3CCD4004524AD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5EB578692CB3CCD4004524AD /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				5EB5786A2CB3CCD4004524AD /* ItsCloudyUITests */,
+			);
+			name = ItsCloudyUITests;
+			packageProductDependencies = (
+			);
+			productName = gedoiseUITests;
+			productReference = 5EB578672CB3CCD4004524AD /* ItsCloudyUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5EB578452CB3CCD3004524AD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					5EB5784C2CB3CCD3004524AD = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					5EB5785C2CB3CCD4004524AD = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = 5EB5784C2CB3CCD3004524AD;
+					};
+					5EB578662CB3CCD4004524AD = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = 5EB5784C2CB3CCD3004524AD;
+					};
+				};
+			};
+			buildConfigurationList = 5EB578482CB3CCD3004524AD /* Build configuration list for PBXProject "ItsCloudy" */;
+			developmentRegion = fr;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				fr,
+			);
+			mainGroup = 5EB578442CB3CCD3004524AD;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5EC0EA422CC5644100632199 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				5EE765C62D2A1B2600EC8447 /* XCRemoteSwiftPackageReference "Swinject" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 5EB5784E2CB3CCD3004524AD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5EB5784C2CB3CCD3004524AD /* ItsCloudy */,
+				5EB5785C2CB3CCD4004524AD /* ItsCloudyTests */,
+				5EB578662CB3CCD4004524AD /* ItsCloudyUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5EB5784B2CB3CCD3004524AD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5EDC292D2EC79CE8006F4F95 /* ci_pre_xcodebuild.sh in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5EB5785B2CB3CCD4004524AD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5EB578652CB3CCD4004524AD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5EB578492CB3CCD3004524AD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5EB578592CB3CCD4004524AD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5EB578632CB3CCD4004524AD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5EB5785F2CB3CCD4004524AD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5EB5784C2CB3CCD3004524AD /* ItsCloudy */;
+			targetProxy = 5EB5785E2CB3CCD4004524AD /* PBXContainerItemProxy */;
+		};
+		5EB578692CB3CCD4004524AD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5EB5784C2CB3CCD3004524AD /* ItsCloudy */;
+			targetProxy = 5EB578682CB3CCD4004524AD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		5EB5786F2CB3CCD4004524AD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		5EB578702CB3CCD4004524AD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		5EB578722CB3CCD4004524AD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 5EB5784F2CB3CCD3004524AD /* ItsCloudy */;
+			baseConfigurationReferenceRelativePath = Config.xcconfig;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ItsCloudy/ItsCloudy.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"ItsCloudy/Preview Content\"";
+				DEVELOPMENT_TEAM = R8SRMT4A39;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ItsCloudy/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ItsCloudy;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.upsaclay.gedoise;
+				PRODUCT_NAME = ItsCloudy;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5EB578732CB3CCD4004524AD /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 5EB5784F2CB3CCD3004524AD /* ItsCloudy */;
+			baseConfigurationReferenceRelativePath = Config.xcconfig;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ItsCloudy/ItsCloudy.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"ItsCloudy/Preview Content\"";
+				DEVELOPMENT_TEAM = R8SRMT4A39;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ItsCloudy/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ItsCloudy;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.upsaclay.gedoise;
+				PRODUCT_NAME = ItsCloudy;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		5EB578752CB3CCD4004524AD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.upsaclay.gedoiseTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ItsCloudy.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ItsCloudy";
+			};
+			name = Debug;
+		};
+		5EB578762CB3CCD4004524AD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.upsaclay.gedoiseTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ItsCloudy.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ItsCloudy";
+			};
+			name = Release;
+		};
+		5EB578782CB3CCD4004524AD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.upsaclay.gedoiseUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = gedoise;
+			};
+			name = Debug;
+		};
+		5EB578792CB3CCD4004524AD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.upsaclay.gedoiseUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = gedoise;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5EB578482CB3CCD3004524AD /* Build configuration list for PBXProject "ItsCloudy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5EB5786F2CB3CCD4004524AD /* Debug */,
+				5EB578702CB3CCD4004524AD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5EB578712CB3CCD4004524AD /* Build configuration list for PBXNativeTarget "ItsCloudy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5EB578722CB3CCD4004524AD /* Debug */,
+				5EB578732CB3CCD4004524AD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5EB578742CB3CCD4004524AD /* Build configuration list for PBXNativeTarget "ItsCloudyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5EB578752CB3CCD4004524AD /* Debug */,
+				5EB578762CB3CCD4004524AD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5EB578772CB3CCD4004524AD /* Build configuration list for PBXNativeTarget "ItsCloudyUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5EB578782CB3CCD4004524AD /* Debug */,
+				5EB578792CB3CCD4004524AD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5EC0EA422CC5644100632199 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.3.0;
+			};
+		};
+		5EE765C62D2A1B2600EC8447 /* XCRemoteSwiftPackageReference "Swinject" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Swinject/Swinject.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5EC0EA432CC5644100632199 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5EC0EA422CC5644100632199 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		5EC0EA452CC5644100632199 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5EC0EA422CC5644100632199 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		5EC0EA472CC5644100632199 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5EC0EA422CC5644100632199 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		5EC0EA492CC5644100632199 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5EC0EA422CC5644100632199 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		5EC0EA4B2CC5644100632199 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5EC0EA422CC5644100632199 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		5EDC1C072E47A34B00A3C603 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5EC0EA422CC5644100632199 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		5EE765C72D2A1B2600EC8447 /* Swinject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5EE765C62D2A1B2600EC8447 /* XCRemoteSwiftPackageReference "Swinject" */;
+			productName = Swinject;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 5EB578452CB3CCD3004524AD /* Project object */;
+}
