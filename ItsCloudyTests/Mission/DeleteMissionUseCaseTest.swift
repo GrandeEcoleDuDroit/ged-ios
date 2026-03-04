@@ -1,0 +1,131 @@
+import Testing
+import Foundation
+import Combine
+
+@testable import ItsCloudy
+
+class DeleteMissionUseCaseTest {
+    @Test
+    func deleteMissionUseCase_should_delete_local_mission_when_state_is_draft() async {
+        // Given
+        let mission = missionFixture.copy { $0.state = .draft }
+        let missionTaskQueue = MissionTaskQueue()
+        let missionRepository = MissionRepositoryTest(
+            givenMission: mission
+        )
+        let useCase = DeleteMissionUseCase(
+            missionRepository: missionRepository,
+            imageRepository: MockImageRepository(),
+            missionTaskQueue: missionTaskQueue
+        )
+        
+        // When
+        try? await useCase.execute(mission: mission)
+        
+        // Then
+        #expect(missionRepository.localMissionDeleted)
+    }
+    
+    @Test
+    func deleteMissionUseCase_should_delete_local_mission_when_state_is_publishing() async {
+        // Given
+        let mission = missionFixture.copy { $0.state = .publishing() }
+        let missionTaskQueue = MissionTaskQueue()
+        let missionRepository = MissionRepositoryTest(
+            givenMission: mission
+        )
+        let useCase = DeleteMissionUseCase(
+            missionRepository: missionRepository,
+            imageRepository: MockImageRepository(),
+            missionTaskQueue: missionTaskQueue
+        )
+        
+        // When
+        try? await useCase.execute(mission: mission)
+        
+        // Then
+        #expect(missionRepository.localMissionDeleted)
+    }
+    
+    @Test
+    func deleteMissionUseCase_should_delete_task_when_state_is_publishing() async {
+        // Given
+        let mission = missionFixture.copy { $0.state = .publishing() }
+        let missionTaskQueue = MissionTaskQueue()
+        let missionRepository = MissionRepositoryTest(
+            givenMission: mission
+        )
+        let useCase = DeleteMissionUseCase(
+            missionRepository: missionRepository,
+            imageRepository: MockImageRepository(),
+            missionTaskQueue: missionTaskQueue
+        )
+        
+        // When
+        try? await useCase.execute(mission: mission)
+        let result = await missionTaskQueue.tasks[mission.id] == nil
+        
+        // Then
+        #expect(result)
+    }
+    
+    @Test
+    func deleteMissionUseCase_should_delete_mission_when_state_is_published() async {
+        // Given
+        let mission = missionFixture.copy { $0.state = .published() }
+        let missionTaskQueue = MissionTaskQueue()
+        let missionRepository = MissionRepositoryTest(
+            givenMission: mission
+        )
+        let useCase = DeleteMissionUseCase(
+            missionRepository: missionRepository,
+            imageRepository: MockImageRepository(),
+            missionTaskQueue: missionTaskQueue
+        )
+        
+        // When
+        try? await useCase.execute(mission: mission)
+        
+        // Then
+        #expect(missionRepository.missionDeleted)
+    }
+    
+    @Test
+    func deleteMissionUseCase_should_delete_mission_when_state_is_error() async {
+        // Given
+        let mission = missionFixture.copy { $0.state = .error() }
+        let missionTaskQueue = MissionTaskQueue()
+        let missionRepository = MissionRepositoryTest(
+            givenMission: mission
+        )
+        let useCase = DeleteMissionUseCase(
+            missionRepository: missionRepository,
+            imageRepository: MockImageRepository(),
+            missionTaskQueue: missionTaskQueue
+        )
+        
+        // When
+        try? await useCase.execute(mission: mission)
+        
+        // Then
+        #expect(missionRepository.localMissionDeleted)
+    }
+}
+
+private class MissionRepositoryTest: MockMissionRepository {
+    let givenMission: Mission
+    var localMissionDeleted: Bool = false
+    var missionDeleted: Bool = false
+    
+    init(givenMission: Mission) {
+        self.givenMission = givenMission
+    }
+    
+    override func deleteLocalMission(missionId: String) async throws {
+        localMissionDeleted = true
+    }
+    
+    override func deleteMission(mission: Mission, imageUrl: String?) async throws {
+        missionDeleted = true
+    }
+}
