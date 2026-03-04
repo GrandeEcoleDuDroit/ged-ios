@@ -111,7 +111,7 @@ private struct FormContent: View {
     let errorMessage: String?
     let onEmailChange: (String) -> Void
     
-    private let legalNoticeUrl = "https://itscloudymourchidi.github.io/itscloudy-website/legal-notice"
+    private let legalNoticeUrl = "https://itscloudymourchidi.github.io/itscloudy-website/#/legal-notice"
     
     var body: some View {
         VStack(alignment: .leading, spacing: DimensResource.mediumPadding) {
