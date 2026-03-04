@@ -1,0 +1,230 @@
+// App
+"privacy" = "Confidentialité";
+"blocked_users" = "Utilisateurs bloqués";
+"blocked_user" = "Utilisateur bloqué";
+"no_blocked_user" = "Aucun utilisateur bloqué";
+"profile" = "Profil";
+"account" = "Compte";
+"account_infos" = "Informations compte";
+"school_level" = "Niveau d'étude";
+"edit_profile" = "Editer profil";
+"new_profile_picture" = "Nouvelle photo de profil";
+"profile_picture_updated" = "Photo de profil mise à jour";
+"member" = "Membre";
+"delete_profile_picture_alert_message" = "Voulez-vous supprimer votre photo de profil ?";
+"delete_account_text" = "Supprimer votre compte entraînera la suppression définitive de toutes vos données. Cette action est irréversible.";
+"delete_account" = "Supprimer le compte";
+"enter_password" = "Saisissez votre mot de passe";
+"logout_alert_message" = "Êtes-vous sûr de vouloir vous déconnecter ?";
+"deleted_user" = "Utilisateur supprimé";
+
+// App error
+"incorrect_password_error" = "Mot de passe incorrect.";
+
+// Common
+"app_name" = "ItsCloudy";
+"next" = "Suivant";
+"back" = "Retour";
+"cancel" = "Annuler";
+"ok" = "Ok";
+"delete" = "Supprimer";
+"edit" = "Editer";
+"save" = "Enregistrer";
+"home" = "Accueil";
+"finish" = "Terminer";
+"retry" = "Réessayer";
+"loading" = "Chargement";
+"send" = "Envoyer";
+"publish" = "Publier";
+"add" = "Ajouter";
+"search" = "Rechercher";
+"now" = "Maintenant";
+"minutes_ago_short" = "%d min";
+"hours_ago_short" = "%d h";
+"days_ago_short" = "%d j";
+"minutes_ago_long" = "Il y a %d minutes";
+"hours_ago_long" = "Il y a %d heures";
+"days_ago_long" = "Il y a %d jours";
+"today" = "Aujourd'hui";
+"yester" = "Hier";
+"sending" = "Envoi...";
+"report" = "Signaler";
+"block" = "Bloquer";
+"unblock" = "Débloquer";
+"confirm" = "Confirmer";
+"remove" = "Retirer";
+"submit" = "Soumettre";
+"copy" = "Copier";
+"see" = "Voir";
+"block_user_alert_title" = "Bloquer utilisateur ?";
+"block_user_alert_message" = "Vous ne verrez plus aucun de ses contenus.";
+"unblock_user_alert_message" = "Voulez-vous débloquer cet utilisateur ?";
+"no_user" = "Aucun utilisateur";
+"no_users_found" = "Aucun utilisateur trouvé";
+"deleted_user_first_name" = "Utilisateur";
+"deleted_user_last_name" = "Supprimé";
+"selling_promoting_inappropriate_content_report_reason" = "Vente ou promotion de contenu inapproprié";
+"violent_hateful_content_report_reason" = "Contenu violent ou haineux";
+"spam_scam_report_reason" = "Spam ou arnaque";
+"false_information_report_reason" = "Fausses informations";
+"intellectual_property_violation_report_reason" = "Violation de la propriété intelectuelle";
+"other_report_reason" = "Autre";
+"other_report_reason_placeholder" = "Entrez la raison";
+"hacked_account" = "Compte piraté";
+"pretending_to_be_someone_else" = "Prétend être quelqu'un d'autre";
+
+// Common error
+"mandatory_field_error" = "Champs obligatoire.";
+"no_internet_connection_error" = "Aucune connexion Internet.";
+"internal_server_error" = "Une erreur interne du serveur est survenue.";
+"any_network_error" = "Une erreur réseau est survenue.";
+"unknown_error" = "Une erreur inconnue est survenue.";
+"timed_out_error" = "Le service a mis trop de temps à répondre. Veuillez réessayer.";
+"server_connection_error" = "Impossible de se connecter au serveur.";
+"empty_inputs_error" = "Veuillez remplir tous les champs.";
+"cannot_connect_to_host_error" = "Impossible de se connecter au serveur.";
+"too_many_requests_error" = "Vous avez effectué trop de requêtes. Veuillez réessayer dans quelques minutes.";
+"internet_connection_lost_error" = "La connexion Internet a été perdue.";
+"disabled_user_error" = "Votre compte a été désactivé.";
+"current_user_not_found_error" = "Utilisateur actuel non trouvé. Veuillez vous réauthentifier.";
+"sending_error" = "Erreur d'envoi";
+"network_connection_lost_error" = "La connexion réseau a été perdue.";
+"cannot_find_host_error" = "Impossible de se connecter au serveur.";
+"number_field_error" = "Veuillez entrer un nombre valide.";
+"invalid_image_format_error" = "L'image a un format invalide.";
+"unauthorized_error" = "Votre session a expiré. Veuillez vous reconnecter.";
+"bad_request_error" = "La requête n'a pu aboutir.";
+"resource_not_found_error" = "La ressource n'a pu être trouvée.";
+"duplicate_data_error" = "La ressource existe déjà.";
+"forbidden_error" = "Vous n'êtes pas autorisé à effectuer cette action.";
+"image_too_large_error_title" = "Image trop volumineuse";
+"image_too_large_error_message" = "La taille totale de l'image doit être inférieur à %@.";
+
+//Authentication
+"authentication_page_title" = "Connectez-vous ou inscrivez-vous sur l'applicaion Gédoise";
+"last_name" = "Nom";
+"first_name" = "Prénom";
+"email" = "Adresse e-mail";
+"password" = "Mot de passe";
+"login" = "Se connecter";
+"logout" = "Se déconnecter";
+"register" = "S'inscrire";
+"registration" = "Inscription";
+"not_register_yet" = "Pas encore inscrit ?";
+"select_school_level" = "Sélectionnez votre niveau scolaire";
+"level" = "Niveau";
+"enter_names" = "Saisissez votre nom";
+"enter_email_password" = "Saisissez votre adresse mail et votre mot de passe";
+"enter_email" = "Saisissez votre adresse mail";
+"agree_terms_privacy_beginning_text" = "J’ai lu et j’accepte les";
+"terms_and_privacy" = "Conditions d'utilisation et la Politique de Confidentialité";
+"forgotten_password" = "Mot de passe oublié";
+"forgotten_password_button_text" = "Mot de passe oublié ?";
+"forgotten_password_sucess_message" = "Si un compte est associé à cette adresse mail, un lien de réinitialisation vous sera envoyé.";
+
+// Authtentication errors
+"incorrect_email_format_error" = "Veuillez entrer une adresse e-mail valide.";
+"password_length_error" = "Le mot de passe doit faire au moins 8 caractères.";
+"incorrect_credentials_error" = "Adresse e-mail ou mot de passe incorrect.";
+"user_not_exist_error" = "L'utilisateur n'existe pas.";
+"email_already_associated" = "Cette adresse e-mail est déjà utilisée.";
+"user_not_white_listed_error" = "L'inscription est actuellement limitée aux utilisateurs autorisés.";
+"legal_notice_not_aceepted_error" = "Veuillez accepter les Conditions d’utilisation et la Politique de Confidentialité pour continuer.";
+"auth_user_not_found_error" = "Aucun utilisateur trouvé.";
+
+// News
+"news" = "Actualités";
+"announcement" = "Annonce";
+"announcement_section_title" = "Annonces";
+"new_announcement" = "Nouvelle annonce";
+"edit_announcement" = "Editer annonce";
+"title_field_placeholder" = "Titre";
+"content_field_placeholder" = "Contenu";
+"no_announcement" = "Aucune annonce";
+"delete_announcement_alert_message" = "Voulez-vous supprimer cette annonce ?";
+"see_all" = "Voir tout";
+"all_announcements" = "Toutes les annonces";
+"post_section_title" = "Posts";
+"no_post" = "Aucune post";
+"new_post" = "Nouveau post";
+"post_link_field_placeholder" = "Lien du post";
+"delete_post_alert_message" = "Voulez-vous supprimer cette post ?";
+
+// News error
+"post_link_length_error" = "Le lien dépasse la limite autorisée (%d caractères maximum).";
+"post_max_image_count_error" = "Vous pouvez ajouter jusqu’à %d images maximum.";
+
+// Message
+"messages" = "Messages";
+"tap_to_chat" = "Appuyez pour discuter";
+"message_placeholder" = "Envoyer un message";
+"no_conversation" = "Démarrer une conversation avec vos amis.";
+"new_conversation" = "Nouvelle conversation";
+"delete_conversation_alert_title" = "Supprimer conversation ?";
+"delete_conversation_alert_message" = "Cela supprimera l'historique des messages de votre côté uniquement.";
+"seen" = "Vu";
+"new_message" = "Nouveau message";
+"delete_message_alert_content" = "Voulez-vous supprimer ce message ?";
+"chat_blocked_user_indicator_text" = "Vous ne pouvez pas envoyer de messages à cet utilisateur à moins que vous ne le débloquiez.";
+"resend" = "Renvoyer";
+"nudity_or_sexual_content" = "Nudité ou contenu sexuel";
+"hate_speech_or_symbols" = "Discours ou symbole de haine";
+"spam" = "Spam";
+"bullying_or_harassment" = "Intimidation ou harcèlement";
+"illegal_content" = "Contenu illégal";
+"scam_or_fraud" = "Escroquerie ou fraude";
+
+// Message error
+"message_failed_to_send_error" = "Échec de l’envoi du message.";
+
+// Mission
+"mission" = "Mission";
+"information" = "Information";
+"managers" = "Gérants";
+"participants" = "Participants";
+"tasks" = "Tâches";
+"new_mission" = "Nouvelle mission";
+"edit_mission" = "Editer mission";
+"select_managers" = "Sélectionner gérants";
+"all_users" = "Tous les utilisateurs";
+"participant_number" = "%d participant sur %d";
+"short_participant_number" = "%d / %d";
+"no_mission" = "Aucune mission";
+"add_image" = "Ajouter image";
+"mission_title_field" = "Titre";
+"mission_description_field" = "Description";
+"mission_start_date_field" = "Date de début";
+"mission_end_date_field" = "Date de fin";
+"mission_school_level_field" = "Niveau scolaire";
+"everyone" = "Tout le monde";
+"mission_max_participants_field" = "Participants max";
+"mission_duration_field" = "Durée (optionnel)";
+"add_manager" = "Ajouter gérant";
+"add_task" = "Ajouter tâche";
+"edit_task" = "Editer tâche";
+"enter_task" = "Entrer tâche";
+"full" = "Complet";
+"no_participant" = "Aucun participant";
+"see_profile" = "Voir profil";
+"completed" = "Terminée";
+"open" = "Ouvert";
+"all" = "Tout";
+"see_all_users" = "Voir tout (%d plus)";
+
+"register_mission_button_text" = "S'inscrire";
+"registered_mission_button_text" = "Inscrit";
+"completed_mission_button_text" = "Terminée";
+"registration_closed_mission_button_text" = "Inscription fermée";
+"unavailable_mission_button_text" = "Non disponible";
+"full_mission_information_text" = "Nombre maximal de participant atteint.";
+"non_matching_school_level_information_text" = "Reservé aux **%@**.";
+"completed_mission_information_text" = "Mission terminée.";
+"delete_mission_alert_message" = "Voulez-vous supprimer cette mission ?";
+"unregister_mission_alert_message" = "Se désinscrire de cette mission ?";
+"remove_participant_alert_message" = "Voulez-vous retirer %@ de cette mission ?";
+"edit_mission_school_level_supporting_text" = "Les participants avec un niveau scolaire non correspondant seront retirés.";
+
+// Mission error
+"max_participants_lower_than_current_error" = "Le nombre maximum de participants ne peut pas être inférieur au nombre actuel (%d).";
+"max_participant_number_reached_error" = "Le nombre maximal de participant a été atteint.";
+"school_level_not_allowed_error" = "Votre niveau scolaire n’est pas autorisé à participer.";
