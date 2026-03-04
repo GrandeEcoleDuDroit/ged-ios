@@ -7,7 +7,7 @@ class RegisterUseCaseTest {
     let password = "password123"
     let firstName = "John"
     let lastName = "Doe"
-    let schoolLevel = SchoolLevel.ged1
+    let schoolLevel = SchoolLevel.level1
     
     @Test
     func registerUseCase_should_throw_forbidden_error_when_user_is_not_whitelisted() async throws {
