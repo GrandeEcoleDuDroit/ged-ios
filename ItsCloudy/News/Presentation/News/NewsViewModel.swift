@@ -107,9 +107,6 @@ class NewsViewModel: ViewModel {
     
     private func listenPosts() {
         postRepository.posts
-            .map { [weak self] posts in
-                posts.compactMap { self?.truncatePosts($0) }
-            }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
                 self?.uiState.posts = posts
@@ -122,13 +119,6 @@ class NewsViewModel: ViewModel {
         
         return announcement.copy {
             $0.title = truncatedTitle
-            $0.content = truncatedContent
-        }
-    }
-    
-    private func truncatePosts(_ post: Post) -> Post {
-        let truncatedContent = post.content.take(1000)
-        return post.copy {
             $0.content = truncatedContent
         }
     }

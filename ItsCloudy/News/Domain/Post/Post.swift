@@ -2,10 +2,10 @@ import Foundation
 
 struct Post: Copying, Hashable {
     let id: String
-    let title: String
-    var content: String
-    let link: String
-    let source: PostSource
+    var title: String
+    var content: String?
+    var link: String
+    var source: PostSource
     let date: Date
     var state: PostState
     

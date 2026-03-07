@@ -5,5 +5,7 @@ protocol PostApi {
     
     func createPost(remotePost: RemotePost, imageFileData: [FileData]) async throws
     
+    func updatePost(remotePost: RemotePost, imageFileData: [FileData]) async throws
+    
     func deletePost(postId: String) async throws
 }

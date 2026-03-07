@@ -213,7 +213,7 @@ private struct NewsView: View {
                         postState: post.state,
                         editable: user.admin,
                         onEditClick: {
-                            // TODO
+                            activeSheet = .editPost(post)
                         },
                         onDeleteClick: {
                             activeSheet = nil
@@ -226,6 +226,12 @@ private struct NewsView: View {
 
                 case .createPost:
                     CreatePostDestination(
+                        onCancelClick: { activeSheet = nil }
+                    )
+                    
+                case let .editPost(post):
+                    EditPostDestination(
+                        post: post,
                         onCancelClick: { activeSheet = nil }
                     )
             }
@@ -270,6 +276,7 @@ private enum NewsViewSheet: Identifiable {
     case editAnnouncement(Announcement)
     case post(Post)
     case createPost
+    case editPost(Post)
     
     var id: Int {
         switch self {
@@ -279,6 +286,7 @@ private enum NewsViewSheet: Identifiable {
             case .editAnnouncement: 3
             case .post: 4
             case .createPost: 5
+            case .editPost: 6
         }
     }
 }

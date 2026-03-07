@@ -10,6 +10,8 @@ class MockPostRepository: PostRepository {
     func getRemotePosts() async throws -> [Post] { [] }
 
     func createPost(post: Post, imageFileData: [FileData]) async throws {}
+    
+    func updatePost(post: Post, imageFileData: [FileData]) async throws {}
 
     func upsertLocalPost(post: Post) async throws {}
     

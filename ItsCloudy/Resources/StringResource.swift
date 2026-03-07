@@ -151,6 +151,7 @@ enum StringResource: String {
     case postSectionTitle = "post_section_title"
     case noPost = "no_post"
     case newPost = "new_post"
+    case editPost = "edit_post"
     case postLinkFieldPlaceholder = "post_link_field_placeholder"
     case deletePostAlertMessage = "delete_post_alert_message"
     

@@ -62,8 +62,7 @@ class MissionInjector: Injector {
         
         container.register(UpdateMissionUseCase.self) { resolver in
             UpdateMissionUseCase(
-                missionRepository: resolver.resolve(MissionRepository.self)!,
-                imageRepository: CommonInjector.shared.resolve(ImageRepository.self)
+                missionRepository: resolver.resolve(MissionRepository.self)!
             )
         }
         
