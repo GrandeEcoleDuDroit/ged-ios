@@ -8,6 +8,7 @@ class NewsViewModel: ViewModel {
     private let recreateAnnouncementUseCase: RecreateAnnouncementUseCase
     private let refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
     private let postRepository: PostRepository
+    private let recreatePostUseCase: RecreatePostUseCase
     private let deletePostUseCase: DeletePostUseCase
     
     @Published private(set) var uiState: NewsUiState = NewsUiState()
@@ -21,6 +22,7 @@ class NewsViewModel: ViewModel {
         recreateAnnouncementUseCase: RecreateAnnouncementUseCase,
         refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase,
         postRepository: PostRepository,
+        recreatePostUseCase: RecreatePostUseCase,
         deletePostUseCase: DeletePostUseCase
     ) {
         self.userRepository = userRepository
@@ -29,6 +31,7 @@ class NewsViewModel: ViewModel {
         self.recreateAnnouncementUseCase = recreateAnnouncementUseCase
         self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
         self.postRepository = postRepository
+        self.recreatePostUseCase = recreatePostUseCase
         self.deletePostUseCase = deletePostUseCase
         
         listenUser()
@@ -61,6 +64,12 @@ class NewsViewModel: ViewModel {
     
     func getAnnouncement(announcementId: String) -> Announcement? {
         announcementRepository.currentAnnouncements.first { $0.id == announcementId }
+    }
+    
+    func recreatePost(post: Post) {
+        Task {
+            await recreatePostUseCase.execute(post: post)
+        }
     }
     
     func deletePost(post: Post) {
