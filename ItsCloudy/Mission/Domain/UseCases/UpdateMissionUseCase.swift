@@ -2,14 +2,9 @@ import Foundation
 
 class UpdateMissionUseCase {
     private let missionRepository: MissionRepository
-    private let imageRepository: ImageRepository
     
-    init(
-        missionRepository: MissionRepository,
-        imageRepository: ImageRepository
-    ) {
+    init(missionRepository: MissionRepository) {
         self.missionRepository = missionRepository
-        self.imageRepository = imageRepository
     }
     
     func execute(user: User, mission: Mission, imageData: Data?) async throws {

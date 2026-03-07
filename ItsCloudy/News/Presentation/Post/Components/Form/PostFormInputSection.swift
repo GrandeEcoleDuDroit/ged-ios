@@ -34,7 +34,7 @@ struct PostInputSection: View {
                 onPostSourceChange: onPostSourceChange
             )
             
-            TransparentTextFieldArea(
+            TransparentTextField(
                 stringResource(.contentFieldPlaceholder),
                 text: value.$content,
                 focusState: _focusState,
@@ -42,7 +42,6 @@ struct PostInputSection: View {
             )
             .font(.body)
             .onChange(of: value.content, perform: onContentChange)
-            .frame(maxWidth: .infinity)
         }
     }
 }

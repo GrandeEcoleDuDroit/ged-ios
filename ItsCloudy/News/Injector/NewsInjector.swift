@@ -107,6 +107,12 @@ class NewsInjector: Injector {
             )
         }.inObjectScope(.weak)
         
+        container.register(UpdatePostUseCase.self) { resolver in
+            UpdatePostUseCase(
+                postRepository: resolver.resolve(PostRepository.self)!
+            )
+        }.inObjectScope(.weak)
+        
         container.register(DeletePostUseCase.self) { resolver in
             DeletePostUseCase(
                 postRepository: resolver.resolve(PostRepository.self)!,

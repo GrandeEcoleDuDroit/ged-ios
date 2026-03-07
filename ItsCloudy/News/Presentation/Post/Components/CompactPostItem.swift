@@ -20,8 +20,8 @@ struct CompactPostItem: View {
                     .frame(height: DimensResource.News.compactPostImageHeight)
             }
             
-            if post.content.isNotBlank() {
-                ContentSection(content: post.content)
+            if let content = post.content {
+                ContentSection(content: content)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             

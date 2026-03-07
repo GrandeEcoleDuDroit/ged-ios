@@ -66,6 +66,16 @@ class PostRepositoryImpl: PostRepository {
         }
     }
     
+    func updatePost(post: Post, imageFileData: [FileData]) async throws {
+        do {
+            try await postRemoteDataSource.updatePost(post: post, imageFileData: imageFileData)
+            try await postLocalDataSource.upsertPost(post: post)
+        } catch {
+            e(tag, "Error updating post \(post.id)", error)
+            throw error
+        }
+    }
+    
     func upsertLocalPost(post: Post) async throws {
         do {
             try await postLocalDataSource.upsertPost(post: post)

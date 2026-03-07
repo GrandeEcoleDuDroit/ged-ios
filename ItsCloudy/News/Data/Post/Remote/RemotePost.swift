@@ -1,7 +1,7 @@
 struct RemotePost: Codable {
     let postId: String
     let postTitle: String
-    let postContent: String
+    let postContent: String?
     let postLink: String
     let postSourceId: Int
     let postDate: Int64
@@ -20,7 +20,7 @@ struct RemotePost: Codable {
     init(
         postId: String,
         postTitle: String,
-        postContent: String,
+        postContent: String?,
         postLink: String,
         postSourceId: Int,
         postDate: Int64,
@@ -39,7 +39,7 @@ struct RemotePost: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.postId = try container.decode(String.self, forKey: .postId)
         self.postTitle = try container.decode(String.self, forKey: .postTitle)
-        self.postContent = try container.decodeIfPresent(String.self, forKey: .postContent) ?? ""
+        self.postContent = try container.decodeIfPresent(String.self, forKey: .postContent)
         self.postLink = try container.decode(String.self, forKey: .postLink)
         self.postSourceId = try container.decode(Int.self, forKey: .postSourceId)
         self.postDate = try container.decode(Int64.self, forKey: .postDate)

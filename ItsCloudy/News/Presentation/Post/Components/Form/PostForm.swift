@@ -58,6 +58,8 @@ struct PostForm: View {
             })
             .padding(.vertical)
             .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.appBackground)
+            .foregroundStyle(.onSurfaceVariant)
         }
     }
 }
@@ -73,7 +75,6 @@ private struct BottomSection: View {
                     .frame(width: DimensResource.smallMediumIconSIze, height: DimensResource.smallMediumIconSIze)
             }
         }
-        .foregroundStyle(.onSurfaceVariant)
     }
 }
 

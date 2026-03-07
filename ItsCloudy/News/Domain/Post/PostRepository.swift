@@ -11,6 +11,8 @@ protocol PostRepository {
     
     func createPost(post: Post, imageFileData: [FileData]) async throws
     
+    func updatePost(post: Post, imageFileData: [FileData]) async throws
+    
     func upsertLocalPost(post: Post) async throws
     
     func deletePost(postId: String) async throws
