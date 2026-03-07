@@ -10,8 +10,7 @@ class UpdateMissionUseCaseTest {
         // Given
         let missionRepositoryTest = MissionRepositoryTest()
         let useCase = UpdateMissionUseCase(
-            missionRepository: missionRepositoryTest,
-            imageRepository: MockImageRepository()
+            missionRepository: missionRepositoryTest
         )
         
         // When
@@ -30,8 +29,7 @@ class UpdateMissionUseCaseTest {
         // Given
         let missionRepositoryTest = MissionRepositoryTest()
         let useCase = UpdateMissionUseCase(
-            missionRepository: missionRepositoryTest,
-            imageRepository: MockImageRepository()
+            missionRepository: missionRepositoryTest
         )
         let oldUrl = "url/oldPath"
         let mission = missionFixture.copy { $0.state = .published(imageUrl: oldUrl) }
