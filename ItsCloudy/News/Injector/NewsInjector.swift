@@ -113,12 +113,19 @@ class NewsInjector: Injector {
             )
         }.inObjectScope(.weak)
         
+        container.register(RecreatePostUseCase.self) { resolver in
+            RecreatePostUseCase(
+                postRepository: resolver.resolve(PostRepository.self)!,
+                imageRepository: CommonInjector.shared.resolve(ImageRepository.self)
+            )
+        }.inObjectScope(.weak)
+        
         container.register(DeletePostUseCase.self) { resolver in
             DeletePostUseCase(
                 postRepository: resolver.resolve(PostRepository.self)!,
                 imageRepository: CommonInjector.shared.resolve(ImageRepository.self)
             )
-        }
+        }.inObjectScope(.weak)
         
         // Others
         container.register(StartupAnnouncementTask.self) { resolver in

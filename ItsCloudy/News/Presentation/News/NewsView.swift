@@ -22,6 +22,7 @@ struct NewsDestination: View {
                 onReportAnnouncementClick: viewModel.reportAnnouncement,
                 onSeeAllAnnouncementClick: onSeeAllAnnouncementClick,
                 getAnnouncement: viewModel.getAnnouncement,
+                onRecreatePostClick: viewModel.recreatePost,
                 onDeletePostClick: viewModel.deletePost
             )
             .onReceive(viewModel.$event) { event in
@@ -58,6 +59,7 @@ private struct NewsView: View {
     let onReportAnnouncementClick: (AnnouncementReport) -> Void
     let onSeeAllAnnouncementClick: () -> Void
     let getAnnouncement: (String) -> Announcement?
+    let onRecreatePostClick: (Post) -> Void
     let onDeletePostClick: (Post) -> Void
     
     @State private var deleteAnnouncementAlert = AlertData<Announcement>(stringResource(.deleteAnnouncementAlertMessage))
@@ -93,8 +95,8 @@ private struct NewsView: View {
                         onPostClick: { _ in
                             // TODO
                         },
-                        onUncreatedPostClick: {
-                            // TODO
+                        onUncreatedPostClick: { post in
+                            activeSheet = .post(post)
                         },
                         onRedirectPostClick: { _ in
                             // TODO
@@ -215,6 +217,10 @@ private struct NewsView: View {
                         onEditClick: {
                             activeSheet = .editPost(post)
                         },
+                        onRecreateClick: {
+                            activeSheet = nil
+                            onRecreatePostClick(post)
+                        },
                         onDeleteClick: {
                             activeSheet = nil
                             deletePostAlert.present(data: post)
@@ -305,6 +311,7 @@ private enum NewsViewSheet: Identifiable {
             onReportAnnouncementClick: {_ in },
             onSeeAllAnnouncementClick: {},
             getAnnouncement: { _ in nil },
+            onRecreatePostClick: { _ in },
             onDeletePostClick: { _ in }
        )
        .background(.appBackground)
