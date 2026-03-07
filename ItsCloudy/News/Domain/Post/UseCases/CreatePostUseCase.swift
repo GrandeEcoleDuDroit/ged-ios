@@ -16,7 +16,7 @@ class CreatePostUseCase {
         var imageFileData: [FileData] = []
         
         for data in imageData {
-            guard let imageExtension = data.imageExtension() else { break }
+            guard let imageExtension = data.imageExtension() else { continue }
             let fileName = PostUtils.Image.generateFileName(postId: post.id) + "." + imageExtension
             let path = PostUtils.Image.getRelativePath(fileName: fileName)
             try? await self.imageRepository.createLocalImage(imageData: data, imagePath: path)

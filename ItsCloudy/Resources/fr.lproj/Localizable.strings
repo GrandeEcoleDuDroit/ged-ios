@@ -147,6 +147,7 @@
 "post_section_title" = "Posts";
 "no_post" = "Aucune post";
 "new_post" = "Nouveau post";
+"edit_post" = "Editer post";
 "post_link_field_placeholder" = "Lien du post";
 "delete_post_alert_message" = "Voulez-vous supprimer cette post ?";
 

@@ -40,7 +40,6 @@ private struct AnnouncementTitleInput: View {
         .font(AnnouncementPresentationUtils.titleFont)
         .fontWeight(.semibold)
         .onChange(of: title, perform: onTitleChange)
-        .padding(.leading, 5)
     }
 }
 
@@ -50,7 +49,7 @@ private struct AnnouncementContentInput: View {
     var focusState: FocusState<AnnouncementFocusField?>
 
     var body: some View {
-        TransparentTextFieldArea(
+        TransparentTextField(
             stringResource(.contentFieldPlaceholder),
             text: $content,
             focusState: focusState,

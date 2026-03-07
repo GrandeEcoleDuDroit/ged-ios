@@ -71,5 +71,13 @@ class NewsMainThreadInjector: MainThreadInjector {
                 generateIdUseCase: CommonInjector.shared.resolve(GenerateIdUseCase.self)
             )
         }
+        
+        container.register(EditPostViewModel.self) { (resolver, post: Any) in
+            let post = post as! Post
+            return EditPostViewModel(
+                post: post,
+                updatePostUseCase: NewsInjector.shared.resolve(UpdatePostUseCase.self)
+            )
+        }
     }
 }

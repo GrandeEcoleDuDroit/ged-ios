@@ -15,6 +15,10 @@ class PostRemoteDataSource {
         try await postApi.createPost(remotePost: post.toRemote(), imageFileData: imageFileData)
     }
     
+    func updatePost(post: Post, imageFileData: [FileData]) async throws {
+        try await postApi.updatePost(remotePost: post.toRemote(), imageFileData: imageFileData)
+    }
+    
     func deletePost(postId: String) async throws {
         try await postApi.deletePost(postId: postId)
     }
