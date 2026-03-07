@@ -3,7 +3,7 @@ import SwiftUI
 struct PostSection: View {
     let posts: [Post]?
     let onPostClick: (Post) -> Void
-    let onUncreatedPostClick: () -> Void
+    let onUncreatedPostClick: (Post) -> Void
     let onRedirectPostClick: (String) -> Void
     let onPostOptionClick: (Post) -> Void
     let onSeeAllPostsClick: () -> Void
@@ -29,7 +29,7 @@ struct PostSection: View {
                 } else {
                     PagedCollectionView(
                         values: posts,
-                        onCellClick: onPostClick
+                        onCellClick: { _ in }
                     ) { post in
                         CompactPostItem(
                             post: post,
@@ -38,6 +38,14 @@ struct PostSection: View {
                         )
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                         .padding(.horizontal)
+                        .contentShape(.rect)
+                        .onTapGesture {
+                            if post.state.type == .publishedType {
+                                onPostClick(post)
+                            } else {
+                                onUncreatedPostClick(post)
+                            }
+                        }
                     }
                 }
             }
@@ -49,7 +57,7 @@ struct PostSection: View {
     PostSection(
         posts: postsFixture,
         onPostClick: {_ in },
-        onUncreatedPostClick: {},
+        onUncreatedPostClick: { _ in },
         onRedirectPostClick: { _ in},
         onPostOptionClick: { _ in},
         onSeeAllPostsClick: {}
