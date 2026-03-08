@@ -173,7 +173,7 @@ struct OutlinedButton: View {
             Text(text)
                 .fontWeight(.semibold)
                 .font(.callout)
-                .padding(8)
+                .padding(DimensResource.smallPadding)
                 .padding(.horizontal, 10)
                 .foregroundStyle(.appPrimary)
                 .overlay(

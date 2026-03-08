@@ -56,6 +56,7 @@
 "submit" = "Soumettre";
 "copy" = "Copier";
 "see" = "Voir";
+"see_more" = "Voir plus";
 "block_user_alert_title" = "Bloquer utilisateur ?";
 "block_user_alert_message" = "Vous ne verrez plus aucun de ses contenus.";
 "unblock_user_alert_message" = "Voulez-vous débloquer cet utilisateur ?";
@@ -148,6 +149,7 @@
 "no_post" = "Aucune post";
 "new_post" = "Nouveau post";
 "edit_post" = "Editer post";
+"all_posts" = "Tout les posts";
 "post_link_field_placeholder" = "Lien du post";
 "delete_post_alert_message" = "Voulez-vous supprimer cette post ?";
 

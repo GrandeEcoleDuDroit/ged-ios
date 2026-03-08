@@ -40,6 +40,10 @@ extension String {
     func take(_ n: Int) -> String {
         String(self.prefix(n))
     }
+    
+    func repeatText(_ n: Int) -> String {
+        String(repeating: self, count: n)
+    }
 }
 
 extension String? {

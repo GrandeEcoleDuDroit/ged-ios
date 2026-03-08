@@ -63,6 +63,7 @@
 "submit" = "Submit";
 "copy" = "Copy";
 "see" = "See";
+"see_more" = "See more";
 "block_user_alert_title" = "Block user?";
 "block_user_alert_message" = "You will no longer see any of their content.";
 "unblock_user_alert_message" = "Do you want to unblock this user?";
@@ -155,6 +156,7 @@
 "no_post" = "No post";
 "new_post" = "New post";
 "edit_post" = "Edit post";
+"all_posts" = "All posts";
 "post_link_field_placeholder" = "Post link";
 "delete_post_alert_message" = "Do you want to delete this post?";
 
