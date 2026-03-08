@@ -85,6 +85,8 @@ private struct AllAnnouncementsView: View {
                             onOptionsClick: { activeSheet = .announcement(announcement) },
                             onAuthorClick: { onAuthorClick(announcement.author) }
                         )
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 )
             } else {

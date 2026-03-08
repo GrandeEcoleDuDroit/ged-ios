@@ -75,7 +75,8 @@ private struct PageNumberBadge: View {
         Text("\(index + 1) / \(totalCount)")
             .font(.caption)
             .foregroundStyle(.white)
-            .padding(DimensResource.smallPadding)
+            .padding(.horizontal, DimensResource.smallPadding)
+            .padding(.vertical, 6)
             .background(.overlayContent)
             .clipShape(ShapeDefaults.large)
     }

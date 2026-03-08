@@ -127,6 +127,10 @@ class NewsInjector: Injector {
             )
         }.inObjectScope(.weak)
         
+        container.register(RefreshPostsUseCase.self) { resolver in
+            RefreshPostsUseCase(fetchPostsUseCase: resolver.resolve(FetchPostsUseCase.self)!)
+        }.inObjectScope(.weak)
+        
         // Others
         container.register(StartupAnnouncementTask.self) { resolver in
             StartupAnnouncementTask(

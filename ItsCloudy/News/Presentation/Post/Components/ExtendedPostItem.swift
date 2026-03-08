@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CompactPostItem: View {
+struct ExtendedPostItem: View {
     let post: Post
     let onRedirectPostClick: () -> Void
     let onOptionClick: () -> Void
@@ -126,9 +126,8 @@ private struct TitleSection: View {
     var body: some View {
         HStack(spacing: DimensResource.smallMediumPadding) {
             Text(title)
-                .font(.subheadline)
+                .font(.headline)
                 .fontWeight(.semibold)
-                .lineLimit(2)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             OptionsButton(action: onOptionClick)
@@ -151,8 +150,7 @@ private struct ContentSection: View {
     let content: String
     
     var body: some View {
-        Text(content)
-            .font(.footnote)
+        ExpandableText(text: content)
     }
 }
 
@@ -171,14 +169,16 @@ private struct FooterSection: View {
                 stringResource(.see),
                 action: onRedirectPostClick
             )
+            .buttonStyle(.plain)
         }
     }
 }
 
 #Preview {
-    CompactPostItem(
+    ExtendedPostItem(
         post: postFixture,
         onRedirectPostClick: {},
         onOptionClick: {}
     )
+    .padding(.horizontal)
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-struct Post: Copying, Hashable {
+struct Post: Copying, Hashable, Identifiable {
     let id: String
     var title: String
     var content: String?
@@ -16,18 +16,18 @@ struct Post: Copying, Hashable {
     enum PostSource: Int, Codable, Identifiable {
         case linkedin = 1
         case instagram = 2
-        case blogLlm = 3
+        case web = 3
         case unknown = 0
         
         static var all: [PostSource] {
-            [.linkedin, .instagram, .blogLlm]
+            [.linkedin, .instagram, .web]
         }
         
         var label: String {
             switch self {
                 case .linkedin: "Linkedin"
                 case .instagram: "Instagram"
-                case .blogLlm: "Blog LLM"
+                case .web: "Web"
                 case .unknown: ""
             }
         }
