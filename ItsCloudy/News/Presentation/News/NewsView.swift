@@ -2,7 +2,8 @@ import SwiftUI
 
 struct NewsDestination: View {
     let onAnnouncementClick: (String) -> Void
-    let onSeeAllAnnouncementClick: () -> Void
+    let onSeeAllAnnouncementsClick: () -> Void
+    let onSeeAllPostsClick: () -> Void
     
     @StateObject private var viewModel = NewsMainThreadInjector.shared.resolve(NewsViewModel.self)
     @State private var errorMessage: String = ""
@@ -20,8 +21,9 @@ struct NewsDestination: View {
                 onRecreateAnnouncementClick: viewModel.recreateAnnouncement,
                 onDeleteAnnouncementClick: viewModel.deleteAnnouncement,
                 onReportAnnouncementClick: viewModel.reportAnnouncement,
-                onSeeAllAnnouncementClick: onSeeAllAnnouncementClick,
+                onSeeAllAnnouncementsClick: onSeeAllAnnouncementsClick,
                 getAnnouncement: viewModel.getAnnouncement,
+                onSeeAllPostsClick: onSeeAllPostsClick,
                 onRecreatePostClick: viewModel.recreatePost,
                 onDeletePostClick: viewModel.deletePost
             )
@@ -57,8 +59,9 @@ private struct NewsView: View {
     let onRecreateAnnouncementClick: (Announcement) -> Void
     let onDeleteAnnouncementClick: (Announcement) -> Void
     let onReportAnnouncementClick: (AnnouncementReport) -> Void
-    let onSeeAllAnnouncementClick: () -> Void
+    let onSeeAllAnnouncementsClick: () -> Void
     let getAnnouncement: (String) -> Announcement?
+    let onSeeAllPostsClick: () -> Void
     let onRecreatePostClick: (Post) -> Void
     let onDeletePostClick: (Post) -> Void
     
@@ -85,7 +88,7 @@ private struct NewsView: View {
                         onAnnouncementOptionsClick: { announcement in
                             activeSheet = .announcement(announcement)
                         },
-                        onSeeAllAnnouncementClick: onSeeAllAnnouncementClick,
+                        onSeeAllAnnouncementsClick: onSeeAllAnnouncementsClick,
                         onRefreshAnnouncements: onRefreshAnnouncements
                     )
                     .frame(height: geo.size.height * (NewsView.announcementSectionFraction / NewsView.totalSectionsFraction))
@@ -104,9 +107,7 @@ private struct NewsView: View {
                         onPostOptionClick: { post in
                             activeSheet = .post(post)
                         },
-                        onSeeAllPostsClick: {
-                            // TODO
-                        }
+                        onSeeAllPostsClick: onSeeAllPostsClick
                     )
                     .padding(.bottom)
                     .frame(height: geo.size.height * (NewsView.postSectionFraction / NewsView.totalSectionsFraction))
@@ -309,8 +310,9 @@ private enum NewsViewSheet: Identifiable {
             onRecreateAnnouncementClick: {_ in },
             onDeleteAnnouncementClick: {_ in },
             onReportAnnouncementClick: {_ in },
-            onSeeAllAnnouncementClick: {},
+            onSeeAllAnnouncementsClick: {},
             getAnnouncement: { _ in nil },
+            onSeeAllPostsClick: {},
             onRecreatePostClick: { _ in },
             onDeletePostClick: { _ in }
        )

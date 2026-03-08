@@ -80,5 +80,15 @@ class NewsMainThreadInjector: MainThreadInjector {
                 updatePostUseCase: NewsInjector.shared.resolve(UpdatePostUseCase.self)
             )
         }
+        
+        container.register(AllPostsViewModel.self) { resolver in
+            AllPostsViewModel(
+                userRepository: CommonInjector.shared.resolve(UserRepository.self),
+                postRepository: NewsInjector.shared.resolve(PostRepository.self),
+                deletePostUseCase: NewsInjector.shared.resolve(DeletePostUseCase.self),
+                recreatePostUseCase: NewsInjector.shared.resolve(RecreatePostUseCase.self),
+                refreshPostsUseCase: NewsInjector.shared.resolve(RefreshPostsUseCase.self)
+            )
+        }
     }
 }

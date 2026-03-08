@@ -9,7 +9,8 @@ struct NewsNavigation: View {
                 onAnnouncementClick: { announcementId in
                     viewModel.path.append(.readAnnouncement(announcementId: announcementId))
                 },
-                onSeeAllAnnouncementClick: { viewModel.path.append(.allAnnouncements) }
+                onSeeAllAnnouncementsClick: { viewModel.path.append(.allAnnouncements) },
+                onSeeAllPostsClick: { viewModel.path.append(.allPosts) }
             )
             .toolbar(viewModel.path.isEmpty ? .visible : .hidden, for: .tabBar)
             .background(.appBackground)
@@ -38,6 +39,14 @@ struct NewsNavigation: View {
                                 viewModel.path.append(.authorProfile(user: user))
                             }
                         )
+                        
+                    case .allPosts:
+                        AllPostsDestination(
+                            onPostClick: { _ in
+                                // TODO
+                            }
+                        )
+                        .background(.appBackground)
                 }
             }
         }

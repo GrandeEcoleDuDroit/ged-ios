@@ -59,6 +59,7 @@ enum StringResource: String {
     case submit = "submit"
     case copy = "copy"
     case see = "see"
+    case seeMore = "see_more"
     case blockUserAlertTitle = "block_user_alert_title"
     case blockUserAlertMessage = "block_user_alert_message"
     case unblockUserAlertMessage = "unblock_user_alert_message"
@@ -152,6 +153,7 @@ enum StringResource: String {
     case noPost = "no_post"
     case newPost = "new_post"
     case editPost = "edit_post"
+    case allPosts = "all_posts"
     case postLinkFieldPlaceholder = "post_link_field_placeholder"
     case deletePostAlertMessage = "delete_post_alert_message"
     
