@@ -13,8 +13,6 @@ struct ExtendedAnnouncementItem: View {
                     onOptionsClick: onOptionsClick,
                     onAuthorClick: onAuthorClick
                 )
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
                 
             case .publishing:
                 PublishingItem(

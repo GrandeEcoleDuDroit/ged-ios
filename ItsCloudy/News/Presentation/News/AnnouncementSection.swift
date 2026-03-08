@@ -4,7 +4,7 @@ struct AnnouncementSection: View {
     let announcements: [Announcement]?
     let onAnnouncementClick: (Announcement) -> Void
     let onAnnouncementOptionsClick: (Announcement) -> Void
-    let onSeeAllAnnouncementClick: () -> Void
+    let onSeeAllAnnouncementsClick: () -> Void
     let onRefreshAnnouncements: () async -> Void
         
     var body: some View {
@@ -15,7 +15,7 @@ struct AnnouncementSection: View {
                 
                 Button(
                     stringResource(.seeAll),
-                    action: onSeeAllAnnouncementClick
+                    action: onSeeAllAnnouncementsClick
                 )
                 .foregroundStyle(.appPrimary)
                 .font(.callout)
@@ -55,7 +55,7 @@ struct AnnouncementSection: View {
         announcements: [],
         onAnnouncementClick: { _ in },
         onAnnouncementOptionsClick: { _ in },
-        onSeeAllAnnouncementClick: {},
+        onSeeAllAnnouncementsClick: {},
         onRefreshAnnouncements: {}
     )
     .background(.appBackground)

@@ -22,13 +22,15 @@ struct PostSourceItem: View {
         HStack {
             PostSourceIcon(postSource: postSource)
             
-            Text(postSource.label)
-            
-            Text("\u{2022}")
-            
-            Text(getElapsedTimeValue(date: date, format: elapsedTimeValueFormat))
+            Group {
+                Text(postSource.label)
+                
+                Text("\u{2022}")
+                
+                Text(getElapsedTimeValue(date: date, format: elapsedTimeValueFormat))
+            }
+            .foregroundStyle(.informationText)
         }
-        .foregroundStyle(.informationText)
         .font(.footnote)
     }
 }
@@ -41,16 +43,17 @@ private struct PostSourceIcon: View {
             switch postSource {
                 case .linkedin: Image(.icLinkedin).resizable()
                 case .instagram: Image(.icInstagram).resizable()
-                case .blogLlm: Image(.appLogo).resizable()
+                case .web: Image(systemName: "globe").resizable()
                 case .unknown: Image(systemName: "questionmark.circle")
             }
-        }.frame(width: DimensResource.smallIconSIze, height: DimensResource.smallIconSIze)
+        }
+        .frame(width: DimensResource.smallIconSIze, height: DimensResource.smallIconSIze)
     }
 }
 
 #Preview {
     PostSourceItem(
-        postSource: .blogLlm,
+        postSource: .web,
         date: .now
     )
 }
