@@ -96,6 +96,7 @@ private struct EditPostView: View {
             onRemoveImageClick: onRemoveImageReference
         )
         .padding(.horizontal)
+        .loading(loading)
         .navigationTitle(stringResource(.editPost))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -108,14 +109,14 @@ private struct EditPostView: View {
             
             ToolbarItem(placement: .confirmationAction) {
                 Button(action: onUpdatePostClick) {
-                    if updateEnabled {
+                    if updateEnabled && !loading {
                         Text(stringResource(.save))
                             .foregroundStyle(.appPrimary)
                     } else {
                         Text(stringResource(.save))
                     }
                 }
-                .disabled(!updateEnabled)
+                .disabled(!updateEnabled || loading)
             }
         }
     }

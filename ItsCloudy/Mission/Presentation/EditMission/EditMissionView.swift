@@ -171,14 +171,14 @@ private struct EditMissionView: View {
             
             ToolbarItem(placement: .confirmationAction) {
                 Button(action: { onSaveMissionClick(imageData) }) {
-                    if editEnabled {
+                    if !editEnabled || loading {
                         Text(stringResource(.save))
-                            .foregroundStyle(.appPrimary)
                     } else {
                         Text(stringResource(.save))
+                            .foregroundStyle(.appPrimary)
                     }
                 }
-                .disabled(!editEnabled)
+                .disabled(!editEnabled || loading)
             }
         }
         .sheet(item: $activeSheet) {

@@ -66,6 +66,16 @@ class NewsMainThreadInjector: MainThreadInjector {
             )
         }
         
+        container.register(ReadPostViewModel.self) { (resolver, postId: Any) in
+            let postId = postId as! String
+            return ReadPostViewModel(
+                postId: postId,
+                userRepository: CommonInjector.shared.resolve(UserRepository.self),
+                postRepository: NewsInjector.shared.resolve(PostRepository.self),
+                deletePostUseCase: NewsInjector.shared.resolve(DeletePostUseCase.self)
+            )
+        }
+        
         container.register(CreatePostViewModel.self) { resolver in
             CreatePostViewModel(
                 createPostUseCase: NewsInjector.shared.resolve(CreatePostUseCase.self),

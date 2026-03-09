@@ -146,12 +146,11 @@ struct MessageInput: View {
                 .clipShape(.rect(cornerRadius: 20))
             }
         }
-        .padding(.leading, DimensResource.mediumPadding)
+        .padding(.leading)
         .padding(.trailing, DimensResource.smallPadding)
         .padding(.vertical, DimensResource.extraSmallPadding)
         .background(.chatInputBackground)
         .clipShape(.rect(cornerRadius: 30))
-        .padding(.bottom, DimensResource.smallPadding)
     }
     
     var messagePlaceholder: Text {
@@ -212,7 +211,6 @@ struct MessageBlockedUserIndicator: View {
             }
             .frame(maxWidth: .infinity, alignment: .center)
         }
-        .padding(.vertical, DimensResource.smallMediumPadding)
     }
 }
 

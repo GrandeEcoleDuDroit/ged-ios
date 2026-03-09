@@ -7,18 +7,7 @@ class PostRepositoryImpl: PostRepository {
     private let tag = String(describing: PostRepositoryImpl.self)
     private var cancellables: Set<AnyCancellable> = []
     private var postsSubject = PassthroughSubject<[Post], Never>()
-    var posts: AnyPublisher<[Post], Never> {
-        let localPosts = Future<[Post], Never> { promise in
-            Task { [weak self] in
-                let posts = (try? await self?.postLocalDataSource.getPosts()) ?? []
-                promise(.success(posts))
-            }
-        }
-        
-        return postsSubject
-            .prepend(localPosts)
-            .eraseToAnyPublisher()
-    }
+    var posts: AnyPublisher<[Post], Never> { getPostsPublisher() }
     
     init(
         postLocalDataSource: PostLocalDataSource,
@@ -27,6 +16,12 @@ class PostRepositoryImpl: PostRepository {
         self.postLocalDataSource = postLocalDataSource
         self.postRemoteDataSource = postRemoteDataSource
         listenDataChanges()
+    }
+    
+    func getPostPublisher(postId: String) -> AnyPublisher<Post?, Never> {
+        getPostsPublisher().map { posts in
+            posts.first { $0.id == postId }
+        }.eraseToAnyPublisher()
     }
     
     func getLocalPosts() async throws -> [Post] {
@@ -102,6 +97,19 @@ class PostRepositoryImpl: PostRepository {
             e(tag, "Error deleting local post \(postId)", error)
             throw error
         }
+    }
+    
+    private func getPostsPublisher() -> AnyPublisher<[Post], Never> {
+        let localPosts = Future<[Post], Never> { promise in
+            Task { [weak self] in
+                let posts = (try? await self?.postLocalDataSource.getPosts()) ?? []
+                promise(.success(posts))
+            }
+        }
+        
+        return postsSubject
+            .prepend(localPosts)
+            .eraseToAnyPublisher()
     }
     
     private func listenDataChanges() {
