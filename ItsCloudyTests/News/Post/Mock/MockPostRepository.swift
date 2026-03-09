@@ -2,6 +2,8 @@ import Combine
 
 class MockPostRepository: PostRepository {
     var posts: AnyPublisher<[Post], Never> { Empty().eraseToAnyPublisher() }
+    
+    func getPostPublisher(postId: String) -> AnyPublisher<Post?, Never> { Empty().eraseToAnyPublisher() }
 
     func getLocalPosts() async throws -> [Post] { [] }
 

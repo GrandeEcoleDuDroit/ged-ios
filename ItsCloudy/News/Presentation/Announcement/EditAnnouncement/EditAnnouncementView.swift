@@ -92,7 +92,7 @@ private struct EditAnnouncementView: View {
                             .foregroundStyle(.appPrimary)
                     }
                 }
-                .disabled(!updateEnabled)
+                .disabled(!updateEnabled || loading)
             }
         }
         .onAppear {

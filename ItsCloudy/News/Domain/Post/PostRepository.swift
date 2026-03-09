@@ -3,6 +3,8 @@ import Combine
 protocol PostRepository {
     var posts: AnyPublisher<[Post], Never> { get }
     
+    func getPostPublisher(postId: String) -> AnyPublisher<Post?, Never>
+    
     func getLocalPosts() async throws -> [Post]
     
     func getLocalPost(postId: String) async throws -> Post?
