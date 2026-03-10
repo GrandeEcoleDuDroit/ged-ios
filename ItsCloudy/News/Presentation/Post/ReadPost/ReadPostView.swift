@@ -6,7 +6,8 @@ struct ReadPostDestination: View {
     @StateObject private var viewModel: ReadPostViewModel
     @State private var showErrorAlert: Bool = false
     @State private var errorMessage: String = ""
-        
+    @Environment(\.openURL) private var openURL
+
     init(
         postId: String,
         onBackClick: @escaping () -> Void
@@ -26,8 +27,10 @@ struct ReadPostDestination: View {
                 post: post,
                 user: user,
                 loading: viewModel.uiState.loading,
-                onRedirectPostClick: { _ in
-                    // TODO
+                onRedirectPostClick: { postLink in
+                    if let url = URL(string: postLink) {
+                        openURL(url)
+                    }
                 },
                 onDeletePostClick: viewModel.deletePost
             )
