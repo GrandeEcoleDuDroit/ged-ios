@@ -5,6 +5,7 @@ struct AllPostsDestination: View {
     
     @StateObject private var viewModel = NewsMainThreadInjector.shared.resolve(AllPostsViewModel.self)
     @State private var errorAlert = AlertData("")
+    @Environment(\.openURL) private var openURL
     
     var body: some View {
         if let user = viewModel.uiState.user, let posts = viewModel.uiState.posts {
@@ -14,10 +15,12 @@ struct AllPostsDestination: View {
                 loading: viewModel.uiState.loading,
                 onRefresh: viewModel.refreshPosts,
                 onPostClick: onPostClick,
-                onRecreatePostClick: { viewModel.recreatePost(post: $0) },
-                onRedirectPostClick: { _ in
-                    // TODO
+                onRedirectPostClick: { postLink in
+                    if let url = URL(string: postLink) {
+                        openURL(url)
+                    }
                 },
+                onRecreatePostClick: { viewModel.recreatePost(post: $0) },
                 onDeletePostClick: { viewModel.deletePost(post: $0) }
             )
             .onReceive(viewModel.$event) { event in
@@ -48,8 +51,8 @@ private struct AllPostsView: View {
     let loading: Bool
     let onRefresh: () async -> Void
     let onPostClick: (String) -> Void
+    let onRedirectPostClick: (String) -> Void
     let onRecreatePostClick: (Post) -> Void
-    let onRedirectPostClick: (Post) -> Void
     let onDeletePostClick: (Post) -> Void
     
     @State private var activeSheet: AllPostViewSheet?
@@ -63,7 +66,7 @@ private struct AllPostsView: View {
                 ForEach(posts) { post in
                     ExtendedPostItem(
                         post: post,
-                        onRedirectPostClick: { onRedirectPostClick(post) },
+                        onRedirectPostClick: { onRedirectPostClick(post.link) },
                         onOptionClick: {
                             activeSheet = .post(post)
                         }
@@ -154,8 +157,8 @@ private enum AllPostViewSheet: Identifiable {
             loading: false,
             onRefresh: {},
             onPostClick: { _ in },
-            onRecreatePostClick: { _ in },
             onRedirectPostClick: { _ in },
+            onRecreatePostClick: { _ in },
             onDeletePostClick: {  _ in }
         )
     }
