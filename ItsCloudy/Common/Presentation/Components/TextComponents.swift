@@ -33,11 +33,19 @@ struct EmptyText: View {
 
 struct ExpandableText: View {
     let text: String
-    var maxLines: Int = 5
+    let maxLines: Int
     
     @State private var expanded: Bool = false
     @State private var displayShowMoreText: Bool = false
     @State private var height = CGFloat.zero
+    
+    init(
+        _ text: String,
+        maxLines: Int = 5
+    ) {
+        self.text = text
+        self.maxLines = maxLines
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: DimensResource.extraSmallPadding) {
@@ -81,7 +89,7 @@ struct ExpandableText: View {
 
 #Preview("Expandable text") {
     ExpandableText(
-        text: CommonPresentationUtils.loremIpsum(),
+        CommonPresentationUtils.loremIpsum(),
         maxLines: 2
     )
 }
