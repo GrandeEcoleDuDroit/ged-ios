@@ -15,25 +15,34 @@ struct PostForm: View {
     @FocusState private var focusState: PostFormFocusField?
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: DimensResource.mediumPadding) {
-                PostInputSection(
-                    value: value,
-                    focusState: _focusState,
-                    onTitleChange: onTitleChange,
-                    onPostLinkChange: onPostLinkChange,
-                    onPostSourceChange: onPostSourceChange,
-                    onContentChange: onContentChange
-                )
-                
-                PostFormImageSection(
-                    imageReferences: value.imageReferences,
-                    onRemoveImageClick: onRemoveImageClick
-                )
+        VStack(alignment: .leading) {
+            ScrollView {
+                VStack(spacing: DimensResource.mediumPadding) {
+                    PostInputSection(
+                        value: value,
+                        focusState: _focusState,
+                        onTitleChange: onTitleChange,
+                        onPostLinkChange: onPostLinkChange,
+                        onPostSourceChange: onPostSourceChange,
+                        onContentChange: onContentChange
+                    )
+                    
+                    PostFormImageSection(
+                        imageReferences: value.imageReferences,
+                        onRemoveImageClick: onRemoveImageClick
+                    )
+                }
             }
+            .scrollDismissesKeyboard(.interactively)
+            .scrollIndicators(.hidden)
+            
+            BottomSection(onAddImageClick: {
+                focusState = nil
+                showPhotoPicker = true
+            })
+            .foregroundStyle(.onSurfaceVariant)
+            .padding(.vertical)
         }
-        .scrollDismissesKeyboard(.interactively)
-        .scrollIndicators(.hidden)
         .photosPicker(
             isPresented: $showPhotoPicker,
             selection: $selectedItems,
@@ -50,16 +59,6 @@ struct PostForm: View {
             }
             onAddImageData(imageData)
             selectedItems.removeAll()
-        }
-        .safeAreaInset(edge: .bottom) {
-            BottomSection(onAddImageClick: {
-                focusState = nil
-                showPhotoPicker = true
-            })
-            .padding(.vertical)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.appBackground)
-            .foregroundStyle(.onSurfaceVariant)
         }
     }
 }
@@ -112,5 +111,6 @@ enum PostFormFocusField: Hashable {
         onAddImageData: { _ in },
         onRemoveImageClick: { _ in }
     )
+    .padding(.horizontal)
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)
 }

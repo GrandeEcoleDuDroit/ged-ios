@@ -208,7 +208,7 @@ class EditPostViewModel: ViewModel {
     private func listenPostUpdateState() {
         postUpdateState
             .sink { [weak self] state in
-                self?.uiState.updateEnabled = state.valid
+                self?.uiState.updateEnabled = state.updated && state.valid
             }
             .store(in: &cancellables)
     }

@@ -146,6 +146,7 @@
 "see_all" = "Voir tout";
 "all_announcements" = "Toutes les annonces";
 "post_section_title" = "Posts";
+"post" = "Post";
 "no_post" = "Aucune post";
 "new_post" = "Nouveau post";
 "edit_post" = "Editer post";

@@ -3,6 +3,7 @@ import SwiftUI
 struct NewsDestination: View {
     let onAnnouncementClick: (String) -> Void
     let onSeeAllAnnouncementsClick: () -> Void
+    let onPostClick: (String) -> Void
     let onSeeAllPostsClick: () -> Void
     
     @StateObject private var viewModel = NewsMainThreadInjector.shared.resolve(NewsViewModel.self)
@@ -23,6 +24,7 @@ struct NewsDestination: View {
                 onReportAnnouncementClick: viewModel.reportAnnouncement,
                 onSeeAllAnnouncementsClick: onSeeAllAnnouncementsClick,
                 getAnnouncement: viewModel.getAnnouncement,
+                onPostClick: onPostClick,
                 onSeeAllPostsClick: onSeeAllPostsClick,
                 onRecreatePostClick: viewModel.recreatePost,
                 onDeletePostClick: viewModel.deletePost
@@ -61,6 +63,7 @@ private struct NewsView: View {
     let onReportAnnouncementClick: (AnnouncementReport) -> Void
     let onSeeAllAnnouncementsClick: () -> Void
     let getAnnouncement: (String) -> Announcement?
+    let onPostClick: (String) -> Void
     let onSeeAllPostsClick: () -> Void
     let onRecreatePostClick: (Post) -> Void
     let onDeletePostClick: (Post) -> Void
@@ -95,8 +98,8 @@ private struct NewsView: View {
                     
                     PostSection(
                         posts: posts,
-                        onPostClick: { _ in
-                            // TODO
+                        onPostClick: {
+                            onPostClick($0.id)
                         },
                         onUncreatedPostClick: { post in
                             activeSheet = .post(post)
@@ -312,6 +315,7 @@ private enum NewsViewSheet: Identifiable {
             onReportAnnouncementClick: {_ in },
             onSeeAllAnnouncementsClick: {},
             getAnnouncement: { _ in nil },
+            onPostClick: {_ in },
             onSeeAllPostsClick: {},
             onRecreatePostClick: { _ in },
             onDeletePostClick: { _ in }
