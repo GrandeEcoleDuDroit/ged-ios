@@ -10,22 +10,6 @@ extension Array<Mission> {
             }
         }
         
-        func compareNotCompletedMission(_ lhs: Mission, _ rhs: Mission) -> Bool {
-            if let startDateResult = lhs.startDate.withoutTime().compare(rhs.startDate.withoutTime())
-                .takeUnless({ $0 == .orderedSame })?
-                .letBlock({ $0 == .orderedAscending })
-            {
-                return startDateResult
-            } else if let endDateResult = lhs.endDate.withoutTime().compare(rhs.endDate.withoutTime())
-                .takeUnless({ $0 == .orderedSame })?
-                .letBlock({ $0 == .orderedAscending })
-            {
-                return endDateResult
-            } else {
-                return lhs.date.compare(rhs.date) == .orderedDescending
-            }
-        }
-        
         return sorted { lhs, rhs in
             let pl = priority(lhs)
             let pr = priority(rhs)
@@ -36,7 +20,7 @@ extension Array<Mission> {
 
             return switch pl {
                 case .first: lhs.date > rhs.date
-                case .second: compareNotCompletedMission(lhs, rhs)
+                case .second: lhs.date > rhs.date
                 case .third: lhs.endDate > rhs.endDate
             }
         }
