@@ -150,7 +150,7 @@ private struct ContentSection: View {
     let content: String
     
     var body: some View {
-        ExpandableText(text: content)
+        ExpandableText(content)
     }
 }
 

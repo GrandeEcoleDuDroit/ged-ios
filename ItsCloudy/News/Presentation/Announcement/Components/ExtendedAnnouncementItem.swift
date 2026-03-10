@@ -38,25 +38,17 @@ private struct DefaultItem: View {
     
     var body: some View {
         VStack(spacing: DimensResource.mediumPadding) {
-            HStack {
-                AnnouncementHeader(
-                    announcement: announcement,
-                    onAuthorClick: onAuthorClick,
-                )
-                
-                OptionsButton(action: onOptionsClick)
-                    .buttonStyle(.borderless)
-            }
+            HeaderSection(
+                announcement: announcement,
+                onAuthorClick: onAuthorClick,
+                onOptionsClick: onOptionsClick
+            )
             
             if let title = announcement.title, !title.isEmpty {
-                Text(title)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                TitleSection(title: title)
             }
             
-            Text(announcement.content)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            ContentSection(content: announcement.content)
         }
     }
 }
@@ -73,8 +65,6 @@ private struct PublishingItem: View {
             onAuthorClick: onAuthorClick
         )
         .opacity(0.5)
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -85,30 +75,61 @@ private struct ErrorItem: View {
     
     var body: some View {
         VStack(spacing: DimensResource.mediumPadding) {
-            HStack(alignment: .center, spacing: DimensResource.smallMediumPadding) {
+            HStack(spacing: DimensResource.smallMediumPadding) {
                 Image(systemName: "exclamationmark.circle")
                     .foregroundStyle(.red)
                 
-                AnnouncementHeader(
+                HeaderSection(
                     announcement: announcement,
-                    onAuthorClick: onAuthorClick
+                    onAuthorClick: onAuthorClick,
+                    onOptionsClick: onOptionsClick
                 )
-                
-                OptionsButton(action: onOptionsClick)
-                    .buttonStyle(.borderless)
             }
             
-            if let title = announcement.title {
-                Text(title)
-                    .font(.title3)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            if let title = announcement.title, !title.isEmpty {
+                TitleSection(title: title)
             }
             
-            Text(announcement.content)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            ContentSection(content: announcement.content)
         }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct HeaderSection: View {
+    let announcement: Announcement
+    let onAuthorClick: () -> Void
+    let onOptionsClick: () -> Void
+    
+    var body: some View {
+        HStack(spacing: DimensResource.smallMediumPadding) {
+            AnnouncementHeader(
+                announcement: announcement,
+                onAuthorClick: onAuthorClick,
+            )
+            
+            OptionsButton(action: onOptionsClick)
+                .buttonStyle(.borderless)
+        }
+    }
+}
+
+private struct TitleSection: View {
+    let title: String
+    
+    var body: some View {
+        Text(title)
+            .font(.title3)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+
+private struct ContentSection: View {
+    let content: String
+    
+    var body: some View {
+        ExpandableText(content)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -133,5 +154,6 @@ private struct ErrorItem: View {
                 onAuthorClick: {}
             )
         }
+        .padding(.horizontal)
     }
 }
