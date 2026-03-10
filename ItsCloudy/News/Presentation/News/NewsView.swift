@@ -9,6 +9,7 @@ struct NewsDestination: View {
     @StateObject private var viewModel = NewsMainThreadInjector.shared.resolve(NewsViewModel.self)
     @State private var errorMessage: String = ""
     @State private var showErrorAlert: Bool = false
+    @Environment(\.openURL) private var openURL
     
     var body: some View {
         if let user = viewModel.uiState.user {
@@ -26,6 +27,11 @@ struct NewsDestination: View {
                 getAnnouncement: viewModel.getAnnouncement,
                 onPostClick: onPostClick,
                 onSeeAllPostsClick: onSeeAllPostsClick,
+                onRedirectPostClick: { postLink in
+                    if let url = URL(string: postLink) {
+                        openURL(url)
+                    }
+                },
                 onRecreatePostClick: viewModel.recreatePost,
                 onDeletePostClick: viewModel.deletePost
             )
@@ -65,6 +71,7 @@ private struct NewsView: View {
     let getAnnouncement: (String) -> Announcement?
     let onPostClick: (String) -> Void
     let onSeeAllPostsClick: () -> Void
+    let onRedirectPostClick: (String) -> Void
     let onRecreatePostClick: (Post) -> Void
     let onDeletePostClick: (Post) -> Void
     
@@ -104,9 +111,7 @@ private struct NewsView: View {
                         onUncreatedPostClick: { post in
                             activeSheet = .post(post)
                         },
-                        onRedirectPostClick: { _ in
-                            // TODO
-                        },
+                        onRedirectPostClick: onRedirectPostClick,
                         onPostOptionClick: { post in
                             activeSheet = .post(post)
                         },
@@ -317,6 +322,7 @@ private enum NewsViewSheet: Identifiable {
             getAnnouncement: { _ in nil },
             onPostClick: {_ in },
             onSeeAllPostsClick: {},
+            onRedirectPostClick: { _ in },
             onRecreatePostClick: { _ in },
             onDeletePostClick: { _ in }
        )
