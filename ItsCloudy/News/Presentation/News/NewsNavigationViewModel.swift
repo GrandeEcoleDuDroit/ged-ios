@@ -26,6 +26,7 @@ enum NewsRoute: Route {
     case readAnnouncement(announcementId: String)
     case authorProfile(user: User)
     case allAnnouncements
+    case readPost(postId: String)
     case allPosts
 }
 

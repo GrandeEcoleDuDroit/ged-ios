@@ -3,18 +3,15 @@ import SwiftUI
 struct PostSourceItem: View {
     let postSource: Post.PostSource
     let date: Date
-    let contentSize: SizeTokens
     let elapsedTimeValueFormat: ElapsedTimeValueFormat
     
     init(
         postSource: Post.PostSource,
         date: Date,
-        contentSize: SizeTokens = .small,
         elapsedTimeValueFormat: ElapsedTimeValueFormat = .short
     ) {
         self.postSource = postSource
         self.date = date
-        self.contentSize = contentSize
         self.elapsedTimeValueFormat = elapsedTimeValueFormat
     }
     

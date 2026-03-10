@@ -158,13 +158,18 @@ struct TextButton: View {
 
 struct OutlinedButton: View {
     let text: String
+    let modifier: Modifier
     let action: () -> Void
+    
+    private let maxWidth: CGFloat? = nil
     
     init(
         _ text: String,
+        modifier: Modifier = Modifier(),
         action: @escaping () -> Void
     ) {
         self.text = text
+        self.modifier = modifier
         self.action = action
     }
     
@@ -173,6 +178,7 @@ struct OutlinedButton: View {
             Text(text)
                 .fontWeight(.semibold)
                 .font(.callout)
+                .frame(maxWidth: modifier.maxWidth)
                 .padding(DimensResource.smallPadding)
                 .padding(.horizontal, 10)
                 .foregroundStyle(.appPrimary)

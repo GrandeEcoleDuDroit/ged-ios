@@ -150,6 +150,7 @@ enum StringResource: String {
     case seeAll = "see_all"
     case allAnnouncements = "all_announcements"
     case postSectionTitle = "post_section_title"
+    case post = "post"
     case noPost = "no_post"
     case newPost = "new_post"
     case editPost = "edit_post"

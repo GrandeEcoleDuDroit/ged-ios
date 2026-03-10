@@ -128,14 +128,26 @@ private struct ChatView: View {
             onInterlocutorProfilePictureClick: { onInterlocutorProfilePictureClick(conversation.interlocutor) }
         )
         .safeAreaInset(edge: .bottom) {
-            MessageBottomSection(
-                isBlocked: isBlocked,
-                messageText: $messageText,
-                onMessageTextChange: onMessageTextChange,
-                onSendMessagesClick: onSendMessagesClick,
-                onDeleteChatClick: { showDeleteChatAlert = true },
-                onUnblockUserClick: { showUnblockUserAlert = true }
-            )
+            Group {
+                if isBlocked {
+                    MessageBlockedUserIndicator(
+                        onDeleteChatClick: {
+                            showDeleteChatAlert = true
+                        },
+                        onUnblockUserClick: {
+                            showUnblockUserAlert = true
+                        }
+                    )
+                } else {
+                    MessageInput(
+                        text: $messageText,
+                        onTextChange: onMessageTextChange,
+                        onSendClick: onSendMessagesClick
+                    )
+                }
+            }
+            .padding(.top, DimensResource.smallPadding)
+            .padding(.horizontal)
         }
         .loading(loading)
         .toolbar {
@@ -318,32 +330,6 @@ private struct ReceivedMessageSheet: View {
                 onClick: onReportClick
             )
             .foregroundColor(.red)
-        }
-    }
-}
-
-private struct MessageBottomSection: View {
-    let isBlocked: Bool
-    @Binding var messageText: String
-    let onMessageTextChange: (String) -> Void
-    let onSendMessagesClick: () -> Void
-    let onDeleteChatClick: () -> Void
-    let onUnblockUserClick: () -> Void
-    
-    var body: some View {
-        if isBlocked {
-            MessageBlockedUserIndicator(
-                onDeleteChatClick: onDeleteChatClick,
-                onUnblockUserClick: onUnblockUserClick
-            )
-        } else {
-            MessageInput(
-                text: $messageText,
-                onTextChange: onMessageTextChange,
-                onSendClick: onSendMessagesClick
-            )
-            .padding(.horizontal)
-            .padding(.top, DimensResource.extraSmallPadding)
         }
     }
 }

@@ -143,9 +143,8 @@ private struct MissionDetailsView: View {
                     onRegisterMissionClick: onRegisterMissionClick,
                     onUnregisterMissionClick: { showUnregisterMissionAlert = true }
                 )
-                .padding(.bottom, DimensResource.smallMediumPadding)
-                .padding(.top, DimensResource.mediumPadding)
-                .padding(.horizontal, DimensResource.mediumPadding)
+                .padding(.top)
+                .padding(.horizontal)
                 .background(.appBackground)
             }
         }
