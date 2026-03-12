@@ -94,25 +94,27 @@ private struct MissionDetailsView: View {
 
     var body: some View {
         ZStack {
-            MissionDetailsContent(
-                mission: mission,
-                user: user,
-                isManager: isManager,
-                onManagerClick: onManagerClick,
-                onParticipantClick: onParticipantClick,
-                activeSheet: $activeSheet
-            )
-            .background(
-                GeometryReader { geometry in
-                    Color.clear
-                        .preference(
-                            key: ScrollOffsetPreferenceKey.self,
-                            value: geometry.frame(in: .named("scroll")).origin
-                        )
-                }
-            )
+            ScrollView(showsIndicators: false) {
+                MissionDetailsContent(
+                    mission: mission,
+                    user: user,
+                    isManager: isManager,
+                    onManagerClick: onManagerClick,
+                    onParticipantClick: onParticipantClick,
+                    activeSheet: $activeSheet
+                )
+                .background(
+                    GeometryReader { geometry in
+                        Color.clear
+                            .preference(
+                                key: ScrollOffsetPreferenceKey.self,
+                                value: geometry.frame(in: .named("scroll")).origin
+                            )
+                    }
+                )
+            }
             .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                self.scrollPosition = value
+                scrollPosition = value
             }
             .coordinateSpace(name: "scroll")
             .onChange(of: scrollPosition) { newValue in
@@ -260,61 +262,59 @@ private struct MissionDetailsContent: View {
     @Binding var activeSheet: MissionDetailsViewSheet?
     
     var body: some View {
-        ScrollView(showsIndicators: false) {
+        VStack(spacing: DimensResource.mediumPadding) {
+            MissionImage(
+                missionState: mission.state,
+                defaultImageScale: 1.4
+            )
+            .ignoresSafeArea(.all)
+            .frame(height: DimensResource.Mission.missionImageHeight)
+            .clipped()
+            
             VStack(spacing: DimensResource.mediumPadding) {
-                MissionImage(
-                    missionState: mission.state,
-                    defaultImageScale: 1.4
-                )
-                .ignoresSafeArea(.all)
-                .frame(height: DimensResource.Mission.missionImageHeight)
-                .clipped()
+                MissionDetailsTitleAndDescriptionSection(mission: mission)
+                    .padding(.horizontal)
                 
-                VStack(spacing: DimensResource.mediumPadding) {
-                    MissionDetailsTitleAndDescriptionSection(mission: mission)
-                        .padding(.horizontal)
-                    
-                    HorizontalDivider()
-                        .padding(.horizontal)
-                    
-                    MissionDetailsInformationSection(mission: mission)
-                        .padding(.horizontal)
-                    
-                    HorizontalDivider()
-                        .padding(.horizontal)
-                    
-                    MissionDetailsManagerSection(
-                        managers: mission.managers,
-                        onManagerClick: onManagerClick,
-                        onSeeAllClick: {
-                            activeSheet = .seeAllUsers(mission.managers)
-                        }
-                    )
-                    
-                    HorizontalDivider()
-                        .padding(.horizontal)
-                    
-                    MissionDetailsParticipantSection(
-                        participants: mission.participants,
-                        onParticipantClick: onParticipantClick,
-                        onLongParticipantClick: {
-                            if user.id != $0.id && (isManager || user.admin) {
-                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                activeSheet = .participant($0)
-                            }
-                        },
-                        onSeeAllClick: {
-                            activeSheet = .seeAllUsers(mission.participants)
-                        }
-                    )
-                    
-                    if !mission.tasks.isEmpty {
-                        HorizontalDivider()
-                            .padding(.horizontal)
-                        
-                        MissionDetailsTaskSection(missionTasks: mission.tasks)
-                            .padding(.horizontal)
+                HorizontalDivider()
+                    .padding(.horizontal)
+                
+                MissionDetailsInformationSection(mission: mission)
+                    .padding(.horizontal)
+                
+                HorizontalDivider()
+                    .padding(.horizontal)
+                
+                MissionDetailsManagerSection(
+                    managers: mission.managers,
+                    onManagerClick: onManagerClick,
+                    onSeeAllClick: {
+                        activeSheet = .seeAllUsers(mission.managers)
                     }
+                )
+                
+                HorizontalDivider()
+                    .padding(.horizontal)
+                
+                MissionDetailsParticipantSection(
+                    participants: mission.participants,
+                    onParticipantClick: onParticipantClick,
+                    onLongParticipantClick: {
+                        if user.id != $0.id && (isManager || user.admin) {
+                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                            activeSheet = .participant($0)
+                        }
+                    },
+                    onSeeAllClick: {
+                        activeSheet = .seeAllUsers(mission.participants)
+                    }
+                )
+                
+                if !mission.tasks.isEmpty {
+                    HorizontalDivider()
+                        .padding(.horizontal)
+                    
+                    MissionDetailsTaskSection(missionTasks: mission.tasks)
+                        .padding(.horizontal)
                 }
             }
         }
