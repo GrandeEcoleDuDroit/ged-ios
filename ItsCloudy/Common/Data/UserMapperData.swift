@@ -51,7 +51,7 @@ extension LocalUser {
             email: userEmail,
             schoolLevel: SchoolLevel.init(rawValue: userSchoolLevel)!,
             admin: userAdmin,
-            profilePictureUrl: UserUtils.ProfilePicture.getUrl(fileName: userProfilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePicture.formatUrl(fileName: userProfilePictureFileName),
             state: User.UserState(rawValue: userState) ?? .active,
             tester: userTester
         )
@@ -67,7 +67,7 @@ extension FirestoreUser {
             email: email,
             schoolLevel: SchoolLevel(rawValue: schoolLevel) ?? .unknown,
             admin: admin,
-            profilePictureUrl: UserUtils.ProfilePicture.getUrl(fileName: profilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePicture.formatUrl(fileName: profilePictureFileName),
             state: User.UserState(rawValue: state) ?? .active,
             tester: tester
         )
@@ -83,7 +83,7 @@ extension OracleUser {
             email: userEmail,
             schoolLevel: SchoolLevel(rawValue: userSchoolLevel) ?? .unknown,
             admin: userAdmin == 1,
-            profilePictureUrl: UserUtils.ProfilePicture.getUrl(fileName: userProfilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePicture.formatUrl(fileName: userProfilePictureFileName),
             state: User.UserState(rawValue: userState) ?? .active,
             tester: userTester == 1
         )

@@ -17,31 +17,31 @@ class RecreateMissionUseCase {
     
     func execute(mission: Mission) async {
         let task = Task {
-            let imagePath = mission.state.resolveImagePath()
-            let imageData: Data? = if let imagePath {
-                try? await imageRepository.getLocalImage(imagePath: imagePath)
-            } else {
-                nil
+            var fileData: FileData?
+            
+            if let imagePath = mission.state.resolveImagePath(),
+               let imageData = try? await imageRepository.getLocalImage(imagePath: imagePath) {
+                fileData = FileData(path: imagePath, data: imageData)
             }
             
             do {
                 try await missionRepository.createMission(
-                    mission: mission.copy { $0.state = .publishing(imagePath: imagePath) },
-                    imageData: imageData
+                    mission: mission.copy { $0.state = .publishing(imagePath: fileData?.path) },
+                    fileData: fileData
                 )
                 
                 try await missionRepository.updateLocalMission(
-                    mission: mission.copy { $0.state = .published(imageUrl: imagePath) }
+                    mission: mission.copy { $0.state = .published(imageUrl: fileData?.path) }
                 )
                 
                 await missionTaskQueue.removeTask(for: mission.id)
                 
-                if let imagePath {
+                if let imagePath = fileData?.path {
                     try? await imageRepository.deleteLocalImage(imagePath: imagePath)
                 }
             } catch {
                 try? await missionRepository.updateLocalMission(
-                    mission: mission.copy { $0.state = .error(imagePath: imagePath) }
+                    mission: mission.copy { $0.state = .error(imagePath: fileData?.path) }
                 )
                 await missionTaskQueue.removeTask(for: mission.id)
             }
