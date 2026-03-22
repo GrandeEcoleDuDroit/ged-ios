@@ -3,9 +3,9 @@ import Foundation
 protocol MissionApi {
     func getMissions() async throws -> [InboundRemoteMission]
     
-    func createMission(remoteMission: OutboundRemoteMission, imageData: Data?) async throws
+    func createMission(remoteMission: OutboundRemoteMission, fileData: FileData?) async throws
     
-    func updateMission(userId: String, remoteMission: OutboundRemoteMission, imageData: Data?) async throws
+    func updateMission(userId: String, remoteMission: OutboundRemoteMission, fileData: FileData?) async throws
     
     func deleteMission(remoteMission: OutboundRemoteMission) async throws
     

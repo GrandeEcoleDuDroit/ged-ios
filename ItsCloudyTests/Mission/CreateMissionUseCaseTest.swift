@@ -144,7 +144,7 @@ private class GetMissionMissionState: MockMissionRepository {
     var createdMissionState: Mission.MissionState?
     var updatedMissionState: Mission.MissionState?
     
-    override func createMission(mission: Mission, imageData: Data?) async throws {
+    override func createMission(mission: Mission, fileData: FileData?) async throws {
         createdMissionState = mission.state
     }
     
@@ -156,7 +156,7 @@ private class GetMissionMissionState: MockMissionRepository {
 private class CreateMissionThrowsException: MockMissionRepository {
     var updatedMissionState: Mission.MissionState?
 
-    override func createMission(mission: Mission, imageData: Data?) async throws {
+    override func createMission(mission: Mission, fileData: FileData?) async throws {
         throw NSError(domain: "", code: 0, userInfo: nil)
     }
     

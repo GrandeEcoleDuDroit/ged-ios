@@ -18,7 +18,7 @@ protocol UserRepository {
     
     func createUser(user: User) async throws
     
-    func updateProfilePicture(user: User, imageData: Data, fileName: String) async throws
+    func updateProfilePicture(user: User, fileData: FileData) async throws
     
     func deleteUser(user: User) async throws
 

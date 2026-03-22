@@ -21,19 +21,17 @@ class MissionApiImpl: MissionApi {
         }
     }
     
-    func createMission(remoteMission: OutboundRemoteMission, imageData: Data?) async throws {
+    func createMission(remoteMission: OutboundRemoteMission, fileData: FileData?) async throws {
         let url = RequestUtils.getUrl(base: base, endpoint: "/create")
         let session = RequestUtils.getDefaultSession()
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
         
-        if let imageData, let imageFileName = remoteMission.missionImageFileName {
-            let fileExtension = (imageFileName as NSString).pathExtension
-            
+        if let fileData {
             body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(imageFileName)\"\r\n".data(using: .utf8)!)
-            body.append("Content-Type: image/\(fileExtension)\r\n\r\n".data(using: .utf8)!)
-            body.append(imageData)
+            body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(fileData.name)\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: image/\(fileData.fileExtension)\r\n\r\n".data(using: .utf8)!)
+            body.append(fileData.data)
             body.append("\r\n".data(using: .utf8)!)
         }
         
@@ -58,19 +56,17 @@ class MissionApiImpl: MissionApi {
         try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func updateMission(userId: String, remoteMission: OutboundRemoteMission, imageData: Data?) async throws {
+    func updateMission(userId: String, remoteMission: OutboundRemoteMission, fileData: FileData?) async throws {
         let url = RequestUtils.getUrl(base: base, endpoint: "/update")
         let session = RequestUtils.getDefaultSession()
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
         
-        if let imageData, let imageFileName = remoteMission.missionImageFileName {
-            let fileExtension = (imageFileName as NSString).pathExtension
-            
+        if let fileData {
             body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(imageFileName)\"\r\n".data(using: .utf8)!)
-            body.append("Content-Type: image/\(fileExtension)\r\n\r\n".data(using: .utf8)!)
-            body.append(imageData)
+            body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(fileData.name)\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: image/\(fileData.fileExtension)\r\n\r\n".data(using: .utf8)!)
+            body.append(fileData.data)
             body.append("\r\n".data(using: .utf8)!)
         }
         

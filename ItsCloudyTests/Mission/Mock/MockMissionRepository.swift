@@ -14,9 +14,9 @@ class MockMissionRepository: MissionRepository {
     
     func getLocalMission(missionId: String) async throws -> Mission? { nil }
     
-    func createMission(mission: Mission, imageData: Data?) async throws {}
+    func createMission(mission: Mission, fileData: FileData?) async throws {}
     
-    func updateMission(user: User, mission: Mission, imageData: Data?) async throws {}
+    func updateMission(user: User, mission: Mission, fileData: FileData?) async throws {}
     
     func updateLocalMission(mission: Mission) async throws {}
     

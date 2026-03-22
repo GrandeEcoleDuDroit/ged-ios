@@ -67,10 +67,10 @@ class UserRepositoryImpl: UserRepository {
         }
     }
     
-    func updateProfilePicture(user: User, imageData: Data, fileName: String) async throws {
+    func updateProfilePicture(user: User, fileData: FileData) async throws {
         do {
-            try await userRemoteDataSource.updateProfilePicture(user: user, imageData: imageData, fileName: fileName)
-            try? userLocalDataSource.updateProfilePictureFileName(fileName: fileName)
+            try await userRemoteDataSource.updateProfilePicture(user: user, fileData: fileData)
+            try? userLocalDataSource.updateProfilePictureFileName(fileName: fileData.name)
         } catch {
             e(tag, "Error updating profile picture of user \(user.id)", error)
             throw error

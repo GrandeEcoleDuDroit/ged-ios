@@ -57,7 +57,7 @@ private class MissionRepositoryTest: MockMissionRepository {
     var missionUpdated: Bool = false
     var updatedMissionState: Mission.MissionState?
     
-    override func updateMission(user: User, mission: Mission, imageData: Data?) async throws {
+    override func updateMission(user: User, mission: Mission, fileData: FileData?) async throws {
         missionUpdated = true
         updatedMissionState = mission.state
     }

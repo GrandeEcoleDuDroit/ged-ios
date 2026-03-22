@@ -39,18 +39,16 @@ class UserServerApi {
         try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func updateProfilePicture(serverUser: OracleUser, imageData: Data, fileName: String) async throws {
+    func updateProfilePicture(serverUser: OracleUser, fileData: FileData) async throws {
         let url = RequestUtils.getUrl(base: base, endpoint: "/profile-picture/update")
         let session = RequestUtils.getDefaultSession()
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
         
-        let fileExtension = (fileName as NSString).pathExtension
-        
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: image/\(fileExtension)\r\n\r\n".data(using: .utf8)!)
-        body.append(imageData)
+        body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(fileData.name)\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: image/\(fileData.fileExtension)\r\n\r\n".data(using: .utf8)!)
+        body.append(fileData.data)
         body.append("\r\n".data(using: .utf8)!)
         
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
