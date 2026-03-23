@@ -32,7 +32,7 @@ extension LocalAnnouncement {
             email: authorEmail,
             schoolLevel: SchoolLevel(rawValue: Int(announcementAuthorSchoolLevel)) ?? SchoolLevel.unknown,
             admin: announcementAuthorAdmin,
-            profilePictureUrl: UserUtils.ProfilePicture.getUrl(fileName: announcementAuthorProfilePictureFileName)
+            profilePictureUrl: UserUtils.ProfilePicture.formatUrl(fileName: announcementAuthorProfilePictureFileName)
         )
         
         return Announcement(
@@ -89,7 +89,7 @@ extension InboundRemoteAnnouncement {
             email: userEmail,
             schoolLevel: SchoolLevel(rawValue: userSchoolLevel) ?? SchoolLevel.unknown,
             admin: userAdmin == 1,
-            profilePictureUrl: UserUtils.ProfilePicture.getUrl(fileName: userProfilePictureFileName),
+            profilePictureUrl: UserUtils.ProfilePicture.formatUrl(fileName: userProfilePictureFileName),
             state: User.UserState(rawValue: userState) ?? .active,
             tester: userTester == 1
         )

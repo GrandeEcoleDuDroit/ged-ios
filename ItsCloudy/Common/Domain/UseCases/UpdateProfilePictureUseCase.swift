@@ -15,7 +15,9 @@ class UpdateProfilePictureUseCase {
     func execute(user: User, imageData: Data) async throws {
         if let fileExtension = imageData.imageExtension() {
             let fileName = UserUtils.ProfilePicture.generateFileName(userId: user.id) + "." + fileExtension
-            try await userRepository.updateProfilePicture(user: user, imageData: imageData, fileName: fileName)
+            let path = UserUtils.ProfilePicture.getRelativePath(fileName: fileName)
+            let fileData = FileData(path: path, data: imageData)
+            try await userRepository.updateProfilePicture(user: user, fileData: fileData)
         } else {
             throw ImageError.invalidFormat
         }

@@ -61,19 +61,19 @@ class MissionRepositoryImpl: MissionRepository {
         }
     }
     
-    func createMission(mission: Mission, imageData: Data?) async throws {
+    func createMission(mission: Mission, fileData: FileData?) async throws {
         do {
             try await missionLocalDataSource.upsertMission(mission: mission)
-            try await missionRemoteDataSource.createMission(mission: mission, imageData: imageData)
+            try await missionRemoteDataSource.createMission(mission: mission, fileData: fileData)
         } catch {
             e(tag, "Error creating mission \(mission.id)", error)
             throw error
         }
     }
     
-    func updateMission(user: User, mission: Mission, imageData: Data?) async throws {
+    func updateMission(user: User, mission: Mission, fileData: FileData?) async throws {
         do {
-            try await missionRemoteDataSource.updateMission(user: user, mission: mission, imageData: imageData)
+            try await missionRemoteDataSource.updateMission(user: user, mission: mission, fileData: fileData)
             try await missionLocalDataSource.upsertMission(mission: mission)
         } catch {
             e(tag, "Error updating mission \(mission.id)", error)

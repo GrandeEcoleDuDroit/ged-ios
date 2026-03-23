@@ -11,12 +11,13 @@ class RecreateMissionUseCaseTest {
         let imagePath = "imagePath"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
         let missionRepositoryTest = MissionRepositoryTest()
+        let imageRepositoryTest = ImageRepositoryTest(givenImageData: pngImageDataFixture)
         let missionTaskQueue = MissionTaskQueue()
 
         // When
         let useCase = RecreateMissionUseCase(
             missionRepository: missionRepositoryTest,
-            imageRepository: MockImageRepository(),
+            imageRepository: imageRepositoryTest,
             missionTaskQueue: missionTaskQueue
         )
         await useCase.execute(mission: mission)
@@ -38,12 +39,13 @@ class RecreateMissionUseCaseTest {
         let imagePath = "imagePath"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
         let missionRepositoryTest = MissionRepositoryTest()
+        let imageRepositoryTest = ImageRepositoryTest(givenImageData: pngImageDataFixture)
         let missionTaskQueue = MissionTaskQueue()
 
         // When
         let useCase = RecreateMissionUseCase(
             missionRepository: missionRepositoryTest,
-            imageRepository: MockImageRepository(),
+            imageRepository: imageRepositoryTest,
             missionTaskQueue: missionTaskQueue
         )
         await useCase.execute(mission: mission)
@@ -89,12 +91,13 @@ class RecreateMissionUseCaseTest {
         let imagePath = "/path/to/image"
         let mission = missionFixture.copy { $0.state = .error(imagePath: imagePath) }
         let createMissionException = CreateMissionThrowsException()
+        let imageRepositoryTest = ImageRepositoryTest(givenImageData: pngImageDataFixture)
         let missionTaskQueue = MissionTaskQueue()
         
         // When
         let useCase = RecreateMissionUseCase(
             missionRepository: createMissionException,
-            imageRepository: MockImageRepository(),
+            imageRepository: imageRepositoryTest,
             missionTaskQueue: missionTaskQueue
         )
         await useCase.execute(mission: mission)
@@ -116,9 +119,9 @@ private class MissionRepositoryTest: MockMissionRepository {
     var updatedMissionState: Mission.MissionState?
     var transmittedImageData: Data?
     
-    override func createMission(mission: Mission, imageData: Data?) async throws {
+    override func createMission(mission: Mission, fileData: FileData?) async throws {
         createdMissionState = mission.state
-        transmittedImageData = imageData
+        transmittedImageData = fileData?.data
     }
     
     override func updateLocalMission(mission: Mission) async throws {
@@ -141,7 +144,7 @@ private class ImageRepositoryTest: MockImageRepository {
 private class CreateMissionThrowsException: MockMissionRepository {
     var updatedMissionState: Mission.MissionState?
 
-    override func createMission(mission: Mission, imageData: Data?) async throws {
+    override func createMission(mission: Mission, fileData: FileData?) async throws {
         throw NSError(domain: "", code: 0, userInfo: nil)
     }
     
