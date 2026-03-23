@@ -24,8 +24,8 @@ class UserRemoteDataSource {
         try await userApi.createUser(user: user)
     }
     
-    func updateProfilePicture(user: User, imageData: Data, fileName: String) async throws {
-        try await userApi.updateProfilePicture(user: user, imageData: imageData, fileName: fileName)
+    func updateProfilePicture(user: User, fileData: FileData) async throws {
+        try await userApi.updateProfilePicture(user: user, fileData: fileData)
     }
     
     func deleteUser(user: User) async throws {

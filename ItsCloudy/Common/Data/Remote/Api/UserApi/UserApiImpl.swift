@@ -31,11 +31,10 @@ class UserApiImpl: UserApi {
         try await userServerApi.createUser(serverUser: user.toOracleUser())
     }
     
-    func updateProfilePicture(user: User, imageData: Data, fileName: String) async throws {
+    func updateProfilePicture(user: User, fileData: FileData) async throws {
         try await userServerApi.updateProfilePicture(
             serverUser: user.toOracleUser(),
-            imageData: imageData,
-            fileName: fileName
+            fileData: fileData
         )
     }
     
