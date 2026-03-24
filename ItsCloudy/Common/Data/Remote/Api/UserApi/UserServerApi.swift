@@ -42,32 +42,19 @@ class UserServerApi {
     func updateProfilePicture(serverUser: OracleUser, fileData: FileData) async throws {
         let url = RequestUtils.getUrl(base: base, endpoint: "/profile-picture/update")
         let session = RequestUtils.getDefaultSession()
-        let boundary = "Boundary-\(UUID().uuidString)"
-        var body = Data()
-        
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(fileData.name)\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: image/\(fileData.fileExtension)\r\n\r\n".data(using: .utf8)!)
-        body.append(fileData.data)
-        body.append("\r\n".data(using: .utf8)!)
-        
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"\(UserField.Oracle.userId)\"\r\n\r\n".data(using: .utf8)!)
-        body.append("\(serverUser.userId)\r\n".data(using: .utf8)!)
-        
+        var multipartRequest = MultipartRequest()
+
+        multipartRequest.addImage(fileData: fileData)
+        multipartRequest.addValue(name: UserField.Oracle.userId, value: serverUser.userId)
         if let oldProfilePictureFileName = serverUser.userProfilePictureFileName {
-            body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"\(UserField.Oracle.userProfilePictureFileName)\"\r\n\r\n".data(using: .utf8)!)
-            body.append("\(oldProfilePictureFileName)\r\n".data(using: .utf8)!)
+            multipartRequest.addValue(name: UserField.Oracle.userProfilePictureFileName, value: oldProfilePictureFileName)
         }
 
-        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
-
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.httpBody = body
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        request.setValue("\(body.count)", forHTTPHeaderField: "Content-Length")
+        request.httpMethod = HttpMethod.post.rawValue
+        request.httpBody = multipartRequest.body
+        request.setValue(multipartRequest.headerValue, forHTTPHeaderField: "Content-Type")
+        request.setValue(multipartRequest.body.count.description, forHTTPHeaderField: "Content-Length")
         if let authToken = await tokenProvider.getAuthToken() {
             request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }

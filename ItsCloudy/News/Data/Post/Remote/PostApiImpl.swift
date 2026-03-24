@@ -24,30 +24,18 @@ class PostApiImpl: PostApi {
     func createPost(remotePost: RemotePost, imageFileData: [FileData]) async throws {
         let url = RequestUtils.getUrl(base: base, endpoint: "/create")
         let session = RequestUtils.getDefaultSession()
-        let boundary = "Boundary-\(UUID().uuidString)"
-        var body = Data()
+        var multipartRequest = MultipartRequest()
         
         imageFileData.forEach { fileData in
-            body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"images\"; filename=\"\(fileData.name)\"\r\n".data(using: .utf8)!)
-            body.append("Content-Type: image/\(fileData.fileExtension)\r\n\r\n".data(using: .utf8)!)
-            body.append(fileData.data)
-            body.append("\r\n".data(using: .utf8)!)
+            multipartRequest.addImage(fileData: fileData)
         }
-        
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"post\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: application/json\r\n\r\n".data(using: .utf8)!)
-        body.append(try JSONEncoder().encode(remotePost))
-        body.append("\r\n".data(using: .utf8)!)
-
-        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        try multipartRequest.addJsonValue(name: "post", jsonValue: remotePost)
 
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.httpBody = body
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        request.setValue("\(body.count)", forHTTPHeaderField: "Content-Length")
+        request.httpMethod = HttpMethod.post.rawValue
+        request.httpBody = multipartRequest.body
+        request.setValue(multipartRequest.headerValue, forHTTPHeaderField: "Content-Type")
+        request.setValue(multipartRequest.body.count.description, forHTTPHeaderField: "Content-Length")
         
         if let authToken = await tokenProvider.getAuthToken() {
             request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
@@ -59,30 +47,18 @@ class PostApiImpl: PostApi {
     func updatePost(remotePost: RemotePost, imageFileData: [FileData]) async throws {
         let url = RequestUtils.getUrl(base: base, endpoint: "/update")
         let session = RequestUtils.getDefaultSession()
-        let boundary = "Boundary-\(UUID().uuidString)"
-        var body = Data()
+        var multipartRequest = MultipartRequest()
         
         imageFileData.forEach { fileData in
-            body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"images\"; filename=\"\(fileData.name)\"\r\n".data(using: .utf8)!)
-            body.append("Content-Type: image/\(fileData.fileExtension)\r\n\r\n".data(using: .utf8)!)
-            body.append(fileData.data)
-            body.append("\r\n".data(using: .utf8)!)
+            multipartRequest.addImage(fileData: fileData)
         }
-        
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"post\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: application/json\r\n\r\n".data(using: .utf8)!)
-        body.append(try JSONEncoder().encode(remotePost))
-        body.append("\r\n".data(using: .utf8)!)
-
-        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        try multipartRequest.addJsonValue(name: "post", jsonValue: remotePost)
 
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.httpBody = body
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        request.setValue("\(body.count)", forHTTPHeaderField: "Content-Length")
+        request.httpMethod = HttpMethod.post.rawValue
+        request.httpBody = multipartRequest.body
+        request.setValue(multipartRequest.headerValue, forHTTPHeaderField: "Content-Type")
+        request.setValue(multipartRequest.body.count.description, forHTTPHeaderField: "Content-Length")
         
         if let authToken = await tokenProvider.getAuthToken() {
             request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
