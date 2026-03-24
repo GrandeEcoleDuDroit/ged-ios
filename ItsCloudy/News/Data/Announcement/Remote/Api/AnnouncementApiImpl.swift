@@ -41,14 +41,10 @@ class AnnouncementApiImpl: AnnouncementApi {
     }
     
     func deleteAnnouncement(announcementId: String, authorId: String) async throws {
-        let url = RequestUtils.getUrl(base: base, endpoint: "/delete")
+        let url = RequestUtils.getUrl(base: base, endpoint: "/\(announcementId)")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()
-        let dataToSend = [
-            AnnouncementField.Remote.announcementId: announcementId,
-            AnnouncementField.Remote.userId: authorId
-        ]
-        let request = try RequestUtils.simplePostRequest(url: url, dataToSend: dataToSend, authToken: authToken)
+        let request = RequestUtils.simpleDeleteRequest(url: url, authToken: authToken)
         
         try await RequestUtils.sendRequest(session: session, request: request)
     }
