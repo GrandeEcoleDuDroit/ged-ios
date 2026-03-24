@@ -147,6 +147,7 @@ private struct ChatView: View {
                 }
             }
             .padding(.top, DimensResource.smallPadding)
+            .padding(.bottom)
             .padding(.horizontal)
         }
         .loading(loading)
