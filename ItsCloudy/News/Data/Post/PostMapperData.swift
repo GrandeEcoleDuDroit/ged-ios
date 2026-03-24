@@ -26,7 +26,6 @@ extension LocalPost {
     func toPost(getImagePath: (String) -> String?) -> Post? {
         guard let postId = postId,
               let postTitle = postTitle,
-              let postContent = postContent,
               let postLink = postLink,
               let postDate = postDate,
               let postImageFileNames = postImageFileNames

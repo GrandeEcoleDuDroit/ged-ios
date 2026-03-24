@@ -156,8 +156,11 @@ private struct AccountInformationView: View {
                     Button(
                         action: {
                             if let profilePictureImageData,
-                                let compressedData = UIImage(data: profilePictureImageData)?.jpegData(compressionQuality: 0.5) {
-                                onSaveProfilePictureClick(compressedData)
+                               let data = profilePictureImageData.imageExtension() == "png"
+                                    ? UIImage(data: profilePictureImageData)?.pngData()
+                                    : UIImage(data: profilePictureImageData)?.jpeg(.medium)
+                            {
+                                onSaveProfilePictureClick(data)
                             }
                         },
                         label: {

@@ -5,7 +5,6 @@ struct AnnouncementSection: View {
     let onAnnouncementClick: (Announcement) -> Void
     let onAnnouncementOptionsClick: (Announcement) -> Void
     let onSeeAllAnnouncementsClick: () -> Void
-    let onRefreshAnnouncements: () async -> Void
         
     var body: some View {
         VStack(alignment: .leading) {
@@ -24,10 +23,7 @@ struct AnnouncementSection: View {
             
             if let announcements {
                 PlainTableView(
-                    modifier: PlainTableModifier(
-                        backgroundColor: .appBackground,
-                        onRefresh: onRefreshAnnouncements
-                    ),
+                    modifier: PlainTableModifier(backgroundColor: .appBackground),
                     values: announcements,
                     onRowClick: onAnnouncementClick,
                     emptyContent: {
@@ -55,8 +51,7 @@ struct AnnouncementSection: View {
         announcements: [],
         onAnnouncementClick: { _ in },
         onAnnouncementOptionsClick: { _ in },
-        onSeeAllAnnouncementsClick: {},
-        onRefreshAnnouncements: {}
+        onSeeAllAnnouncementsClick: {}
     )
     .background(.appBackground)
     .environment(\.managedObjectContext, GedDatabaseContainer.preview.container.viewContext)

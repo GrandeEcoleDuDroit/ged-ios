@@ -8,6 +8,10 @@ if [[ $CI_PULL_REQUEST_TARGET_BRANCH == release/* ]] && [[ $CI_XCODEBUILD_ACTION
     ./release/pre_build_release_script.sh
 fi
 
+if [[ $CI_PULL_REQUEST_TARGET_BRANCH == release/* ]] && [[ $CI_XCODEBUILD_ACTION == "archive" ]]; then
+    ./release/pre_build_release_script.sh
+fi
+
 if [[ $CI_BRANCH == release/* ]] && [[ $CI_XCODEBUILD_ACTION == "archive" ]]; then
     ./release/pre_build_release_script.sh
 fi

@@ -170,7 +170,15 @@ private struct EditMissionView: View {
             }
             
             ToolbarItem(placement: .confirmationAction) {
-                Button(action: { onSaveMissionClick(imageData) }) {
+                Button(action: {
+                    var data: Data? = nil
+                    if let imageData {
+                        data = imageData.imageExtension() == "png"
+                            ? UIImage(data: imageData)?.pngData()
+                            : UIImage(data: imageData)?.jpeg(.medium)
+                    }
+                    onSaveMissionClick(data)
+                }) {
                     if !editEnabled || loading {
                         Text(stringResource(.save))
                     } else {
