@@ -40,7 +40,7 @@ class AnnouncementApiImpl: AnnouncementApi {
         try await RequestUtils.sendRequest(session: session, request: request)
     }
     
-    func deleteAnnouncement(announcementId: String, authorId: String) async throws {
+    func deleteAnnouncement(announcementId: String) async throws {
         let url = RequestUtils.getUrl(base: base, endpoint: "/\(announcementId)")
         let session = RequestUtils.getDefaultSession()
         let authToken = await tokenProvider.getAuthToken()

@@ -99,12 +99,12 @@ class MissionRepositoryImpl: MissionRepository {
         }
     }
     
-    func deleteMission(mission: Mission, imageUrl: String?) async throws {
+    func deleteMission(missionId: String, imageUrl: String?) async throws {
         do {
-            try await missionRemoteDataSource.deleteMission(mission: mission)
-            try await missionLocalDataSource.deleteMission(missionId: mission.id)
+            try await missionRemoteDataSource.deleteMission(missionId: missionId)
+            try await missionLocalDataSource.deleteMission(missionId: missionId)
         } catch {
-            e(tag, "Error deleting mission \(mission.id)", error)
+            e(tag, "Error deleting mission \(missionId)", error)
             throw error
         }
     }

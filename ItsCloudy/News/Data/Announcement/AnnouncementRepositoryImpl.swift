@@ -87,9 +87,9 @@ class AnnouncementRepositoryImpl: AnnouncementRepository {
         }
     }
     
-    func deleteAnnouncement(announcementId: String, authorId: String) async throws {
+    func deleteAnnouncement(announcementId: String) async throws {
         do {
-            try await announcementRemoteDataSource.deleteAnnouncement(announcementId: announcementId, authorId: authorId)
+            try await announcementRemoteDataSource.deleteAnnouncement(announcementId: announcementId)
             try await announcementLocalDataSource.deleteAnnouncement(announcementId: announcementId)
         } catch {
             e(tag, "Error deleting announcement \(announcementId)", error)
