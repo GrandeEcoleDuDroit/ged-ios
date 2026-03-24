@@ -22,7 +22,7 @@ protocol MissionRepository {
     
     func upsertLocalMission(mission: Mission) async throws
     
-    func deleteMission(mission: Mission, imageUrl: String?) async throws
+    func deleteMission(missionId: String, imageUrl: String?) async throws
     
     func deleteLocalMissions() async throws
     

@@ -13,10 +13,7 @@ class DeleteAnnouncementUseCase {
     func execute(announcement: Announcement) async throws {
         switch announcement.state {
             case .published:
-                try await announcementRepository.deleteAnnouncement(
-                    announcementId: announcement.id,
-                    authorId: announcement.author.id
-                )
+                try await announcementRepository.deleteAnnouncement(announcementId: announcement.id)
                 
             case .publishing:
                 await announcementTaskQueue.cancelTask(for: announcement.id)
