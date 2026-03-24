@@ -25,6 +25,6 @@ playground.xcworkspace
 
 *.xcuserstate
 
-LaGrandeEcoleDuDroit/Config.xcconfig
-LaGrandeEcoleDuDroit/GoogleService-Info.plist
+ItsCloudy/Config.xcconfig
+ItsCloudy/GoogleService-Info.plist
 .DS_Store
