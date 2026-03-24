@@ -90,6 +90,15 @@ class PostRepositoryImpl: PostRepository {
         }
     }
     
+    func deleteLocalPosts() async throws {
+        do {
+            try await postLocalDataSource.deletePosts()
+        } catch {
+            e(tag, "Error deleting local posts", error)
+            throw error
+        }
+    }
+    
     func deleteLocalPost(postId: String) async throws {
         do {
             try await postLocalDataSource.deletePost(postId: postId)

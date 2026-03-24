@@ -19,5 +19,7 @@ protocol PostRepository {
     
     func deletePost(postId: String) async throws
     
+    func deleteLocalPosts() async throws
+    
     func deleteLocalPost(postId: String) async throws
 }
