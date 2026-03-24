@@ -18,7 +18,7 @@ struct RequestUtils {
         authToken: String? = nil
     ) -> URLRequest {
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = HttpMethod.get.rawValue
         if let authToken {
             request.addValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
@@ -30,7 +30,7 @@ struct RequestUtils {
         dataToSend: Encodable,
         authToken: String? = nil
     ) throws -> URLRequest {
-        try simpleWriteRequest(method: "POST", url: url, authToken: authToken, data: dataToSend)
+        try simpleWriteRequest(method: HttpMethod.post.rawValue, url: url, authToken: authToken, data: dataToSend)
     }
     
     static func simplePutRequest(
@@ -38,7 +38,7 @@ struct RequestUtils {
         dataToSend: Encodable,
         authToken: String? = nil
     ) throws -> URLRequest {
-        try simpleWriteRequest(method: "PUT", url: url, authToken: authToken, data: dataToSend)
+        try simpleWriteRequest(method: HttpMethod.put.rawValue, url: url, authToken: authToken, data: dataToSend)
     }
     
     static func simplePatchRequest(
@@ -46,12 +46,12 @@ struct RequestUtils {
         dataToSend: Encodable,
         authToken: String? = nil
     ) throws -> URLRequest {
-       try simpleWriteRequest(method: "PATCH", url: url, authToken: authToken, data: dataToSend)
+        try simpleWriteRequest(method: HttpMethod.patch.rawValue, url: url, authToken: authToken, data: dataToSend)
     }
     
     static func simpleDeleteRequest(url: URL, authToken: String? = nil) -> URLRequest {
         var request = URLRequest(url: url)
-        request.httpMethod = "DELETE"
+        request.httpMethod = HttpMethod.delete.rawValue
         if let authToken {
             request.addValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
@@ -66,28 +66,30 @@ struct RequestUtils {
                 if let serverResponse = try? JSONDecoder().decode(ServerResponse.self, from: dataReceived) {
                     throw ServerError(httpCode: httpCode, message: serverResponse.message, errorCode: serverResponse.code)
                 } else {
-                    let message =  String(bytes: dataReceived, encoding: .utf8)
-                    throw ServerError(httpCode: httpCode, message: message.orEmpty())
+                    throw NetworkError.unknown
                 }
             }
-        } catch {
+        } catch let error as ServerError {
             throw mapServerError(error)
         }
     }
     
     static func sendDataRequest<T: Decodable>(session: URLSession, request: URLRequest) async throws  -> T? {
-        let (dataReceived, urlResponse) = try await session.data(for: request)
-        
-        if let httpCode = (urlResponse as? HTTPURLResponse)?.statusCode, httpCode >= 400 {
-            if let serverResponse = try? JSONDecoder().decode(ServerResponse.self, from: dataReceived) {
-                throw ServerError(httpCode: httpCode, message: serverResponse.message, errorCode: serverResponse.code)
+        do {
+            let (dataReceived, urlResponse) = try await session.data(for: request)
+            
+            if let httpCode = (urlResponse as? HTTPURLResponse)?.statusCode, httpCode >= 400 {
+                if let serverResponse = try? JSONDecoder().decode(ServerResponse.self, from: dataReceived) {
+                    throw ServerError(httpCode: httpCode, message: serverResponse.message, errorCode: serverResponse.code)
+                } else {
+                    throw NetworkError.unknown
+                }
             } else {
-                let message =  String(bytes: dataReceived, encoding: .utf8)
-                throw ServerError(httpCode: httpCode, message: message.orEmpty())
+                let receivedData = try? JSONDecoder().decode(T.self, from: dataReceived)
+                return receivedData
             }
-        } else {
-            let receivedData = try? JSONDecoder().decode(T.self, from: dataReceived)
-            return receivedData
+        } catch let error as ServerError {
+            throw mapServerError(error)
         }
     }
     

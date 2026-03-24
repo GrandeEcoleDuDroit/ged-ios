@@ -24,30 +24,18 @@ class MissionApiImpl: MissionApi {
     func createMission(remoteMission: OutboundRemoteMission, fileData: FileData?) async throws {
         let url = RequestUtils.getUrl(base: base, endpoint: "/create")
         let session = RequestUtils.getDefaultSession()
-        let boundary = "Boundary-\(UUID().uuidString)"
-        var body = Data()
+        var multipartRequest = MultipartRequest()
         
         if let fileData {
-            body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(fileData.name)\"\r\n".data(using: .utf8)!)
-            body.append("Content-Type: image/\(fileData.fileExtension)\r\n\r\n".data(using: .utf8)!)
-            body.append(fileData.data)
-            body.append("\r\n".data(using: .utf8)!)
+            multipartRequest.addImage(fileData: fileData)
         }
+        try multipartRequest.addJsonValue(name: "mission", jsonValue: remoteMission)
         
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"mission\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: application/json\r\n\r\n".data(using: .utf8)!)
-        body.append(try JSONEncoder().encode(remoteMission))
-        body.append("\r\n".data(using: .utf8)!)
-
-        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
-
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.httpBody = body
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        request.setValue("\(body.count)", forHTTPHeaderField: "Content-Length")
+        request.httpMethod = HttpMethod.post.rawValue
+        request.httpBody = multipartRequest.body
+        request.setValue(multipartRequest.headerValue, forHTTPHeaderField: "Content-Type")
+        request.setValue(multipartRequest.body.count.description, forHTTPHeaderField: "Content-Length")
         
         if let authToken = await tokenProvider.getAuthToken() {
             request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
@@ -59,34 +47,19 @@ class MissionApiImpl: MissionApi {
     func updateMission(userId: String, remoteMission: OutboundRemoteMission, fileData: FileData?) async throws {
         let url = RequestUtils.getUrl(base: base, endpoint: "/update")
         let session = RequestUtils.getDefaultSession()
-        let boundary = "Boundary-\(UUID().uuidString)"
-        var body = Data()
+        var multipartRequest = MultipartRequest()
         
         if let fileData {
-            body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(fileData.name)\"\r\n".data(using: .utf8)!)
-            body.append("Content-Type: image/\(fileData.fileExtension)\r\n\r\n".data(using: .utf8)!)
-            body.append(fileData.data)
-            body.append("\r\n".data(using: .utf8)!)
+            multipartRequest.addImage(fileData: fileData)
         }
+        multipartRequest.addValue(name: UserField.Oracle.userId, value: userId)
+        try multipartRequest.addJsonValue(name: "mission", jsonValue: remoteMission)
         
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"\(UserField.Oracle.userId)\"\r\n\r\n".data(using: .utf8)!)
-        body.append("\(userId)\r\n".data(using: .utf8)!)
-        
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"mission\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: application/json\r\n\r\n".data(using: .utf8)!)
-        body.append(try JSONEncoder().encode(remoteMission))
-        body.append("\r\n".data(using: .utf8)!)
-
-        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
-
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.httpBody = body
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        request.setValue("\(body.count)", forHTTPHeaderField: "Content-Length")
+        request.httpMethod = HttpMethod.post.rawValue
+        request.httpBody = multipartRequest.body
+        request.setValue(multipartRequest.headerValue, forHTTPHeaderField: "Content-Type")
+        request.setValue(multipartRequest.body.count.description, forHTTPHeaderField: "Content-Length")
         
         if let authToken = await tokenProvider.getAuthToken() {
             request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
