@@ -4,6 +4,7 @@ class ClearDataUseCase {
     private let messageRepository: MessageRepository
     private let conversationMessageRepository: ConversationMessageRepository
     private let announcementRepository: AnnouncementRepository
+    private let postRepository: PostRepository
     private let missionRepository: MissionRepository
     private let blockedUserRepository: BlockedUserRepository
     private let fcmTokenRepository: FcmTokenRepository
@@ -14,6 +15,7 @@ class ClearDataUseCase {
         messageRepository: MessageRepository,
         conversationMessageRepository: ConversationMessageRepository,
         announcementRepository: AnnouncementRepository,
+        postRepository: PostRepository,
         missionRepository: MissionRepository,
         blockedUserRepository: BlockedUserRepository,
         fcmTokenRepository: FcmTokenRepository
@@ -23,6 +25,7 @@ class ClearDataUseCase {
         self.messageRepository = messageRepository
         self.conversationMessageRepository = conversationMessageRepository
         self.announcementRepository = announcementRepository
+        self.postRepository = postRepository
         self.missionRepository = missionRepository
         self.blockedUserRepository = blockedUserRepository
         self.fcmTokenRepository = fcmTokenRepository
@@ -34,6 +37,7 @@ class ClearDataUseCase {
         try? await conversationRepository.deleteLocalConversations()
         conversationMessageRepository.deleteConversationMessages()
         try? await announcementRepository.deleteLocalAnnouncements()
+        try? await postRepository.deleteLocalPosts()
         try? await missionRepository.deleteLocalMissions()
         blockedUserRepository.deleteLocalBlockedUsers()
     }

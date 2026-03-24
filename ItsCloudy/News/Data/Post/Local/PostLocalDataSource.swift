@@ -32,6 +32,10 @@ class PostLocalDataSource {
         try await postActor.upsertLocalPost(post: post)
     }
     
+    func deletePosts() async throws {
+        try await postActor.deleteAll()
+    }
+    
     func deletePost(postId: String) async throws {
         try await postActor.delete(postId: postId)
     }
