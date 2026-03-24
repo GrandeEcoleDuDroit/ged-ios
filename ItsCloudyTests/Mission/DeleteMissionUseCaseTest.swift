@@ -125,7 +125,7 @@ private class MissionRepositoryTest: MockMissionRepository {
         localMissionDeleted = true
     }
     
-    override func deleteMission(mission: Mission, imageUrl: String?) async throws {
+    override func deleteMission(missionId: String, imageUrl: String?) async throws {
         missionDeleted = true
     }
 }
