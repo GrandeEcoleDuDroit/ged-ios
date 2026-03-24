@@ -6,7 +6,6 @@ class NewsViewModel: ViewModel {
     private let announcementRepository: AnnouncementRepository
     private let deleteAnnouncementUseCase: DeleteAnnouncementUseCase
     private let recreateAnnouncementUseCase: RecreateAnnouncementUseCase
-    private let refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase
     private let postRepository: PostRepository
     private let recreatePostUseCase: RecreatePostUseCase
     private let deletePostUseCase: DeletePostUseCase
@@ -20,7 +19,6 @@ class NewsViewModel: ViewModel {
         announcementRepository: AnnouncementRepository,
         deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
         recreateAnnouncementUseCase: RecreateAnnouncementUseCase,
-        refreshAnnouncementsUseCase: RefreshAnnouncementsUseCase,
         postRepository: PostRepository,
         recreatePostUseCase: RecreatePostUseCase,
         deletePostUseCase: DeletePostUseCase
@@ -29,7 +27,6 @@ class NewsViewModel: ViewModel {
         self.announcementRepository = announcementRepository
         self.deleteAnnouncementUseCase = deleteAnnouncementUseCase
         self.recreateAnnouncementUseCase = recreateAnnouncementUseCase
-        self.refreshAnnouncementsUseCase = refreshAnnouncementsUseCase
         self.postRepository = postRepository
         self.recreatePostUseCase = recreatePostUseCase
         self.deletePostUseCase = deletePostUseCase
@@ -38,11 +35,6 @@ class NewsViewModel: ViewModel {
         listenAnnouncements()
         listenPosts()
     }
-    
-    func refreshAnnouncements() async {
-        try? await refreshAnnouncementsUseCase.execute()
-    }
-
     
     func recreateAnnouncement(announcement: Announcement) {
         Task {

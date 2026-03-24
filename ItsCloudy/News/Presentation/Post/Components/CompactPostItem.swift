@@ -50,7 +50,7 @@ private struct DefaultItem: View {
                     .frame(maxWidth: .infinity)
             }
             
-            if let content = post.content {
+            if let content = post.content, !content.isEmpty {
                 ContentSection(content: content)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -103,7 +103,7 @@ private struct ErrorItem: View {
                     .frame(maxWidth: .infinity)
             }
             
-            if let content = post.content {
+            if let content = post.content, !content.isEmpty {
                 ContentSection(content: content)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }

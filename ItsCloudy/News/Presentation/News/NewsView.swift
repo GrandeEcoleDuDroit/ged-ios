@@ -18,7 +18,6 @@ struct NewsDestination: View {
                 announcements: viewModel.uiState.announcements,
                 posts: viewModel.uiState.posts,
                 loading: viewModel.uiState.loading,
-                onRefreshAnnouncements: viewModel.refreshAnnouncements,
                 onAnnouncementClick: onAnnouncementClick,
                 onRecreateAnnouncementClick: viewModel.recreateAnnouncement,
                 onDeleteAnnouncementClick: viewModel.deleteAnnouncement,
@@ -62,7 +61,6 @@ private struct NewsView: View {
     let announcements: [Announcement]?
     let posts: [Post]?
     let loading: Bool
-    let onRefreshAnnouncements: () async -> Void
     let onAnnouncementClick: (String) -> Void
     let onRecreateAnnouncementClick: (Announcement) -> Void
     let onDeleteAnnouncementClick: (Announcement) -> Void
@@ -98,8 +96,7 @@ private struct NewsView: View {
                         onAnnouncementOptionsClick: { announcement in
                             activeSheet = .announcement(announcement)
                         },
-                        onSeeAllAnnouncementsClick: onSeeAllAnnouncementsClick,
-                        onRefreshAnnouncements: onRefreshAnnouncements
+                        onSeeAllAnnouncementsClick: onSeeAllAnnouncementsClick
                     )
                     .frame(height: geo.size.height * (NewsView.announcementSectionFraction / NewsView.totalSectionsFraction))
                     
@@ -313,7 +310,6 @@ private enum NewsViewSheet: Identifiable {
             announcements: announcementsFixture,
             posts: postsFixture,
             loading: false,
-            onRefreshAnnouncements: {},
             onAnnouncementClick: {_ in },
             onRecreateAnnouncementClick: {_ in },
             onDeleteAnnouncementClick: {_ in },
