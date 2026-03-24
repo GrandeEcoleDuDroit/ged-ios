@@ -25,7 +25,7 @@ class DeleteMissionUseCase {
                 }
                 
             case let .published(imageUrl):
-                try await missionRepository.deleteMission(mission: mission, imageUrl: imageUrl)
+                try await missionRepository.deleteMission(missionId: mission.id, imageUrl: imageUrl)
             
             case let .error(imagePath):
                 try await missionRepository.deleteLocalMission(missionId: mission.id)

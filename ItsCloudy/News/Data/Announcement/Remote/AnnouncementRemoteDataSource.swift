@@ -20,8 +20,8 @@ class AnnouncementRemoteDataSource {
         try await announcementApi.updateAnnouncement(remoteAnnouncement: announcement.toRemote())
     }
     
-    func deleteAnnouncement(announcementId: String, authorId: String) async throws {
-        try await announcementApi.deleteAnnouncement(announcementId: announcementId, authorId: authorId)
+    func deleteAnnouncement(announcementId: String) async throws {
+        try await announcementApi.deleteAnnouncement(announcementId: announcementId)
     }
     
     func reportAnnouncement(report: AnnouncementReport) async throws {

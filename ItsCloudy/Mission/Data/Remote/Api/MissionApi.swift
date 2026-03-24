@@ -7,7 +7,7 @@ protocol MissionApi {
     
     func updateMission(userId: String, remoteMission: OutboundRemoteMission, fileData: FileData?) async throws
     
-    func deleteMission(remoteMission: OutboundRemoteMission) async throws
+    func deleteMission(missionId: String) async throws
     
     func addParticipant(missionId: String, oracleUser: OracleUser) async throws
     

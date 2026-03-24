@@ -19,8 +19,8 @@ class MissionRemoteDataSource {
         try await missionApi.updateMission(userId: user.id, remoteMission: mission.toRemote()!, fileData: fileData)
     }
     
-    func deleteMission(mission: Mission) async throws {
-        try await missionApi.deleteMission(remoteMission: mission.toRemote()!)
+    func deleteMission(missionId: String) async throws {
+        try await missionApi.deleteMission(missionId: missionId)
     }
     
     func addParticipant(missionId: String, user: User) async throws {
