@@ -7,7 +7,7 @@ extension Data {
         }
 
         if self.starts(with: [0xFF, 0xD8]) {
-            return "jpeg"
+            return "jpg"
         }
 
         if self.starts(with: [0x47, 0x49, 0x46]) {

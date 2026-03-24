@@ -130,11 +130,13 @@ private struct CreateMissionView: View {
             ToolbarItem(placement: .confirmationAction) {
                 Button(
                     action: {
-                        if let imageData, let compressImageData = UIImage(data: imageData)?.jpeg(.medium) {
-                            onCreateMissionClick(compressImageData)
-                        } else {
-                            onCreateMissionClick(nil)
+                        var data: Data? = nil
+                        if let imageData {
+                            data = imageData.imageExtension() == "png"
+                                ? UIImage(data: imageData)?.pngData()
+                                : UIImage(data: imageData)?.jpeg(.medium)
                         }
+                        onCreateMissionClick(data)
                     }
                 ) {
                     if createEnabled {

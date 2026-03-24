@@ -92,7 +92,14 @@ private struct EditPostView: View {
             onPostLinkChange: onPostLinkChange,
             onPostSourceChange: onPostSourceChange,
             onContentChange: onContentChange,
-            onAddImageData: onAddImageData,
+            onAddImageData: { imageData in
+                let dataToAdd = imageData.compactMap {
+                    $0.imageExtension() == "png"
+                         ? UIImage(data: $0)?.pngData()
+                         : UIImage(data: $0)?.jpeg(.medium)
+                }
+                onAddImageData(dataToAdd)
+            },
             onRemoveImageClick: onRemoveImageReference
         )
         .padding(.horizontal)
